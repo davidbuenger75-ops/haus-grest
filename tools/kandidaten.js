@@ -74,7 +74,7 @@ window.KANDIDATEN = [
       "ding-kaestchen-1.jpg",
       "ding-kaestchen-2.jpg"
     ],
-    "gewaehlt": null,
+    "gewaehlt": "ding-kaestchen.jpg",
     "vorlage": null
   },
   {
