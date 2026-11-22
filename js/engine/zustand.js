@@ -4,8 +4,9 @@
 (function (HG) {
   'use strict';
 
-  var VERSION = 5; // 2: Tageszeit, Reiseziele, Handy, Spuk · 3: Spielfigur, Uhrzeit, NERVEN in Prozent, Bücher · 4: MACHT des Hauses
+  var VERSION = 6; // 2: Tageszeit, Reiseziele, Handy, Spuk · 3: Spielfigur, Uhrzeit, NERVEN in Prozent, Bücher · 4: MACHT des Hauses
                    // 5: angesehene Hinweise (gesehen), erledigte Handlungen an Dingen (getan)
+                   // 6: Regelsystem nach Delta Green: Eigenschaften, Fertigkeiten, Beruf, LP, WP, Wunden
 
   // Ältere Spielstände an das aktuelle Format anpassen: MIGRATION[v] macht aus Version v die Version v+1.
   var MIGRATION = {
@@ -13,6 +14,16 @@
     4: function (z) {
       z.gesehen = {}; z.getan = {};
       (z.hinweise || []).forEach(function (id) { z.gesehen[id] = true; }); // alte Hinweise gelten als angesehen
+    },
+    5: function (z) {
+      // GESCHICK/AUSDAUER entfallen; Eigenschaften werden ausgewürfelt, ein Beruf fehlt (kann man nicht nachwählen)
+      delete z.werte.geschick; delete z.werte.ausdauer; delete z.max.geschick; delete z.max.ausdauer;
+      delete z.start.geschick; delete z.start.ausdauer;
+      z.wunden = []; z.beruf = null;
+      var alt = HG.zustand.z; HG.zustand.z = z;
+      HG.charakter.setzeEigenschaften(HG.charakter.wuerfle().werte);
+      HG.zustand.z = alt;
+      if (z.spieler && z.spieler.geschlecht) z.spieler.fertig = true;
     }
   };
   // Inhalte können eigene Schritte anhängen, z. B. wenn sich Buchseiten verschoben haben:
@@ -26,17 +37,22 @@
     z: null,          // aktueller Zustand
     verlauf: [],      // Schnappschüsse für "rückgängig"
 
-    /** Neues Spiel: Werte auswürfeln, Gegenstände an ihre Startorte. */
+    /** Neues Spiel: Startwerte, Gegenstände an ihre Startorte. Eigenschaften und Beruf folgen in der Charaktererstellung
+     *  (bis dahin vorläufig ausgewürfelt, damit der Zustand immer vollständig ist). */
     neu: function () {
       var sp = HG.daten.spiel;
-      var w = sp.werte || { geschick: '1W6+6', ausdauer: '2W6+12', nerven: 80 };
+      var w = sp.werte || { nerven: 80 };
       var mx = sp.maxWerte || { nerven: 99 };
       var z = {
         version: VERSION,
         zug: 0,
         raum: sp.startRaum,
-        werte: {},
+        werte: {},       // lp, nerven, wp (aktuell)
         max: {},
+        eigenschaften: {},   // st, au, ge, ve, wi, as (3–18)
+        fertigkeiten: {},    // Prozentwerte (Basis + Beruf), js/engine/charakter.js
+        beruf: null,
+        wunden: [],          // [{ lp, grund, versorgt }] – Erste Hilfe einmal pro Wunde
         dinge: {},       // nur Abweichungen von der Definition, z. B. {ort:'spieler', offen:true}
         flags: {},       // freie Merker für den Inhalt
         zaehler: {},     // freie Zähler für den Inhalt
@@ -59,13 +75,14 @@
         macht: HG.macht ? HG.macht.start() : 100   // unsichtbare Kraftreserve des Hauses (Spielbibel 8.3)
       };
       (sp.startZiele || []).forEach(function (id) { z.ziele[id] = true; });
-      ['geschick', 'ausdauer', 'nerven'].forEach(function (k) {
+      Object.keys(w).forEach(function (k) {
         z.werte[k] = HG.wuerfel(w[k]);
         z.max[k] = mx[k] || z.werte[k];
         z.start[k] = z.werte[k];
       });
       this.z = z;
       this.verlauf = [];
+      if (HG.charakter) HG.charakter.setzeEigenschaften(HG.charakter.wuerfle().werte);
       return z;
     },
 

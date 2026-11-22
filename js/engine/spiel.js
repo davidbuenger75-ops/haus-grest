@@ -39,7 +39,7 @@
     ende: function (h) { this.schreibe('ende', h); }
   };
 
-  var WERTNAME = { geschick: 'GESCHICK', ausdauer: 'AUSDAUER', nerven: 'NERVEN' };
+  var WERTNAME = { lp: 'LP', nerven: 'NERVEN', wp: 'WP' };
   // Handlungen, die im Spielzustand (z.getan) gemerkt werden; Menü-Verben, die Erledigtes in einen
   // eingeklappten Bereich schieben (Verb der Leiste -> Aktion und Überschrift)
   var MERKEN = ['lesen', 'untersuchen'];
@@ -89,10 +89,22 @@
     nerven: function (d, g) { return api.aendere('nerven', d, g); },
     /** NERVEN-Probe: api.nervenProbe('1/1W6', { grund: 'Gestalt im Spiegel' }) */
     nervenProbe: function (spec, opt) { return HG.proben.nerven(spec, opt); },
-    ausdauer: function (d, g) { return api.aendere('ausdauer', d, g); },
-    geschick: function (d, g) { return api.aendere('geschick', d, g); },
-    /** Prozentprobe (W100 ≤ Wert): api.probe('nerven') oder api.probe(60, { titel: 'Suchen' }). Liefert { erfolg, wurf, ziel … }. */
+    /** Prozentprobe (W100 ≤ Zielwert): api.probe('st') (Eigenschaft × 5), api.probe('handwerk', { mod: -20, beruf: { handwerk: 0 } }),
+     *  api.probe('nerven'), api.probe(60, { titel: 'Glück' }). Liefert { erfolg, kritisch, patzer, wurf, ziel, auto }. */
     probe: function (wer, opt) { return HG.proben.probe(wer, opt); },
+    // --- Charakter (js/engine/charakter.js) ---
+    /** Verletzung: api.verletze('1W4', { grund: 'Glasscherben' }) – zieht LP ab, merkt die Wunde für Erste Hilfe. */
+    verletze: function (spec, opt) { return HG.charakter.verletze(spec, opt); },
+    heile: function (n, grund) { return HG.charakter.heile(n, grund); },
+    vollHeilen: function (grund) { HG.charakter.vollHeilen(grund); },
+    lp: function () { return Z().werte.lp; },
+    eigenschaft: function (k) { return (Z().eigenschaften || {})[k]; },
+    fertigkeit: function (k) { return (Z().fertigkeiten || {})[k]; },
+    beruf: function () { return Z().beruf; },
+    /** Eigener Weg durch den Beruf, z. B. api.hatVorteil('mechanik') */
+    hatVorteil: function (v) { return HG.charakter.hatVorteil(v); },
+    /** Willenspunkte ausgeben, um dem Haus zu widerstehen: true = gelungen */
+    willenskraft: function (kosten, grund) { return HG.charakter.willenskraft(kosten, grund); },
     /** Geschlechtsabhängig: api.g('Cousin', 'Cousine', 'Cousin/Cousine') */
     g: function (m, w, d) { return HG.g(m, w, d); },
     spieler: function () { return Z().spieler || {}; },
@@ -190,7 +202,7 @@
   var INFINITIV = {
     untersuchen: 'untersuchen', durchsuchen: 'durchsuchen', lesen: 'lesen', nehmen: 'nehmen', abnehmen: 'abnehmen',
     anheben: 'anheben', ablegen: 'ablegen', legen: 'hinlegen', aufschliessen: 'aufschließen', abschliessen: 'abschließen',
-    oeffnen: 'öffnen', schliessen: 'schließen', druecken: 'drücken', ziehen: 'ziehen', drehen: 'drehen', umdrehen: 'umdrehen', schieben: 'schieben',
+    oeffnen: 'öffnen', schliessen: 'schließen', druecken: 'drücken', ziehen: 'ziehen', drehen: 'drehen', umdrehen: 'umdrehen', einstellen: 'einstellen', knacken: 'knacken', schieben: 'schieben',
     anzuenden: 'anzünden', loeschen: 'löschen', zerbrechen: 'zerbrechen', reissen: 'zerreißen', sprechen: 'ansprechen',
     fragen: 'fragen', zeigen: 'zeigen', geben: 'geben', benutzen: 'benutzen', kombinieren: 'kombinieren',
     hineinschauen: 'hineinschauen', unterschauen: 'darunter ansehen', hinterschauen: 'dahinter ansehen'
@@ -203,7 +215,7 @@
     // =============== Start, Neues Spiel, Räume ======================
     start: function () {
       var r = HG.zustand.laden('auto');
-      if (r.ok && !(Z().spieler && Z().spieler.geschlecht)) r = { ok: false }; // Charakter noch nicht fertig
+      if (r.ok && !(Z().spieler && Z().spieler.fertig)) r = { ok: false }; // Charakter noch nicht fertig
       if (r.ok) {
         HG.ausgabe.system('Willkommen zurück. Dein letzter Spielstand wurde geladen. („neustart“ beginnt von vorn.)');
         W.beschreibeRaum(true);
@@ -227,12 +239,35 @@
       S.prolog();
     },
 
-    /** Nach der Charaktererstellung: Werte, Einleitung, Startraum. */
+    /** Nach der Charaktererstellung: Charakterbogen, Einleitung, Startraum. */
     prolog: function () {
-      var sp = HG.daten.spiel, w = Z().werte;
+      var sp = HG.daten.spiel;
+      if (Z().spieler) Z().spieler.fertig = true;
+      if (HG.charakter.eigenschaftListe().length) HG.ausgabe.system(S.charakterbogen() + '<br>Alles steht auch unter „Werte“. Tippe „hilfe“, wenn du nicht weiterweißt.');
       [].concat(HG.wert(sp.einleitung) || []).forEach(function (t) { HG.ausgabe.text(t); });
-      HG.ausgabe.system('Deine Werte: GESCHICK ' + w.geschick + ', AUSDAUER ' + w.ausdauer + ' – und deine NERVEN stehen bei ' + w.nerven + ' von ' + Z().max.nerven + '. Tippe „hilfe“, wenn du nicht weiterweißt.');
       S.betrete(sp.startRaum);
+    },
+
+    /** Kurzer Charakterbogen als Text (für "werte" und den Spielbeginn). */
+    charakterbogen: function () {
+      var z = Z(), C = HG.charakter;
+      var e = C.eigenschaftListe().map(function (d) { return d.kurz + ' ' + z.eigenschaften[d.k] + ' <small>(' + C.eigenschaftZiel(d.k) + ' %)</small>'; }).join(' · ');
+      var b = C.berufDef(), staerken = b ? Object.keys(b.boni || {}).map(function (k) { var f = C.fertigkeitDef(k); return (f ? f.name : k) + ' ' + z.fertigkeiten[k] + ' %'; }).join(', ') : '';
+      var wunden = (z.wunden || []).length ? '<br>Wunden: ' + z.wunden.length + ((z.wunden.filter(function (w) { return !w.versorgt; }).length) ? ' (' + z.wunden.filter(function (w) { return !w.versorgt; }).length + ' unversorgt – „versorge wunde“)' : '') : '';
+      return '<b>' + (z.spieler ? T.esc(z.spieler.name) : 'Deine Figur') + '</b>' + (b ? ' – ' + T.esc(C.berufName()) : '') + '<br>' + e + '<br>' +
+        'LP ' + z.werte.lp + '/' + z.max.lp + (C.schwerVerletzt() ? ' <b>(schwer verletzt)</b>' : '') + ' · NERVEN ' + z.werte.nerven + ' % · WP ' + z.werte.wp + '/' + z.max.wp +
+        (staerken ? '<br>Stärken: ' + staerken : '') + (b && b.text ? '<br><span class="nebenbei">' + T.esc(HG.text.fuelle(b.text)) + '</span>' : '') + wunden;
+    },
+    /** Läuft gerade die Charaktererstellung? */
+    imCharakter: function () { return !!(S.offen && ['name', 'geschlecht', 'methode', 'verteilen', 'beruf'].indexOf(S.offen.art) >= 0); },
+    frageBeruf: function () {
+      var sp = HG.daten.spiel, liste = HG.charakter.berufListe();
+      if (!liste.length) { S.offen = null; S.prolog(); return; }
+      var html = (HG.wert(sp.frageBeruf) || 'Was machst du beruflich?') + '<ol class="berufe">' + liste.map(function (b) {
+        return '<li><b>' + T.esc(HG.text.fuelle(b.name)) + '</b> – ' + Object.keys(b.boni || {}).map(function (k) { var f = HG.charakter.fertigkeitDef(k); return f ? f.name : k; }).join(', ') +
+          (b.text ? '<br><span class="nebenbei">' + T.esc(HG.text.fuelle(b.text)) + '</span>' : '') + '</li>';
+      }).join('') + '</ol>';
+      S.frage({ art: 'beruf' }, html);
     },
 
     GESCHLECHT: {
@@ -243,7 +278,7 @@
     /** Antworten während der Charaktererstellung. true = erledigt. */
     charakterSchritt: function (roh) {
       var o = S.offen, sp = HG.daten.spiel, z = Z();
-      if (!o || (o.art !== 'name' && o.art !== 'geschlecht')) return false;
+      if (!o || !S.imCharakter()) return false;
       S._verwerfeVerlauf = true;
       if (o.art === 'name') {
         var name = roh.replace(/["„“”'»«<>{}]/g, '').replace(/\s+/g, ' ').trim().slice(0, 40);
@@ -253,10 +288,54 @@
         S.frage({ art: 'geschlecht' }, HG.wert(sp.frageGeschlecht) || 'Bist du eine Frau, ein Mann – oder möchtest du das offen lassen?');
         return true;
       }
-      var w = T.norm(roh).split(/[\s,.!]+/).filter(Boolean), ge = null;
-      Object.keys(S.GESCHLECHT).forEach(function (k) { if (!ge && w.some(function (x) { return S.GESCHLECHT[k].indexOf(x) >= 0; })) ge = k; });
-      if (!ge) { S.frage(o, 'Tippe „Frau“, „Mann“ oder „ohne Angabe“.'); return true; }
-      z.spieler.geschlecht = ge;
+      var w = T.norm(roh).split(/[\s,.!]+/).filter(Boolean), C = HG.charakter;
+      if (o.art === 'geschlecht') {
+        var ge = null;
+        Object.keys(S.GESCHLECHT).forEach(function (k) { if (!ge && w.some(function (x) { return S.GESCHLECHT[k].indexOf(x) >= 0; })) ge = k; });
+        if (!ge) { S.frage(o, 'Tippe „Frau“, „Mann“ oder „ohne Angabe“.'); return true; }
+        z.spieler.geschlecht = ge;
+        if (!C.eigenschaftListe().length) { S.frageBeruf(); return true; }
+        S.frage({ art: 'methode' }, HG.wert(sp.frageMethode) || 'Eigenschaften würfeln oder verteilen?');
+        return true;
+      }
+      if (o.art === 'methode') {
+        if (w.some(function (x) { return /^(wuerfel|wurf|1$|zufall)/.test(x); })) {
+          var r = C.wuerfle();
+          C.setzeEigenschaften(r.werte);
+          HG.ausgabe.schreibe('auswahl', '<b>Deine Würfe</b> (4W6, die niedrigste fällt weg):<ul class="eigenschaftswuerfe">' + C.eigenschaftListe().map(function (d) {
+            var x = r.einzeln[d.k];
+            return '<li><b>' + d.name + '</b>: ' + x.slice(0, 3).join(' + ') + ' <s>' + x[3] + '</s> = <b>' + r.werte[d.k] + '</b></li>';
+          }).join('') + '</ul>');
+          S.frageBeruf();
+          return true;
+        }
+        if (w.some(function (x) { return /^(verteil|selbst|punkte|2$)/.test(x); })) {
+          S.frage({ art: 'verteilen' }, HG.wert(sp.frageVerteilen) || 'Sechs Zahlen, zusammen 72.');
+          HG.ausgabe.schreibe('verteiler', '', { punkte: sp.eigenschaftPunkte || 72, min: sp.eigenschaftMin || 3, max: sp.eigenschaftMax || 18,
+            eigenschaften: C.eigenschaftListe().map(function (d) { return { k: d.k, name: d.name, kurz: d.kurz }; }) });
+          return true;
+        }
+        S.frage(o, 'Tippe „würfeln“ oder „verteilen“.');
+        return true;
+      }
+      if (o.art === 'verteilen') {
+        var zahlen = (roh.match(/\d+/g) || []).map(Number);
+        var fehler = C.pruefeVerteilung(zahlen);
+        if (fehler) { S.frage(o, fehler); return true; }
+        var e = {}; C.eigenschaftListe().forEach(function (d, i) { e[d.k] = zahlen[i]; });
+        C.setzeEigenschaften(e);
+        S.frageBeruf();
+        return true;
+      }
+      // Beruf: Nummer, Name oder Stichwort
+      var liste = C.berufListe(), nr = parseInt(roh, 10), wahl = null;
+      if (nr >= 1 && nr <= liste.length) wahl = liste[nr - 1];
+      if (!wahl) wahl = liste.filter(function (b) {
+        var n = T.norm(HG.text.fuelle(b.name) + ' ' + b.id + ' ' + (b.woerter || []).join(' '));
+        return w.length && w.some(function (x) { return x.length > 3 && n.indexOf(x.slice(0, Math.max(4, x.length - 3))) >= 0; });
+      })[0];
+      if (!wahl) { S.frage(o, 'Diesen Beruf kenne ich nicht. Tippe die Nummer (1–' + liste.length + ') oder den Namen.'); return true; }
+      C.setzeBeruf(wahl.id);
       S.offen = null;
       if (sp.charakterFertig) HG.ausgabe.text(HG.wert(sp.charakterFertig));
       S.prolog();
@@ -518,6 +597,9 @@
       if (ctx.obj && D(ctx.obj).bei && D(ctx.obj).bei[a]) haken.push(D(ctx.obj).bei[a]);
       if (ctx.obj2 && D(ctx.obj2).bei && D(ctx.obj2).bei[a]) haken.push(D(ctx.obj2).bei[a]);
       if (HG.daten.spiel.bei && HG.daten.spiel.bei[a]) haken.push(HG.daten.spiel.bei[a]);
+      // Proben per Daten: Ding "proben: { aktion: { wer, mod, grund, beruf, erfolg, misserfolg, kritisch, patzer } }"
+      // Zweige sind Texte oder function (api, ergebnis, ctx); fehlt "kritisch"/"patzer", gilt erfolg/misserfolg.
+      if (ctx.obj && D(ctx.obj).proben && D(ctx.obj).proben[a]) haken.push(function (api2, c) { return S.datenProbe(D(c.obj).proben[a], c); });
       var erledigt = false;
       try { erledigt = haken.some(function (h) { return h(api, ctx); }); } catch (e) { S._tiefe = 0; throw e; }
       if (!erledigt) {
@@ -540,10 +622,26 @@
         // Geräusche am Ding (geraeusch: { oeffnen: 'tuer-knarren' }) und große Bilder von Fundstücken
         if (ctx.obj && D(ctx.obj).geraeusch && D(ctx.obj).geraeusch[a]) HG.medien.effekt(HG.wert(D(ctx.obj).geraeusch[a], api, ctx));
         if (ctx.obj && (a === 'untersuchen' || a === 'lesen' || a === 'umdrehen')) S.zeigeFundBild(ctx.obj, ctx);
+        if (ctx.obj && a === 'untersuchen' && D(ctx.obj) && D(ctx.obj).nahansicht && W.hell()) HG.ausgabe.schreibe('nahknopf', T.gross(T.name(ctx.obj, 'nom', '')), { ding: ctx.obj });
         HG.ausgabe.leere();
       }
       if (!ctx.mehrfach && S._tiefe === 0) S.zugEnde();
       return true;
+    },
+
+    /** Eine Probe aus Daten ausführen und verzweigen. Liefert true (Handlung erledigt) oder false (weiter wie gewohnt). */
+    datenProbe: function (p, ctx) {
+      if (p.wenn && !HG.wert(p.wenn, api, ctx)) return false;
+      if (p.einmal && Z().flags['_probe_' + ctx.obj + '_' + ctx.aktion]) return false;
+      var e = HG.proben.probe(HG.wert(p.wer, api, ctx), {
+        mod: HG.wert(p.mod, api, ctx) || 0, modGrund: p.modGrund, grund: HG.wert(p.grund, api, ctx), titel: p.titel, beruf: p.beruf
+      });
+      if (p.einmal) Z().flags['_probe_' + ctx.obj + '_' + ctx.aktion] = true;
+      if (p.dauer !== undefined) ctx.dauer = p.dauer;
+      var zweig = (e.kritisch && p.kritisch !== undefined) ? p.kritisch : (e.patzer && p.patzer !== undefined) ? p.patzer : e.erfolg ? p.erfolg : p.misserfolg;
+      var r = typeof zweig === 'function' ? zweig(api, e, ctx) : zweig;
+      if (typeof r === 'string') HG.ausgabe.text(r);
+      return r !== false;
     },
 
     /** Großes Bild eines Fundstücks in den Text schreiben (höchstens einmal pro Handlung).
@@ -583,7 +681,7 @@
       HG.spukwerk.zug();
       if (HG.proben.schockFaellig && z.werte.nerven > 0) HG.proben.schock();
       if (z.werte.nerven <= 0 && !z.vorbei) api.ende(HG.wert(HG.daten.spiel.endeNerven, api) || 'Dein Verstand gibt nach.');
-      else if (z.werte.ausdauer <= 0 && !z.vorbei) api.ende(HG.wert(HG.daten.spiel.endeAusdauer) || 'Deine Kräfte verlassen dich.');
+      else if (z.max.lp !== undefined && z.werte.lp <= 0 && !z.vorbei) api.ende(HG.wert(HG.daten.spiel.endeLp, api) || 'Deine Kräfte verlassen dich.');
     },
 
     // =============== Notizbuch ======================================
@@ -622,7 +720,7 @@
         case 'hilfe': HG.ausgabe.system(HILFE); break;
         case 'inventar': S.zeigeInventar(); break;
         case 'werte':
-          HG.ausgabe.system((z.spieler ? T.esc(z.spieler.name) + ': ' : '') + 'GESCHICK ' + z.werte.geschick + '/' + z.max.geschick + ' · AUSDAUER ' + z.werte.ausdauer + '/' + z.max.ausdauer + ' · NERVEN ' + z.werte.nerven + ' % (Start ' + z.start.nerven + ', höchstens ' + z.max.nerven + ')');
+          HG.ausgabe.system(S.charakterbogen());
           break;
         case 'notizbuch': S.zeigeNotizbuch(); if (HG.anzeige && HG.anzeige.zeigeTab) HG.anzeige.zeigeTab('notizbuch'); break;
         case 'karte':
@@ -762,6 +860,7 @@
       if (d.person) add('Ansprechen', 'sprich mit ' + k);
       if (d.lesbar || d.buch || d.lesen) add('Lesen', 'lies ' + k);
       if (d.rueckseite) add('Umdrehen', 'dreh ' + k + ' um');
+      if (d.nahansicht) add('Nahansicht', 'nahansicht ' + k);
       if (d.istHandy) { add('Nachrichten lesen', 'lies nachrichten'); add('Fotos ansehen', 'fotos'); }
       if (d.oeffenbar) {
         if (eig(id, 'verschlossen') && d.schluessel != null) add('Aufschließen', 'schließe ' + k + ' auf');
@@ -818,7 +917,7 @@
     ergaenze: function (text) {
       var roh = String(text).replace(/^\s+/, ''), erg = [];
       if (!roh || !W.raum() || Z().vorbei) return erg;
-      if (S.offen && (S.offen.art === 'name' || S.offen.art === 'geschlecht')) return erg;
+      if (S.imCharakter()) return erg;
       var offen = /\s$/.test(roh), teile = roh.trim().split(/\s+/);
       var rest = offen ? '' : teile.pop(), vorne = teile.join(' ');
       var p = T.norm(rest), getippt = T.norm(roh.trim()) + (offen ? ' ' : '');
@@ -865,6 +964,9 @@
       var z = Z(), v = [];
       function add(s) { if (s && !v.some(function (x) { return x.toLowerCase() === s.toLowerCase(); })) v.push(s); }
       if (S.offen && S.offen.art === 'geschlecht') return ['Frau', 'Mann', 'ohne Angabe'];
+      if (S.offen && S.offen.art === 'methode') return ['würfeln', 'verteilen'];
+      if (S.offen && S.offen.art === 'verteilen') return ['12 12 12 12 12 12', '14 13 12 12 11 10'];
+      if (S.offen && S.offen.art === 'beruf') return HG.charakter.berufListe().map(function (b) { return HG.text.fuelle(b.name).split(' oder ')[0]; });
       if (S.offen && S.offen.art === 'name') return [];
       if (z.vorbei) return ['rückgängig', 'laden', 'neustart'];
       if (z.handy && z.handy.klingelt) return ['geh ran', 'ignoriere'];
@@ -909,7 +1011,7 @@
     '<b>Dinge:</b> nimm … · nimm alles · lege … ab · lege … in/auf … · öffne/schließe … · schließe … mit … auf/ab · heb … hoch · nimm … ab · drücke/ziehe/drehe/schiebe …',
     '<b>Licht:</b> zünde … an (mit …) · lösche … / blas … aus',
     '<b>Sinne:</b> horche · lausche an … · rieche (an …) · taste (…) · klopfe an …',
-    '<b>Sonstiges:</b> dreh … um · zerbrich … · reiß an … · kletter auf … · versteck dich hinter … · warte (z) · sprich mit … · frage … nach … · zeige … … · gib … an … · benutze … (mit …) · kombiniere … mit … · schreibe "…" auf …/ins Notizbuch',
+    '<b>Sonstiges:</b> dreh … um · drehe … auf 1234 · knacke … mit … · brich … auf · versorge wunde · zerbrich … · reiß an … · kletter auf … · versteck dich hinter … · warte (z) · sprich mit … · frage … nach … · zeige … … · gib … an … · benutze … (mit …) · kombiniere … mit … · schreibe "…" auf …/ins Notizbuch',
     '<b>Abkürzungen:</b> es/ihn/sie meint das zuletzt Genannte. Mehrere Befehle mit „und“ oder „dann“: <i>nimm die Kerze und geh nach Norden</i>. „g“ wiederholt den letzten Befehl.',
     '<b>Reisen:</b> fahre los (zeigt alle bekannten Ziele) · fahre zum Lager · fahre nach Hause – nur dort, wo dein Auto steht. Neue Ziele ergeben sich aus Hinweisen.',
     '<b>Zeit:</b> warte bis zum Abend / bis morgen · schlafe (nur mit Bett) · zeit. Nachts hat das Haus mehr Macht.',

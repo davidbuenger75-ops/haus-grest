@@ -82,14 +82,17 @@
     },
 
     /** Rekursiv: alles, was an/in einem Ort sichtbar ist. */
+    /** Alles, was an einem Ort (Raum, Spieler) sichtbar ist: die Dinge dort und – rekursiv – was auf Ablagen liegt,
+     *  feste Teile (rel: 'teil') und der Inhalt offener Behälter. Geschlossene Behälter verbergen ihren Inhalt. */
     sammle: function (ortId, liste) {
       liste = liste || [];
-      W.kinder(ortId).forEach(function (id) {
-        liste.push(id);
-        if (D(id).ablage) W.kinder(id, 'auf').forEach(function (k) { liste.push(k); W.sammle(k, liste); });
-        if (W.innenZugaenglich(id)) W.kinder(id, 'in').forEach(function (k) { liste.push(k); W.sammle(k, liste); });
-      });
+      W.kinder(ortId).forEach(function (id) { liste.push(id); W.sammleAn(id, liste); });
       return liste.filter(function (v, i, a) { return a.indexOf(v) === i; });
+    },
+    sammleAn: function (id, liste) {
+      if (D(id).ablage) W.kinder(id, 'auf').forEach(function (k) { liste.push(k); W.sammleAn(k, liste); });
+      W.kinder(id, 'teil').forEach(function (k) { liste.push(k); W.sammleAn(k, liste); });
+      if (W.innenZugaenglich(id)) W.kinder(id, 'in').forEach(function (k) { liste.push(k); W.sammleAn(k, liste); });
     },
 
     /** Türen und mehrfach vorhandene Dinge (Definition mit "orte"). */

@@ -1,8 +1,13 @@
 // Haus Grest – Engine: Prozentproben (W100), NERVEN-Proben, Schock
 //
-// Allgemein:  api.probe('nerven')                     -> W100 gegen den Wert, Ergebnis-Objekt
-//             api.probe(65, { titel: 'Suchen' })      -> W100 gegen eine feste Zahl (spätere Fertigkeiten)
-//             api.probe('suchen', { mod: -20, modGrund: 'Dunkelheit' })  (Fertigkeiten in z.werte oder z.fertigkeiten)
+// Allgemein:  api.probe('st')                         -> Eigenschaftsprobe: W100 gegen Wert × 5 (+ Berufsbonus)
+//             api.probe('handwerk', { mod: -20 })     -> Fertigkeitsprobe (Prozentwert aus z.fertigkeiten)
+//             api.probe('nerven') · api.probe(65, { titel: 'Glück' })
+//             opt: { mod, modGrund, grund, titel, still, beruf: { handwerk: 0 | 'auto' } }
+//               beruf: für diese Berufe gilt ein anderer Modifikator (Zahl) oder die Probe gelingt ohne Wurf ('auto')
+//             Schwer verletzt (LP ≤ 2): −20 % auf körperliche Proben (Inhalt: schwerMalus, koerperlich)
+// Ergebnis:   { erfolg, kritisch, patzer, wurf, ziel, auto } – kritisch/Patzer wie Delta Green:
+//             Pasch (11, 22 …) oder 01 unter dem Ziel = kritisch; Pasch über dem Ziel oder 100 = Patzer.
 // NERVEN:     api.nervenProbe('1/1W6', { grund: 'Gestalt im Spiegel' })
 //             Erfolg/Misserfolg-Verlust wie bei Delta Green: "0/1W3", "1/1W6", "1/1W8", "1W3/1W10", "1W4/1W12".
 //             Nachts an Orten aus HG.daten.spiel.nachtMalusOrte (Standard: 'haus') gibt es −10 %.
@@ -13,17 +18,24 @@
 
   var W = HG.welt, T = HG.text;
   function Z() { return HG.zustand.z; }
-  var NAMEN = { nerven: 'NERVEN', geschick: 'GESCHICK', ausdauer: 'AUSDAUER' };
+  var NAMEN = { nerven: 'NERVEN', lp: 'LP', wp: 'WP' };
+  function name(wer) {
+    if (NAMEN[wer]) return NAMEN[wer];
+    var e = HG.charakter && HG.charakter.eigenschaftDef(wer); if (e) return e.name;
+    var f = HG.charakter && HG.charakter.fertigkeitDef(wer); if (f) return f.name;
+    return typeof wer === 'string' ? T.gross(wer) : 'Prozent';
+  }
 
   var P = HG.proben = {
     schockFaellig: false,
 
     w100: function () { return 1 + Math.floor(HG.zufall() * 100); },
 
-    /** Zielwert ermitteln: Zahl, Wert (z.werte) oder Fertigkeit (z.fertigkeiten). */
+    /** Zielwert ermitteln: Zahl, Eigenschaft (× 5), Wert (z.werte) oder Fertigkeit (z.fertigkeiten). */
     basis: function (wer) {
       if (typeof wer === 'number') return wer;
       var z = Z();
+      if (z.eigenschaften && z.eigenschaften[wer] !== undefined) return HG.charakter.eigenschaftZiel(wer);
       if (z.werte && z.werte[wer] !== undefined) return z.werte[wer];
       if (z.fertigkeiten && z.fertigkeiten[wer] !== undefined) return z.fertigkeiten[wer];
       return 50;
@@ -35,14 +47,29 @@
      */
     probe: function (wer, opt) {
       opt = opt || {};
-      var basis = P.basis(wer), mod = opt.mod || 0;
+      var basis = P.basis(wer), mod = opt.mod || 0, modGrund = opt.modGrund || '';
+      var titel = opt.titel || (name(wer) + '-Probe');
+      // Beruf: anderer Modifikator oder automatischer Erfolg
+      var beruf = HG.charakter && opt.beruf && Z().beruf && opt.beruf[Z().beruf];
+      if (beruf === 'auto') {
+        var a = { wurf: 0, ziel: basis, basis: basis, mod: 0, erfolg: true, kritisch: false, patzer: false, auto: true,
+          titel: titel, grund: opt.grund || '', berufName: HG.charakter.berufName() };
+        if (!opt.still) P.zeige(a);
+        return a;
+      }
+      if (typeof beruf === 'number') { mod = beruf; modGrund = modGrund || HG.charakter.berufName(); }
+      // Schwer verletzt: körperliche Proben schwerer
+      if (HG.charakter && typeof wer === 'string' && HG.charakter.istKoerperlich(wer) && HG.charakter.schwerVerletzt()) {
+        mod -= HG.daten.spiel.schwerMalus || 20; modGrund = (modGrund ? modGrund + ', ' : '') + 'schwer verletzt';
+      }
       var ziel = Math.max(1, Math.min(99, basis + mod));
       var wurf = P.w100();
+      var pasch = wurf < 100 && wurf % 11 === 0;
+      var erfolg = wurf <= ziel;
       var e = {
-        wurf: wurf, ziel: ziel, basis: basis, mod: mod, modGrund: opt.modGrund || '',
-        erfolg: wurf <= ziel, kritisch: wurf <= 5 && wurf <= ziel, patzer: wurf >= 96 && wurf > ziel,
-        titel: opt.titel || ((NAMEN[wer] || (typeof wer === 'string' ? T.gross(wer) : 'Prozent')) + '-Probe'),
-        grund: opt.grund || ''
+        wurf: wurf, ziel: ziel, basis: basis, mod: mod, modGrund: modGrund,
+        erfolg: erfolg, kritisch: erfolg && (wurf === 1 || pasch), patzer: !erfolg && (wurf === 100 || pasch),
+        titel: titel, grund: opt.grund || ''
       };
       if (!opt.still) P.zeige(e);
       return e;
@@ -51,11 +78,13 @@
     /** Würfel-Block ausgeben (Text für Protokoll/Screenreader, Daten für die Animation). */
     zeige: function (e) {
       var ziel = e.ziel + (e.mod ? ' <small>(' + e.basis + ' ' + (e.mod < 0 ? '−' : '+') + ' ' + Math.abs(e.mod) + (e.modGrund ? ' ' + T.esc(e.modGrund) : '') + ')</small>' : '');
-      var html = '<b>' + e.titel + '</b>' + (e.grund ? ' (' + e.grund + ')' : '') + ': W100 → <b>' + e.wurf + '</b> gegen ' + ziel +
-        ' – ' + (e.erfolg ? 'bestanden' : 'misslungen') + '.' +
+      var html = e.auto
+        ? '<b>' + e.titel + '</b>' + (e.grund ? ' (' + e.grund + ')' : '') + ': kein Wurf nötig – ' + T.esc(e.berufName || 'dein Beruf') + '.'
+        : '<b>' + e.titel + '</b>' + (e.grund ? ' (' + e.grund + ')' : '') + ': W100 → <b>' + e.wurf + '</b> gegen ' + ziel +
+        ' – ' + (e.kritisch ? 'kritischer Erfolg' : e.patzer ? 'Patzer' : e.erfolg ? 'bestanden' : 'misslungen') + '.' +
         (e.verlustSpec !== undefined ? ' Verlust ' + e.verlustSpec + ' → ' + e.verlust + ' · NERVEN jetzt ' + e.neu + '.' : '');
       HG.ausgabe.schreibe('wurf', html, { probe: e });
-      HG.medien.effekt('wuerfel');
+      if (!e.auto) HG.medien.effekt('wuerfel');
     },
 
     /** Malus für Nacht im Haus. */

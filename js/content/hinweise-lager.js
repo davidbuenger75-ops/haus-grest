@@ -76,6 +76,8 @@ HG.hinweis('tb_dreizehn', { titel: 'Tagebuch: Dreizehn (18.11.2025)', strang: 'D
   text: 'Im Stadtarchiv zählte Carsten die Todesfälle im Haus. Er hörte bei dreizehn auf, „weil ich nicht weiterzählen will“.', stichworte: ['zaehlen', 'todesfaelle'] });
 HG.hinweis('tb_mutter', { titel: 'Tagebuch: Mutter ruft an (24.12.2025)', strang: 'E',
   text: 'Heiligabend 23:40: Carstens Mutter, seit 2011 tot, ruft an – von seiner eigenen Festnetznummer. Das Zimmer oben sei „nicht für ihn gemacht“.', stichworte: ['mutter', 'heiligabend'] });
+HG.hinweis('tb_kaestchen', { titel: 'Tagebuch: Bernwards Kästchen (12.1.2026)', strang: 'E',
+  text: 'Carsten fand hinter der Täfelung im Arbeitszimmer ein Kästchen aus Nussbaum – ohne Schloss, ohne Fuge, innen klappert etwas. Er bekam es nicht auf und brachte es ins Lager: „Sie soll es nicht haben.“', stichworte: ['taefelung', 'nussbaum'] });
 HG.hinweis('tb_bleib', { titel: 'Tagebuch: „Bleib.“ (11.2.2026)', strang: 'E',
   text: 'Carsten mietete das Lager, weil er glaubte, das Haus lese mit. In seinem Notizbuch stand in seiner eigenen Schrift ein Wort, das er nie geschrieben hatte: „Bleib.“', stichworte: ['bleib'] });
 HG.hinweis('tb_pistole', { titel: 'Tagebuch: Die Pistole (3.4.2026)', strang: 'E',

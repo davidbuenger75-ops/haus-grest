@@ -40,11 +40,7 @@
       <div class="blatt-kopf"><span id="blatt-titel"></span><button type="button" class="blatt-zu" aria-label="Schließen">✕</button></div>
       <h1>Haus Grest</h1>
       <p id="tageszeit" class="tageszeit"></p>
-      <section class="werte" aria-label="Werte">
-        <div class="wert" id="wert-geschick"><span class="name">GESCHICK</span><span class="zahl">–</span><span class="max"></span><span class="balken"><i></i></span></div>
-        <div class="wert" id="wert-ausdauer"><span class="name">AUSDAUER</span><span class="zahl">–</span><span class="max"></span><span class="balken"><i></i></span></div>
-        <div class="wert" id="wert-nerven"><span class="name">NERVEN</span><span class="zahl">–</span><span class="max"></span><span class="balken"><i></i></span></div>
-      </section>
+      <section class="werte" id="werte-bereich" aria-label="Charakter"></section>
 
       <div class="tabs" role="tablist">
         <button type="button" role="tab" class="aktiv" aria-selected="true" data-tab="inventar">Inventar</button>
@@ -104,6 +100,13 @@
     <p class="nebenbei">(Klicken zum Schließen)</p>
   </dialog>
 
+  <dialog id="nah" aria-label="Nahansicht">
+    <div class="nah-kopf"><b id="nah-titel"></b><button type="button" id="nah-zu" aria-label="Schließen">✕</button></div>
+    <div id="nah-bild" class="nah-bild"></div>
+    <div id="nah-steuer" class="nah-steuer"></div>
+    <div id="nah-text" class="nah-text" aria-live="polite"></div>
+  </dialog>
+
   <dialog id="karte" aria-label="Karte">
     <div id="karte-bild"></div>
     <button type="button" id="karte-zu">Schließen</button>
@@ -121,6 +124,7 @@
   <script src="js/engine/spuk.js"></script>
   <script src="js/engine/macht.js"></script>
   <script src="js/engine/proben.js"></script>
+  <script src="js/engine/charakter.js"></script>
   <script src="js/engine/buch.js"></script>
   <script src="js/engine/medien.js"></script>
   <script src="js/engine/plan.js"></script>
@@ -132,6 +136,7 @@
   <script src="js/content/prolog.js"></script>
   <script src="js/content/schauplaetze.js"></script>
   <script src="js/content/lager-schmidt.js"></script>
+  <script src="js/content/kaestchen.js"></script>
   <script src="js/content/erdgeschoss.js"></script>
   <script src="js/content/grundriss.js"></script>
   <script src="js/content/spuk.js"></script>

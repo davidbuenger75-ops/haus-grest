@@ -222,4 +222,62 @@
       '<rect width="800" height="300" fill="url(#nacht)"/><rect width="800" height="300" filter="url(#korn)"/>' +
       '</svg>';
   });
+
+  // ------------------------------------------------------------------
+  // Nahansicht: Bernwards Kästchen (800 × 600). Lage der Ringe, der Leiste und des Schlitzes
+  // passt zu den anklickbaren Bereichen in js/content/kaestchen.js (nahansicht).
+  HG.bild('nah_kaestchen', function (api) {
+    var offen = !!(api.eig('kaestchen', 'offen') || api.eig('kaestchen', 'weg')), gewalt = api.eig('kaestchen', 'weg') === 'gewalt';
+    var leiste = !!api.eig('zierleiste', 'verschoben'), zirkel = api.eig('zirkel', 'ort') === 'kaestchen';
+    var MESSING = '#b98a3e', HOLZ = '#5a3b22', HOLZHELL = '#7a5434';
+    var g = '';
+    // Tischplatte
+    g += '<rect x="0" y="0" width="800" height="600" fill="#d9c7a2" stroke="none"/><path d="M0 540 L800 540" stroke-width="1"/>';
+    for (var y = 30; y < 600; y += 46) g += '<path d="M0 ' + y + ' q200 ' + (y % 3 ? 6 : -6) + ' 400 0 t400 0" stroke-width=".6" opacity=".35"/>';
+    // Vorderseite
+    g += '<path d="M120 420 L680 420 L680 520 L120 520 Z" fill="' + HOLZHELL + '"/>';
+    for (var x = 140; x < 680; x += 38) g += '<path d="M' + x + ' 424 q6 46 0 92" stroke-width=".6" opacity=".5"/>';
+    // Zierleiste (verschoben: nach rechts geschoben) und Schlitz
+    var lx = leiste ? 240 : 150;
+    if (leiste) {
+      g += '<rect x="205" y="458" width="90" height="44" fill="#2a1d12" stroke-width="1.2"/>';
+      // Schlitz in Form eines Zirkels: Kreis oben, zwei Schenkel
+      g += zirkel
+        ? '<g fill="' + MESSING + '" stroke-width="1.3"><circle cx="250" cy="468" r="7"/><path d="M246 474 L228 498 L233 499 L250 478 L267 499 L272 498 L254 474 Z"/></g>'
+        : '<g fill="#000" stroke="#6b5a45" stroke-width="1"><circle cx="250" cy="468" r="7"/><path d="M246 474 L228 498 L233 499 L250 478 L267 499 L272 498 L254 474 Z"/></g>';
+    }
+    var lb = gewalt ? 300 : leiste ? 432 : 500;   // verschoben: das Ende verschwindet in der Seitenwand
+    g += '<rect x="' + lx + '" y="465" width="' + lb + '" height="26" rx="3" fill="#8d6a45" stroke-width="1.4"/>' +
+      '<path d="M' + (lx + 8) + ' 478 h' + (lb - 16) + '" stroke-width=".7" opacity=".6"/>';
+    // Deckel / Oberseite
+    if (!offen) {
+      g += '<path d="M120 120 L680 120 L680 420 L120 420 Z" fill="' + HOLZ + '"/>';
+      for (var x2 = 150; x2 < 680; x2 += 44) g += '<path d="M' + x2 + ' 126 q10 140 -4 288" stroke="#3a2516" stroke-width=".7" opacity=".6"/>';
+      // Gravur
+      g += '<text x="400" y="192" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="17" fill="' + MESSING + '" stroke="none">Was ich für E. erbaute, öffnet nur, wer unseren Tag kennt.</text>';
+      // Rosette mit vier Ringen
+      g += '<ellipse cx="400" cy="262" rx="150" ry="62" fill="' + MESSING + '" stroke-width="2"/>' +
+        '<ellipse cx="400" cy="262" rx="138" ry="52" fill="none" stroke-width=".9"/>';
+      [310, 370, 430, 490].forEach(function (cx) {
+        g += '<circle cx="' + cx + '" cy="262" r="28" fill="#d8b36a" stroke-width="1.6"/><circle cx="' + cx + '" cy="262" r="22" fill="none" stroke-width=".7"/>';
+        for (var k = 0; k < 10; k++) { var w = k * Math.PI / 5; g += '<path d="M' + (cx + 24 * Math.cos(w)).toFixed(1) + ' ' + (262 + 24 * Math.sin(w)).toFixed(1) + ' L' + (cx + 27 * Math.cos(w)).toFixed(1) + ' ' + (262 + 27 * Math.sin(w)).toFixed(1) + '" stroke-width=".8"/>'; }
+      });
+    } else {
+      // aufgeklappter Deckel hinten, Inneres mit Samt, Brief und Ring
+      g += '<path d="M120 120 L680 120 L700 60 L100 60 Z" fill="' + HOLZ + '"/>' +
+        (gewalt ? '<path d="M300 120 l14 -22 l10 18 l16 -26 l8 30" stroke-width="1.4"/>' : '<ellipse cx="400" cy="90" rx="80" ry="18" fill="' + MESSING + '" stroke-width="1.3"/>');
+      g += '<path d="M120 120 L680 120 L680 420 L120 420 Z" fill="' + HOLZ + '"/><rect x="150" y="150" width="500" height="250" fill="#4a1f24" stroke-width="1.2"/>';
+      if (api.eig('brief_1905', 'ort') === 'kaestchen') g += '<path d="M220 300 L420 286 L428 392 L228 404 Z" fill="#efe2c4" stroke-width="1.3"/>' +
+        (api.eig('brief_1905', 'zerrissen') ? '<path d="M300 294 l8 30 l-10 24 l12 26 l-6 24" stroke-width="1.3"/>' : '<path d="M250 320 h140 M252 340 h130 M254 360 h120" stroke-width=".7" opacity=".6"/>');
+      if (api.eig('ehering', 'ort') === 'kaestchen') g += '<ellipse cx="530" cy="350" rx="26" ry="20" fill="none" stroke="#d9b15a" stroke-width="7"/><ellipse cx="530" cy="350" rx="26" ry="20" fill="none" stroke-width="1"/>';
+    }
+    // Messingbeschläge an den Ecken
+    [[120, 120, 1, 1], [680, 120, -1, 1], [120, 420, 1, -1], [680, 420, -1, -1]].forEach(function (e) {
+      g += '<path d="M' + e[0] + ' ' + e[1] + ' h' + (38 * e[2]) + ' v' + (8 * e[3]) + ' h' + (-30 * e[2]) + ' v' + (30 * e[3]) + ' h' + (-8 * e[2]) + ' Z" fill="' + MESSING + '" stroke-width="1.2"/>';
+    });
+    g += '<path d="M120 520 L680 520 L680 120" stroke-width="2.2"/><path d="M120 120 L120 520" stroke-width="2.2"/>';
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" preserveAspectRatio="none" class="nah-svg">' +
+      '<defs><filter id="feder-nah" x="-2%" y="-2%" width="104%" height="104%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="11"/><feDisplacementMap in="SourceGraphic" scale="2.2"/></filter></defs>' +
+      '<g filter="url(#feder-nah)" fill="none" stroke="' + TINTE + '" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' + g + '</g></svg>';
+  });
 })();

@@ -35,7 +35,7 @@
     lesen: 3, nehmen: 1, ablegen: 1, legen: 1, oeffnen: 1, schliessen: 1, aufschliessen: 1, abschliessen: 1,
     anzuenden: 1, loeschen: 1, warten: 10, sprechen: 5, fragen: 3, sagen: 1, anrufen: 4, rangehen: 2,
     fotografieren: 1, schreiben: 3, kombinieren: 2, klettern: 2, verstecken: 2, anheben: 2, schieben: 2,
-    fahren: 0, schlafen: 0, buchseite: 2
+    fahren: 0, schlafen: 0, buchseite: 2, einstellen: 1, knacken: 15, ersteHilfe: 10, zerbrechen: 5
   };
 
   function Z() { return HG.zustand.z; }
@@ -222,14 +222,16 @@
     HG.ausgabe.text(typeof platz === 'string' ? platz : 'Du legst dich hin und schläfst ein.');
     ZT.vergeht(ZT.minutenBis(ZIELZEIT.morgen));
     HG.ausgabe.text('<span class="nebenbei">Du wachst um ' + ZT.uhr() + ' Uhr auf.</span>');
-    var er = HG.daten.spiel.erholungBeimSchlaf || { ausdauer: 2, nerven: 1 };
+    // Erholung: { lp: 1, nerven: 1, wp: 'voll' }; Werte aus erholungNurAusserhalb nur nach einer Nacht außerhalb des Hauses
+    var sp = HG.daten.spiel, er = sp.erholungBeimSchlaf || { nerven: 1 };
+    var nurAussen = sp.erholungNurAusserhalb || ['nerven'];
     var z = HG.zustand.z;
-    var imHaus = (HG.daten.spiel.nachtMalusOrte || ['haus']).indexOf(r.schauplatz) >= 0;
+    var imHaus = (sp.nachtMalusOrte || ['haus']).indexOf(r.schauplatz) >= 0;
     Object.keys(er).forEach(function (k) {
-      if (!er[k]) return;
-      if (k === 'nerven' && (imHaus || !nacht)) return;              // nur eine Nacht außerhalb des Hauses
+      if (!er[k] || z.werte[k] === undefined) return;
+      if (nurAussen.indexOf(k) >= 0 && (imHaus || !nacht)) return;
       var grenze = k === 'nerven' ? z.start.nerven : z.max[k];         // NERVEN höchstens bis zum Startwert
-      var delta = Math.max(0, Math.min(er[k], grenze - z.werte[k]));
+      var delta = Math.max(0, er[k] === 'voll' ? grenze - z.werte[k] : Math.min(er[k], grenze - z.werte[k]));
       if (delta) HG.api.aendere(k, delta, 'Schlaf');
     });
   };

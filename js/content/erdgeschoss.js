@@ -336,10 +336,11 @@ HG.ding('brief', {
   ort: 'schreibtischschublade', rel: 'in',
   beschreibung: 'Ein vergilbter Briefbogen, eng beschrieben in einer sauberen, schrägen Handschrift. Er wurde nie abgeschickt.',
   lesbar: '<i>Haus Grest, im November 1900</i><br><br>Lieber Freund,<br>das Haus ist fertig. Jeder Raum ist so geworden, wie Elisabeth ihn sich gewünscht hat – ich habe keinen Strich gezogen, den sie nicht gesehen hätte.<br><br>' +
-    'Und doch: Seit wir eingezogen sind, geht es ihr mit jeder Woche schlechter. Erst die Müdigkeit, nun die Anfälle. Die Ärzte finden keine Ursache.<br><br>' +
+    'Und doch: Seit wir eingezogen sind, geht es ihr mit jeder Woche schlechter. Erst die Müdigkeit, nun die Anfälle. Die Ärzte finden keine Ursache. Am zwölften Mai, an unserem Tag, wollte ich ihr das fertige Haus schenken – zwei Jahre nach unserer Hochzeit. Sie konnte an diesem Tag kaum die Treppe hinaufsteigen.<br><br>' +
     'Manchmal, wenn ich nachts durch die Flure gehe, ist mir, als hätte ich mich verrechnet. Nicht an den Mauern. An etwas anderem.<br><br>' +
     'Verzeih die wirren Zeilen. Ich schlafe schlecht.<br><br>Dein Bernward',
   hinweis: 'brief_bernward', hinweisBei: 'lesen',
+  bei: { lesen: function (api) { api.hinweis('hochzeitstag'); return false; } },
   riechen: 'Ganz schwach: Lavendel.'
 });
 

@@ -78,6 +78,8 @@
     { a: 'anheben', w: L('klapp klappe schlag schlage'), p: 'um', o: 1 },
     { a: 'ablegen', w: L('leg lege legen stell stelle stellen setz setze'), p: 'ab', o: 1, mehr: true },
     { a: 'ablegen', w: L('lass lasse'), p: 'fallen', o: 1, mehr: true },
+    { a: 'behandeln', w: L('lass lasse'), p: 'behandeln', o: 0 },   // "lass dich behandeln" (Krankenhaus)
+    { a: 'behandeln', w: L('lass lasse'), p: 'verarzten', o: 0 },
     { a: 'ablegen', w: L('wirf werfe'), p: 'weg', o: 1, mehr: true },
     { a: 'ablegen', w: L('ablegen fallenlassen wegwerfen'), o: 1, mehr: true },
     { a: 'legen', w: L('leg lege legen stell stelle stellen steck stecke stecken tu tue pack packe setz setze wirf werfe'), o: 1, mehr: true, p2: L('in auf unter hinter') },
@@ -100,7 +102,11 @@
     { a: 'ziehen', w: L('zieh ziehe ziehen zerr zerre'), vor: L('an'), o: 1 },
     { a: 'umdrehen', w: L('dreh drehe drehen wend wende wenden'), p: 'um', o: '?' },   // "dreh das Foto um", "dreh dich um"
     { a: 'umdrehen', w: L('wend wende wenden umdrehen umwenden'), o: 1 },
+    { a: 'einstellen', w: L('dreh drehe drehen'), o: 1, p2: L('auf'), p2Text: true },   // "drehe ringe auf 1205" (Zahlenschloss)
     { a: 'drehen', w: L('dreh drehe drehen kurbel kurble'), o: 1 },
+    { a: 'knacken', w: L('knack knacke knacken'), o: 1, p2: L('mit') },
+    { a: 'nahansicht', w: L('nahansicht'), o: 1 },
+    { a: 'ersteHilfe', w: L('versorg versorge versorgen verarzt verarzte verarzten'), o: 0, text: true },
     { a: 'schieben', w: L('schieb schiebe schieben rueck ruecke'), p: 'beiseite', o: 1 },
     { a: 'schieben', w: L('schieb schiebe schieben rueck ruecke'), p: 'weg', o: 1 },
     { a: 'schieben', w: L('schieb schiebe schieben verschieb verschiebe rueck ruecke verrueck verruecke'), o: 1 },
@@ -118,11 +124,14 @@
     { a: 'horchen', w: L('hoer hoere hoeren'), vor: L('an'), o: '?', blind: true },
     { a: 'riechen', w: L('riech rieche riechen schnupper schnuppere schnueffel schnueffle'), vor: L('an'), o: '?', blind: true },
     { a: 'tasten', w: L('tast taste tasten fuehl fuehle fuehlen befuehle befuehl betaste betast beruehre beruehr beruehren streichle'), vor: L('an nach'), o: '?', blind: true },
+    { a: 'tasten', w: L('tast taste tasten'), p: 'ab', o: 1, blind: true },             // "taste das Kästchen ab"
     { a: 'tasten', w: L('tast taste'), p: 'umher', o: 0, blind: true },
+    { a: 'schuetteln', w: L('schuettel schuettle schuetteln ruettel ruettle ruetteln'), o: 1 },
     { a: 'tasten', w: L('tast taste'), p: 'herum', o: 0, blind: true },
     { a: 'klopfen', w: L('klopf klopfe klopfen poch poche pochen'), vor: L('an auf gegen'), o: '?', blind: true },
 
     // Gewalt und Körper
+    { a: 'zerbrechen', w: L('brich breche brechen hebel hebele'), p: 'auf', o: 1, p2: L('mit') },   // "brich das Kästchen auf"
     { a: 'zerbrechen', w: L('zerbrich zerbreche zerbrechen zerschlag zerschlage zertruemmere zertruemmer zerstoer zerstoere zerstoeren brich breche'), o: 1, p2: L('mit') },
     { a: 'zerbrechen', w: L('schlag schlage tritt'), p: 'ein', o: 1, p2: L('mit') },
     { a: 'zerbrechen', w: L('schlag schlage hau haue'), o: 1, p2: L('mit') },
@@ -274,7 +283,7 @@
     'untersuche …', 'nimm …', 'öffne …', 'schließe …', 'lies …', 'durchsuche …', 'schau', 'schau in …',
     'schau unter …', 'schau hinter …', 'geh …', 'zünde … an', 'lösche …', 'schalte … ein', 'schalte … aus',
     'schließe … auf', 'schließe … ab', 'lege … ab', 'lege … in …', 'lege … auf …', 'gib … an …', 'zeige … …',
-    'sprich mit …', 'frage … nach …', 'benutze …', 'kombiniere … mit …', 'drücke …', 'ziehe an …', 'drehe …', 'drehe … um',
+    'sprich mit …', 'frage … nach …', 'benutze …', 'kombiniere … mit …', 'drücke …', 'ziehe an …', 'drehe …', 'drehe … um', 'drehe … auf …', 'knacke …', 'brich … auf', 'versorge wunde', 'erste hilfe',
     'schiebe …', 'horche', 'lausche an …', 'rieche an …', 'taste …', 'taste umher', 'klopfe an …', 'zerbrich …',
     'reiße an …', 'klettere auf …', 'verstecke dich hinter …', 'warte', 'warte bis …', 'schlafe', 'fahre los',
     'fahre zu …', 'ruf … an', 'fotografiere …', 'schreibe …', 'tippe …', 'winke', 'blättere weiter',
@@ -355,6 +364,17 @@
       if (tokens.indexOf('spaet') >= 0 || (tokens[0] === 'wieviel' || tokens[0] === 'wie') && tokens.indexOf('uhr') >= 0) {
         return { aktion: 'zeit', eintrag: VERB_MAP.zeit[0], np1: [], np2: [] };
       }
+      // "erste hilfe", "verbinde die wunde", "kümmere dich um die verletzung" -> Erste Hilfe
+      if ((tokens[0] === 'erste' && tokens[1] === 'hilfe') ||
+          (/^(verbind|versorg|verarzt|behandel|behandl|kuemmer|desinfizier|reinig)/.test(tokens[0]) && tokens.some(function (t) { return /^(wunde|wunden|verletzung|verletzungen|schnitt|schnittwunde|kratzer)$/.test(t); }))) {
+        return { aktion: 'ersteHilfe', eintrag: VERB_MAP.versorge[0], np1: [], np2: [] };
+      }
+      // "untersuche X genau / gründlich" -> durchsuche X
+      if (/^(untersuch|betracht|pruef)/.test(tokens[0]) && tokens.some(function (t) { return /^(genau|genauer|gruendlich|gruendlicher|naeher|eingehend)$/.test(t); })) {
+        tokens = ['durchsuche'].concat(tokens.slice(1).filter(function (t) { return !/^(genau|genauer|gruendlich|gruendlicher|naeher|eingehend)$/.test(t); }));
+      }
+      // "stelle die ringe auf 1205" -> "drehe die ringe auf 1205" (sonst wäre es "lege … auf …")
+      if (/^(stell|stelle|stellen)$/.test(tokens[0]) && /^\d+$/.test(tokens[tokens.length - 1]) && tokens.indexOf('auf') > 0) tokens[0] = 'drehe';
       // "mach ein Foto von X" -> "fotografiere X", "mach ein Selfie"
       if (/^mach/.test(tokens[0]) && tokens.some(function (t) { return /^(foto|fotos|bild|aufnahme|selfie)$/.test(t); })) {
         var vonI = tokens.indexOf('von');

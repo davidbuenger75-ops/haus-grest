@@ -82,6 +82,32 @@
     }
   });
 
+  // Krankenhaus: volle Heilung, kostet einen ganzen Tag (Spielbibel, Abschnitt 6) [Vorschlag: Klinikum Nord]
+  HG.ziel('krankenhaus', {
+    name: 'Krankenhaus',
+    woerter: ['krankenhaus', 'klinik', 'klinikum', 'notaufnahme', 'arzt', 'hospital'],
+    ankunft: 'krankenhaus', fahrzeit: 20
+  });
+  HG.raum('krankenhaus', {
+    name: 'Notaufnahme', schauplatz: 'krankenhaus', abfahrt: true, karte: { x: 0, y: 0 },
+    beschreibung: 'Neonlicht, Plastikstühle, ein Getränkeautomat, der leise brummt. Hinter einer Glasscheibe sitzt eine Pflegekraft am Empfang. <span class="nebenbei">(„lass dich behandeln“)</span>',
+    vorschlaege: ['lass dich behandeln', 'fahre los'],
+    bei: {
+      behandeln: function (api) { return behandeln(api); },
+      warten: function (api) { return behandeln(api); }
+    }
+  });
+  function behandeln(api) {
+    var z = HG.zustand.z;
+    if (z.werte.lp >= z.max.lp && !(z.wunden || []).some(function (w) { return !w.versorgt; })) {
+      api.sage('„Ihnen fehlt nichts“, sagt die Pflegekraft nach einem kurzen Blick. „Außer Schlaf vielleicht.“'); return true;
+    }
+    api.sage('Du wartest. Und wartest. Irgendwann wirst du aufgerufen, genäht, verbunden, geröntgt und mit einer Packung Schmerztabletten wieder entlassen. Als du hinausgehst, ist ein ganzer Tag vergangen.');
+    api.zeitVergeht(24 * 60);
+    api.vollHeilen('Krankenhaus');
+    return true;
+  }
+
   HG.ziel('polizei', {
     name: 'Polizeiwache',
     woerter: ['polizei', 'polizeiwache', 'wache', 'revier', 'kommissariat'],

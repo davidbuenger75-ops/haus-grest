@@ -601,6 +601,8 @@
           text: 'Stadtarchiv. Das Haus wurde 1900 von einem Architekten namens Bernward Grest gebaut, für seine Frau Elisabeth. Er stirbt 1905, sie 1930. Dazwischen und danach: Ich habe angefangen, Todesfälle zu zählen. Ich höre bei dreizehn auf, weil ich nicht weiterzählen will.' },
         { titel: '24. Dezember 2025', hinweis: 'tb_mutter',
           text: 'Heiligabend. Um 23:40 ruft Mutter an. Mutter ist seit 2011 tot. Sie hat gesagt, ich soll nicht so viel im ersten Stock sein, das Zimmer sei „nicht für mich gemacht“. Ihre Stimme, ihr Lachen am Ende. Die Nummer im Display: meine eigene Festnetznummer.' },
+        { titel: '12. Januar 2026', hinweis: 'tb_kaestchen',
+          text: 'Hinter der Täfelung im Arbeitszimmer: ein Kästchen aus Nussbaum mit Messingbeschlägen. Kein Schloss, keine Fuge, nichts. Es ist schwerer, als es sein dürfte, und wenn man es schüttelt, klappert etwas Kleines. Bernward hat es gebaut, das sieht man. Ich bekomme es nicht auf. Ich bringe es ins Lager. Sie soll es nicht haben.' },
         { titel: '11. Februar 2026', hinweis: 'tb_bleib',
           text: 'Ich habe den Lagerraum bei Schmidt gemietet. Alles, was ich über das Haus herausfinde, kommt hierher. Im Haus habe ich das Gefühl, dass es mitliest. Gestern Nacht lag mein Notizbuch aufgeschlagen auf dem Küchentisch, an einer Stelle, an der ich nichts geschrieben hatte. In meiner Handschrift stand dort: „Bleib.“' },
         { titel: '3. April 2026', hinweis: 'tb_pistole',
@@ -628,6 +630,11 @@
 
   // Alte Spielstände (bis Version 4): Am 22.11.2026 kamen die Einträge 2.9. und 19.9.2026 hinzu.
   // Die Seiten ab "28. September" (alt 10, 11, 12) rücken deshalb um zwei nach hinten.
+  // Bis Version 5: Am 22.11.2026 kam der Eintrag vom 12. Januar 2026 hinzu (Seite 7) – alles ab „11. Februar“ rückt um eins.
+  HG.zustand.migration(5, function (z) {
+    var st = z.buecher && z.buecher.tagebuch;
+    if (st && st.gelesen) st.gelesen = st.gelesen.map(function (i) { return i >= 6 ? i + 1 : i; });
+  });
   HG.zustand.migration(4, function (z) {
     var st = z.buecher && z.buecher.tagebuch;
     if (st && st.gelesen) st.gelesen = st.gelesen.map(function (i) { return i >= 10 ? i + 2 : i; });

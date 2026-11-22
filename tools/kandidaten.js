@@ -67,6 +67,17 @@ window.KANDIDATEN = [
     "vorlage": null
   },
   {
+    "name": "ding-kaestchen",
+    "titel": "Bernwards Kästchen",
+    "prompt": "Altes Kästchen aus dunklem Nussbaumholz, schuhkartongroß, Messingbeschläge an den Ecken, auf dem Deckel eine ovale Messingrosette mit vier kleinen drehbaren Zahlenrädern nebeneinander in einer Reihe, Deckel und Korpus wie aus einem Stück ohne sichtbare Fuge, kein Schloss, kein Schlüsselloch, kein Scharnier – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, kein Text",
+    "kandidaten": [
+      "ding-kaestchen-1.jpg",
+      "ding-kaestchen-2.jpg"
+    ],
+    "gewaehlt": null,
+    "vorlage": null
+  },
+  {
     "name": "raum-halle",
     "titel": "Eingangshalle",
     "prompt": "Hohe Eingangshalle einer Jugendstilvilla bei Tag, dunkle Holztäfelung, breite Treppe mit staubigem Geländer ins Obergeschoss, buntes halbrundes Oberlicht über der Haustür, abgetretener Teppich, alte Kommode mit Kerze im Messingleuchter, Eichentür links, dunkler Durchgang zum Flur – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",

@@ -433,3 +433,66 @@ body[data-zeit=nacht] #grossbild-bild.art-svg svg { filter: invert(.86) sepia(.5
 #karte-bild .plan-grund svg { max-height: none; }
 .plan-blatt { max-width: calc((96vh - 150px) * 4 / 3); margin: 0 auto; }
 @media (max-width: 600px) { .plan-kopf button { padding: 4px 9px; } .plan-blaettern { padding: 0 9px !important; } .plan-reiter { flex-wrap: nowrap; } }
+
+/* ---------- Charakterbogen (Seitenleiste / Reiter „Werte“) ---------- */
+.eigenschaften { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin: 8px 0 6px; }
+.eig { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; align-items: baseline; column-gap: 6px; padding: 3px 6px; border: 1px solid #2a1d1233; border-radius: 3px; background: #f3ead699; }
+.eig .kurz { font-family: 'Trebuchet MS', Verdana, sans-serif; font-size: .72em; font-weight: bold; letter-spacing: 1px; }
+.eig .zahl { font-size: 1.15em; font-weight: bold; text-align: right; }
+.eig .proz { grid-column: 1 / -1; font-size: .72em; color: var(--tinte-hell); text-align: right; }
+.werte .beruf { margin: 4px 0; font-size: .85em; }
+.werte .beruf span { color: var(--tinte-hell); }
+.werte .wunden { margin: 4px 0; font-size: .85em; color: var(--blut); }
+.werte .wunden button { font: inherit; font-size: .9em; background: #f3ead6; color: var(--blut); border: 1px solid #7a1a1266; border-radius: 10px; padding: 0 8px; cursor: pointer; }
+.fertigkeiten { margin-top: 4px; font-size: .85em; }
+.fertigkeiten summary { cursor: pointer; font-variant: small-caps; letter-spacing: 1px; padding: 3px 0; }
+.fertigkeiten ul { list-style: none; margin: 4px 0 0; padding: 0; columns: 2; column-gap: 14px; }
+.fertigkeiten li { display: flex; justify-content: space-between; gap: 6px; break-inside: avoid; padding: 1px 0; border-bottom: 1px dotted #2a1d1222; }
+.fertigkeiten li.stark { font-weight: bold; }
+@media (max-width: 860px) { .fertigkeiten[open] ul, .fertigkeiten ul { columns: 1; } }
+
+/* ---------- Charaktererstellung ---------- */
+ol.berufe { margin: 6px 0 2px; padding-left: 1.4em; }
+ol.berufe li { margin-bottom: 4px; }
+.eigenschaftswuerfe { margin: 4px 0; padding-left: 1.2em; }
+.eigenschaftswuerfe s { color: var(--tinte-hell); }
+.verteiler { border: 1px solid #2a1d1244; background: #f3ead6; border-radius: 4px; padding: 8px 10px; margin: 6px 0 12px; max-width: 420px; }
+.vt-zeile { display: grid; grid-template-columns: 1fr 36px 2.4em 36px 3.6em; align-items: center; gap: 4px; margin-bottom: 3px; }
+.vt-zeile button, .vt-ok { font: inherit; background: #fffaf0; color: var(--tinte); border: 1px solid #2a1d1266; border-radius: 4px; min-height: 32px; cursor: pointer; }
+.vt-zeile button:disabled, .vt-ok:disabled { opacity: .35; cursor: default; }
+.vt-wert { text-align: center; font-size: 1.1em; }
+.vt-proz { color: var(--tinte-hell); font-size: .85em; text-align: right; }
+.vt-frei { margin: 6px 0; font-size: .9em; }
+.vt-ok { padding: 4px 14px; }
+@media (pointer: coarse) { .vt-zeile { grid-template-columns: 1fr 44px 2.4em 44px 3.6em; } .vt-zeile button, .vt-ok { min-height: 44px; } }
+
+/* ---------- Würfe: kritisch, Patzer, ohne Wurf ---------- */
+#log .wurf.kritisch .ergebnis { color: #1f6a2a; font-weight: bold; }
+#log .wurf.patzer .ergebnis { color: var(--blut); font-weight: bold; }
+#log .wurf.automatisch .ergebnis { color: var(--gruen); }
+
+/* ---------- Nahansicht ---------- */
+#nah { background: var(--papier); color: var(--tinte); border: 1px solid var(--tinte); border-radius: 4px; width: min(860px, 98vw); max-height: 96vh; padding: 10px 12px; overflow-y: auto; }
+#nah::backdrop { background: #000b; }
+.nah-kopf { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-variant: small-caps; letter-spacing: 1px; }
+.nah-kopf button { font: inherit; background: none; border: none; color: var(--tinte); font-size: 1.2em; min-width: 44px; min-height: 40px; cursor: pointer; }
+.nah-flaeche { position: relative; width: 100%; max-width: calc((96vh - 220px) * 4 / 3); margin: 0 auto; border: 1px solid #2a1d1244; box-shadow: 0 2px 10px #0004; }
+.nah-flaeche svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.nah-bereich { position: absolute; background: transparent; border: 2px dashed transparent; border-radius: 4px; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.nah-bereich:focus-visible { border-color: var(--blut); outline: none; }
+.nah-ring { position: absolute; border-radius: 50%; border: 2px solid #5a3b2299; background: #e9cf8acc; color: var(--tinte); padding: 0; cursor: pointer;
+  font-family: Georgia, serif; font-weight: bold; font-size: clamp(14px, 3.2vw, 26px); display: flex; align-items: center; justify-content: center; }
+.nah-ring.fest { cursor: not-allowed; background: #cdb27acc; }
+.nah-ring:focus-visible { outline: 3px solid var(--blut); }
+.nah-steuer { margin: 8px 0 4px; text-align: center; }
+.nah-steuer button { font: inherit; background: var(--tinte); color: var(--papier); border: none; border-radius: 4px; padding: 6px 14px; min-height: 40px; cursor: pointer; }
+.nah-text { min-height: 2.4em; font-size: .95em; border-top: 1px solid #2a1d1222; padding-top: 4px; }
+.nah-text p { margin: 4px 0; }
+.nah-text .nah-eingabe { color: var(--tinte-hell); font-style: italic; }
+.nah-text .nah-hinweis { color: var(--gruen); font-style: italic; }
+@media (hover: hover) {
+  .nah-bereich:hover { border-color: #b98a3ecc; background: #ffffff1a; }
+  .nah-ring:hover:not(.fest) { background: #f3dc9e; }
+  .vt-zeile button:hover:not(:disabled), .vt-ok:hover:not(:disabled) { background: var(--tinte); color: var(--papier); }
+}
+@media (prefers-reduced-motion: no-preference) { .nah-ring span { display: inline-block; transition: transform .15s; } .nah-ring:active span { transform: rotate(36deg); } }

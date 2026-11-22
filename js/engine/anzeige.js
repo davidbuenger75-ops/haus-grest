@@ -8,6 +8,7 @@
   function $(id) { return document.getElementById(id); }
   function Z() { return HG.zustand.z; }
   function D(id) { return HG.daten.dinge[id]; }
+  var W = HG.welt;
 
   var verlaufEingaben = [], verlaufPos = 0, letztesBild = null, gewaehlt = [];
   var nbOffen = { gruppe: {}, hinweis: {} };   // Notizbuch: welche Gruppen/Hinweise aufgeklappt sind (nur Oberfläche)
@@ -153,6 +154,22 @@
         });
       });
       $('karte-zu').addEventListener('click', function () { $('karte').close(); A.fokus(); });
+      // Nahansicht: Bereiche lösen Befehle aus, Ringe drehen sich erst lokal und rasten per Knopf ein
+      $('nah-zu').addEventListener('click', function () { $('nah').close(); A.fokus(); });
+      $('nah-bild').addEventListener('click', function (e) {
+        var d = A._nah && D(A._nah); if (!d) return;
+        var ring = e.target.closest('.nah-ring');
+        if (ring) {
+          if (ring.classList.contains('fest')) { var b = HG.wert(d.zahlenschloss.bereit, HG.api); $('nah-text').innerHTML = '<p>' + (typeof b === 'string' ? b : 'Die Ringe rühren sich nicht.') + '</p>'; return; }
+          var i = +ring.getAttribute('data-ring'); A._nahZiffern[i] = (A._nahZiffern[i] + 1) % 10; HG.medien.effekt('klick'); A.zeigeNah(A._nah); return;
+        }
+        var ber = e.target.closest('.nah-bereich');
+        if (ber) { var x = d.nahansicht.bereiche[+ber.getAttribute('data-i')]; A.nahBefehl(HG.wert(x.befehl, HG.api)); }
+      });
+      $('nah-steuer').addEventListener('click', function (e) {
+        if (e.target.closest('.nah-einrasten') && A._nah) A.nahBefehl('drehe ' + HG.spiel.kurzwort(A._nah) + ' auf ' + A._nahZiffern.join(''));
+      });
+      $('werte-bereich').addEventListener('click', function (e) { var b = e.target.closest('[data-befehl]'); if (b) A.befehl(b.getAttribute('data-befehl')); });
       // Bauplan: Stockwerk wechseln, Raum antippen
       $('karte-bild').addEventListener('click', function (e) {
         var plan = A._plan && HG.daten.plaene[A._plan]; if (!plan) return;
@@ -381,6 +398,8 @@
     /** Einen Ausgabe-Block in den Textverlauf schreiben. */
     block: function (b) {
       var log = $('log'), el;
+      // Während eines Befehls aus der Nahansicht die Antwort mitschneiden (wird dort angezeigt)
+      if (A._nahLog && ['text', 'wurf', 'hinweis', 'wert', 'schrift', 'system', 'frage', 'spuk', 'schock', 'andeutung'].indexOf(b.typ) >= 0) A._nahLog.push(b);
       switch (b.typ) {
         case 'eingabe': el = document.createElement('p'); el.className = 'eingabe'; el.innerHTML = '› ' + b.html; break;
         case 'titel': el = document.createElement('h2'); el.className = 'raumtitel'; el.innerHTML = b.html; break;
@@ -391,6 +410,12 @@
           break;
         case 'ende': el = document.createElement('div'); el.className = 'ende'; el.innerHTML = b.html; break;
         case 'wurf': el = A.wurfBlock(b); break;
+        case 'verteiler': el = A.verteiler(b); break;
+        case 'nahknopf':
+          el = document.createElement('p'); el.className = 'planknopf';
+          el.innerHTML = '<button type="button">🔍 Nahansicht: ' + b.html + '</button>';
+          el.querySelector('button').addEventListener('click', function () { A.zeigeNah(b.ding); });
+          break;
         case 'abbildung': el = A.abbildung(b); break;
         case 'planknopf':
           el = document.createElement('p'); el.className = 'planknopf';
@@ -416,16 +441,54 @@
       log.scrollTop = log.scrollHeight;
     },
 
+    /** Punkte verteilen bei der Charaktererstellung: +/− je Eigenschaft, „Übernehmen“ schickt die sechs Zahlen. */
+    verteiler: function (b) {
+      var el = document.createElement('div'), werte = {}, gleich = Math.floor(b.punkte / b.eigenschaften.length), rest = b.punkte - gleich * b.eigenschaften.length;
+      el.className = 'verteiler';
+      b.eigenschaften.forEach(function (d, i) { werte[d.k] = gleich + (i < rest ? 1 : 0); });
+      function summe() { return b.eigenschaften.reduce(function (s, d) { return s + werte[d.k]; }, 0); }
+      function zeichne() {
+        var frei = b.punkte - summe();
+        el.innerHTML = b.eigenschaften.map(function (d) {
+          return '<div class="vt-zeile"><span class="vt-name">' + d.name + '</span>' +
+            '<button type="button" data-k="' + d.k + '" data-d="-1" aria-label="' + d.name + ' verringern"' + (werte[d.k] <= b.min ? ' disabled' : '') + '>−</button>' +
+            '<b class="vt-wert">' + werte[d.k] + '</b>' +
+            '<button type="button" data-k="' + d.k + '" data-d="1" aria-label="' + d.name + ' erhöhen"' + (werte[d.k] >= b.max || frei <= 0 ? ' disabled' : '') + '>+</button>' +
+            '<span class="vt-proz">' + werte[d.k] * 5 + ' %</span></div>';
+        }).join('') +
+          '<p class="vt-frei">' + (frei === 0 ? 'Alle Punkte verteilt.' : frei > 0 ? 'Noch ' + frei + ' Punkte frei.' : (-frei) + ' Punkte zu viel.') + '</p>' +
+          '<button type="button" class="vt-ok"' + (frei === 0 ? '' : ' disabled') + '>Übernehmen</button>';
+      }
+      el.addEventListener('click', function (e) {
+        var btn = e.target.closest('button'); if (!btn || btn.disabled) return;
+        if (btn.classList.contains('vt-ok')) {
+          var z = HG.spiel.offen; if (!z || z.art !== 'verteilen') return;
+          A.befehl(b.eigenschaften.map(function (d) { return werte[d.k]; }).join(' '));
+          el.querySelectorAll('button').forEach(function (x) { x.disabled = true; });
+          return;
+        }
+        var k = btn.getAttribute('data-k'); werte[k] += +btn.getAttribute('data-d'); zeichne();
+      });
+      zeichne();
+      return el;
+    },
+
     /** Würfel-Block: die Zahl rollt kurz, dann erscheint das Ergebnis. */
     wurfBlock: function (b) {
       var e = b.probe, el = document.createElement('div');
-      el.className = 'wurf ' + (e.erfolg ? 'erfolg' : 'fehlschlag');
+      el.className = 'wurf ' + (e.erfolg ? 'erfolg' : 'fehlschlag') + (e.kritisch ? ' kritisch' : '') + (e.patzer ? ' patzer' : '');
+      if (e.auto) {
+        el.className += ' fertig automatisch';
+        el.innerHTML = '<span class="unsichtbar">' + b.html + '</span><div aria-hidden="true"><div class="wurf-kopf"><b>' + e.titel + '</b>' + (e.grund ? ' <span class="grund">· ' + e.grund + '</span>' : '') + '</div>' +
+          '<div class="wurf-zeile"><span class="ergebnis">✓ ohne Wurf – ' + T.esc(e.berufName || 'dein Beruf') + '</span></div></div>';
+        return el;
+      }
       var mod = e.mod ? ' <small>(' + e.basis + ' ' + (e.mod < 0 ? '−' : '+') + ' ' + Math.abs(e.mod) + (e.modGrund ? ' ' + T.esc(e.modGrund) : '') + ')</small>' : '';
       el.innerHTML = '<span class="unsichtbar">' + b.html + '</span>' +
         '<div aria-hidden="true"><div class="wurf-kopf"><b>' + e.titel + '</b>' + (e.grund ? ' <span class="grund">· ' + e.grund + '</span>' : '') + '</div>' +
-        '<div class="wurf-zeile"><span class="w100">W100</span><span class="wuerfel">' + e.wurf + '</span>' +
+        '<div class="wurf-zeile"><span class="w100">W100</span><span class="wuerfel">' + (e.wurf === 100 ? '00' : e.wurf < 10 ? '0' + e.wurf : e.wurf) + '</span>' +
         '<span class="gegen">≤ ' + e.ziel + mod + '?</span>' +
-        '<span class="ergebnis">' + (e.erfolg ? '✓ bestanden' : '✗ misslungen') + '</span></div>' +
+        '<span class="ergebnis">' + (e.kritisch ? '★ kritischer Erfolg' : e.patzer ? '✗ Patzer' : e.erfolg ? '✓ bestanden' : '✗ misslungen') + '</span></div>' +
         (e.verlustSpec !== undefined ? '<div class="wurf-verlust">Verlust ' + e.verlustSpec + ' → ' + (e.erfolg ? 'Erfolg' : 'Misserfolg') + ': ' + e.verlustTeil +
           (/W/i.test(e.verlustTeil) ? ' = <b>' + e.verlust + '</b>' : '') + ' · NERVEN jetzt <b>' + e.neu + '</b></div>' : '') + '</div>';
       var ruhig = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -434,7 +497,7 @@
       var w = el.querySelector('.wuerfel'), n = 0;
       var t = setInterval(function () {
         w.textContent = 1 + Math.floor(Math.random() * 100);
-        if (++n >= 14) { clearInterval(t); w.textContent = e.wurf; el.classList.remove('rollt'); el.classList.add('fertig'); }
+        if (++n >= 14) { clearInterval(t); w.textContent = e.wurf === 100 ? '00' : e.wurf < 10 ? '0' + e.wurf : e.wurf; el.classList.remove('rollt'); el.classList.add('fertig'); }
       }, 60);
       return el;
     },
@@ -540,15 +603,44 @@
       $('ton-regler').disabled = e.stumm;
     },
 
+    // Charakterbogen in der Seitenleiste (auf dem Handy der Reiter „Werte“). Das Gerüst wird nur neu gebaut,
+    // wenn sich Eigenschaften, Beruf oder Wunden ändern – Zahlen und Balken werden direkt aufgefrischt.
     werte: function () {
-      var z = Z();
-      ['geschick', 'ausdauer', 'nerven'].forEach(function (k) {
-        var el = $('wert-' + k);
+      var z = Z(), C = HG.charakter, sec = $('werte-bereich');
+      var BALKEN = [['lp', 'LP', 'Lebenspunkte'], ['nerven', 'NERVEN', 'NERVEN – bei 0 ist das Spiel verloren'], ['wp', 'WP', 'Willenspunkte – um dem Haus zu widerstehen']]
+        .filter(function (b) { return z.max[b[0]] !== undefined; });
+      var offen = (z.wunden || []).filter(function (w) { return !w.versorgt; }).length;
+      var sig = JSON.stringify([z.eigenschaften, z.beruf, z.fertigkeiten, (z.wunden || []).length, offen, C.schwerVerletzt(), BALKEN.length]);
+      if (sec.getAttribute('data-sig') !== sig) {
+        var html = BALKEN.map(function (b) {
+          return '<div class="wert" id="wert-' + b[0] + '" title="' + b[2] + '"><span class="name">' + b[1] + '</span><span class="zahl">–</span><span class="max"></span><span class="balken"><i></i></span></div>';
+        }).join('');
+        if (C.eigenschaftListe().length) {
+          html += '<div class="eigenschaften">' + C.eigenschaftListe().map(function (d) {
+            return '<div class="eig" title="' + T.esc(d.name + ': ' + (d.text || '')) + '"><span class="kurz">' + d.kurz + '</span><span class="zahl">' + (z.eigenschaften[d.k] || '–') + '</span>' +
+              '<span class="proz">' + C.eigenschaftZiel(d.k) + ' %</span></div>';
+          }).join('') + '</div>';
+          var b = C.berufDef();
+          if (b) html += '<p class="beruf"><b>' + T.esc(C.berufName()) + '</b>' + (b.text ? ' – <span>' + T.esc(HG.text.fuelle(b.text)) + '</span>' : '') + '</p>';
+          if ((z.wunden || []).length || C.schwerVerletzt()) {
+            html += '<p class="wunden">' + (C.schwerVerletzt() ? '<b>Schwer verletzt</b> (−' + (HG.daten.spiel.schwerMalus || 20) + ' % auf körperliche Proben). ' : '') +
+              (offen ? offen + (offen === 1 ? ' Wunde' : ' Wunden') + ' unversorgt – <button type="button" data-befehl="versorge wunde">versorgen</button>' : 'Wunden versorgt.') + '</p>';
+          }
+          var stark = b ? Object.keys(b.boni || {}) : [];
+          html += '<details class="fertigkeiten"><summary>Fertigkeiten</summary><ul>' + C.fertigkeitListe().map(function (f) {
+            return '<li' + (stark.indexOf(f.k) >= 0 ? ' class="stark"' : '') + '><span>' + f.name + '</span><b>' + (z.fertigkeiten[f.k] || 0) + ' %</b></li>';
+          }).join('') + '</ul></details>';
+        }
+        sec.innerHTML = html;
+        sec.setAttribute('data-sig', sig);
+      }
+      BALKEN.forEach(function (bk) {
+        var k = bk[0], el = $('wert-' + k); if (!el) return;
         el.querySelector('.zahl').textContent = z.werte[k];
-        el.querySelector('.max').textContent = '/' + z.max[k];
+        el.querySelector('.max').textContent = k === 'nerven' ? ' %' : '/' + z.max[k];
         var anteil = z.max[k] ? z.werte[k] / z.max[k] : 0;
         el.querySelector('.balken i').style.width = Math.round(anteil * 100) + '%';
-        el.classList.toggle('knapp', anteil <= 0.34);
+        el.classList.toggle('knapp', k === 'lp' ? C.schwerVerletzt() : anteil <= 0.34);
       });
       // Kurzanzeige im Reiter (schmale Bildschirme)
       var rn = $('reiter-nerven');
@@ -731,6 +823,45 @@
       if (!$('karte').open) {
         if ($('karte').showModal) $('karte').showModal(); else $('karte').setAttribute('open', '');
       }
+    },
+
+    // ---------------- Nahansicht eines Dings ----------------
+    // Ding: nahansicht: { groesse: [800, 600], svg: fn(api), bereiche: [{ titel, r: [x, y, w, h], befehl: fn(api) | 'text', sichtbar: fn(api) }],
+    //                     ringe: [[x, y, r], …] }  – Ringe gehören zum zahlenschloss des Dings. Alles bleibt auch per Texteingabe lösbar.
+    zeigeNah: function (id) {
+      var d = D(id), n = d && d.nahansicht, api = HG.api;
+      if (!n) return;
+      if (A._nah !== id) { A._nah = id; A._nahZiffern = null; $('nah-text').innerHTML = ''; }
+      var g = n.groesse || [800, 600], pc = function (v, i) { return (v / g[i] * 100).toFixed(2) + '%'; };
+      var zs = d.zahlenschloss, n4 = zs ? (zs.stellen || 4) : 0;
+      if (zs && !A._nahZiffern) A._nahZiffern = (HG.zustand.eig(id, 'ziffern') || '0000000000'.slice(0, n4)).split('').map(Number);
+      var bereit = zs ? HG.wert(zs.bereit, api) : false;
+      var html = '<div class="nah-flaeche" style="aspect-ratio:' + g[0] + ' / ' + g[1] + '">' + (HG.wert(n.svg, api) || '');
+      (n.bereiche || []).forEach(function (b, i) {
+        if (b.sichtbar !== undefined && !HG.wert(b.sichtbar, api)) return;
+        html += '<button type="button" class="nah-bereich" data-i="' + i + '" title="' + T.esc(b.titel) + '" aria-label="' + T.esc(b.titel) + '" style="left:' + pc(b.r[0], 0) + ';top:' + pc(b.r[1], 1) + ';width:' + pc(b.r[2], 0) + ';height:' + pc(b.r[3], 1) + '"></button>';
+      });
+      if (zs && n.ringe && !HG.zustand.eig(id, 'offen')) n.ringe.forEach(function (r, i) {
+        html += '<button type="button" class="nah-ring' + (bereit === true || bereit === undefined ? '' : ' fest') + '" data-ring="' + i + '" aria-label="Ring ' + (i + 1) + ', steht auf ' + A._nahZiffern[i] + '" style="left:' + pc(r[0] - r[2], 0) + ';top:' + pc(r[1] - r[2], 1) + ';width:' + pc(2 * r[2], 0) + ';height:' + pc(2 * r[2], 1) + '"><span>' + A._nahZiffern[i] + '</span></button>';
+      });
+      html += '</div>';
+      $('nah-bild').innerHTML = html;
+      $('nah-titel').textContent = T.gross(T.name(id, 'nom', ''));
+      $('nah-steuer').innerHTML = (zs && n.ringe && !HG.zustand.eig(id, 'offen'))
+        ? '<span class="nebenbei">Ringe antippen zum Drehen, dann:</span> <button type="button" class="nah-einrasten">Ringe auf ' + A._nahZiffern.join('') + ' einrasten lassen</button>'
+        : '';
+      if (!$('nah').open) { if ($('nah').showModal) $('nah').showModal(); else $('nah').setAttribute('open', ''); }
+    },
+    /** Befehl aus der Nahansicht: ausführen und die Antwort im Dialog zeigen. */
+    nahBefehl: function (text) {
+      A._nahLog = [];
+      HG.spiel.eingabe(text);
+      var log = A._nahLog; A._nahLog = null;
+      $('nah-text').innerHTML = '<p class="nah-eingabe">› ' + T.esc(text) + '</p>' + log.map(function (b) {
+        if (b.typ === 'wurf') return '<p class="nah-wurf">🎲 ' + b.html + '</p>';
+        return '<p class="nah-' + b.typ + '">' + (b.typ === 'hinweis' ? '✎ ' : '') + b.html + '</p>';
+      }).join('');
+      if (A._nah && W.imUmfeld(A._nah, true)) A.zeigeNah(A._nah); else $('nah').close();
     },
 
     // ---------------- Bauplan als Karte ----------------

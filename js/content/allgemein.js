@@ -9,7 +9,7 @@ HG.spielDaten({
   startRaum: 'wohnung',          // Prolog: die Wohnung der Spielfigur (js/content/prolog.js)
   startDatum: '2026-11-16',      // [Vorschlag] Montag, 16. November 2026
   startUhrzeit: '08:10',
-  startZiele: ['zuhause'],       // weitere Ziele schaltet der Brief des Notars frei
+  startZiele: ['zuhause', 'krankenhaus'],   // weitere Ziele schaltet der Brief des Notars frei
 
   // --- Charaktererstellung ---------------------------------------------
   charakterText: 'Bevor die Geschichte beginnt: Wer bist du?',
@@ -17,11 +17,64 @@ HG.spielDaten({
   frageGeschlecht: 'Bist du eine Frau, ein Mann – oder möchtest du das offen lassen? <span class="nebenbei">(„Frau“, „Mann“ oder „ohne Angabe“)</span>',
   charakterFertig: 'Gut, {name}. Dann beginnt es.',
 
-  // --- Werte -------------------------------------------------------------
-  // GESCHICK und AUSDAUER im Fighting-Fantasy-Stil (ausgewürfelt),
-  // NERVEN als Prozentwert nach Delta-Green-Art: Start 80, höchstens 99.
-  werte: { geschick: '1W6+6', ausdauer: '2W6+12', nerven: 80 },
+  frageMethode: 'Wie sollen deine sechs Eigenschaften entstehen? <span class="nebenbei">(„würfeln“: je 4W6, die niedrigste Augenzahl fällt weg – oder „verteilen“: 72 Punkte selbst verteilen, jede Eigenschaft 3 bis 18)</span>',
+  frageVerteilen: 'Verteile 72 Punkte auf Stärke, Ausdauer, Geschick, Verstand, Willenskraft und Ausstrahlung – jede zwischen 3 und 18. <span class="nebenbei">(Sechs Zahlen in dieser Reihenfolge, z. B. „13 12 12 12 12 11“)</span>',
+  frageBeruf: 'Und was machst du beruflich? Dein Beruf bestimmt, worin du gut bist – und eröffnet manchmal eigene Wege.',
+
+  // --- Regelsystem nach Delta Green (Spielbibel, Abschnitt 6) ------------
+  // Eigenschaften 3–18, Probe = Wert × 5 %. Alles [Vorschlag], außer NERVEN (Start 80, höchstens 99).
+  eigenschaften: [
+    { k: 'st', name: 'Stärke', kurz: 'ST', text: 'Türen aufbrechen, festhalten, tragen, sich losreißen' },
+    { k: 'au', name: 'Ausdauer', kurz: 'AU', text: 'Schmerzen, Kälte, Gift, Schlafentzug' },
+    { k: 'ge', name: 'Geschick', kurz: 'GE', text: 'Fingerfertigkeit, Balance, Ausweichen' },
+    { k: 've', name: 'Verstand', kurz: 'VE', text: 'Kombinieren, Muster erkennen, Erinnern' },
+    { k: 'wi', name: 'Willenskraft', kurz: 'WI', text: 'Widerstehen gegen Einflüsterungen und Besessenheit' },
+    { k: 'as', name: 'Ausstrahlung', kurz: 'AS', text: 'Überzeugen, Vertrauen gewinnen' }
+  ],
+  eigenschaftPunkte: 72,         // beim Verteilen
+  eigenschaftMin: 3, eigenschaftMax: 18,
+  koerperlich: ['st', 'au', 'ge'],   // Malus, wenn schwer verletzt (dazu Fertigkeiten mit koerperlich: true)
+
+  // Fertigkeiten in Prozent; basis: Zahl oder 'ge*2' (Eigenschaft × Faktor)
+  fertigkeiten: [
+    { k: 'wahrnehmung', name: 'Wahrnehmung', basis: 20 },
+    { k: 'suchen', name: 'Suchen', basis: 20 },
+    { k: 'recherche', name: 'Recherche', basis: 20 },
+    { k: 'geschichte', name: 'Geschichte', basis: 10 },
+    { k: 'okkultismus', name: 'Okkultismus', basis: 10 },
+    { k: 'handwerk', name: 'Handwerk', basis: 10, koerperlich: true },
+    { k: 'erstehilfe', name: 'Erste Hilfe', basis: 10 },
+    { k: 'ueberreden', name: 'Überreden', basis: 20 },
+    { k: 'schleichen', name: 'Schleichen', basis: 10, koerperlich: true },
+    { k: 'schusswaffen', name: 'Schusswaffen', basis: 20 },
+    { k: 'nahkampf', name: 'Nahkampf', basis: 30, koerperlich: true },
+    { k: 'ausweichen', name: 'Ausweichen', basis: 'ge*2', koerperlich: true }
+  ],
+
+  // Berufe: Boni auf Fertigkeiten (Prozentpunkte), probeBoni auf Eigenschaftsproben, vorteile = eigene Wege
+  berufe: [
+    { id: 'polizei', woerter: ['polizei', 'polizist', 'polizistin', 'kommissar', 'kommissarin', 'beamter', 'beamtin'], name: '{g:Polizist|Polizistin|Polizist(in)}', boni: { wahrnehmung: 30, schusswaffen: 30, ueberreden: 20 },
+      vorteile: ['akte'], text: 'Leichterer Zugang zur Ermittlungsakte auf der Polizeiwache.' },
+    { id: 'journalismus', woerter: ['journalist', 'journalistin', 'reporter', 'reporterin', 'redakteur', 'redakteurin', 'presse'], name: '{g:Journalist|Journalistin|Journalist(in)}', boni: { recherche: 30, ueberreden: 20, wahrnehmung: 20 },
+      vorteile: ['archiv'], text: 'Zeitungsarchiv ohne Termin, alte Kontakte.' },
+    { id: 'handwerk', woerter: ['handwerker', 'handwerkerin', 'tischler', 'tischlerin', 'schreiner', 'schreinerin', 'schlosser', 'schlosserin', 'mechaniker', 'mechanikerin', 'elektriker', 'elektrikerin'], name: '{g:Handwerker|Handwerkerin|Handwerker(in)}', boni: { handwerk: 40, suchen: 20 }, probeBoni: { st: 10 },
+      vorteile: ['mechanik'], text: 'Überwindet Mechaniken und Schlösser leichter; +10 % auf Stärke-Proben.' },
+    { id: 'geschichte', woerter: ['historiker', 'historikerin', 'lehrer', 'lehrerin', 'archivar', 'archivarin', 'geschichte'], name: '{g:Historiker oder Lehrer|Historikerin oder Lehrerin|Historiker(in) oder Lehrer(in)}', boni: { geschichte: 40, recherche: 20, okkultismus: 20 },
+      vorteile: ['suetterlin'], text: 'Liest alte deutsche Handschrift ohne Probe.' },
+    { id: 'pflege', woerter: ['pflege', 'pfleger', 'pflegerin', 'pflegekraft', 'krankenpfleger', 'krankenschwester', 'altenpfleger', 'altenpflegerin'], name: 'Pflegekraft', boni: { erstehilfe: 40, ueberreden: 20, wahrnehmung: 20 },
+      vorteile: ['altenheim', 'krankenakten'], text: 'Zugang im Altenheim, versteht alte Krankenakten.' }
+  ],
+
+  // Abgeleitete Werte (e = Eigenschaften)
+  lebenspunkte: function (e) { return Math.ceil((e.st + e.au) / 2); },
+  willenspunkte: function (e) { return e.wi; },
+  werte: { nerven: 80 },
   maxWerte: { nerven: 99 },
+  schwerVerletztAb: 2,           // LP ≤ 2: schwer verletzt
+  schwerMalus: 20,               // … dann −20 % auf körperliche Proben
+  schwerNerven: '0/1W4',         // … und NERVEN-Probe bei jeder weiteren Verletzung
+  ersteHilfe: '1W4',             // Erste Hilfe heilt einmal pro Verletzung
+  endeLp: 'Dir wird schwarz vor Augen. Du spürst den kalten Boden nicht mehr, nur noch, wie etwas dich aufmerksam betrachtet, während du gehst. <b>Deine Lebenspunkte sind aufgebraucht.</b>',
   nachtMalus: 10,                // nachts an diesen Orten −10 % auf NERVEN-Proben
   nachtMalusOrte: ['haus'],
   schockAb: 5,                   // ab so vielen verlorenen Punkten auf einmal: Schock
@@ -30,7 +83,9 @@ HG.spielDaten({
     { art: 'fallen', text: 'Deine Hände zittern so sehr, dass dir %DING% entgleitet und zu Boden fällt.' },
     { art: 'flucht', text: 'Du denkst nicht nach. Deine Beine tragen dich einfach fort, nur weg von hier.' }
   ],
-  erholungBeimSchlaf: { ausdauer: 2, nerven: 1 },   // NERVEN nur für eine Nacht außerhalb des Hauses, höchstens bis zum Startwert
+  // Schlaf: +1 LP und +1 NERVEN pro Nacht außerhalb des Hauses (NERVEN höchstens bis zum Startwert), WP wieder voll
+  erholungBeimSchlaf: { lp: 1, nerven: 1, wp: 'voll' },
+  erholungNurAusserhalb: ['lp', 'nerven', 'wp'],
   tragkraft: 12,
 
   tageszeitTexte: {

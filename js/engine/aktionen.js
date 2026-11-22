@@ -501,7 +501,50 @@
     sag('Du schreibst mit ' + der(stift, 'dat') + ' „' + T.esc(ctx.text) + '“ auf ' + der(ctx.obj2) + '.');
   };
 
-  A.eintippen = function () { sag('Hier gibt es nichts, wo du etwas eintippen könntest.'); };
+  A.eintippen = function (ctx) {
+    // Ziffern an einem Zahlenschloss in der Nähe? ("tippe 1205", "gib 1205 ein")
+    var ziffern = String(ctx.text || '').replace(/\D/g, '');
+    var schloss = ziffern && W.umfeld().filter(function (id) { return D(id).zahlenschloss; })[0];
+    if (schloss) return HG.spiel.handle(Object.assign({}, ctx, { aktion: 'einstellen', obj: schloss, thema: [ziffern] }));
+    sag('Hier gibt es nichts, wo du etwas eintippen könntest.');
+  };
+
+  // ================= Zahlenschloss ==================================
+  //   zahlenschloss: { stellen: 4, code: '1205', bereit: fn(api) -> true | 'Text, warum nicht',
+  //                    richtig: fn(api, ctx), falsch: 'Text' | fn }   Teile verweisen mit teilVon: 'id' darauf.
+  //   Zustand: eig(id, 'ziffern') – die zuletzt eingestellte Zahl.
+  A.einstellen = function (ctx) {
+    var id = ctx.obj, d = D(id);
+    if (!d.zahlenschloss && d.teilVon && D(d.teilVon).zahlenschloss) { id = d.teilVon; d = D(id); }
+    var ziffern = (ctx.thema || []).join('').replace(/\D/g, '');
+    if (!d.zahlenschloss) {
+      if (!ziffern) return HG.spiel.handle(Object.assign({}, ctx, { aktion: 'drehen' }));   // "drehe X" ohne Zahl
+      sag('An ' + der(ctx.obj, 'dat') + ' lässt sich keine Zahl einstellen.'); return;
+    }
+    var zs = d.zahlenschloss, n = zs.stellen || 4;
+    if (!W.hell()) { sag('Es ist zu dunkel, um die Ziffern zu erkennen.'); return; }
+    if (!ziffern) { sag('Auf welche Zahl? Zum Beispiel: „drehe die Ringe auf ' + '1234567890'.slice(0, n) + '“.'); return; }
+    if (ziffern.length !== n) { sag('Es sind ' + n + ' Ringe – du brauchst eine ' + n + '-stellige Zahl.'); return; }
+    var bereit = HG.wert(zs.bereit, HG.api, ctx);
+    if (bereit !== undefined && bereit !== true) { sag(typeof bereit === 'string' ? bereit : 'Die Ringe rühren sich nicht.'); return; }
+    setze(id, 'ziffern', ziffern);
+    if (ziffern === String(HG.wert(zs.code, HG.api, ctx))) { if (zs.richtig) zs.richtig(HG.api, ctx); return; }
+    sag(HG.wert(zs.falsch, HG.api, ctx) || 'Du stellst die Ringe auf ' + ziffern.split('').join(' – ') + '. Nichts geschieht.');
+  };
+
+  // ================= Erste Hilfe, Knacken ===========================
+  A.ersteHilfe = function (ctx) { HG.charakter.ersteHilfe(ctx); };
+  A.behandeln = function () { sag('Hier ist niemand, der dich behandeln könnte. Für Wunden gibt es Erste Hilfe („versorge wunde“) – oder das Krankenhaus.'); };
+  // Nahansicht (Ding mit "nahansicht"): öffnet die Ansicht in der Oberfläche, sonst wie Untersuchen
+  A.nahansicht = function (ctx) {
+    ctx.dauer = 0;
+    if (!D(ctx.obj).nahansicht) { A.untersuchen(ctx); return; }
+    if (!W.hell()) { sag('Es ist zu dunkel, um Einzelheiten zu erkennen.'); return; }
+    if (HG.anzeige && HG.anzeige.zeigeNah) { HG.anzeige.zeigeNah(ctx.obj); sag('Du siehst dir ' + der(ctx.obj) + ' aus der Nähe an.'); }
+    else A.untersuchen(ctx);
+  };
+  A.schuetteln = function (ctx) { sag(txt(ctx.obj, 'schuetteln', ctx) || (istFest(ctx.obj) ? Der(ctx.obj) + ' ' + vb(ctx.obj, 'rührt', 'rühren') + ' sich nicht.' : 'Du schüttelst ' + der(ctx.obj) + '. Nichts klappert.')); };
+  A.knacken = function (ctx) { sag('An ' + der(ctx.obj, 'dat') + ' gibt es nichts, was du knacken könntest.'); };
   A.winken = function () { sag(HG.wert(raum().winken, HG.api) || 'Du fuchtelst mit den Armen. Niemand sieht es – hoffentlich.'); };
 
   // ================= Gehen ===========================================
