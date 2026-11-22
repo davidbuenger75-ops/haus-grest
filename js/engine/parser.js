@@ -98,6 +98,8 @@
     // Bewegen
     { a: 'druecken', w: L('drueck druecke druecken press presse betaetige'), vor: L('auf gegen'), o: 1 },
     { a: 'ziehen', w: L('zieh ziehe ziehen zerr zerre'), vor: L('an'), o: 1 },
+    { a: 'umdrehen', w: L('dreh drehe drehen wend wende wenden'), p: 'um', o: '?' },   // "dreh das Foto um", "dreh dich um"
+    { a: 'umdrehen', w: L('wend wende wenden umdrehen umwenden'), o: 1 },
     { a: 'drehen', w: L('dreh drehe drehen kurbel kurble'), o: 1 },
     { a: 'schieben', w: L('schieb schiebe schieben rueck ruecke'), p: 'beiseite', o: 1 },
     { a: 'schieben', w: L('schieb schiebe schieben rueck ruecke'), p: 'weg', o: 1 },
@@ -272,7 +274,7 @@
     'untersuche …', 'nimm …', 'öffne …', 'schließe …', 'lies …', 'durchsuche …', 'schau', 'schau in …',
     'schau unter …', 'schau hinter …', 'geh …', 'zünde … an', 'lösche …', 'schalte … ein', 'schalte … aus',
     'schließe … auf', 'schließe … ab', 'lege … ab', 'lege … in …', 'lege … auf …', 'gib … an …', 'zeige … …',
-    'sprich mit …', 'frage … nach …', 'benutze …', 'kombiniere … mit …', 'drücke …', 'ziehe an …', 'drehe …',
+    'sprich mit …', 'frage … nach …', 'benutze …', 'kombiniere … mit …', 'drücke …', 'ziehe an …', 'drehe …', 'drehe … um',
     'schiebe …', 'horche', 'lausche an …', 'rieche an …', 'taste …', 'taste umher', 'klopfe an …', 'zerbrich …',
     'reiße an …', 'klettere auf …', 'verstecke dich hinter …', 'warte', 'warte bis …', 'schlafe', 'fahre los',
     'fahre zu …', 'ruf … an', 'fotografiere …', 'schreibe …', 'tippe …', 'winke', 'blättere weiter',

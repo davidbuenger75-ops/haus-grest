@@ -61,6 +61,7 @@
       sag(HG.wert(d.tasten, HG.api, ctx) || 'Es ist zu dunkel, um viel zu erkennen. Du ertastest ' + ein(id) + '.');
       return;
     }
+    if (d.rueckseite) setze(id, 'umgedreht', false);   // beim Untersuchen zuerst die Vorderseite
     var teile = [HG.wert(d.beschreibung, HG.api, ctx) || 'Du bemerkst nichts Besonderes an ' + der(id, 'dat') + '.'];
     if (d.oeffenbar && d.zeigeZustand !== false) teile.push(Pron(id) + ' ' + ist(id) + ' ' + (eig(id, 'offen') ? 'offen.' : 'geschlossen.'));
     if (d.lichtquelle && eig(id, 'brennt')) teile.push(Pron(id) + ' ' + vb(id, 'brennt', 'brennen') + '.');
@@ -77,6 +78,14 @@
   A.lesen = function (ctx) {
     var id = ctx.obj, d = D(id);
     if (!W.hell()) { sag('Es ist zu dunkel zum Lesen.'); return; }
+    // Steht die Schrift auf der Rückseite (rueckseite: { schrift: true }), wird das Ding dafür umgedreht.
+    if (d.rueckseite && d.rueckseite.schrift && d.lesbar) {
+      var schonHinten = !!eig(id, 'umgedreht');
+      setze(id, 'umgedreht', true);
+      zeigeSeite(id, true, ctx, schonHinten);
+      if (d.hinweis && (d.hinweisBei === 'lesen' || d.hinweisBei === undefined)) HG.api.hinweis(d.hinweis);
+      return;
+    }
     var text = HG.wert(d.lesbar, HG.api, ctx);
     if (!text) {
       var b = eig(id, 'beschriftung');
@@ -275,6 +284,37 @@
     if (D(id).oeffenbar && eig(id, 'offen')) { A.schliessen(ctx); return; }
     if (W.enthuelle(id, 'druecken').length) return;
     sag('Du drückst auf ' + der(id) + '. Nichts geschieht.');
+  };
+
+  // ================= Umdrehen (Fotos, Karten … mit Rückseite) ===========
+  //   rueckseite: { beschreibung: '…', vorne: '…', schrift: true }
+  //     beschreibung = beim Umdrehen auf die Rückseite, vorne = beim Zurückdrehen (sonst die normale Beschreibung),
+  //     schrift: true = der lesbar-Text steht hinten (wird unter dem Bild gezeigt)
+  //   Bilder: ding-<id> (Vorderseite) und ding-<id>-rueckseite. Zustand: eig(id, 'umgedreht').
+  function zeigeSeite(id, hinten, ctx, liegtSchon) {
+    var d = D(id), r = d.rueckseite;
+    if (hinten) {
+      if (!liegtSchon) sag(HG.wert(r.beschreibung, HG.api, ctx) || 'Du drehst ' + der(id) + ' um.');
+      HG.spiel.zeigeFundBild(id, ctx);                       // Bild vor der Schrift, die Schrift steht darunter
+      if (r.schrift && d.lesbar) HG.ausgabe.schrift(HG.wert(d.lesbar, HG.api, ctx), d.schriftart);
+    } else {
+      sag(HG.wert(r.vorne, HG.api, ctx) || HG.wert(d.beschreibung, HG.api, ctx) || 'Du drehst ' + der(id) + ' wieder um.');
+      HG.spiel.zeigeFundBild(id, ctx);
+    }
+  }
+  A.umdrehen = function (ctx) {
+    var id = ctx.obj;
+    if (!id) { sag(HG.wert(HG.daten.spiel.umdrehenText, HG.api, ctx) || 'Du drehst dich um. Da ist nichts.'); return; }
+    var d = D(id);
+    if (!d.rueckseite) {
+      if (W.enthuelle(id, 'drehen').length) return;
+      sag(istFest(id) ? Der(id) + ' ' + vb(id, 'lässt', 'lassen') + ' sich nicht umdrehen.' : 'Du drehst ' + der(id) + ' um. Auf der anderen Seite ist nichts Besonderes.');
+      return;
+    }
+    if (!W.hell()) { sag('Es ist zu dunkel, um viel zu erkennen.'); return; }
+    var hinten = !eig(id, 'umgedreht');
+    setze(id, 'umgedreht', hinten);
+    zeigeSeite(id, hinten, ctx);
   };
 
   A.drehen = function (ctx) {

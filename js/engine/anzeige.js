@@ -10,6 +10,7 @@
   function D(id) { return HG.daten.dinge[id]; }
 
   var verlaufEingaben = [], verlaufPos = 0, letztesBild = null, gewaehlt = [];
+  var nbOffen = { gruppe: {}, hinweis: {} };   // Notizbuch: welche Gruppen/Hinweise aufgeklappt sind (nur Oberfläche)
 
   /** Bedienung per Finger (kein Mauszeiger)? Dann kein automatisches Fokussieren – sonst springt die Tastatur auf. */
   function touch() { return !!(window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches); }
@@ -122,12 +123,28 @@
         A.notizbuch();
       });
       $('notizbuch').addEventListener('click', function (e) {
-        if (e.target.id === 'verbinden' && gewaehlt.length === 2) {
+        if (e.target.closest('#verbinden') && gewaehlt.length === 2) {
           HG.spiel.verbindeImNotizbuch(gewaehlt[0], gewaehlt[1]);
           gewaehlt = [];
           A.auffrischen();
         }
       });
+      // Auf-/Zuklappen merken; ein neuer Hinweis gilt als angesehen, sobald er einmal offen war.
+      // ("toggle" steigt nicht auf – daher in der Einfangphase lauschen.)
+      $('notizbuch').addEventListener('toggle', function (e) {
+        var d = e.target;
+        if (d.classList.contains('nb-gruppe')) nbOffen.gruppe[d.getAttribute('data-gruppe')] = d.open;
+        else if (d.classList.contains('nb-hinweis')) {
+          var id = d.getAttribute('data-id');
+          nbOffen.hinweis[id] = d.open;
+          if (d.open && HG.spiel.hinweisNeu(id)) {
+            HG.spiel.hinweisGesehen(id);
+            var p = d.querySelector('.nb-punkt'); if (p) p.parentNode.removeChild(p);
+            A.notizZaehler();
+            if (!Z().vorbei) HG.zustand.speichern('auto');
+          }
+        }
+      }, true);
       document.querySelectorAll('[data-befehl-knopf]').forEach(function (b) {
         b.addEventListener('click', function () {
           var c = b.getAttribute('data-befehl-knopf');
@@ -223,14 +240,33 @@
     },
 
     // ---------------- Menüs (angetipptes Wort, Verb mit Objektauswahl) ----------------
-    /** eintraege: [{ text, befehl } | { text, eingabe } | { kopf }] */
-    zeigeMenue: function (anker, titel, eintraege) {
-      var m = $('wortmenue'), html = '<div class="wm-titel">' + titel + '</div>';
+    /** eintraege: [{ text, befehl, erledigt? } | { text, eingabe } | { kopf }]
+     *  erledigt: true – landet im eingeklappten Bereich "erledigtTitel" (z. B. "Bereits gelesen") unter der Liste. */
+    zeigeMenue: function (anker, titel, eintraege, erledigtTitel) {
+      var m = $('wortmenue'), html = '<div class="wm-titel">' + titel + '</div>', alt = '', nAlt = 0;
+      function knopf(x, i) { return '<button type="button" data-i="' + i + '"' + (x.eingabe !== undefined ? ' class="wm-eingabe"' : '') + '>' + T.esc(x.text) + '</button>'; }
       eintraege.forEach(function (x, i) {
         if (x.kopf) html += '<div class="wm-kopf">' + x.kopf + '</div>';
-        else html += '<button type="button" data-i="' + i + '"' + (x.eingabe !== undefined ? ' class="wm-eingabe"' : '') + '>' + T.esc(x.text) + '</button>';
+        else if (x.erledigt) { alt += knopf(x, i); nAlt++; }
+        else if (x.eingabe !== undefined) return;   // Eingabe-Knöpfe kommen ganz nach unten
+        else html += knopf(x, i);
       });
-      m.innerHTML = html; m.hidden = false; A._menue = eintraege;
+      if (nAlt) html += '<details class="wm-erledigt"><summary>' + T.esc(erledigtTitel || 'Erledigt') + ' <span class="nb-zahl">' + nAlt + '</span></summary><div class="wm-alt">' + alt + '</div></details>';
+      eintraege.forEach(function (x, i) { if (!x.kopf && !x.erledigt && x.eingabe !== undefined) html += knopf(x, i); });
+      m.innerHTML = html; m.hidden = false; A._menue = eintraege; A._menueAnker = anker;
+      A.platziereMenue();
+      var erster = m.querySelector('button, summary');
+      if (erster && !touch()) erster.focus();
+      var det = m.querySelector('.wm-erledigt');
+      if (det) det.addEventListener('toggle', function () {
+        A.platziereMenue();
+        if (det.open) { det.querySelector('.wm-alt').scrollTop = 0; m.scrollTop = Math.max(0, det.offsetTop - 8); }   // aufgeklappten Bereich zeigen
+      });
+    },
+    /** Menü am Anker ausrichten, so dass es ganz im Fenster bleibt (auch nach dem Aufklappen). */
+    platziereMenue: function () {
+      var m = $('wortmenue'), anker = A._menueAnker;
+      if (!anker || m.hidden) return;
       m.style.left = '0px'; m.style.top = '0px';
       var r = anker.getBoundingClientRect(), mw = m.offsetWidth, mh = m.offsetHeight;
       var vw = document.documentElement.clientWidth, vh = window.innerHeight;
@@ -238,8 +274,6 @@
       var y = r.bottom + 6;
       if (y + mh > vh - 8) y = Math.max(8, r.top - mh - 6);
       m.style.left = x + 'px'; m.style.top = y + 'px';
-      var erster = m.querySelector('button');
-      if (erster && !touch()) erster.focus();
     },
     schliesseMenue: function () {
       if ($('wortmenue')) $('wortmenue').hidden = true;
@@ -261,12 +295,13 @@
       A.zeigeMenue(w, T.esc(w.textContent), liste);
     },
     verbMenue: function (verb, knopf) {
+      // Schon Gelesenes/Untersuchtes rutscht in den eingeklappten Bereich darunter (HG.spiel.erledigt)
       var liste = HG.spiel.objekteFuer(verb).map(function (id) {
-        return { text: T.gross(T.name(id, 'nom', '')), befehl: verb + ' ' + HG.spiel.kurzwort(id) };
+        return { text: T.gross(T.name(id, 'nom', '')), befehl: verb + ' ' + HG.spiel.kurzwort(id), erledigt: HG.spiel.erledigt(verb, id) };
       });
       if (!liste.length) liste.push({ kopf: 'Hier ist nichts Passendes zu sehen.' });
       liste.push({ text: 'Selbst eintippen …', eingabe: verb + ' ' });
-      A.zeigeMenue(knopf, T.esc(T.gross(verb)) + ' …', liste);
+      A.zeigeMenue(knopf, T.esc(T.gross(verb)) + ' …', liste, HG.spiel.erledigtTitel(verb));
     },
 
     // ---------------- Blatt (Seitenleiste auf schmalen Bildschirmen) ----------------
@@ -444,11 +479,21 @@
       var el = document.createElement('figure');
       el.className = 'abbildung';
       el.hidden = true;
-      HG.medien.erstesBild([HG.medien.dingName(b.ding)], function (url) {
+      HG.medien.erstesBild([b.datei || HG.medien.dingName(b.ding)], function (url) {
+        if (!url && b.umdrehen) {   // kein Bild vorhanden: nur der Umdreh-Knopf
+          el.className = 'abbildung ohne-bild';
+          el.innerHTML = '<figcaption><button type="button" class="abb-umdrehen">↻ Umdrehen</button></figcaption>';
+          el.hidden = false;
+          el.querySelector('.abb-umdrehen').addEventListener('click', function () { A.befehl(b.umdrehen); });
+          return;
+        }
         if (!url) { if (el.parentNode) el.parentNode.removeChild(el); return; }
-        el.innerHTML = '<button type="button" title="Groß anzeigen"><img src="' + url + '" alt="' + b.html + '"></button><figcaption>' + b.html + '</figcaption>';
+        el.innerHTML = '<button type="button" class="abb-gross" title="Groß anzeigen"><img src="' + url + '" alt="' + b.html + '"></button><figcaption>' + b.html +
+          (b.umdrehen ? ' <button type="button" class="abb-umdrehen" data-befehl="' + T.esc(b.umdrehen) + '">↻ Umdrehen</button>' : '') + '</figcaption>';
         el.hidden = false;
-        el.querySelector('button').addEventListener('click', function () { A.grossbild(url, b.html); });
+        el.querySelector('.abb-gross').addEventListener('click', function () { A.grossbild(url, b.html); });
+        var u = el.querySelector('.abb-umdrehen');
+        if (u) u.addEventListener('click', function () { A.befehl(u.getAttribute('data-befehl')); });
         $('log').scrollTop = $('log').scrollHeight;
       });
       return el;
@@ -515,34 +560,64 @@
       $('inventar').innerHTML = html;
     },
 
+    // Notizbuch: Schlussfolgerungen oben, darunter die Hinweise nach Ermittlungsstrang in aufklappbaren
+    // Gruppen. Jeder Hinweis zeigt zugeklappt Titel + erste Zeile; neue Hinweise tragen einen Punkt,
+    // bis man sie einmal aufklappt (z.gesehen). Welche Gruppen/Hinweise offen sind, merkt sich nur die Oberfläche.
     notizbuch: function () {
-      var z = Z(), html = '';
+      var z = Z(), html = '', S = HG.spiel;
       gewaehlt = gewaehlt.filter(function (id) { return z.hinweise.indexOf(id) >= 0; });
       if (!z.hinweise.length && !z.notizen.length) html = '<p class="leer">Noch keine Einträge. Hinweise werden automatisch notiert.</p>';
-      if (z.hinweise.length) {
-        html += '<ul class="hinweise">';
-        z.hinweise.forEach(function (id) {
-          var h = HG.daten.hinweise[id];
-          html += '<li><label><input type="checkbox" value="' + id + '"' + (gewaehlt.indexOf(id) >= 0 ? ' checked' : '') + '> <b>' + h.titel + '</b></label>' +
-            (h.strang ? ' <span class="strang">' + h.strang + '</span>' : '') + '<div>' + HG.text.fuelle(h.text) + '</div></li>';
-        });
-        html += '</ul>';
-        if (z.hinweise.length >= 2) {
-          html += '<button type="button" id="verbinden"' + (gewaehlt.length === 2 ? '' : ' disabled') + '>Zwei Hinweise verbinden</button>';
-        }
-      }
       if (z.schluesse.length) {
-        html += '<h4>Schlussfolgerungen</h4><ul class="schluesse">';
-        z.schluesse.forEach(function (id) { var s = HG.daten.schluesse[id]; html += '<li><b>' + s.titel + '</b><div>' + s.text + '</div></li>'; });
-        html += '</ul>';
+        html += '<section class="nb-schluesse"><h4>★ Schlussfolgerungen <span class="nb-zahl">' + z.schluesse.length + '</span></h4><ul class="schluesse">';
+        z.schluesse.forEach(function (id) { var s = HG.daten.schluesse[id]; html += '<li><b>' + s.titel + '</b><div>' + HG.text.fuelle(s.text) + '</div></li>'; });
+        html += '</ul></section>';
+      }
+      if (z.hinweise.length) {
+        if (z.hinweise.length >= 2) html += '<p class="nb-tipp">Hake zwei Hinweise an, um sie zu verbinden.</p>';
+        S.notizGruppen().forEach(function (g) {
+          var neu = g.ids.filter(S.hinweisNeu).length;
+          var offen = nbOffen.gruppe[g.schluessel] !== undefined ? nbOffen.gruppe[g.schluessel] : neu > 0;
+          html += '<details class="nb-gruppe" data-gruppe="' + g.schluessel + '"' + (offen ? ' open' : '') + '><summary>' +
+            '<span class="nb-gruppe-titel">' + T.esc(g.titel) + '</span> <span class="nb-zahl">' + g.ids.length + '</span>' +
+            '<span class="nb-neu-zahl"' + (neu ? '' : ' hidden') + '>' + neu + ' neu</span></summary><ul class="hinweise">';
+          g.ids.forEach(function (id) {
+            var h = HG.daten.hinweise[id], text = HG.text.fuelle(h.text);
+            var vorschau = text.replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]+>/g, '');
+            html += '<li><input type="checkbox" value="' + id + '" aria-label="' + T.esc(h.titel) + ' zum Verbinden wählen"' + (gewaehlt.indexOf(id) >= 0 ? ' checked' : '') + '>' +
+              '<details class="nb-hinweis" data-id="' + id + '"' + (nbOffen.hinweis[id] ? ' open' : '') + '><summary>' +
+              (S.hinweisNeu(id) ? '<span class="nb-punkt" title="neu" aria-label="neu"></span>' : '') +
+              '<b>' + h.titel + '</b>' + (/\//.test(h.strang || '') ? ' <span class="strang">' + T.esc(h.strang) + '</span>' : '') +
+              '<span class="nb-vorschau">' + vorschau + '</span></summary><div class="nb-text">' + text + '</div></details></li>';
+          });
+          html += '</ul></details>';
+        });
+        if (z.hinweise.length >= 2) {
+          html += '<div class="nb-leiste"><button type="button" id="verbinden"' + (gewaehlt.length === 2 ? '' : ' disabled') + '>Zwei Hinweise verbinden' +
+            (gewaehlt.length ? ' (' + gewaehlt.length + '/2)' : '') + '</button></div>';
+        }
       }
       if (z.notizen.length) {
         html += '<h4>Eigene Notizen</h4><ul class="notizen">';
         z.notizen.forEach(function (n) { html += '<li>„' + T.esc(n) + '“</li>'; });
         html += '</ul>';
       }
-      $('notizbuch').innerHTML = html;
-      document.querySelectorAll('[data-tab=notizbuch] .anzahl').forEach(function (t) { t.textContent = z.hinweise.length ? '(' + z.hinweise.length + ')' : ''; });
+      var box = $('notizbuch'), scroll = box.scrollTop;
+      box.innerHTML = html;
+      box.scrollTop = scroll;
+      A.notizZaehler();
+    },
+    /** Zahlen und Neu-Markierungen im Reiter und an den Gruppen auffrischen (ohne alles neu zu zeichnen). */
+    notizZaehler: function () {
+      var z = Z(), S = HG.spiel, neu = z.hinweise.filter(S.hinweisNeu).length;
+      document.querySelectorAll('[data-tab=notizbuch] .anzahl').forEach(function (t) {
+        t.textContent = z.hinweise.length ? '(' + z.hinweise.length + ')' : '';
+        t.classList.toggle('hat-neue', neu > 0);
+        t.title = neu ? neu + ' neue Hinweise' : '';
+      });
+      document.querySelectorAll('#notizbuch .nb-gruppe').forEach(function (g) {
+        var n = g.querySelectorAll('.nb-punkt').length, el = g.querySelector('.nb-neu-zahl');
+        el.textContent = n + ' neu'; el.hidden = !n;
+      });
     },
 
     tageszeit: function () {

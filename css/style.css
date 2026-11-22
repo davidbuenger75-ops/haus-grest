@@ -97,13 +97,61 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--blut); outl
 #inventar { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
 #inventar button.drin { margin-left: 14px; }
 .hinweise, .schluesse, .notizen { list-style: none; padding: 0; margin: 0 0 10px; }
-.hinweise li, .schluesse li, .notizen li { margin-bottom: 9px; font-size: .92em; }
-.hinweise li div, .schluesse li div { color: var(--tinte-hell); margin-left: 22px; }
-.schluesse li { border-left: 3px solid var(--gruen); padding-left: 8px; }
-.schluesse li div { margin-left: 0; }
-.strang { font-size: .75em; border: 1px solid #2a1d1255; border-radius: 8px; padding: 0 5px; color: var(--tinte-hell); }
+.schluesse li, .notizen li { margin-bottom: 9px; font-size: .92em; }
+.schluesse li div { color: var(--tinte-hell); }
+.strang { font-size: .75em; border: 1px solid #2a1d1255; border-radius: 8px; padding: 0 5px; color: var(--tinte-hell); font-weight: normal; }
 #notizbuch h4 { margin: 12px 0 6px; font-weight: normal; font-variant: small-caps; letter-spacing: 1px; }
 #verbinden:disabled { opacity: .45; cursor: default; }
+
+/* Notizbuch: Schlussfolgerungen hervorgehoben ganz oben */
+.nb-schluesse { background: #eef0dc; border: 1px solid #2f5a2a66; border-left: 4px solid var(--gruen); border-radius: 4px; padding: 2px 10px 4px; margin: 0 0 12px; box-shadow: 0 1px 4px #0002; }
+.nb-schluesse h4 { color: var(--gruen); margin-top: 8px !important; }
+.nb-schluesse .schluesse { margin: 0; }
+.nb-schluesse .schluesse li { border-left: none; padding-left: 0; }
+.nb-schluesse .schluesse li + li { border-top: 1px dashed #2f5a2a44; padding-top: 7px; }
+.nb-zahl { display: inline-block; min-width: 1.5em; text-align: center; font-size: .78em; background: #2a1d121a; border-radius: 9px; padding: 0 5px; font-variant: normal; letter-spacing: 0; color: var(--tinte-hell); }
+.nb-tipp { margin: 0 0 8px; font-size: .82em; font-style: italic; color: var(--tinte-hell); }
+
+/* Gruppen nach Ermittlungsstrang (auf-/zuklappbar) */
+.nb-gruppe { border-top: 1px solid #2a1d1233; }
+.nb-gruppe:last-of-type { border-bottom: 1px solid #2a1d1233; }
+.nb-gruppe > summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 6px; padding: 8px 2px; font-variant: small-caps; letter-spacing: 1px; }
+.nb-gruppe > summary::-webkit-details-marker, .nb-hinweis > summary::-webkit-details-marker, .wm-erledigt > summary::-webkit-details-marker { display: none; }
+.nb-gruppe > summary::before { content: '▸'; display: inline-block; width: 1em; color: var(--tinte-hell); transition: transform .15s; }
+.nb-gruppe[open] > summary::before { transform: rotate(90deg); }
+.nb-gruppe-titel { flex: 0 1 auto; }
+.nb-neu-zahl { margin-left: auto; font-size: .75em; font-variant: normal; letter-spacing: 0; color: #fff; background: var(--blut); border-radius: 9px; padding: 0 7px; }
+.nb-neu-zahl[hidden] { display: none; }
+.nb-gruppe .hinweise { margin: 0 0 8px; }
+
+/* Einzelne Hinweise: zugeklappt Titel + erste Zeile */
+.hinweise li { display: flex; align-items: flex-start; gap: 6px; margin-bottom: 4px; font-size: .92em; }
+.hinweise li input[type=checkbox] { margin: 5px 0 0; flex: none; accent-color: var(--gruen); }
+.nb-hinweis { flex: 1; min-width: 0; border-radius: 3px; }
+.nb-hinweis > summary { cursor: pointer; list-style: none; padding: 2px 4px; border-radius: 3px; }
+.nb-hinweis > summary b { font-weight: bold; }
+.nb-vorschau { display: block; color: var(--tinte-hell); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: .95em; }
+.nb-hinweis[open] .nb-vorschau { display: none; }
+.nb-hinweis[open] { background: #f3ead699; }
+.nb-text { color: var(--tinte-hell); padding: 2px 4px 6px; }
+.nb-punkt { display: inline-block; width: .55em; height: .55em; border-radius: 50%; background: var(--blut); margin-right: 5px; vertical-align: .1em; box-shadow: 0 0 0 2px #7a1a1233; }
+[data-tab=notizbuch] .anzahl.hat-neue::after { content: ''; display: inline-block; width: .45em; height: .45em; border-radius: 50%; background: var(--blut); margin-left: 3px; vertical-align: .35em; }
+
+/* "Zwei Hinweise verbinden" bleibt beim Blättern unten sichtbar */
+.nb-leiste { position: sticky; bottom: -14px; background: var(--papier-dunkel); padding: 8px 0 10px; margin-top: 8px; box-shadow: 0 -6px 8px -6px #0003; }
+.nb-leiste #verbinden { width: 100%; }
+
+/* Menüs: eingeklappter Bereich "Bereits gelesen" */
+.wm-erledigt { border-top: 1px solid #2a1d1233; margin-top: 4px; padding-top: 2px; }
+.wm-erledigt > summary { cursor: pointer; list-style: none; padding: 6px 10px; color: var(--tinte-hell); font-style: italic; border-radius: 4px; display: flex; align-items: center; gap: 6px; }
+.wm-erledigt > summary::before { content: '▸'; display: inline-block; width: 1em; transition: transform .15s; }
+.wm-erledigt[open] > summary::before { transform: rotate(90deg); }
+.wm-alt { display: flex; flex-direction: column; gap: 2px; max-height: 32vh; overflow-y: auto; overscroll-behavior: contain; padding-left: 8px; }
+.wm-alt button { color: var(--tinte-hell) !important; }
+
+/* Fundstück mit Rückseite */
+#log .abbildung .abb-umdrehen { font: inherit; font-style: normal; cursor: pointer; margin-left: 6px; background: #f3ead6; color: var(--tinte); border: 1px solid #2a1d1266; border-radius: 12px; padding: 2px 10px; }
+#log .abbildung.ohne-bild { margin: 0 0 10px; }
 .knoepfe { display: flex; flex-wrap: wrap; gap: 6px; border-top: 1px solid #2a1d1255; padding-top: 10px; margin-top: 6px; }
 
 /* ---------- Karte ---------- */
@@ -209,6 +257,9 @@ body[data-zeit=nacht] #bild.art-auto::after { content: ''; position: absolute; i
   #vorschlaege button:hover, #ergaenzung button:hover, #leiste button:hover:not(:disabled), .knoepfe button:hover,
   #inventar button:hover, #verbinden:hover:not(:disabled), #handy button:hover, .wortmenue button:hover { background: var(--tinte); color: var(--papier); }
   #log .wort:hover { background: #2a1d1218; }
+  .nb-gruppe > summary:hover, .nb-hinweis > summary:hover, .wm-erledigt > summary:hover { background: #2a1d1214; }
+  #log .abbildung .abb-umdrehen:hover { background: var(--tinte); color: var(--papier); }
+  .wortmenue .wm-alt button:hover { color: var(--papier) !important; }
 }
 #log .wort { cursor: pointer; border-bottom: 1px dotted #2a1d1277; border-radius: 2px; -webkit-tap-highlight-color: transparent; }
 #log .wort.aktiv { background: #2a1d1226; border-bottom-style: solid; }
@@ -251,7 +302,10 @@ body[data-zeit=nacht] #grossbild-bild.art-svg svg { filter: invert(.86) sepia(.5
   #verbinden, .tabs button, #buch button, #buch select, #karte-zu, .ton button { min-height: 44px; padding-left: 14px; padding-right: 14px; }
   #eingabe button { min-width: 48px; min-height: 44px; }
   .wortmenue button { min-height: 46px; }
-  .hinweise input[type=checkbox] { width: 22px; height: 22px; vertical-align: middle; }
+  .hinweise input[type=checkbox] { width: 22px; height: 22px; margin-top: 3px; }
+  .nb-gruppe > summary, .wm-erledigt > summary { min-height: 46px; }
+  .nb-hinweis > summary { padding: 6px 4px; }
+  #log .abbildung .abb-umdrehen { min-height: 40px; padding: 4px 14px; }
   .ton input[type=range] { min-height: 44px; }
 }
 @media (pointer: coarse), (max-width: 860px) {

@@ -4,12 +4,20 @@
 (function (HG) {
   'use strict';
 
-  var VERSION = 4; // 2: Tageszeit, Reiseziele, Handy, Spuk · 3: Spielfigur, Uhrzeit, NERVEN in Prozent, Bücher · 4: MACHT des Hauses
+  var VERSION = 5; // 2: Tageszeit, Reiseziele, Handy, Spuk · 3: Spielfigur, Uhrzeit, NERVEN in Prozent, Bücher · 4: MACHT des Hauses
+                   // 5: angesehene Hinweise (gesehen), erledigte Handlungen an Dingen (getan)
 
   // Ältere Spielstände an das aktuelle Format anpassen: MIGRATION[v] macht aus Version v die Version v+1.
   var MIGRATION = {
-    3: function (z) { z.macht = HG.macht ? HG.macht.start() : 100; }
+    3: function (z) { z.macht = HG.macht ? HG.macht.start() : 100; },
+    4: function (z) {
+      z.gesehen = {}; z.getan = {};
+      (z.hinweise || []).forEach(function (id) { z.gesehen[id] = true; }); // alte Hinweise gelten als angesehen
+    }
   };
+  // Inhalte können eigene Schritte anhängen, z. B. wenn sich Buchseiten verschoben haben:
+  // HG.zustand.migration(4, function (z) { ... })  läuft beim Laden nach MIGRATION[4].
+  var MIGRATION_INHALT = {};
   var SPEICHER_PREFIX = 'hausgrest:';
   var MAX_RUECKGAENGIG = 50;
 
@@ -36,6 +44,8 @@
         hinweise: [],    // gefundene Hinweis-IDs (in Reihenfolge)
         schluesse: [],   // gefundene Schlussfolgerungen
         notizen: [],     // eigene Notizen des Spielers
+        gesehen: {},     // Hinweis-ID -> true, sobald der Hinweis im Notizbuch aufgeklappt wurde
+        getan: {},       // Ding-ID -> { lesen: true, untersuchen: true } – für "Bereits gelesen" in den Menüs
         pronomen: {},    // m/f/n/pl/letzt -> Ding-ID
         versteckt: null, // Ding, hinter dem sich der Spieler versteckt
         vorbei: false,
@@ -83,6 +93,17 @@
       return true;
     },
 
+    /** Inhalts-Schritt für die Migration anmelden (siehe MIGRATION_INHALT). */
+    migration: function (v, fn) { (MIGRATION_INHALT[v] = MIGRATION_INHALT[v] || []).push(fn); },
+
+    /** Hinweise und Schlussfolgerungen entfernen, die es im Inhalt nicht mehr gibt (z. B. gestrichene). */
+    aufraeumen: function (z) {
+      z.hinweise = (z.hinweise || []).filter(function (id) { return !!HG.daten.hinweise[id]; });
+      z.schluesse = (z.schluesse || []).filter(function (id) { return !!HG.daten.schluesse[id]; });
+      if (!z.gesehen) z.gesehen = {};
+      if (!z.getan) z.getan = {};
+    },
+
     // --- Speichern / Laden (localStorage, immer in try/catch) ---
     speichern: function (platz) {
       try {
@@ -100,9 +121,14 @@
         var paket = JSON.parse(roh);
         if (!paket || !paket.zustand) return { ok: false, fehler: 'leer' };
         var v = paket.version;
-        while (v < VERSION && MIGRATION[v]) { MIGRATION[v](paket.zustand); v++; }
+        while (v < VERSION && MIGRATION[v]) {
+          MIGRATION[v](paket.zustand);
+          (MIGRATION_INHALT[v] || []).forEach(function (fn) { fn(paket.zustand); });
+          v++;
+        }
         if (v !== VERSION) return { ok: false, fehler: 'version' };
         paket.zustand.version = VERSION;
+        this.aufraeumen(paket.zustand);
         this.z = paket.zustand;
         this.verlauf = [];
         return { ok: true, zeit: paket.zeit };

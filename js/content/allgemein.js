@@ -62,6 +62,16 @@ HG.spielDaten({
   wartenLangeText: 'Du wartest. Die Minuten kriechen dahin.',
   keinSchlafText: 'Hier kannst du nicht schlafen. Du bräuchtest ein Bett – und das Gefühl, sicher zu sein.',
   andeutungText: 'Zwei deiner Notizen scheinen zusammenzupassen. Verbinde sie im Notizbuch – oder tippe „kombiniere … mit …“.',
+  // Gruppen im Notizbuch (Ermittlungsstränge der Spielbibel, Abschnitt 5); "strang" am Hinweis wählt die Gruppe
+  straenge: [
+    { k: 'A', titel: 'A · Der Architekt' },
+    { k: 'B', titel: 'B · Elisabeth' },
+    { k: 'C', titel: 'C · Die Krähe' },
+    { k: 'D', titel: 'D · Die Toten' },
+    { k: 'E', titel: 'E · Carsten' }
+  ],
+  straengeSonst: 'Weitere Hinweise',
+  umdrehenText: 'Du drehst dich um. Niemand. Natürlich niemand.',
 
   // Reisen
   keinAutoText: 'Dein Auto steht nicht hier. Geh erst hinaus.',

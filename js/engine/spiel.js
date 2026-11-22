@@ -40,6 +40,13 @@
   };
 
   var WERTNAME = { geschick: 'GESCHICK', ausdauer: 'AUSDAUER', nerven: 'NERVEN' };
+  // Handlungen, die im Spielzustand (z.getan) gemerkt werden; Menü-Verben, die Erledigtes in einen
+  // eingeklappten Bereich schieben (Verb der Leiste -> Aktion und Überschrift)
+  var MERKEN = ['lesen', 'untersuchen'];
+  var ERLEDIGT_MENUE = {
+    lies: { aktion: 'lesen', titel: 'Bereits gelesen' },
+    untersuche: { aktion: 'untersuchen', titel: 'Bereits untersucht' }
+  };
 
   // ---------------------------------------------------------------
   // api: Werkzeugkasten für die Inhaltsdateien (Haken bekommen "api")
@@ -183,7 +190,7 @@
   var INFINITIV = {
     untersuchen: 'untersuchen', durchsuchen: 'durchsuchen', lesen: 'lesen', nehmen: 'nehmen', abnehmen: 'abnehmen',
     anheben: 'anheben', ablegen: 'ablegen', legen: 'hinlegen', aufschliessen: 'aufschließen', abschliessen: 'abschließen',
-    oeffnen: 'öffnen', schliessen: 'schließen', druecken: 'drücken', ziehen: 'ziehen', drehen: 'drehen', schieben: 'schieben',
+    oeffnen: 'öffnen', schliessen: 'schließen', druecken: 'drücken', ziehen: 'ziehen', drehen: 'drehen', umdrehen: 'umdrehen', schieben: 'schieben',
     anzuenden: 'anzünden', loeschen: 'löschen', zerbrechen: 'zerbrechen', reissen: 'zerreißen', sprechen: 'ansprechen',
     fragen: 'fragen', zeigen: 'zeigen', geben: 'geben', benutzen: 'benutzen', kombinieren: 'kombinieren',
     hineinschauen: 'hineinschauen', unterschauen: 'darunter ansehen', hinterschauen: 'dahinter ansehen'
@@ -517,6 +524,11 @@
         if (!HG.aktionen[a]) HG.ausgabe.text('Das kann ich (noch) nicht.');
         else HG.aktionen[a](ctx);
       }
+      // Für die Menüs merken, was schon gelesen bzw. untersucht wurde (nur bei Licht – im Dunkeln sieht man nichts)
+      if (ctx.obj && D(ctx.obj) && MERKEN.indexOf(a) >= 0 && W.hell()) {
+        var getan = Z().getan || (Z().getan = {});
+        (getan[ctx.obj] = getan[ctx.obj] || {})[a] = true;
+      }
       S._tiefe--;
       if (S._tiefe === 0) {
         // Wie viele Minuten hat das gedauert? Handlung > Ding (dauer: {lesen: 20}) > Raum > Tabelle
@@ -527,13 +539,23 @@
         S._dauer = (S._dauer || 0) + dd;
         // Geräusche am Ding (geraeusch: { oeffnen: 'tuer-knarren' }) und große Bilder von Fundstücken
         if (ctx.obj && D(ctx.obj).geraeusch && D(ctx.obj).geraeusch[a]) HG.medien.effekt(HG.wert(D(ctx.obj).geraeusch[a], api, ctx));
-        if (ctx.obj && (a === 'untersuchen' || a === 'lesen') && HG.medien.hatFundBild(ctx.obj) && !D(ctx.obj).buch && W.hell()) {
-          HG.ausgabe.schreibe('abbildung', T.gross(T.name(ctx.obj, 'nom', '')), { ding: ctx.obj });
-        }
+        if (ctx.obj && (a === 'untersuchen' || a === 'lesen' || a === 'umdrehen')) S.zeigeFundBild(ctx.obj, ctx);
         HG.ausgabe.leere();
       }
       if (!ctx.mehrfach && S._tiefe === 0) S.zugEnde();
       return true;
+    },
+
+    /** Großes Bild eines Fundstücks in den Text schreiben (höchstens einmal pro Handlung).
+     *  Dinge mit Rückseite zeigen die Seite, die gerade oben liegt (ding-<id>-rueckseite), und einen Umdreh-Knopf. */
+    zeigeFundBild: function (id, ctx) {
+      if ((ctx && ctx.bildGezeigt) || !HG.medien.hatFundBild(id) || D(id).buch || !W.hell()) return;
+      if (ctx) ctx.bildGezeigt = true;
+      var hinten = !!(D(id).rueckseite && eig(id, 'umgedreht'));
+      HG.ausgabe.schreibe('abbildung', T.gross(T.name(id, 'nom', '')) + (hinten ? ' (Rückseite)' : ''), {
+        ding: id, datei: HG.medien.dingName(id) + (hinten ? '-rueckseite' : ''),
+        umdrehen: D(id).rueckseite ? 'dreh ' + S.kurzwort(id) + ' um' : null
+      });
     },
 
     /** Ein Spielzug ist vorbei: Ereignisse, Spielende prüfen. */
@@ -652,11 +674,46 @@
     zeigeNotizbuch: function () {
       var z = Z();
       if (!z.hinweise.length && !z.notizen.length) { HG.ausgabe.system('Dein Notizbuch ist noch leer.'); return; }
-      var h = z.hinweise.map(function (id) { var x = HG.daten.hinweise[id]; return '• <b>' + x.titel + '</b> – ' + x.text; });
+      var h = [];
       z.schluesse.forEach(function (id) { var s = HG.daten.schluesse[id]; h.push('★ <b>' + s.titel + '</b> – ' + s.text); });
+      S.notizGruppen().forEach(function (g) {
+        h.push('<br><b>' + T.esc(g.titel) + '</b> (' + g.ids.length + ')');
+        g.ids.forEach(function (id) { var x = HG.daten.hinweise[id]; h.push('• <b>' + x.titel + '</b> – ' + x.text); S.hinweisGesehen(id); });
+      });
+      if (z.notizen.length) h.push('<br><b>Eigene Notizen</b>');
       z.notizen.forEach(function (n) { h.push('✎ „' + T.esc(n) + '“'); });
       HG.ausgabe.system('<b>Notizbuch</b><br>' + h.join('<br>'));
     },
+
+    /** Gefundene Hinweise nach Ermittlungsstrang: [{ schluessel, titel, ids }] – nur Gruppen mit Einträgen.
+     *  Die Stränge stehen im Inhalt (HG.daten.spiel.straenge); "D/E" zählt zu D, Unbekanntes zu "Weitere". */
+    notizGruppen: function () {
+      var z = Z(), sp = HG.daten.spiel, gruppen = [], nach = {};
+      (sp.straenge || []).forEach(function (s) { var g = { schluessel: s.k, titel: s.titel, ids: [] }; gruppen.push(g); nach[s.k] = g; });
+      var sonst = { schluessel: '_', titel: sp.straengeSonst || 'Weitere Hinweise', ids: [] };
+      z.hinweise.forEach(function (id) {
+        var h = HG.daten.hinweise[id]; if (!h) return;
+        var k = String(h.strang || '').split('/')[0].trim();
+        (nach[k] || sonst).ids.push(id);
+      });
+      gruppen.push(sonst);
+      return gruppen.filter(function (g) { return g.ids.length; });
+    },
+    /** Noch nicht angesehener Hinweis? */
+    hinweisNeu: function (id) { return !(Z().gesehen || {})[id]; },
+    hinweisGesehen: function (id) { var z = Z(); if (!z.gesehen) z.gesehen = {}; z.gesehen[id] = true; },
+
+    /** Ist die Handlung des Menü-Verbs an diesem Ding schon erledigt? ("lies": Bücher erst, wenn alle Seiten gelesen sind) */
+    erledigt: function (verb, id) {
+      var e = ERLEDIGT_MENUE[verb], d = D(id);
+      if (!e || !d) return false;
+      if (e.aktion === 'lesen' && d.buch) {
+        var st = (Z().buecher || {})[id];
+        return !!st && HG.buch.seiten(id).every(function (x) { return st.gelesen.indexOf(x.i) >= 0; });
+      }
+      return !!((Z().getan || {})[id] || {})[e.aktion];
+    },
+    erledigtTitel: function (verb) { return ERLEDIGT_MENUE[verb] ? ERLEDIGT_MENUE[verb].titel : null; },
 
     // =============== Vorschläge (anklickbar) ========================
     // ---------------------------------------------------------------
@@ -695,6 +752,7 @@
       add('Untersuchen', 'untersuche ' + k);
       if (d.person) add('Ansprechen', 'sprich mit ' + k);
       if (d.lesbar || d.buch || d.lesen) add('Lesen', 'lies ' + k);
+      if (d.rueckseite) add('Umdrehen', 'dreh ' + k + ' um');
       if (d.istHandy) { add('Nachrichten lesen', 'lies nachrichten'); add('Fotos ansehen', 'fotos'); }
       if (d.oeffenbar) {
         if (eig(id, 'verschlossen') && d.schluessel != null) add('Aufschließen', 'schließe ' + k + ' auf');
@@ -842,7 +900,7 @@
     '<b>Dinge:</b> nimm … · nimm alles · lege … ab · lege … in/auf … · öffne/schließe … · schließe … mit … auf/ab · heb … hoch · nimm … ab · drücke/ziehe/drehe/schiebe …',
     '<b>Licht:</b> zünde … an (mit …) · lösche … / blas … aus',
     '<b>Sinne:</b> horche · lausche an … · rieche (an …) · taste (…) · klopfe an …',
-    '<b>Sonstiges:</b> zerbrich … · reiß an … · kletter auf … · versteck dich hinter … · warte (z) · sprich mit … · frage … nach … · zeige … … · gib … an … · benutze … (mit …) · kombiniere … mit … · schreibe "…" auf …/ins Notizbuch',
+    '<b>Sonstiges:</b> dreh … um · zerbrich … · reiß an … · kletter auf … · versteck dich hinter … · warte (z) · sprich mit … · frage … nach … · zeige … … · gib … an … · benutze … (mit …) · kombiniere … mit … · schreibe "…" auf …/ins Notizbuch',
     '<b>Abkürzungen:</b> es/ihn/sie meint das zuletzt Genannte. Mehrere Befehle mit „und“ oder „dann“: <i>nimm die Kerze und geh nach Norden</i>. „g“ wiederholt den letzten Befehl.',
     '<b>Reisen:</b> fahre los (zeigt alle bekannten Ziele) · fahre zum Lager · fahre nach Hause – nur dort, wo dein Auto steht. Neue Ziele ergeben sich aus Hinweisen.',
     '<b>Zeit:</b> warte bis zum Abend / bis morgen · schlafe (nur mit Bett) · zeit. Nachts hat das Haus mehr Macht.',

@@ -494,11 +494,19 @@
     nomen: 'Fotografie', genus: 'f', adj: ['alt'],
     woerter: ['fotografie', 'foto', 'bild', 'rollstuhl', 'pflegerin', 'kraehe', 'rueckseite', 'elisabeth'],
     ort: 'karton_grest', rel: 'in',
-    beschreibung: 'Eine alte Fotografie, um 1912: Elisabeth Grest im Rollstuhl im Garten. Hinter ihr eine alte Frau in schwarzem Tuch, deren Gesicht verwischt ist, als hätte sie sich während der Belichtung bewegt. Auf ihrer Schulter sitzt eine Krähe. Auf der Rückseite steht etwas in Sütterlin.',
-    lesbar: '<i>(Rückseite, Sütterlin)</i><br>„E. mit Pflegerin. Der Herr segne ihre Hände.“',
+    beschreibung: 'Eine alte Fotografie, um 1912, verblichen, die Ecken abgestoßen, quer ein Knick: Elisabeth Grest im Rollstuhl im Garten vor der Villa. Hinter ihr eine alte Frau in schwarzem Tuch, deren Gesicht verwischt ist, als hätte sie sich während der Belichtung bewegt. Auf ihrer Schulter sitzt eine Krähe. Auf der Rückseite steht etwas geschrieben. <span class="nebenbei">(„dreh foto um“)</span>',
+    rueckseite: {
+      beschreibung: 'Du drehst die Fotografie um. Vergilbter Karton, der verblasste Stempel eines Fotoateliers. Darunter eine einzige Zeile in Tinte, in alter deutscher Handschrift:',
+      vorne: 'Du drehst die Fotografie wieder um. Elisabeth im Rollstuhl, hinter ihr die alte Frau mit dem verwischten Gesicht. Die Krähe auf ihrer Schulter ist ganz scharf.',
+      schrift: true   // der lesbar-Text steht auf der Rückseite
+    },
+    lesbar: '„E. mit Pflegerin. Der Herr segne ihre Hände.“',
     hinweis: 'pflegerin_kraehe', hinweisBei: 'untersuchen',
     foto: 'Auf deinem Handyfoto ist die Frau hinter dem Rollstuhl nicht verwischt. Sie sieht dich an. Die Krähe auch.',
-    bei: { lesen: function (api) { api.hinweis('pflegerin_kraehe'); return false; } }
+    bei: {
+      lesen: function (api) { api.hinweis('pflegerin_kraehe'); return false; },
+      umdrehen: function (api) { api.hinweis('pflegerin_kraehe'); return false; }
+    }
   });
 
   // ===================================================================
@@ -585,11 +593,15 @@
         { titel: '19. Juni 2026', hinweis: 'tb_brand_plan',
           text: 'Ich verstehe es nicht, und ich werde es nicht verstehen. Also muss es brennen. Drei Kanister, sechzig Liter. Das reicht für die Halle und die Treppe. Und das Zimmer.' },
         { titel: '14. August 2026', hinweis: ['tb_brand', 'fremde_nummern'],
-          text: 'Ich habe es versucht. Die Kanister standen in der Halle, das Benzin war verteilt. Dann klingelte mein Handy: Peter Gerdes, weinend, er sei in der Nähe, ob er vorbeikommen dürfe. Er wolle nur noch einmal Bettinas Zimmer sehen. Ich habe gewartet, vier Stunden lang. Peter Gerdes lebt seit Januar in Portugal. Als ich die Streichhölzer nehmen wollte, waren sie nass. Alle. In einer verschlossenen Packung.<br>Ich habe die Kanister wieder ins Lager gebracht. Sie wollte nicht, dass das Haus brennt. Und ich habe gemerkt: Ich wollte es auch nicht mehr.' },
-        { titel: '28. September 2026', hinweis: 'drei_regeln',
-          text: 'Testament gemacht. Das Haus geht an das einzige Familienmitglied, das nie etwas mit ihm zu tun hatte. Wir haben uns einmal gesehen, auf Tante Gerdas Siebzigstem; du warst vielleicht acht. Du erinnerst dich nicht an mich. Vielleicht ist das gut so. Vielleicht sieht es dich nicht kommen.<br><br>Drei Regeln, falls du das hier liest:<br><b>Geh nicht nachts hinein.<br>Sieh nicht zu lange in die Spiegel.<br>Glaub keiner Nachricht und keinem Anruf, die du nicht selbst überprüft hast. Auch nicht von mir.</b>' },
+          text: 'Ich habe es versucht. Die Kanister standen in der Halle, das Benzin war verteilt. Dann klingelte mein Handy: Peter Gerdes, weinend, er sei in der Nähe, ob er vorbeikommen dürfe. Er wolle nur noch einmal Bettinas Zimmer sehen. Ich habe gewartet, vier Stunden lang. Peter Gerdes lebt seit Januar in Portugal. Als ich die Streichhölzer nehmen wollte, waren sie nass. Alle. In einer verschlossenen Packung.<br>Ich habe den ganzen Abend den Boden geschrubbt, bis man nichts mehr gerochen hat. Dabei habe ich gesummt. Ich weiß nicht, woher ich das Lied kenne.<br>Die Kanister bringe ich morgen ins Lager. Ich will nicht, dass sie im Haus stehen. Es soll nicht denken, dass ich ihm etwas Böses will.' },
+        { titel: '2. September 2026', hinweis: 'tb_verliebt',
+          text: 'Seit ich die Kanister weggebracht habe, ist es still. Keine Schritte mehr. Kein Lavendel um drei Uhr. Stattdessen steht morgens Kaffee auf dem Tisch. Ich trinke keinen Kaffee, aber ich habe ihn getrunken. Er schmeckte wie früher bei Mutter.<br>Ich glaube, ich habe sie die ganze Zeit falsch verstanden. Sie war nie böse. Sie war nur allein. Hundert Jahre allein in diesem Zimmer.' },
+        { titel: '19. September 2026', hinweis: 'tb_verliebt',
+          text: 'Ich habe die Laken von den Spiegeln genommen. Alle. Die Romanow hatte keine Ahnung. Man darf sie nicht verhängen, man muss sie ansehen, dann zeigt sie sich. Heute Nacht hat sie hinter mir gestanden, ganz nah, und mir die Hand auf die Schulter gelegt. Sie war warm.<br>Ich gehe kaum noch raus. Wozu auch.' },
+        { titel: '28. September 2026', hinweis: 'tb_testament',
+          text: 'Testament gemacht. Sie hat mich darum gebeten. Sie sagt, ein Haus braucht Familie, und wenn ich einmal „hinübergehe“, soll jemand nachkommen, der zu mir gehört.<br>Es gibt nur noch {g:einen|eine|eine(n)}. Wir haben uns einmal gesehen, auf Tante Gerdas Siebzigstem; du warst vielleicht acht. Du erinnerst dich bestimmt nicht an mich. Sie sagt, das macht nichts. Sie wird dich kennenlernen.<br>Das Lager behalte ich trotzdem. Nur für den Fall. Ich weiß nicht mehr, für welchen Fall.' },
         { titel: '7. Oktober 2026', hinweis: 'von_drueben',
-          text: '<i>(Die Schrift ist kaum lesbar, als wäre sie mit links geschrieben.)</i><br>Sie hat mir ein Geschenk gemacht. Es lag heute Morgen auf dem Waschbecken. Ein Rasiermesser mit Perlmuttgriff, auf der Klinge eingraviert: 1906. Es ist so schön. Ich habe es nicht gekauft. Niemand hat es gekauft. Es ist von DRÜBEN.<br>Sie sagt, es tut nicht weh.' },
+          text: '<i>(Die Schrift ist kaum lesbar, als wäre sie mit links geschrieben.)</i><br>Sie mag mich jetzt. Sie will, dass ich bei ihr bleibe. Nicht nur in diesem Haus – bei IHR. Drüben.<br>Heute Morgen lag ein Geschenk auf dem Waschbecken. Ein Rasiermesser mit Perlmuttgriff, auf der Klinge eingraviert: 1906. Es ist so schön. Niemand hat es gekauft. Es ist von DRÜBEN, sie hat es mir herübergereicht.<br>Sie sagt, es tut nicht weh. Sie sagt, sie wartet im Zimmer auf mich.<br>Ich habe keine Angst mehr.' },
         { titel: 'Letzte Seite', schrift: 'druck', hinweis: 'tagebuch_willkommen',
           // erscheint erst, wenn die Spielfigur das Haus mindestens einmal betreten hat
           bedingung: function () { return !!HG.zustand.z.besucht.halle; },
@@ -597,6 +609,13 @@
           beimLesen: function (api) { api.nervenProbe('1/1W6', { grund: 'Willkommen zu Hause' }); } }
       ]
     }
+  });
+
+  // Alte Spielstände (bis Version 4): Am 22.11.2026 kamen die Einträge 2.9. und 19.9.2026 hinzu.
+  // Die Seiten ab "28. September" (alt 10, 11, 12) rücken deshalb um zwei nach hinten.
+  HG.zustand.migration(4, function (z) {
+    var st = z.buecher && z.buecher.tagebuch;
+    if (st && st.gelesen) st.gelesen = st.gelesen.map(function (i) { return i >= 10 ? i + 2 : i; });
   });
 
 })();
