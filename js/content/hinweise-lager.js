@@ -9,7 +9,7 @@ HG.hinweis('tote_anrufer', {
 });
 HG.hinweis('dreizehn_kreuze', {
   titel: 'Dreizehn Kreuze', strang: 'D',
-  text: 'Grundbuchauszug Ulmenweg 12: Carsten hat neben jedem Eigentümer, bei dem jemand im Haus starb, ein Kreuz gemacht. 13 Kreuze. Nur bei dreien steht ein Name: Gerdes, Romanow, Grest.',
+  text: 'Grundbuchauszug Ulmenweg 12: Carsten hat neben den Eigentümern, bei denen jemand im Haus starb, Kreuze gemacht. 13 Kreuze, nur bei dreien steht ein Name: Grest, Gerdes, Romanow. Für 1930–1963 nur Namen und Fragezeichen – die Akten der Stadt sind 1965 beim Rathausbrand verbrannt. Das dreizehnte Kreuz steht neben Carstens eigenem Namen – sauber mit Tinte gezogen, ganz anders als seine Kugelschreiberkreuze.',
   stichworte: ['kreuze', 'grundbuch', 'dreizehn'],
   schaltetFrei: ['stadtarchiv']
 });
@@ -57,7 +57,7 @@ HG.hinweis('pflegerin_kraehe', {
   schaltetFrei: ['friedhof']
 });
 HG.hinweis('taschenspiegel', {
-  titel: 'Der eingewickelte Taschenspiegel', strang: 'Spiegelwelt',
+  titel: 'Der eingewickelte Taschenspiegel', strang: 'E',
   text: 'Carsten hatte einen Taschenspiegel in ein Handtuch gewickelt und mit Klebeband umwickelt. Darin sah ich für einen Augenblick ein fremdes Gesicht. Auf seinem Einkaufszettel: „Spiegel abhängen!!!“',
   stichworte: ['taschenspiegel']
 });
@@ -88,7 +88,7 @@ HG.hinweis('tb_verliebt', { titel: 'Carsten verliebt sich', strang: 'E',
   text: 'Tagebuch, September 2026: Seit die Kanister fort sind, ist es still im Haus, morgens steht Kaffee auf dem Tisch, der wie bei seiner Mutter schmeckt. Carsten glaubt, „sie“ sei nie böse gewesen, nur allein. Er nimmt die Laken von den Spiegeln, „dann zeigt sie sich“. Nachts legt sie ihm die Hand auf die Schulter. Das Haus belohnt Gehorsam.', stichworte: ['verliebt', 'kaffee', 'gehorsam'] });
 HG.hinweis('tb_testament', { titel: 'Das Testament war ihr Wunsch', strang: 'E',
   text: 'Tagebuch, 28.9.2026: Carsten machte sein Testament, weil „sie“ ihn darum bat. Ein Haus brauche Familie; wenn er „hinübergeht“, soll jemand nachkommen, der zu ihm gehört. Ich habe das Haus geerbt, weil SIE es wollte. „Sie wird dich kennenlernen.“', stichworte: ['wunsch', 'familie'] });
-HG.hinweis('von_drueben', { titel: 'Das Rasiermesser kommt „von drüben“', strang: 'E/Spiegelwelt',
+HG.hinweis('von_drueben', { titel: 'Das Rasiermesser kommt „von drüben“', strang: 'E',
   text: 'Tagebuch, 7.10.2026, mit links geschrieben: „Sie“ will, dass Carsten bei ihr bleibt – drüben. Sie hat ihm ein Rasiermesser mit Perlmuttgriff herübergereicht, Gravur 1906. Niemand hat es gekauft. „Sie sagt, es tut nicht weh. Sie sagt, sie wartet im Zimmer auf mich.“', stichworte: ['drueben', 'geschenk', 'perlmutt'] });
 HG.hinweis('tagebuch_willkommen', { titel: 'Die letzte Seite', strang: 'E',
   text: 'Auf der letzten Seite von Carstens Tagebuch steht in fremder, altmodischer Handschrift: „Willkommen zu Hause.“ Dieselben Worte wie in der SMS beim ersten Betreten des Hauses.', stichworte: ['willkommen', 'letzte'] });

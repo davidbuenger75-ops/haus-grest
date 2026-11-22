@@ -78,7 +78,7 @@ HG.ding('testament', {
   beschreibung: 'Die Abschrift eines handschriftlichen Testaments. Die Schrift wird zum Ende hin unruhig.',
   lesbar: '<i>Mein letzter Wille. Dortmund, den 28. September 2026.</i><br><br>Alles, was ich besitze – das Haus Grest und was in meinem Lager liegt –, soll an den letzten Menschen gehen, der von meiner Familie übrig ist.<br><br>' +
     'Es tut mir leid. Ich hätte dich gern noch einmal gesehen.<br><br>' +
-    'Für das Lager: Wenn bei Schmidt das Büro zu ist, öffnet der Code <b>0308</b> das Tor. Der Tag, an dem alles anfing.<br><br><b>Verkaufe es nicht. Es lässt dich nicht gehen.</b><br><br>Carsten Häuser',
+    'Für das Lager: Wenn bei Schmidt das Büro zu ist, öffnet der Code <b>0308</b> das Tor. Der Tag, an dem alles anfing.<br><br>Carsten Häuser',
   hinweis: 'testament', hinweisBei: 'lesen'
 });
 

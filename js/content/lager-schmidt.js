@@ -338,12 +338,27 @@
     nomen: 'Grundbuchauszug', genus: 'm',
     woerter: ['grundbuchauszug', 'grundbuch', 'auszug', 'kreuze', 'liste', 'eigentuemer'],
     ort: 'karton_gerdes', rel: 'in', schriftart: 'druck',
-    beschreibung: 'Die Kopie eines Grundbuchauszugs für Ulmenweg 12: alle Eigentümer seit 1900, Zeile für Zeile. Neben vielen Namen hat Carsten mit Kugelschreiber ein Kreuz gemacht. Mittendrin klafft eine Lücke, die er mit dicken Fragezeichen markiert hat.',
-    lesbar: '<b>Grundbuch von Kirchhörde – Blatt 1173 – Ulmenweg 12</b><br>Eigentümer seit 1900, in Carstens Kopie mit Kreuzen versehen:<br><br>' +
-      'Grest, Bernward (1900) ✝ <i>– daneben: „Grest“</i><br>Grest, Elisabeth (1905) ✝<br>… weitere Namen bis 1930 …<br>' +
-      '<i>1931 bis 1964: „Eintragungen durch Brand vernichtet“</i> – daneben, mehrfach nachgezogen: <b>? ? ?</b><br>' +
-      '… weitere Namen ab 1965 – zusammen mit denen vor 1931 zwei Dutzend, elf davon mit Kreuz …<br>' +
-      'Gerdes, Peter und Brigitte (1998) ✝ <i>– „Gerdes“</i><br>Romanow, Natascha (2023) ✝ <i>– „Romanow“</i><br>Häuser, Carsten (2025)<br><br>' +
+    beschreibung: 'Die Kopie eines Grundbuchauszugs für Ulmenweg 12: alle Eigentümer seit 1899, Zeile für Zeile. Neben vielen Namen hat Carsten mit Kugelschreiber ein Kreuz gemacht. Bei einem Block in der Mitte stehen hinter den Kreuzen dicke Fragezeichen. Und das letzte Kreuz sieht anders aus als die anderen.',
+    // Die 13 Toten: Spielbibel 8.4. 1930–1963 nur Namen (Akten der Stadt 1965 verbrannt), ab 1964 recherchierbar.
+    lesbar: '<b>Amtsgericht Dortmund – Grundbuch von Kirchhörde – Blatt 1173 – Ulmenweg 12</b><br>Abteilung I – Eigentümer (in Carstens Kopie mit Kreuzen versehen):<br><br>' +
+      'Grest, Bernward, Architekt · 1899–1905<br>' +
+      'Grest, Elisabeth, Witwe · 1905–1930 · Erbfolge ✝ <i>– daneben: „Grest“</i><br>' +
+      'Ostermann, Heinrich, Textilkaufmann · 1930–1933 · Erbfolge ✝?<br>' +
+      'Ostermann, Margarete, Witwe · 1933–1938 · Erbfolge ✝?<br>' +
+      'Albers, Dr. Karl, Zahnarzt · 1938–1946 · Erbfolge ✝?<br>' +
+      'Teubner, Wilhelmine, Witwe · 1947–1955 · Erbfolge ✝?<br>' +
+      'Brzezinski, Josef, Steiger · 1955–1963 · Erbfolge ✝?<br>' +
+      '<i>– neben diesem Block, eingerahmt: „Akten der Stadt verbrannt (Rathaus 1965). Nur Namen. Wer waren die???“</i><br>' +
+      'Brzezinski, Hedwig, Witwe · 1963–1964 · Verkauf<br>' +
+      'Hallmann, Wolfgang und Irmgard, Eheleute · 1964–1974 · Erbfolge ✝ ✝<br>' +
+      'Erbengemeinschaft Hallmann · 1974–1975 · Verkauf<br>' +
+      'Brinkhoff, Hans-Joachim, Architekt · 1975–1986 · Erbfolge ✝<br>' +
+      'Brinkhoff, Ute · 1986–1987 · Verkauf<br>' +
+      'Vogt, Renate, Musiklehrerin · 1987–1997 · Erbfolge ✝<br>' +
+      'Erbengemeinschaft Vogt · 1997–1998 · Verkauf<br>' +
+      'Gerdes, Peter und Brigitte · 1998–2023 · Verkauf ✝ <i>– „Gerdes“</i><br>' +
+      'Romanow, Natascha · 2023–2025 · Erbfolge ✝ <i>– „Romanow“</i><br>' +
+      'Häuser, Carsten · seit 2025 ✝ <i>– dieses Kreuz ist nicht mit Kugelschreiber gezogen, sondern mit Tinte, sehr sauber und gerade</i><br><br>' +
       'Am Rand, doppelt unterstrichen: <b>13</b>. Nur bei dreien steht ein Name daneben.',
     hinweis: 'dreizehn_kreuze', hinweisBei: 'lesen',
     bei: { untersuchen: function (api) { api.hinweis('dreizehn_kreuze'); return false; } }
@@ -555,7 +570,7 @@
     nomen: 'Taschenspiegel', genus: 'm', adj: ['klein'],
     woerter: ['taschenspiegel', 'spiegel', 'spiegelchen'],
     ort: 'handtuchbuendel', rel: 'in',
-    beschreibung: 'Ein kleiner, runder Taschenspiegel mit angelaufenem Silberrand. Vielleicht ist er später nützlich – ein Blick dorthin, wohin man sonst nicht sieht.',
+    beschreibung: 'Ein kleiner, runder Taschenspiegel mit angelaufenem Silberrand.',
     foto: 'Im Taschenspiegel auf dem Foto: eine Zimmerdecke, die nicht diese ist. Stuck. Ein Kronleuchter.',
     bei: { hineinschauen: function (api) { api.sage('Dein Gesicht. Nur dein Gesicht. Ganz sicher.'); return true; } }
   });

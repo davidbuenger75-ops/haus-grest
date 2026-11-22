@@ -47,7 +47,7 @@ Die Geschichte, Figuren, Zeitleiste und Ermittlungsstränge stehen in **`docs/sp
 - Web-App: `manifest.webmanifest`, `sw.js` (offline, liest die Dateiliste aus index.html; nach Änderungen `VERSION` hochzählen), Icons in `assets/icons/`. Beides nur aktiv über http(s); per Doppelklick (file://) bleibt alles wie bisher.
 - Platzhalter in allen Texten: `{name} {vorname} {nachname} {anrede} {briefanrede}` und `{g:männlich|weiblich|ohne Angabe}`; im Code `HG.g(m, w, d)` bzw. `api.g(...)`.
 - Raum-Haken: `vorBetreten` (vor der Beschreibung), `beimBetreten`, `jedeRunde` (nach dem Voranschreiten der Zeit); Dinge mit `imDunkeln: true` findet man auch im Dunkeln.
-- Inhalt: `allgemein.js` (Charaktererstellung, Startwerte, Texte), `prolog.js` (Wohnung, Notarbrief), `handy.js` (Handy, Kontakte, Nachrichten, Anrufe), `schauplaetze.js` (Bauamt, Polizei … als Platzhalter), `lager-schmidt.js` (vollständiger Schauplatz, Vorlage `docs/lager-schmidt.md`), `hinweise-lager.js`, `erdgeschoss.js` (Haus Grest), `spuk.js`, `hinweise.js`, `bilder.js` (SVG-Szenen), `medien.js` (welche Dinge Fundstücke mit Bild sind, Geräusche an Dingen, Bildvarianten).
+- Inhalt: `allgemein.js` (Charaktererstellung, Startwerte, Texte), `prolog.js` (Wohnung, Notarbrief), `handy.js` (Handy, Kontakte, Nachrichten, Anrufe), `schauplaetze.js` (Bauamt mit Frau Pohl und Bauakte; Polizei, Friedhof … noch Platzhalter), `lager-schmidt.js` (vollständiger Schauplatz, Vorlage `docs/lager-schmidt.md`), `hinweise-lager.js`, `erdgeschoss.js` (Haus Grest), `spuk.js`, `hinweise.js`, `bilder.js` (SVG-Szenen), `medien.js` (welche Dinge Fundstücke mit Bild sind, Geräusche an Dingen, Bildvarianten).
 
 ## Parser – Ziele
 

@@ -17,7 +17,69 @@
   });
   HG.raum('bauamt', {
     name: 'Bauamt', schauplatz: 'bauamt', abfahrt: true, karte: { x: 0, y: 0 },
-    beschreibung: platzhalter('Ein Flur mit Linoleumboden und nummerierten Türen. Hinter einem Tresen sortiert eine Sachbearbeiterin Akten. Irgendwo hier müsste es die Bauakte von Haus Grest geben.')
+    beschreibung: 'Ein Flur mit Linoleumboden und nummerierten Türen, es riecht nach Bohnerwachs und Kopierpapier. Hinter einem Tresen sortiert eine Sachbearbeiterin Akten. Irgendwo hier müsste es die Bauakte von Haus Grest geben.',
+    vorschlaege: ['sprich mit sachbearbeiterin', 'frage sachbearbeiterin nach bauakte', 'frage sachbearbeiterin nach brand']
+  });
+
+  // Stadtverwaltung (David, 22.11.2026): Hier erfährt man vom Brand 1974 und vom Architekten,
+  // der das Haus danach wiederhergestellt hat. Alles vor 1965 ist beim Rathausbrand verbrannt.
+  // Namen der Sachbearbeiterin und Wortlaut [Vorschlag]; Hintergründe: Spielbibel 8.4.
+  function bauakteHolen(api) {
+    if (api.flag('bauakte_geholt')) return '„Die Akte liegt doch vor Ihnen“, sagt Frau Pohl und tippt auf den grauen Ordner. „Lesen dürfen Sie, mitnehmen nicht.“';
+    api.setzeFlag('bauakte_geholt');
+    api.bewege('bauakte', 'tresen', 'auf');
+    return 'Frau Pohl tippt etwas in ihren Rechner, verschwindet hinter einem Regal und kommt mit einem grauen, erstaunlich dünnen Ordner zurück. „Ulmenweg zwölf. Viel ist da nicht drin.“ Sie legt ihn auf den Tresen. „Lesen dürfen Sie, mitnehmen nicht. Kopien kosten fünfzig Cent die Seite.“';
+  }
+  HG.ding('tresen', {
+    nomen: 'Tresen', genus: 'm', woerter: ['tresen', 'theke', 'schalter'],
+    ort: 'bauamt', fest: true, szenerie: true, ablage: true,
+    beschreibung: 'Ein Tresen aus hellem Holzimitat, abgegriffen, mit einer Klingel und einem Ständer voller Formulare.'
+  });
+  HG.ding('sachbearbeiterin', {
+    nomen: 'Frau Pohl', genus: 'f', eigenname: true,
+    woerter: ['sachbearbeiterin', 'pohl', 'frau', 'beamtin', 'angestellte'],
+    ort: 'bauamt', person: true, szenerie: true,
+    beschreibung: 'Eine Frau um die sechzig mit Lesebrille im Haar und einem Namensschild: „M. Pohl“. Sie sortiert Akten mit der Ruhe von jemandem, der schon alles gesehen hat.',
+    gespraech: function () {
+      return '„Guten Tag. Pohl, Bauordnung.“ Sie schiebt die Brille auf die Nase. „Worum geht’s? Bauakte, Bauantrag, Beschwerde über den Nachbarn?“ <span class="nebenbei">(„frage pohl nach …“)</span>';
+    },
+    themen: {
+      'bauakte,akte,ulmenweg,haus,grest,villa,unterlagen': bauakteHolen,
+      'rathausbrand,rathaus,1965,verbrannt,vernichtet,alt,aelter,frueher,vor': function () {
+        return '„Alles vor 1965? Weg.“ Sie zuckt mit den Schultern. „Februar 65 hat das alte Rathaus gebrannt, der ganze Keller mit den Bauakten, Meldekarten, Sterbebüchern. Was davor war, kennt keiner mehr. Nur das Grundbuch nicht – das liegt beim Amtsgericht, das hat’s überstanden.“';
+      },
+      'grundbuch,eigentuemer,amtsgericht': function () {
+        return '„Grundbuch macht das Amtsgericht, nicht wir. Da stehen aber nur Namen drin, wer wann Eigentümer war. Warum, wieso, woran gestorben – das steht da nicht.“';
+      },
+      'brand,feuer,1974,hallmann,feuerwehr': function (api) {
+        if (!api.flag('bauakte_geholt')) return '„Brand? Am Ulmenweg?“ Sie runzelt die Stirn. „Da müsste ich in die Akte gucken.“ ' + bauakteHolen(api);
+        return '„Steht alles da drin. Der Feuerwehrbericht ist als Abschrift beigeheftet.“ Sie zögert. „Komische Sache übrigens, mit dem Anruf. Das hat mir mein Vorgänger schon erzählt. Der Notruf kam aus dem Haus selbst, und der Mann war da schon oben.“';
+      },
+      'brinkhoff,architekt,reparatur,wiederaufbau,umbau': function (api) {
+        if (!api.flag('bauakte_geholt')) return bauakteHolen(api);
+        return '„Brinkhoff. Hat die Ruine damals gekauft und alles wieder hergerichtet, sehr ordentlich, nach den alten Zeichnungen. Der hatte einen Narren an dem Haus gefressen.“';
+      }
+    },
+    themaSonst: '„Da kann ich Ihnen nicht helfen“, sagt Frau Pohl. „Ich bin Bauordnung.“'
+  });
+  HG.ding('bauakte', {
+    nomen: 'Bauakte', genus: 'f', adj: ['grau'],
+    woerter: ['bauakte', 'akte', 'ordner', 'brandbericht', 'bericht', 'bauantrag'],
+    ort: null,   // legt Frau Pohl erst auf den Tresen, wenn man nach der Akte fragt
+    fest: true, schriftart: 'druck', dauer: { lesen: 15 },
+    beschreibung: 'Ein grauer Ordner, beschriftet „Ulmenweg 12 – Gemarkung Kirchhörde“. Erstaunlich dünn für ein Haus von 1900. Darin ein Vorblatt, eine Abschrift des Feuerwehrberichts von 1974 und ein Bauantrag von 1975.',
+    foto: 'Auf dem Foto vom Brandbericht ist am Rand ein rußiger Fingerabdruck. Auf dem Papier ist keiner.',
+    lesbar: '<b>Stadt Dortmund – Bauordnungsamt – Bauakte Ulmenweg 12</b><br><i>Vorblatt: Akte neu angelegt am 1.3.1965. Ältere Vorgänge beim Brand im Rathaus (Februar 1965) vernichtet.</i><br><br>' +
+      '<b>4.11.1974 – Abschrift: Feuerwehr Dortmund, Einsatzbericht</b><br>Alarmierung 02:58 Uhr über Notruf. Anruferin weiblich, nannte keinen Namen; Anschluss laut Fernmeldeamt: Ulmenweg 12 (Brandobjekt). Zeitgleich Anrufe gleichen Inhalts bei drei Nachbarn („Es brennt bei Hallmanns“). Eintreffen 03:07 Uhr.<br>' +
+      'Brand in Eingangshalle und Treppenhaus, Brandbeschleuniger (Benzin). Eigentümer Wolfgang Hallmann (46), Studienrat, im Obergeschoss tot aufgefunden, vor einer tapezierten Tür, die von innen verriegelt war. Todesursache: Rauchgasvergiftung. Brandstiftung durch den Eigentümer anzunehmen.<br>' +
+      'Raum hinter der genannten Tür (Ankleidezimmer) ohne jeden Brandschaden, auch kein Rußniederschlag.<br><br>' +
+      '<b>12.5.1975 – Bauantrag: Wiederherstellung nach Brandschaden</b><br>Bauherr und Entwurfsverfasser: Hans-Joachim Brinkhoff, Architekt (Eigentümer seit April 1975). Neue Treppe in Eiche nach den Originalzeichnungen, Erneuerung der Hallenvertäfelung, neue Elektroinstallation, Zentralheizung. Vermerk: „Ankleidezimmer OG: keine Maßnahmen erforderlich. Originalausstattung erhalten.“<br><br>' +
+      '<b>2.9.1976 – Schlussabnahme</b> ohne Beanstandungen.',
+    hinweis: 'architekt_brinkhoff', hinweisBei: 'lesen',
+    bei: {
+      lesen: function (api) { api.hinweis('hallmann_brand'); return false; },
+      nehmen: function (api) { api.sage('„Die bleibt hier“, sagt Frau Pohl, ohne aufzusehen. „Kopien kosten fünfzig Cent.“'); return true; }
+    }
   });
 
   HG.ziel('polizei', {

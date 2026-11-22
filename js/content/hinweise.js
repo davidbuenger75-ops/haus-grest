@@ -16,7 +16,7 @@ HG.hinweis('notarbrief', {
 
 HG.hinweis('testament', {
   titel: 'Carstens Testament', strang: 'E',
-  text: 'Carsten vermacht alles „dem letzten Menschen, der von meiner Familie übrig ist“. Und: „Verkaufe es nicht. Es lässt dich nicht gehen.“ Der Code fürs Tor bei Lager Schmidt: 0308.',
+  text: 'Carsten vermacht alles „dem letzten Menschen, der von meiner Familie übrig ist“. Der Code fürs Tor bei Lager Schmidt: 0308.',
   stichworte: ['testament', 'carsten']
 });
 
@@ -74,4 +74,23 @@ HG.schluss('haus_fuer_elisabeth', {
   aus: ['bauplan_signatur', 'brief_bernward'],
   titel: 'Ein Haus für E.',
   text: 'Bernward hat das Haus eigens für Elisabeth entworfen – „Für E.“. Doch kaum waren sie eingezogen, wurde sie krank. Hat ihre Krankheit etwas mit dem Haus selbst zu tun?'
+});
+
+// --- Stadtverwaltung / Bauamt (David, 22.11.2026; Wortlaut [Vorschlag], Hintergründe: Spielbibel 8.4) ---
+HG.hinweis('hallmann_brand', {
+  titel: 'Der Brand von 1974', strang: 'D',
+  text: 'Bauakte, Feuerwehrbericht vom 4.11.1974: Eigentümer Wolfgang Hallmann (46), Studienrat, legte mit Benzin Feuer in Halle und Treppenhaus. Um 02:58 Uhr rief eine Frau ohne Namen die Feuerwehr – vom Anschluss des brennenden Hauses. Zugleich klingelte bei drei Nachbarn das Telefon. Hallmann starb oben vor einer tapezierten Tür, die von innen verriegelt war. Das Zimmer dahinter: nicht einmal Ruß.',
+  stichworte: ['hallmann', '1974', 'feuerwehr', 'bauakte']
+});
+HG.hinweis('architekt_brinkhoff', {
+  titel: 'Der Architekt Brinkhoff', strang: 'A',
+  text: 'Bauakte: 1975 kaufte der Architekt Hans-Joachim Brinkhoff die Brandruine und stellte das Haus nach den Originalzeichnungen wieder her – neue Treppe, neue Vertäfelung, Heizung, Strom. Nur im „Ankleidezimmer“ war nichts zu tun. Frau Pohl: „Der hatte einen Narren an dem Haus gefressen.“',
+  stichworte: ['brinkhoff', 'architekt', 'wiederaufbau']
+});
+
+// [Vorschlag] Beide Brandversuche zusammen
+HG.schluss('das_haus_brennt_nicht', {
+  aus: ['hallmann_brand', 'tb_brand'],
+  titel: 'Das Haus lässt sich nicht verbrennen',
+  text: '1974 Wolfgang Hallmann, 2026 Carsten: Zweimal wollte jemand das Haus anzünden, beide Male kamen Anrufe mit Stimmen, die es nicht geben dürfte. 1974 hat das Haus sogar selbst die Feuerwehr gerufen. Wer es anzünden will, darf es niemanden rufen lassen.'
 });

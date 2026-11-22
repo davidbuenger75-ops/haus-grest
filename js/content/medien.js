@@ -11,7 +11,8 @@
     'grundbuchauszug', 'zeitung_2022', 'trauerkarte', 'foto_gerdes', 'zettel_unna',   // Karton GERDES
     'artikel_2025', 'visitenkarte', 'expose', 'freigabe',                              // Karton ROMANOW
     'archivkopien', 'zeitung_1930', 'foto_1912',                                       // Karton GREST
-    'einkaufszettel', 'taschenspiegel', 'pistole'                                      // Küche, Schuhkarton
+    'einkaufszettel', 'taschenspiegel', 'pistole',                                     // Küche, Schuhkarton
+    'bauakte'                                                                          // Stadtverwaltung
   ].forEach(function (id) { if (HG.daten.dinge[id]) HG.daten.dinge[id].fundstueck = true; });
   // Tagebuchseiten: assets/bilder/ding-tagebuch-<seite>.webp erscheint in der Lese-Ansicht
 
