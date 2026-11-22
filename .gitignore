@@ -1,0 +1,10 @@
+# Autor-Werkzeuge
+node_modules/
+.env
+
+# Story-Spoiler – bleibt nur lokal
+docs/
+
+# Bild-Entwürfe
+assets/bilder/_kandidaten/
+assets/bilder/_stiltest/

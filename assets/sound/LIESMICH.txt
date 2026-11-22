@@ -1,0 +1,2 @@
+Hier kommen Sounddateien hin (.ogg oder .mp3).
+Dateinamen und Vorschläge: docs/medien-liste.md

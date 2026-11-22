@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2a1d12">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Haus Grest">
+<title>Haus Grest</title>
+<link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+<link rel="stylesheet" href="css/style.css">
+<script>
+  // Web-App-Manifest nur über http(s) einbinden – per Doppelklick (file://) würde der Browser es ablehnen.
+  if (/^https?:$/.test(location.protocol)) {
+    var m = document.createElement('link'); m.rel = 'manifest'; m.href = 'manifest.webmanifest';
+    document.head.appendChild(m);
+  }
+</script>
+</head>
+<body>
+  <div class="spiel">
+    <main class="buehne">
+      <figure id="bild" class="leer" aria-hidden="true" title="Bild vergrößern"></figure>
+      <div id="log" role="log" aria-live="polite" aria-label="Spieltext"></div>
+      <div id="ergaenzung" aria-label="Ergänzungen" hidden></div>
+      <form id="eingabe" autocomplete="off">
+        <label for="befehl" class="unsichtbar">Was tust du?</label>
+        <span class="zeiger" aria-hidden="true">☞</span>
+        <input id="befehl" placeholder="Was tust du?" spellcheck="false" autocapitalize="off" autocorrect="off" enterkeyhint="send">
+        <button type="submit" title="Befehl ausführen" aria-label="Befehl ausführen">↵</button>
+      </form>
+      <div id="vorschlaege" aria-label="Vorschläge"></div>
+      <div id="leiste" aria-label="Befehlsleiste"></div>
+    </main>
+
+    <aside class="seite" id="seite">
+      <div class="blatt-kopf"><span id="blatt-titel"></span><button type="button" class="blatt-zu" aria-label="Schließen">✕</button></div>
+      <h1>Haus Grest</h1>
+      <p id="tageszeit" class="tageszeit"></p>
+      <section class="werte" aria-label="Werte">
+        <div class="wert" id="wert-geschick"><span class="name">GESCHICK</span><span class="zahl">–</span><span class="max"></span><span class="balken"><i></i></span></div>
+        <div class="wert" id="wert-ausdauer"><span class="name">AUSDAUER</span><span class="zahl">–</span><span class="max"></span><span class="balken"><i></i></span></div>
+        <div class="wert" id="wert-nerven"><span class="name">NERVEN</span><span class="zahl">–</span><span class="max"></span><span class="balken"><i></i></span></div>
+      </section>
+
+      <div class="tabs" role="tablist">
+        <button type="button" role="tab" class="aktiv" aria-selected="true" data-tab="inventar">Inventar</button>
+        <button type="button" role="tab" aria-selected="false" data-tab="notizbuch">Notizbuch <span class="anzahl"></span></button>
+        <button type="button" role="tab" aria-selected="false" data-tab="handy">Handy <span class="anzahl"></span></button>
+      </div>
+      <div id="inventar" class="tab-inhalt" role="tabpanel"></div>
+      <div id="notizbuch" class="tab-inhalt" role="tabpanel" hidden></div>
+      <div id="handy" class="tab-inhalt" role="tabpanel" hidden></div>
+
+      <div class="knoepfe">
+        <button type="button" data-befehl-knopf="karte">Karte</button>
+        <button type="button" data-befehl-knopf="rückgängig">Rückgängig</button>
+        <button type="button" data-befehl-knopf="speichern">Speichern</button>
+        <button type="button" data-befehl-knopf="laden">Laden</button>
+        <button type="button" data-befehl-knopf="hilfe">Hilfe</button>
+        <button type="button" data-befehl-knopf="neustart ja">Neues Spiel</button>
+      </div>
+      <div class="ton" aria-label="Ton">
+        <button type="button" id="ton-stumm" aria-pressed="false">🔊</button>
+        <label for="ton-regler">Lautstärke</label>
+        <input type="range" id="ton-regler" min="0" max="100" step="5">
+      </div>
+    </aside>
+  </div>
+
+  <!-- Nur auf schmalen Bildschirmen: Reiter unten, Seitenleiste als ausklappbares Blatt -->
+  <div class="schleier" id="schleier" hidden></div>
+  <nav class="reiter" aria-label="Bereiche">
+    <button type="button" data-blatt="werte"><span class="sym" aria-hidden="true">♥</span>Werte <span class="anzahl" id="reiter-nerven"></span></button>
+    <button type="button" data-blatt="inventar" data-tab="inventar"><span class="sym" aria-hidden="true">✋</span>Inventar</button>
+    <button type="button" data-blatt="notizbuch" data-tab="notizbuch"><span class="sym" aria-hidden="true">✎</span>Notizen <span class="anzahl"></span></button>
+    <button type="button" data-blatt="handy" data-tab="handy"><span class="sym" aria-hidden="true">☏</span>Handy <span class="anzahl"></span></button>
+  </nav>
+
+  <!-- Menü zu einem angetippten Wort bzw. Objektauswahl der Verb-Leiste -->
+  <div id="wortmenue" class="wortmenue" role="dialog" aria-label="Aktionen" hidden></div>
+
+  <dialog id="buch" aria-label="Buch">
+    <div class="buch-seite">
+      <div class="buch-kopf"><span id="buch-titel"></span><span id="buch-zaehler"></span></div>
+      <h3 id="buch-seitentitel"></h3>
+      <div id="buch-bild" class="buch-bild" hidden></div>
+      <div id="buch-text" class="buch-text"></div>
+    </div>
+    <div class="buch-steuerung">
+      <button type="button" id="buch-zurueck">‹ zurück</button>
+      <select id="buch-lesezeichen" aria-label="Lesezeichen"></select>
+      <button type="button" id="buch-weiter">weiter ›</button>
+      <button type="button" id="buch-zu">Schließen</button>
+    </div>
+  </dialog>
+
+  <dialog id="grossbild" aria-label="Bild">
+    <div id="grossbild-bild"></div>
+    <p id="grossbild-titel"></p>
+    <p class="nebenbei">(Klicken zum Schließen)</p>
+  </dialog>
+
+  <dialog id="karte" aria-label="Karte">
+    <div id="karte-bild"></div>
+    <button type="button" id="karte-zu">Schließen</button>
+  </dialog>
+
+  <!-- Reihenfolge wichtig: erst Engine, dann Inhalt, dann Start -->
+  <script src="js/engine/grundlagen.js"></script>
+  <script src="js/engine/zustand.js"></script>
+  <script src="js/engine/welt.js"></script>
+  <script src="js/engine/parser.js"></script>
+  <script src="js/engine/aktionen.js"></script>
+  <script src="js/engine/zeit.js"></script>
+  <script src="js/engine/reisen.js"></script>
+  <script src="js/engine/handy.js"></script>
+  <script src="js/engine/spuk.js"></script>
+  <script src="js/engine/macht.js"></script>
+  <script src="js/engine/proben.js"></script>
+  <script src="js/engine/buch.js"></script>
+  <script src="js/engine/medien.js"></script>
+  <script src="js/engine/spiel.js"></script>
+  <script src="js/engine/anzeige.js"></script>
+
+  <script src="js/content/allgemein.js"></script>
+  <script src="js/content/handy.js"></script>
+  <script src="js/content/prolog.js"></script>
+  <script src="js/content/schauplaetze.js"></script>
+  <script src="js/content/lager-schmidt.js"></script>
+  <script src="js/content/erdgeschoss.js"></script>
+  <script src="js/content/spuk.js"></script>
+  <script src="js/content/hinweise.js"></script>
+  <script src="js/content/hinweise-lager.js"></script>
+  <script src="js/content/bilder.js"></script>
+  <script src="js/content/macht.js"></script>
+  <script src="js/content/medien.js"></script>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

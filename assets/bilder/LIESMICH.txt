@@ -1,0 +1,2 @@
+Hier kommen Bilddateien hin (.webp, .jpg oder .png).
+Dateinamen und Prompt-Vorschläge: docs/medien-liste.md

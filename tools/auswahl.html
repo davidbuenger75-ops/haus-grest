@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Haus Grest – Bildauswahl</title>
+<style>
+  body { margin: 0; padding: 1.5rem 2rem; background: #1b1712; color: #e8dcc4; font: 16px/1.5 Georgia, serif; }
+  h1 { font-weight: normal; margin: 0 0 .3rem; }
+  .hinweis { color: #b5a586; margin: 0 0 1.5rem; }
+  .eintrag { border-top: 1px solid #4a3f30; padding: 1.2rem 0 1.5rem; }
+  .eintrag h2 { margin: 0; font-size: 1.25rem; font-weight: normal; }
+  .eintrag h2 code { color: #c9a96e; font-size: .9em; }
+  .status { font-size: .9rem; color: #8fbf8f; margin-left: .6rem; }
+  details { color: #b5a586; font-size: .85rem; margin: .3rem 0 .8rem; }
+  .reihe { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem; }
+  figure { margin: 0; background: #262019; border: 3px solid transparent; border-radius: 4px; padding: .5rem; }
+  figure.gewaehlt { border-color: #c9a96e; }
+  figure.vorlage { border-style: dashed; border-color: #4a3f30; }
+  figure img { width: 100%; display: block; cursor: zoom-in; }
+  figcaption { display: flex; justify-content: space-between; align-items: center; margin-top: .5rem; gap: .5rem; }
+  button { font: inherit; background: #c9a96e; color: #1b1712; border: 0; border-radius: 3px; padding: .35rem .9rem; cursor: pointer; }
+  button:hover, button:focus-visible { background: #e3c48a; outline: 2px solid #fff3; }
+  .befehl { margin-top: .6rem; font: 14px/1.4 Consolas, monospace; background: #0e0c09; padding: .5rem .7rem; border-radius: 3px; user-select: all; }
+  .leer { color: #b5a586; font-style: italic; }
+  #gross { position: fixed; inset: 0; background: #000d; display: none; align-items: center; justify-content: center; cursor: zoom-out; }
+  #gross img { max-width: 96vw; max-height: 96vh; }
+</style>
+</head>
+<body>
+<h1>Bildauswahl</h1>
+<p class="hinweis" id="modus"></p>
+<div id="liste"></div>
+<div id="gross" onclick="this.style.display='none'"><img alt=""></div>
+
+<script src="kandidaten.js"></script>
+<script>
+(function () {
+  var mitServer = location.protocol.indexOf('http') === 0;
+  var liste = window.KANDIDATEN || [];
+  var wurzel = document.getElementById('liste');
+
+  document.getElementById('modus').textContent = mitServer
+    ? 'Klick auf „Übernehmen“ kopiert die Variante sofort nach assets/bilder/. Klick aufs Bild vergrößert es.'
+    : 'Seite ist direkt geöffnet: Nach dem Klick auf „Übernehmen“ erscheint ein Befehl zum Kopieren. Bequemer: node tools/bilder.js auswahl';
+
+  if (!liste.length) {
+    wurzel.innerHTML = '<p class="leer">Noch keine Kandidaten. Erst erzeugen mit: node tools/bilder.js &lt;name&gt;</p>';
+    return;
+  }
+
+  liste.forEach(function (e) {
+    var block = document.createElement('section');
+    block.className = 'eintrag';
+    var h = document.createElement('h2');
+    h.innerHTML = '';
+    h.appendChild(document.createTextNode(e.titel + ' '));
+    var c = document.createElement('code'); c.textContent = e.name; h.appendChild(c);
+    var st = document.createElement('span'); st.className = 'status';
+    st.textContent = e.gewaehlt ? '✓ übernommen (' + e.gewaehlt + ')' : '';
+    h.appendChild(st);
+    block.appendChild(h);
+
+    var d = document.createElement('details');
+    d.innerHTML = '<summary>Prompt</summary>';
+    d.appendChild(document.createTextNode(e.prompt));
+    block.appendChild(d);
+
+    var reihe = document.createElement('div'); reihe.className = 'reihe';
+    var befehl = document.createElement('div'); befehl.className = 'befehl'; befehl.hidden = true;
+
+    if (e.vorlage) {
+      var vf = document.createElement('figure'); vf.className = 'vorlage';
+      var vi = document.createElement('img');
+      vi.src = '../assets/bilder/' + e.vorlage + '?t=' + Date.now();
+      vi.alt = 'Vorlage';
+      vi.onclick = function () {
+        var g = document.getElementById('gross');
+        g.querySelector('img').src = vi.src; g.style.display = 'flex';
+      };
+      var vc = document.createElement('figcaption');
+      vc.textContent = 'Vorlage (' + e.vorlage + ')';
+      vf.appendChild(vi); vf.appendChild(vc);
+      reihe.appendChild(vf);
+    }
+
+    e.kandidaten.forEach(function (datei) {
+      var nummer = datei.match(/-(\d+)\.\w+$/)[1];
+      var fig = document.createElement('figure');
+      var img = document.createElement('img');
+      img.src = '../assets/bilder/_kandidaten/' + datei + '?t=' + Date.now();
+      img.alt = e.titel + ', Variante ' + nummer;
+      img.onclick = function () {
+        var g = document.getElementById('gross');
+        g.querySelector('img').src = img.src; g.style.display = 'flex';
+      };
+      var cap = document.createElement('figcaption');
+      cap.appendChild(document.createTextNode('Variante ' + nummer));
+      var knopf = document.createElement('button');
+      knopf.textContent = 'Übernehmen';
+      knopf.onclick = function () {
+        if (!mitServer) {
+          befehl.textContent = 'node tools/bilder.js nimm ' + e.name + ' ' + nummer;
+          befehl.hidden = false;
+          markiere();
+          return;
+        }
+        fetch('/uebernehmen', { method: 'POST', body: JSON.stringify({ name: e.name, nummer: nummer }) })
+          .then(function (r) { return r.json(); })
+          .then(function (a) {
+            if (!a.ok) throw new Error(a.fehler);
+            st.textContent = '✓ übernommen (' + a.ziel.replace(/\\/g, '/') + ')';
+            markiere();
+          })
+          .catch(function (err) { alert('Fehler: ' + err.message); });
+      };
+      function markiere() {
+        reihe.querySelectorAll('figure:not(.vorlage)').forEach(function (f) { f.classList.remove('gewaehlt'); });
+        fig.classList.add('gewaehlt');
+      }
+      cap.appendChild(knopf);
+      fig.appendChild(img); fig.appendChild(cap);
+      reihe.appendChild(fig);
+    });
+    block.appendChild(reihe);
+    block.appendChild(befehl);
+    wurzel.appendChild(block);
+  });
+})();
+</script>
+</body>
+</html>
