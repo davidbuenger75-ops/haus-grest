@@ -139,6 +139,7 @@
         var v = eig(id, 'versteckt');
         if (!v || v.bei !== beiId) return;
         if ((v.wie || []).indexOf(modus) < 0) return;
+        if (v.nurOffen && !W.innenZugaenglich(beiId)) return;   // versteckt: { …, nurOffen: true } – nur im offenen Behälter
         HG.zustand.setze(id, 'versteckt', false);
         gefunden.push(id);
         var txt = HG.wert(v.text, HG.api);

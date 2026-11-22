@@ -3,7 +3,8 @@
 // Carsten hat das Kästchen im Januar 2026 hinter der Täfelung im Arbeitszimmer gefunden und ins Lager gebracht
 // (Tagebuch 12.1.2026). Spielbibel, Abschnitt 6c. Lösungsschritte:
 //   1. Die Zierleiste lässt sich verschieben (untersuchen/tasten/durchsuchen, Suchen-Probe – oder einfach „schiebe leiste“).
-//   2. Darunter ein Schlitz in Form eines Zirkels. Der Zirkel liegt im Karton GREST zwischen den Archivkopien.
+//   2. Darunter ein Schlitz in Form eines Zirkels. Der Zirkel liegt im Karton GREST ganz unten, unter der Fotografie
+//      („durchsuche grest-karton“).
 //      „stecke zirkel in schlitz“ / „benutze zirkel mit kästchen“ – danach lassen sich die Ringe drehen.
 //   3. „Unser Tag“ = Hochzeitstag 12. Mai 1898 → „drehe ringe auf 1205“ (Hinweis: Bernwards Brief im Arbeitszimmer).
 //   4. Inhalt: Bernwards letzter Brief (1905) und Elisabeths Ehering.
@@ -74,7 +75,7 @@
           3: function (api) {
             if (!leisteOffen(api)) return 'Die Zierleiste. Versuch, sie zur Seite zu schieben. <span class="nebenbei">(„schiebe leiste“)</span>';
             if (api.traegt('zirkel')) return 'Der Schlitz hat genau die Form des kleinen Messingzirkels, den du bei dir trägst. <span class="nebenbei">(„stecke zirkel in schlitz“)</span>';
-            return 'Der Schlitz hat die Form eines Zirkels – das Werkzeug eines Architekten. Carsten hat Bernwards Unterlagen im Karton GREST gesammelt. Vielleicht liegt dort, zwischen den Archivkopien, mehr als nur Papier.';
+            return 'Der Schlitz hat die Form eines Zirkels – das Werkzeug eines Architekten. Carsten hat alles über die Grests in einem Karton gesammelt. Vielleicht liegt dort mehr als nur ein Foto. <span class="nebenbei">(„durchsuche grest-karton“)</span>';
           }
         },
         falsch: {
@@ -233,7 +234,7 @@
     nomen: 'Zirkel', genus: 'm', adj: ['klein'],
     woerter: ['zirkel', 'zeichenzirkel', 'messingzirkel'],
     ort: 'karton_grest', rel: 'in',
-    versteckt: { bei: 'archivkopien', wie: ['untersuchen', 'durchsuchen', 'lesen', 'tasten'], text: 'Zwischen den Kopien steckt etwas Hartes: ein kleiner Zeichenzirkel aus Messing.' },
+    versteckt: { bei: 'karton_grest', wie: ['durchsuchen', 'tasten'], nurOffen: true, text: 'Ganz unten im Karton, unter der Fotografie, ertastest du etwas Hartes, in ein Taschentuch gewickelt: ein kleiner Zeichenzirkel aus Messing.' },
     beschreibung: function (api) {
       return 'Ein kleiner Zeichenzirkel aus Messing, sorgfältig gearbeitet, die Spitzen seltsam stumpf geschliffen – zum Zeichnen taugt er so nicht. In den Griff sind zwei Buchstaben eingeschlagen: <b>B. G.</b>' +
         (zirkelSteckt(api) ? ' Er steckt im Schlitz des Kästchens.' : '');

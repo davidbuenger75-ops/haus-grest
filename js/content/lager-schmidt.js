@@ -331,12 +331,12 @@
     var t = 'Ein Umzugskarton, beschriftet: „GREST“. Der Deckel ist mit Klebeband mehrfach verstärkt.';
     // Hinweis auf den Zirkel (Rätsel „Bernwards Kästchen“, js/content/kaestchen.js), solange er noch nicht gefunden ist
     if (api.eig('karton_grest', 'offen') && api.eig('zirkel', 'versteckt') && api.eig('zirkel', 'ort') === 'karton_grest') {
-      t += ' Zwischen den Archivkopien steckt etwas Hartes – die Blätter wölben sich darüber.';
+      t += ' Für eine einzige Fotografie ist er erstaunlich schwer. Ganz unten, unter dem Foto, steckt etwas Hartes.';
     }
     return t;
   });
-  // Karton KÜCHE / DIVERSES: ein einziges Kulissen-Objekt. Herausnehmbar sind nur das Feinmechaniker-Set
-  // (js/content/kaestchen.js) und der Taschenspiegel; der Einkaufszettel ist nur noch Text beim Durchsuchen.
+  // Karton KÜCHE / DIVERSES: ein einziges Kulissen-Objekt. Herausnehmbar ist nur das Feinmechaniker-Set
+  // (js/content/kaestchen.js); der Einkaufszettel ist nur Text beim Durchsuchen. (Der Taschenspiegel ist fürs Haus vorgemerkt.)
   var EINKAUFSZETTEL = 'In der Tasche eines Wintermantels knistert Papier: ein zerknüllter Einkaufszettel in Carstens Schrift. <i>Milch. Brot.</i> Und darunter, dreimal unterstrichen: <b>Spiegel abhängen!!!</b>';
   karton('karton_kueche', 'Küchen', 'küchen-karton', function (api) {
     return 'Ein Umzugskarton: „KÜCHE / DIVERSES“. Er klappert.' + (api.eig('karton_kueche', 'offen')
@@ -411,22 +411,6 @@
     lesbar: '<i>Bettina Gerdes · 2005 – 2022</i><br><br>„Du bist nur in ein anderes Zimmer gegangen.“<br><br><span class="rot">Zimmer</span> <i>(von Carsten eingekreist)</i>'
   });
 
-  HG.ding('foto_gerdes', {
-    dokument: true,   // wird fotografiert (Handy-Galerie + Notizbuch), nicht eingesteckt
-    nomen: 'Familienfoto', genus: 'n',
-    woerter: ['familienfoto', 'foto', 'bild', 'abzug', 'familie', 'fenster', 'person'],
-    ort: 'karton_gerdes', rel: 'in',
-    beschreibung: 'Familie Gerdes vor dem Haus, Sommer 2019: Peter, Brigitte, Daniel und Bettina. Alle lächeln.',
-    foto: 'Das Foto vom Foto: vier lächelnde Menschen. Und im Fenster des ersten Stocks – nichts. Auf dem Original war doch …?',
-    bei: {
-      untersuchen: function (api) {
-        api.sage('Familie Gerdes vor dem Haus, Sommer 2019: Peter, Brigitte, Daniel und Bettina, alle lächeln in die Sonne. ' +
-          (api.zaehle('foto_gerdes_angesehen') === 1 ? 'Du willst es schon zurücklegen, da fällt dir das Fenster im ersten Stock auf. Darin spiegelt sich eine fünfte Person: eine Frau in einem hellen, altmodischen Kleid. Sie lächelt nicht.' : 'Im Fenster des ersten Stocks: die Frau im hellen Kleid. Du siehst nicht noch einmal genauer hin.'));
-        if (api.zaehler('foto_gerdes_angesehen') === 1) api.nervenProbe('0/1W3', { grund: 'unheimliches Foto' });
-        return true;
-      }
-    }
-  });
 
   HG.ding('zettel_unna', {
     dokument: true,   // wird fotografiert (Handy-Galerie + Notizbuch), nicht eingesteckt
@@ -514,7 +498,7 @@
     dokument: true,   // wird fotografiert (Handy-Galerie + Notizbuch), nicht eingesteckt
     nomen: 'Archivkopien', genus: 'pl',
     woerter: ['archivkopien', 'kopien', 'bauantrag', 'todesanzeige', 'stadtarchiv'],
-    ort: 'karton_grest', rel: 'in', schriftart: 'druck',
+    ort: null,   // [vorgemerkt] kommt ins Stadtarchiv – Spielbibel 5b schriftart: 'druck',
     beschreibung: 'Kopien aus dem Stadtarchiv: ein Bauantrag und eine Todesanzeige.',
     lesbar: '<b>Bauantrag</b>, eingereicht am 12. Mai 1899 – „Wohnhaus nebst Remise, Ulmenweg“. Unterschrift: <i>B. Grest, Architekt</i>.<br><br>' +
       '<b>Todesanzeige</b>, 1905: „Plötzlich und unerwartet verstarb mein geliebter Gatte, der Architekt <b>Bernward Grest</b>. In tiefer Trauer: Elisabeth Grest.“',
@@ -558,7 +542,7 @@
   HG.ding('handtuchbuendel', {
     nomen: 'Handtuchbündel', genus: 'n',
     woerter: ['handtuchbuendel', 'handtuch', 'buendel', 'klebeband', 'paket'],
-    ort: 'karton_kueche', rel: 'in', fest: 'Das Handtuch lässt du im Karton.',
+    ort: null, fest: 'Das Handtuch lässt du, wo es ist.',   // [vorgemerkt] mit dem Taschenspiegel ins Haus Grest – Spielbibel 5b
     behaelter: true, oeffenbar: true, offen: false, zeigeZustand: false,
     beschreibung: function (api) { return api.eig('handtuchbuendel', 'offen') ? 'Ein ausgewickeltes Handtuch, Reste von Klebeband daran.' : 'Etwas Flaches, Hartes, fest in ein Handtuch gewickelt und mit Klebeband umwickelt. Viel Klebeband. Als hätte jemand verhindern wollen, dass es jemals wieder ausgepackt wird.'; },
     bei: {

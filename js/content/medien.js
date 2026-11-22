@@ -8,7 +8,7 @@
   [
     'notarbrief', 'testament',                                   // Prolog
     'brief', 'portraet', 'rasiermesser',                        // Haus Grest (der Bauplan hat eigene Blätter: ding-bauplan-<stockwerk>)
-    'grundbuchauszug', 'zeitung_2022', 'trauerkarte', 'foto_gerdes', 'zettel_unna',   // Karton GERDES
+    'grundbuchauszug', 'zeitung_2022', 'trauerkarte', 'zettel_unna',   // Karton GERDES
     'artikel_2025', 'expose', 'freigabe',                              // Karton ROMANOW
     'archivkopien', 'zeitung_1930', 'foto_1912',                                       // Karton GREST
     'taschenspiegel', 'pistole',                                     // Küche, Schuhkarton
