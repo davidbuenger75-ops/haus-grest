@@ -7,7 +7,8 @@
 //      „stecke zirkel in schlitz“ / „benutze zirkel mit kästchen“ – danach lassen sich die Ringe drehen.
 //   3. „Unser Tag“ = Hochzeitstag 12. Mai 1898 → „drehe ringe auf 1205“ (Hinweis: Bernwards Brief im Arbeitszimmer).
 //   4. Inhalt: Bernwards letzter Brief (1905) und Elisabeths Ehering.
-// Andere Wege: Handwerk (−20, Handwerker ohne Malus; mit dem Feinmechaniker-Set leichter) oder Gewalt (Stärke-Probe,
+// Gestaffelte Hinweise nach Fehlversuchen (zahlenschloss.tipps, Engine: api.fehlversuch).
+// Andere Wege: Handwerk (grobes Werkzeug −20, Handwerker ohne Malus; Feinmechaniker-Set +20) oder Gewalt (Stärke-Probe,
 // der Brief wird zerrissen). Keiner endet in einer Sackgasse. Alles per Text und in der Nahansicht lösbar.
 (function () {
 
@@ -64,6 +65,24 @@
         return true;
       },
       richtig: function (api) { oeffne(api, 'code'); },
+      // Gestaffelte Hinweise (api.fehlversuch): beim 2. und 3. vergeblichen Versuch immer deutlicher – je nach Stand
+      tipps: {
+        gesperrt: {
+          2: function (api) {
+            if (!leisteOffen(api)) return 'Etwas blockiert die Ringe von innen, wie ein Riegel. Vielleicht gibt es am Kästchen einen zweiten Mechanismus. Die Zierleiste an der Seite wirkt nicht ganz so fest wie der Rest.';
+            return 'Der Schlitz unter der Leiste muss der Schlüssel sein – nur passt kein Schlüssel hinein. Seine Form erinnert an ein Zeichenwerkzeug.';
+          },
+          3: function (api) {
+            if (!leisteOffen(api)) return 'Die Zierleiste. Versuch, sie zur Seite zu schieben. <span class="nebenbei">(„schiebe leiste“)</span>';
+            if (api.traegt('zirkel')) return 'Der Schlitz hat genau die Form des kleinen Messingzirkels, den du bei dir trägst. <span class="nebenbei">(„stecke zirkel in schlitz“)</span>';
+            return 'Der Schlitz hat die Form eines Zirkels – das Werkzeug eines Architekten. Carsten hat Bernwards Unterlagen im Karton GREST gesammelt. Vielleicht liegt dort, zwischen den Archivkopien, mehr als nur Papier.';
+          }
+        },
+        falsch: {
+          2: '„Was ich für E. erbaute, öffnet nur, wer unseren Tag kennt.“ Vier Ringe – vier Ziffern. Ein Tag, den nur zwei Menschen „unseren“ nennen.',
+          3: 'Ein Datum mit vier Ziffern: Tag und Monat. Bernwards eigene Papiere – sein Brief im Arbeitszimmer des Hauses – erzählen vielleicht, welcher Tag ihnen gehörte.'
+        }
+      },
       falsch: function (api) { return 'Die Ringe rasten ein: ' + String(api.eig('kaestchen', 'ziffern')).split('').join(' – ') + '. Ein leises Klicken im Inneren – dann nichts. Der Deckel bleibt, wo er ist.'; }
     },
     // Nahansicht mit anklickbaren Bereichen (SVG in js/content/bilder.js: HG.daten.bilder.nah_kaestchen)
@@ -186,8 +205,8 @@
     if (!api.traegt(werkzeugId)) { api.sage('Dafür musst du ' + api.der(werkzeugId, 'akk') + ' in der Hand haben.'); return true; }
     if (api.flag('kaestchen_hakt') && q < 2) { api.sage('Der Mechanismus hakt seit deinem letzten Versuch. Mit ' + api.der(werkzeugId, 'dat') + ' kommst du nicht weiter – du bräuchtest feineres Werkzeug.'); return true; }
     api.sage('Du setzt ' + api.der(werkzeugId, 'akk') + ' an der Rosette an und tastest nach den Federn hinter den Ringen.');
-    // einfaches Werkzeug: −20 (Handwerker ohne Malus); Feinmechaniker-Set: ±0 (Handwerker +20)
-    var e = api.probe('handwerk', { mod: q >= 2 ? 0 : -20, modGrund: q >= 2 ? '' : 'grobes Werkzeug', grund: 'Mechanismus überlisten', beruf: { handwerk: q >= 2 ? 20 : 0 } });
+    // grobes Werkzeug: −20 (Handwerker(in) ohne Malus); Feinmechaniker-Set: +20
+    var e = api.probe('handwerk', { mod: q >= 2 ? 20 : -20, modGrund: q >= 2 ? 'Feinmechaniker-Set' : 'grobes Werkzeug', grund: 'Mechanismus überlisten', beruf: q >= 2 ? null : { handwerk: 0 } });
     if (e.erfolg) { oeffne(api, 'handwerk'); return true; }
     api.setzeFlag('kaestchen_hakt');
     if (e.patzer) {
@@ -240,7 +259,7 @@
     nomen: 'Feinmechaniker-Set', genus: 'n', kurzwort: 'werkzeug',
     woerter: ['feinmechanikerset', 'feinmechaniker', 'set', 'werkzeug', 'werkzeugset', 'etui', 'schraubendreher', 'uhrmacherwerkzeug', 'pinzette'],
     ort: 'karton_kueche', rel: 'in',
-    werkzeug: 2,    // feines Werkzeug: Handwerk ohne Malus
+    werkzeug: 2,    // feines Werkzeug: +20 auf Handwerk
     beschreibung: 'Ein schmales Lederetui mit winzigen Schraubendrehern, Pinzetten und einer Lupe. Carsten war Vermessungsingenieur – damit hat er wohl seine Instrumente gepflegt.'
   });
 

@@ -113,6 +113,19 @@
     setzeFlag: function (n, v) { Z().flags[n] = v === undefined ? true : v; },
     zaehler: function (n) { return Z().zaehler[n] || 0; },
     zaehle: function (n) { Z().zaehler[n] = (Z().zaehler[n] || 0) + 1; return Z().zaehler[n]; },
+    /** Gestaffelte Hinweise nach Fehlversuchen (Rätsel-Grundsatz „kein Stillstand“):
+     *  api.fehlversuch('kaestchen_ringe', { 2: 'leiser Hinweis', 3: 'deutlicher Hinweis' }) zählt einen Fehlversuch
+     *  und gibt beim 2., 3. … Versuch den passenden Hinweis aus (Text oder function (api, n)). Ab der höchsten Stufe
+     *  wiederholt sich der deutlichste Hinweis bei jedem weiteren Versuch. Liefert die Zahl der Fehlversuche. */
+    fehlversuch: function (schluessel, stufen) {
+      var n = api.zaehle('_fehl_' + schluessel);
+      var t = S.tippFuer(stufen, n);
+      if (t) HG.ausgabe.schreibe('tipp', t);
+      return n;
+    },
+    fehlversuche: function (schluessel) { return Z().zaehler['_fehl_' + schluessel] || 0; },
+    /** Zähler zurücksetzen, z. B. wenn ein Teilschritt gelöst ist und neue Hinweise beginnen sollen. */
+    fehlversucheVergessen: function (schluessel) { delete Z().zaehler['_fehl_' + schluessel]; },
 
     eig: function (id, k) { return eig(id, k); },
     setze: function (id, k, v) { HG.zustand.setze(id, k, v); },
@@ -629,6 +642,17 @@
       return true;
     },
 
+    /** Hinweistext für den n-ten Fehlversuch aus { 2: …, 3: … } (Text oder function (api, n)); ab der höchsten Stufe die höchste. */
+    tippFuer: function (stufen, n) {
+      if (!stufen) return null;
+      var hoechste = Object.keys(stufen).map(Number).filter(function (k) { return !isNaN(k); }).sort(function (a, b) { return a - b; }).pop();
+      if (hoechste === undefined || n < Math.min.apply(null, Object.keys(stufen).map(Number))) return null;
+      var k = stufen[n] !== undefined ? n : (n > hoechste ? hoechste : null);
+      if (k === null) return null;
+      var t = stufen[k];
+      return typeof t === 'function' ? t(api, n) : t;
+    },
+
     /** Eine Probe aus Daten ausführen und verzweigen. Liefert true (Handlung erledigt) oder false (weiter wie gewohnt). */
     datenProbe: function (p, ctx) {
       if (p.wenn && !HG.wert(p.wenn, api, ctx)) return false;
@@ -641,6 +665,7 @@
       var zweig = (e.kritisch && p.kritisch !== undefined) ? p.kritisch : (e.patzer && p.patzer !== undefined) ? p.patzer : e.erfolg ? p.erfolg : p.misserfolg;
       var r = typeof zweig === 'function' ? zweig(api, e, ctx) : zweig;
       if (typeof r === 'string') HG.ausgabe.text(r);
+      if (!e.erfolg && p.tipps) api.fehlversuch('probe_' + ctx.obj + '_' + ctx.aktion, p.tipps);
       return r !== false;
     },
 

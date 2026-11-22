@@ -399,7 +399,7 @@
     block: function (b) {
       var log = $('log'), el;
       // Während eines Befehls aus der Nahansicht die Antwort mitschneiden (wird dort angezeigt)
-      if (A._nahLog && ['text', 'wurf', 'hinweis', 'wert', 'schrift', 'system', 'frage', 'spuk', 'schock', 'andeutung'].indexOf(b.typ) >= 0) A._nahLog.push(b);
+      if (A._nahLog && ['text', 'wurf', 'hinweis', 'wert', 'schrift', 'system', 'frage', 'spuk', 'schock', 'andeutung', 'tipp'].indexOf(b.typ) >= 0) A._nahLog.push(b);
       switch (b.typ) {
         case 'eingabe': el = document.createElement('p'); el.className = 'eingabe'; el.innerHTML = '› ' + b.html; break;
         case 'titel': el = document.createElement('h2'); el.className = 'raumtitel'; el.innerHTML = b.html; break;
@@ -427,6 +427,7 @@
         case 'handy': case 'anruf': case 'auswahl':
           el = document.createElement('div'); el.className = b.typ; el.innerHTML = b.html; break;
         case 'zeit': el = document.createElement('p'); el.className = 'zeitwechsel'; el.innerHTML = '— ' + b.html + ' —'; break;
+        case 'tipp': el = document.createElement('p'); el.className = 'tipp'; el.innerHTML = '<span class="tipp-zeichen" aria-hidden="true">☞</span> ' + b.html; break;
         case 'spuk': el = document.createElement('p'); el.className = 'spuk'; el.innerHTML = b.html; break;
         case 'ziel': el = document.createElement('p'); el.className = 'hinweis'; el.innerHTML = '➜ ' + b.html; break;
         default:

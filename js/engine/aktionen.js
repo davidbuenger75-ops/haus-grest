@@ -512,6 +512,8 @@
   // ================= Zahlenschloss ==================================
   //   zahlenschloss: { stellen: 4, code: '1205', bereit: fn(api) -> true | 'Text, warum nicht',
   //                    richtig: fn(api, ctx), falsch: 'Text' | fn }   Teile verweisen mit teilVon: 'id' darauf.
+  //   tipps: { gesperrt: { 2: …, 3: … }, falsch: { 2: …, 3: … } } – gestaffelte Hinweise nach Fehlversuchen
+  //   (api.fehlversuch; Zähler "<id>_gesperrt" bzw. "<id>_falsch").
   //   Zustand: eig(id, 'ziffern') – die zuletzt eingestellte Zahl.
   A.einstellen = function (ctx) {
     var id = ctx.obj, d = D(id);
@@ -526,10 +528,15 @@
     if (!ziffern) { sag('Auf welche Zahl? Zum Beispiel: „drehe die Ringe auf ' + '1234567890'.slice(0, n) + '“.'); return; }
     if (ziffern.length !== n) { sag('Es sind ' + n + ' Ringe – du brauchst eine ' + n + '-stellige Zahl.'); return; }
     var bereit = HG.wert(zs.bereit, HG.api, ctx);
-    if (bereit !== undefined && bereit !== true) { sag(typeof bereit === 'string' ? bereit : 'Die Ringe rühren sich nicht.'); return; }
+    if (bereit !== undefined && bereit !== true) {
+      sag(typeof bereit === 'string' ? bereit : 'Die Ringe rühren sich nicht.');
+      if (zs.tipps && zs.tipps.gesperrt) HG.api.fehlversuch(id + '_gesperrt', zs.tipps.gesperrt);
+      return;
+    }
     setze(id, 'ziffern', ziffern);
     if (ziffern === String(HG.wert(zs.code, HG.api, ctx))) { if (zs.richtig) zs.richtig(HG.api, ctx); return; }
     sag(HG.wert(zs.falsch, HG.api, ctx) || 'Du stellst die Ringe auf ' + ziffern.split('').join(' – ') + '. Nichts geschieht.');
+    if (zs.tipps && zs.tipps.falsch) HG.api.fehlversuch(id + '_falsch', zs.tipps.falsch);
   };
 
   // ================= Erste Hilfe, Knacken ===========================

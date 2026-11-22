@@ -327,7 +327,14 @@
 
   karton('karton_gerdes', 'Gerdes', 'gerdes-karton', 'Ein Umzugskarton, mit dickem Edding beschriftet: „GERDES“.');
   karton('karton_romanow', 'Romanow', 'romanow-karton', 'Ein Umzugskarton, beschriftet: „ROMANOW“. Die Schrift ist zittriger als auf den anderen.');
-  karton('karton_grest', 'Grest', 'grest-karton', 'Ein Umzugskarton, beschriftet: „GREST“. Der Deckel ist mit Klebeband mehrfach verstärkt.');
+  karton('karton_grest', 'Grest', 'grest-karton', function (api) {
+    var t = 'Ein Umzugskarton, beschriftet: „GREST“. Der Deckel ist mit Klebeband mehrfach verstärkt.';
+    // Hinweis auf den Zirkel (Rätsel „Bernwards Kästchen“, js/content/kaestchen.js), solange er noch nicht gefunden ist
+    if (api.eig('karton_grest', 'offen') && api.eig('zirkel', 'versteckt') && api.eig('zirkel', 'ort') === 'karton_grest') {
+      t += ' Zwischen den Archivkopien steckt etwas Hartes – die Blätter wölben sich darüber.';
+    }
+    return t;
+  });
   karton('karton_kueche', 'Küchen', 'küchen-karton', 'Ein Umzugskarton: „KÜCHE / DIVERSES“. Er klappert.');
   HG.daten.dinge.karton_kueche.woerter.push('diverses', 'kueche', 'hausrat');
 

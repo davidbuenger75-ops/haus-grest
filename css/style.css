@@ -496,3 +496,7 @@ ol.berufe li { margin-bottom: 4px; }
   .vt-zeile button:hover:not(:disabled), .vt-ok:hover:not(:disabled) { background: var(--tinte); color: var(--papier); }
 }
 @media (prefers-reduced-motion: no-preference) { .nah-ring span { display: inline-block; transition: transform .15s; } .nah-ring:active span { transform: rotate(36deg); } }
+
+/* Gestaffelter Hinweis nach Fehlversuchen (api.fehlversuch) */
+#log .tipp, .nah-text .nah-tipp { font-style: italic; color: #5a4a2e; border-left: 2px dotted #b98a3e; padding-left: 8px; margin-left: 2px; }
+.tipp-zeichen { color: #b98a3e; font-style: normal; }
