@@ -63,6 +63,7 @@
     themaSonst: '„Da kann ich Ihnen nicht helfen“, sagt Frau Pohl. „Ich bin Bauordnung.“'
   });
   HG.ding('bauakte', {
+    dokument: true,   // mitnehmen darf man sie nicht – fotografieren schon
     nomen: 'Bauakte', genus: 'f', adj: ['grau'],
     woerter: ['bauakte', 'akte', 'ordner', 'brandbericht', 'bericht', 'bauantrag'],
     ort: null,   // legt Frau Pohl erst auf den Tresen, wenn man nach der Akte fragt

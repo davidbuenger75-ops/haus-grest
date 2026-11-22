@@ -13,6 +13,13 @@
 //   });
 // Befehle: "lies tagebuch" (öffnet die Lese-Ansicht), "lies eintrag 3", "lies seite 3",
 //          "blättere weiter" / "blättere zurück", "lies weiter", "lies die letzte seite".
+//
+// Gesperrte Seiten (z. B. fahrig geschrieben, verklebt): Seite mit
+//   gesperrt: { frei: function (api) { … }, text: 'was man stattdessen sieht' }
+// Solange frei() nicht stimmt und das Buch nicht entziffert ist, zeigt die Seite den Ersatztext, gilt nicht als
+// gelesen und gibt keinen Hinweis. Entziffern per Probe ("entziffere tagebuch"):
+//   buch: { entziffern: { wer: ['ve', 'geschichte'], mod: -20, dauer: 20, erfolg: 'Text', misserfolg: 'Text',
+//           tipps: { 2: …, 3: … } } }   – geprobt wird mit dem besseren der Werte; Erfolg gilt fürs ganze Buch.
 // Ohne Browser-Oberfläche (Tests) erscheinen die Seiten vollständig im Textverlauf.
 (function (HG) {
   'use strict';
@@ -41,6 +48,38 @@
     },
     hatOberflaeche: function () { return !!(HG.anzeige && HG.anzeige.zeigeBuch); },
 
+    /** Ist die Seite lesbar? (nicht gesperrt, Bedingung erfüllt oder das Buch entziffert) */
+    frei: function (id, s) {
+      if (!s.gesperrt) return true;
+      return !!bz(id).entziffert || !!HG.wert(s.gesperrt.frei, HG.api);
+    },
+    /** Text einer Seite – bei gesperrten Seiten der Ersatztext. */
+    text: function (id, x) {
+      return B.frei(id, x.s) ? HG.wert(x.s.text, HG.api)
+        : HG.wert(x.s.gesperrt.text, HG.api) + ' <span class="nebenbei">(„entziffere ' + D(id).nomen.toLowerCase() + '“)</span>';
+    },
+    /** Gibt es noch gesperrte Seiten? */
+    hatGesperrte: function (id) { return B.seiten(id).some(function (x) { return !B.frei(id, x.s); }); },
+
+    /** Fahrige oder verklebte Seiten per Probe entziffern. */
+    entziffere: function (id, ctx) {
+      var e = D(id).buch.entziffern || {}, api = HG.api;
+      if (!B.hatGesperrte(id)) { HG.ausgabe.text('Du kannst alles in ' + T.der(id, 'dat') + ' lesen, was es zu lesen gibt.'); return; }
+      if (!W.hell()) { HG.ausgabe.text('Es ist zu dunkel zum Lesen.'); return; }
+      var wer = [].concat(e.wer || ['ve']).sort(function (a, b) { return HG.proben.basis(b) - HG.proben.basis(a); })[0];
+      if (ctx) ctx.dauer = e.dauer === undefined ? 20 : e.dauer;
+      var p = api.probe(wer, { mod: e.mod || 0, modGrund: e.modGrund || 'schwer lesbar', grund: e.grund || 'Schrift entziffern', beruf: e.beruf });
+      if (p.erfolg) {
+        bz(id).entziffert = true;
+        HG.ausgabe.text(HG.wert(e.erfolg, api) || 'Wort für Wort setzt du die Zeilen zusammen. Jetzt kannst du die Seiten lesen.');
+        var liste = B.seiten(id), erste = liste.filter(function (x) { return x.s.gesperrt && B.frei(id, x.s) && bz(id).gelesen.indexOf(x.i) < 0; })[0];
+        if (erste) B.lies(id, liste.indexOf(erste), null);
+      } else {
+        HG.ausgabe.text(HG.wert(e.misserfolg, api) || 'Die Buchstaben verschwimmen. Du bekommst kaum ein Wort zusammen.');
+        if (e.tipps) api.fehlversuch('entziffern_' + id, e.tipps);
+      }
+    },
+
     /** Buch aufschlagen. */
     oeffne: function (id, ctx) {
       if (!W.hell()) { HG.ausgabe.text('Es ist zu dunkel zum Lesen.'); return; }
@@ -63,12 +102,12 @@
     lies: function (id, pos, ctx) {
       var b = D(id).buch, liste = B.seiten(id), st = bz(id);
       if (pos < 0 || pos >= liste.length) { HG.ausgabe.text(pos < 0 ? 'Das ist schon die erste Seite.' : 'Danach sind die Seiten leer.'); return; }
-      var x = liste[pos], neu = st.gelesen.indexOf(x.i) < 0;
+      var x = liste[pos], frei = B.frei(id, x.s), neu = frei && st.gelesen.indexOf(x.i) < 0;
       st.seite = pos;
       Z().buchOffen = id;
       HG.medien.effekt('seite');
       if (ctx) ctx.dauer = neu ? (b.dauerProSeite === undefined ? 2 : b.dauerProSeite) : 1;
-      var text = HG.wert(x.s.text, HG.api);
+      var text = B.text(id, x);
       if (neu) st.gelesen.push(x.i); // vor der Anzeige, damit das Lesezeichen ein Häkchen bekommt
       if (B.hatOberflaeche()) {
         HG.ausgabe.text('<span class="nebenbei">📖 ' + T.esc(b.titel) + ', Seite ' + (pos + 1) + ' von ' + liste.length + ': ' + x.s.titel + '</span>');
@@ -115,4 +154,9 @@
     altLesen(ctx);
   };
   A.buchseite = function (ctx) { B.blaettere(ctx.buchZiel || 'weiter', ctx); };
+  A.entziffern = function (ctx) {
+    var id = (ctx.obj && D(ctx.obj).buch) ? ctx.obj : B.aktuell();
+    if (!id) { HG.ausgabe.text('Hier gibt es nichts, was du entziffern müsstest.'); return; }
+    B.entziffere(id, ctx);
+  };
 })(window.HG);

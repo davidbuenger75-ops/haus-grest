@@ -512,7 +512,7 @@
       $('buch-seitentitel').innerHTML = HG.text.fuelle(x.s.titel);
       var txt = $('buch-text');
       txt.className = 'buch-text stil-' + (x.s.schrift || d.buch.schrift || 'hand');
-      txt.innerHTML = HG.text.fuelle(HG.wert(x.s.text, HG.api));
+      txt.innerHTML = HG.text.fuelle(HG.buch.text(id, x));
       var seitenBild = $('buch-bild'), nr = x.i + 1;
       seitenBild.innerHTML = ''; seitenBild.hidden = true;
       HG.medien.erstesBild([HG.medien.dingName(id) + '-' + nr], function (url) {

@@ -4,9 +4,10 @@
 (function (HG) {
   'use strict';
 
-  var VERSION = 6; // 2: Tageszeit, Reiseziele, Handy, Spuk · 3: Spielfigur, Uhrzeit, NERVEN in Prozent, Bücher · 4: MACHT des Hauses
+  var VERSION = 7; // 2: Tageszeit, Reiseziele, Handy, Spuk · 3: Spielfigur, Uhrzeit, NERVEN in Prozent, Bücher · 4: MACHT des Hauses
                    // 5: angesehene Hinweise (gesehen), erledigte Handlungen an Dingen (getan)
                    // 6: Regelsystem nach Delta Green: Eigenschaften, Fertigkeiten, Beruf, LP, WP, Wunden
+                   // 7: Tagebuch mit zusammenfassenden Hinweisen und gesperrten Seiten (nur Inhalts-Migration)
 
   // Ältere Spielstände an das aktuelle Format anpassen: MIGRATION[v] macht aus Version v die Version v+1.
   var MIGRATION = {
@@ -24,7 +25,8 @@
       HG.charakter.setzeEigenschaften(HG.charakter.wuerfle().werte);
       HG.zustand.z = alt;
       if (z.spieler && z.spieler.geschlecht) z.spieler.fertig = true;
-    }
+    },
+    6: function () { /* Inhalte passen sich per HG.zustand.migration(6, …) an */ }
   };
   // Inhalte können eigene Schritte anhängen, z. B. wenn sich Buchseiten verschoben haben:
   // HG.zustand.migration(4, function (z) { ... })  läuft beim Laden nach MIGRATION[4].

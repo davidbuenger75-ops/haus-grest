@@ -32,7 +32,6 @@
       api.sage('Das Holz kreischt, dann splittert es. Der Deckel bricht entlang einer Fuge auf, die es eben noch nicht gab. Papier reißt dabei – ein Brief im Inneren hat sich in der Mechanik verfangen.');
     }
     api.sage('Darin, auf verblichenem Samt: ein gefalteter Brief ' + (weg === 'gewalt' ? '– jetzt zerrissen – ' : '') + 'und ein schmaler goldener Ring.');
-    api.hinweis('kaestchen_offen');
   }
 
   // ------------------------------------------------------------ Das Kästchen
@@ -167,7 +166,6 @@
         api.setze('schlitz', 'versteckt', false);
         api.sage('Du drückst gegen das Ende der Leiste. Erst nichts – dann gleitet sie mit einem trockenen Schaben zur Seite. Darunter: ein schmaler Schlitz, seltsam geformt. Zwei schlanke Schenkel, oben ein kleiner Kreis. ' +
           'Die Form eines <b>Zirkels</b>.');
-        api.hinweis('kaestchen_schlitz');
         return true;
       },
       ziehen: function (api, ctx) { return HG.daten.dinge.zierleiste.bei.schieben(api, ctx); },
@@ -265,6 +263,7 @@
 
   // ------------------------------------------------------------ Inhalt
   HG.ding('brief_1905', {
+    dokument: true,
     nomen: 'Brief', genus: 'm', adj: ['gefaltet'], kurzwort: 'brief von 1905',
     woerter: ['brief', 'briefbogen', '1905', 'letzter', 'papier'],
     ort: 'kaestchen', rel: 'in', schriftart: 'hand',
@@ -315,20 +314,10 @@
     text: 'In Carstens Lager: ein Kästchen aus Nussbaum ohne Schloss und Fuge, vier Zahlenringe auf dem Deckel. Die Gravur: „Was ich für E. erbaute, öffnet nur, wer unseren Tag kennt.“',
     stichworte: ['kaestchen', 'gravur', 'ringe']
   });
-  HG.hinweis('kaestchen_schlitz', {
-    titel: 'Ein Schlitz wie ein Zirkel', strang: 'A',
-    text: 'Unter der Zierleiste des Kästchens liegt ein Schlitz in der Form eines kleinen Zeichenzirkels. Bernward war Architekt …',
-    stichworte: ['schlitz', 'zierleiste']
-  });
   HG.hinweis('hochzeitstag', {
     titel: '„Unser Tag“: der 12. Mai', strang: 'B',
     text: 'Bernwards Brief von 1900: Am zwölften Mai, „an unserem Tag“, wollte er Elisabeth das fertige Haus schenken – zum zweiten Hochzeitstag.',
     stichworte: ['hochzeitstag', 'mai', 'tag']
-  });
-  HG.hinweis('kaestchen_offen', {
-    titel: 'Das Kästchen ist offen', strang: 'A',
-    text: 'In Bernwards Kästchen lagen ein Brief und ein schmaler goldener Ring.',
-    stichworte: ['inhalt']
   });
   HG.hinweis('bernwards_letzter_brief', {
     titel: 'Bernwards letzter Brief (1905)', strang: 'A',

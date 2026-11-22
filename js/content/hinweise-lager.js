@@ -58,42 +58,23 @@ HG.hinweis('pflegerin_kraehe', {
 });
 HG.hinweis('taschenspiegel', {
   titel: 'Der eingewickelte Taschenspiegel', strang: 'E',
-  text: 'Carsten hatte einen Taschenspiegel in ein Handtuch gewickelt und mit Klebeband umwickelt. Darin sah ich für einen Augenblick ein fremdes Gesicht. Auf seinem Einkaufszettel: „Spiegel abhängen!!!“',
+  text: 'Carsten hatte einen Taschenspiegel in ein Handtuch gewickelt und mit Klebeband umwickelt. Darin sah ich für einen Augenblick ein fremdes Gesicht.',
   stichworte: ['taschenspiegel']
 });
 
-// --- Carstens Tagebuch: jeder Eintrag ergibt einen Hinweis ---------------
-HG.hinweis('tb_kauf', { titel: 'Tagebuch: Der Kauf (3.8.2025)', strang: 'E',
-  text: 'Carsten kaufte das Haus für ein Drittel des Werts. Der Makler: Die Vorbesitzerin sei „verunglückt“, das Haus „etwas eigen“.', stichworte: ['kauf', 'makler'] });
-HG.hinweis('tb_lavendel', { titel: 'Tagebuch: Lavendel um drei (21.8.2025)', strang: 'E',
-  text: 'Jede Nacht gegen drei Uhr roch es nach Lavendel – Carsten besaß nichts mit Lavendel.', stichworte: ['lavendel'] });
-HG.hinweis('tb_spiegelzimmer', { titel: 'Tagebuch: Die Tapetentür (9.9.2025)', strang: 'E',
-  text: 'Hinter der Tapete im ersten Stock: eine Tür zu einem Zimmer voller Spiegel, alle mit Bettlaken verhängt – wohl von Natascha Romanow.', stichworte: ['tapetentuer', 'laken'] });
+// --- Carstens Tagebuch: vier zusammenfassende Hinweise (die Einträge selbst bleiben im Tagebuch nachlesbar) ---
+HG.hinweis('tb_zweifel', { titel: 'Tagebuch: Carstens erste Monate (Aug.–Dez. 2025)', strang: 'E',
+  text: 'Carsten kaufte das Haus 2025 für ein Drittel des Werts. Jede Nacht gegen drei roch es nach Lavendel. Hinter der Tapete im ersten Stock fand er eine Tür zu einem Zimmer voller verhängter Spiegel. Im Stadtarchiv zählte er die Todesfälle im Haus – und hörte bei dreizehn auf.',
+  stichworte: ['zweifel', 'lavendel', 'tapetentuer', 'dreizehn'] });
 HG.hinweis('fremde_nummern', { titel: 'Das Haus benutzt fremde Nummern', strang: 'E',
-  text: 'Carsten bekam eine SMS „von Peter Gerdes“ („Grüßen Sie Bettina“), die Peter nie geschrieben hat – und später einen Anruf „von Peter“, der längst in Portugal lebt. Das Haus schreibt und ruft mit fremden Nummern und Stimmen an.',
-  stichworte: ['nummern', 'sms', 'peter'] });
-HG.hinweis('tb_dreizehn', { titel: 'Tagebuch: Dreizehn (18.11.2025)', strang: 'D',
-  text: 'Im Stadtarchiv zählte Carsten die Todesfälle im Haus. Er hörte bei dreizehn auf, „weil ich nicht weiterzählen will“.', stichworte: ['zaehlen', 'todesfaelle'] });
-HG.hinweis('tb_mutter', { titel: 'Tagebuch: Mutter ruft an (24.12.2025)', strang: 'E',
-  text: 'Heiligabend 23:40: Carstens Mutter, seit 2011 tot, ruft an – von seiner eigenen Festnetznummer. Das Zimmer oben sei „nicht für ihn gemacht“.', stichworte: ['mutter', 'heiligabend'] });
-HG.hinweis('tb_kaestchen', { titel: 'Tagebuch: Bernwards Kästchen (12.1.2026)', strang: 'E',
-  text: 'Carsten fand hinter der Täfelung im Arbeitszimmer ein Kästchen aus Nussbaum – ohne Schloss, ohne Fuge, innen klappert etwas. Er bekam es nicht auf und brachte es ins Lager: „Sie soll es nicht haben.“', stichworte: ['taefelung', 'nussbaum'] });
-HG.hinweis('tb_bleib', { titel: 'Tagebuch: „Bleib.“ (11.2.2026)', strang: 'E',
-  text: 'Carsten mietete das Lager, weil er glaubte, das Haus lese mit. In seinem Notizbuch stand in seiner eigenen Schrift ein Wort, das er nie geschrieben hatte: „Bleib.“', stichworte: ['bleib'] });
-HG.hinweis('tb_pistole', { titel: 'Tagebuch: Die Pistole (3.4.2026)', strang: 'E',
-  text: 'Nachts schwere Schritte auf der Treppe, dann das Quietschen der Tapetentür. Carsten kaufte eine Pistole ohne Papiere. Die Schritte gingen durch ihn hindurch. Die Waffe ließ er im Lager.', stichworte: ['pistole', 'schritte'] });
-HG.hinweis('tb_brand_plan', { titel: 'Tagebuch: Es muss brennen (19.6.2026)', strang: 'E',
-  text: 'Carsten plante, das Haus mit sechzig Litern Benzin anzuzünden – „die Halle und die Treppe. Und das Zimmer.“', stichworte: ['brand', 'benzin'] });
-HG.hinweis('tb_brand', { titel: 'Carsten konnte das Haus nicht verbrennen', strang: 'E',
-  text: 'Tagebuch, 14.8.2026: Ein falscher Anruf „von Peter Gerdes“ hielt Carsten vier Stunden auf, danach waren die Streichhölzer nass – in einer verschlossenen Packung. Danach wollte er es selbst nicht mehr: Er schrubbte das Benzin weg, summte ein Lied, das er nicht kannte, und brachte die Kanister ins Lager. „Es soll nicht denken, dass ich ihm etwas Böses will.“', stichworte: ['verbrennen', 'nass', 'gescheitert', 'kanister'] });
-HG.hinweis('tb_verliebt', { titel: 'Carsten verliebt sich', strang: 'E',
-  text: 'Tagebuch, September 2026: Seit die Kanister fort sind, ist es still im Haus, morgens steht Kaffee auf dem Tisch, der wie bei seiner Mutter schmeckt. Carsten glaubt, „sie“ sei nie böse gewesen, nur allein. Er nimmt die Laken von den Spiegeln, „dann zeigt sie sich“. Nachts legt sie ihm die Hand auf die Schulter. Das Haus belohnt Gehorsam.', stichworte: ['verliebt', 'kaffee', 'gehorsam'] });
-HG.hinweis('tb_testament', { titel: 'Das Testament war ihr Wunsch', strang: 'E',
-  text: 'Tagebuch, 28.9.2026: Carsten machte sein Testament, weil „sie“ ihn darum bat. Ein Haus brauche Familie; wenn er „hinübergeht“, soll jemand nachkommen, der zu ihm gehört. Ich habe das Haus geerbt, weil SIE es wollte. „Sie wird dich kennenlernen.“', stichworte: ['wunsch', 'familie'] });
-HG.hinweis('von_drueben', { titel: 'Das Rasiermesser kommt „von drüben“', strang: 'E',
-  text: 'Tagebuch, 7.10.2026, mit links geschrieben: „Sie“ will, dass Carsten bei ihr bleibt – drüben. Sie hat ihm ein Rasiermesser mit Perlmuttgriff herübergereicht, Gravur 1906. Niemand hat es gekauft. „Sie sagt, es tut nicht weh. Sie sagt, sie wartet im Zimmer auf mich.“', stichworte: ['drueben', 'geschenk', 'perlmutt'] });
-HG.hinweis('tagebuch_willkommen', { titel: 'Die letzte Seite', strang: 'E',
-  text: 'Auf der letzten Seite von Carstens Tagebuch steht in fremder, altmodischer Handschrift: „Willkommen zu Hause.“ Dieselben Worte wie in der SMS beim ersten Betreten des Hauses.', stichworte: ['willkommen', 'letzte'] });
+  text: 'Carsten bekam eine SMS „von Peter Gerdes“ („Grüßen Sie Bettina“), die Peter nie geschrieben hat. An Heiligabend rief seine Mutter an, seit 2011 tot – von Carstens eigener Festnetznummer. Das Haus schreibt und ruft mit fremden Nummern und Stimmen an.',
+  stichworte: ['nummern', 'sms', 'peter', 'mutter'] });
+HG.hinweis('tb_angst', { titel: 'Tagebuch: Angst (Jan.–Juni 2026)', strang: 'E',
+  text: 'Carsten fand hinter der Täfelung im Arbeitszimmer Bernwards Kästchen und brachte es ins Lager: „Sie soll es nicht haben.“ In seinem Notizbuch stand in seiner Schrift „Bleib.“ Nachts gingen Schritte durch ihn hindurch; er kaufte eine Pistole. Im Juni beschloss er: Das Haus muss brennen.',
+  stichworte: ['angst', 'bleib', 'pistole', 'brennen'] });
+HG.hinweis('tb_wandlung', { titel: 'Tagebuch: Carsten verliebt sich (Aug.–Okt. 2026)', strang: 'E',
+  text: 'Der Brand scheiterte: ein falscher Anruf „von Peter Gerdes“, nasse Streichhölzer in einer verschlossenen Packung. Danach wollte Carsten es selbst nicht mehr. Es wurde still, „sie“ belohnte ihn – Kaffee, eine warme Hand auf der Schulter. Er nahm die Laken von den Spiegeln, machte auf ihren Wunsch sein Testament („Sie wird dich kennenlernen“) und schrieb zuletzt, mit links: Sie habe ihm ein Rasiermesser von drüben gereicht. „Ich habe keine Angst mehr.“',
+  stichworte: ['wandlung', 'verliebt', 'testament', 'drueben', 'verbrennen'] });
 
 // --- Schlussfolgerungen ----------------------------------------------
 HG.schluss('das_haus_ruft_an', {
@@ -102,9 +83,9 @@ HG.schluss('das_haus_ruft_an', {
   text: 'Carsten rief Schmidt nach seinem Tod an. „Peter Gerdes“ schrieb SMS, die er nie geschrieben hat. Es sind immer Stimmen und Nummern, denen man vertraut. Was auf meinem Handy erscheint, muss nicht von dem kommen, dessen Name darübersteht.'
 });
 HG.schluss('wie_das_haus_umdreht', {
-  aus: ['tb_brand', 'tb_verliebt'],
+  aus: ['tb_angst', 'tb_wandlung'],
   titel: 'Wie das Haus Menschen umdreht',
-  text: 'Erst Angst: falsche Anrufe, nasse Streichhölzer. Dann, sobald Carsten nachgab, Belohnung: Ruhe, Kaffee, eine warme Hand auf der Schulter. Am Ende Liebe. Das Haus will Gefährten, keine Opfer.'
+  text: 'Erst Angst: Schritte, „Bleib.“, falsche Anrufe, nasse Streichhölzer. Dann, sobald Carsten nachgab, Belohnung: Ruhe, Kaffee, eine warme Hand auf der Schulter. Am Ende Liebe. Das Haus will Gefährten, keine Opfer.'
 });
 HG.schluss('die_pflegerin', {
   aus: ['pflegerin_kraehe', 'pflegerin_vermisst'],

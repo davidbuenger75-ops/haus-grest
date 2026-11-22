@@ -6,6 +6,8 @@
 
 HG.spielDaten({
   titel: 'Haus Grest',
+  // Spielweite Runde: merkt sich die erste Nacht im Haus (macht u. a. Carstens späte Tagebuchseiten lesbar)
+  jedeRunde: function (api) { if (api.istNacht() && HG.welt.raum().schauplatz === 'haus' && !api.flag('nacht_im_haus')) api.setzeFlag('nacht_im_haus'); },
   startRaum: 'wohnung',          // Prolog: die Wohnung der Spielfigur (js/content/prolog.js)
   startDatum: '2026-11-16',      // [Vorschlag] Montag, 16. November 2026
   startUhrzeit: '08:10',

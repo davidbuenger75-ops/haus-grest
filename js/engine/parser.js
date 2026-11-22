@@ -63,7 +63,7 @@
     { a: 'hinterschauen', w: L('such suche suchen'), vor: L('hinter'), vorPflicht: true, o: 1 },
     { a: 'durchsuchen', w: L('such suche suchen'), p: 'ab', o: 1 },
     { a: 'durchsuchen', w: L('such suche suchen'), o: 1 },
-    { a: 'lesen', w: L('lies lese lesen entziffere entziffer'), o: 1 },
+    { a: 'lesen', w: L('lies lese lesen'), o: 1 },
 
     // Nehmen und Ablegen
     { a: 'abnehmen', w: L('nimm nehme nehm nehmen hol hole'), p: 'ab', o: 1 },
@@ -106,7 +106,8 @@
     { a: 'drehen', w: L('dreh drehe drehen kurbel kurble'), o: 1 },
     { a: 'knacken', w: L('knack knacke knacken'), o: 1, p2: L('mit') },
     { a: 'nahansicht', w: L('nahansicht'), o: 1 },
-    { a: 'ersteHilfe', w: L('versorg versorge versorgen verarzt verarzte verarzten'), o: 0, text: true },
+    { a: 'entziffern', w: L('entziffer entziffere entziffern'), o: '?', text: true },   // gesperrte Buchseiten
+    { a: 'ersteHilfe', w: L('versorg versorge versorgen verarzt verarzte verarzten'), o: '?', text: true },
     { a: 'schieben', w: L('schieb schiebe schieben rueck ruecke'), p: 'beiseite', o: 1 },
     { a: 'schieben', w: L('schieb schiebe schieben rueck ruecke'), p: 'weg', o: 1 },
     { a: 'schieben', w: L('schieb schiebe schieben verschieb verschiebe rueck ruecke verrueck verruecke'), o: 1 },
@@ -283,7 +284,7 @@
     'untersuche …', 'nimm …', 'öffne …', 'schließe …', 'lies …', 'durchsuche …', 'schau', 'schau in …',
     'schau unter …', 'schau hinter …', 'geh …', 'zünde … an', 'lösche …', 'schalte … ein', 'schalte … aus',
     'schließe … auf', 'schließe … ab', 'lege … ab', 'lege … in …', 'lege … auf …', 'gib … an …', 'zeige … …',
-    'sprich mit …', 'frage … nach …', 'benutze …', 'kombiniere … mit …', 'drücke …', 'ziehe an …', 'drehe …', 'drehe … um', 'drehe … auf …', 'knacke …', 'brich … auf', 'versorge wunde', 'erste hilfe',
+    'sprich mit …', 'frage … nach …', 'benutze …', 'kombiniere … mit …', 'drücke …', 'ziehe an …', 'drehe …', 'drehe … um', 'drehe … auf …', 'knacke …', 'brich … auf', 'versorge wunde', 'erste hilfe', 'entziffere …',
     'schiebe …', 'horche', 'lausche an …', 'rieche an …', 'taste …', 'taste umher', 'klopfe an …', 'zerbrich …',
     'reiße an …', 'klettere auf …', 'verstecke dich hinter …', 'warte', 'warte bis …', 'schlafe', 'fahre los',
     'fahre zu …', 'ruf … an', 'fotografiere …', 'schreibe …', 'tippe …', 'winke', 'blättere weiter',
@@ -375,6 +376,11 @@
       }
       // "stelle die ringe auf 1205" -> "drehe die ringe auf 1205" (sonst wäre es "lege … auf …")
       if (/^(stell|stelle|stellen)$/.test(tokens[0]) && /^\d+$/.test(tokens[tokens.length - 1]) && tokens.indexOf('auf') > 0) tokens[0] = 'drehe';
+      // "lies foto 3", "zeig bild 2", "foto 3" -> ein Foto aus der Galerie
+      if (tokens.some(function (t) { return /^(foto|fotos|bild|bilder|galerie)$/.test(t); }) && /^\d+$/.test(tokens[tokens.length - 1]) &&
+          (tokens.length === 2 || /^(lies|les|zeig|zeige|oeffne|schau|betracht|betrachte|sieh)$/.test(tokens[0]))) {
+        return { aktion: 'fotos', eintrag: VERB_MAP.fotos[0], np1: [tokens[tokens.length - 1]], np2: [] };
+      }
       // "mach ein Foto von X" -> "fotografiere X", "mach ein Selfie"
       if (/^mach/.test(tokens[0]) && tokens.some(function (t) { return /^(foto|fotos|bild|aufnahme|selfie)$/.test(t); })) {
         var vonI = tokens.indexOf('von');

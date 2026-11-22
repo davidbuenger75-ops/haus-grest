@@ -9,9 +9,9 @@
     'notarbrief', 'testament',                                   // Prolog
     'brief', 'portraet', 'rasiermesser',                        // Haus Grest (der Bauplan hat eigene Blätter: ding-bauplan-<stockwerk>)
     'grundbuchauszug', 'zeitung_2022', 'trauerkarte', 'foto_gerdes', 'zettel_unna',   // Karton GERDES
-    'artikel_2025', 'visitenkarte', 'expose', 'freigabe',                              // Karton ROMANOW
+    'artikel_2025', 'expose', 'freigabe',                              // Karton ROMANOW
     'archivkopien', 'zeitung_1930', 'foto_1912',                                       // Karton GREST
-    'einkaufszettel', 'taschenspiegel', 'pistole',                                     // Küche, Schuhkarton
+    'taschenspiegel', 'pistole',                                     // Küche, Schuhkarton
     'bauakte',                                                                         // Stadtverwaltung
     'kaestchen', 'zirkel', 'brief_1905', 'ehering'                                     // Bernwards Kästchen
   ].forEach(function (id) { if (HG.daten.dinge[id]) HG.daten.dinge[id].fundstueck = true; });

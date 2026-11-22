@@ -121,13 +121,27 @@
       }).join('<br>'));
     },
 
-    zeigeFotos: function () {
+    /** Galerie; mit Nummer ein einzelnes Foto (Dokumente lassen sich so nachlesen: "lies foto 3"). */
+    zeigeFotos: function (nr) {
       var f = hz().fotos;
       if (!f.length) { HG.ausgabe.text('Noch keine Fotos.'); return; }
+      if (nr) {
+        var x = f[nr - 1];
+        if (!x) { HG.ausgabe.text('Ein Foto Nummer ' + nr + ' gibt es nicht. Du hast ' + f.length + ' Fotos.'); return; }
+        HG.ausgabe.schreibe('handy', '<b>Foto ' + nr + ': ' + x.titel + '</b> <span class="wann">(' + x.zeit + ')</span>' + (x.text ? '<br>' + x.text : ''));
+        if (x.dokument && D(x.id)) {
+          var t = HG.wert(D(x.id).lesbar, HG.api);
+          if (t) HG.ausgabe.schrift(t, D(x.id).schriftart);
+          HG.spiel.zeigeFundBild(x.id, { aktion: 'lesen' });
+        }
+        return;
+      }
       HG.ausgabe.schreibe('handy', '<b>Fotos</b><br>' + f.map(function (x, i) {
-        return (i + 1) + '. <b>' + x.titel + '</b> <span class="wann">(' + x.zeit + ')</span> – ' + x.text;
-      }).join('<br>'));
+        return (i + 1) + '. ' + (x.dokument ? '📄 ' : '') + '<b>' + x.titel + '</b> <span class="wann">(' + x.zeit + ')</span>' + (x.text ? ' – ' + x.text : '');
+      }).join('<br>') + (f.some(function (x) { return x.dokument; }) ? '<br><span class="nebenbei">(„lies foto 3“ zeigt ein Dokument noch einmal)</span>' : ''));
     },
+    /** Wurde dieses Ding schon als Dokument fotografiert? */
+    hatFoto: function (id) { return hz().fotos.some(function (x) { return x.id === id && x.dokument; }); },
 
     /** Foto von einem Ding (id) oder vom Raum (null). */
     foto: function (id, ctx) {
@@ -139,6 +153,18 @@
       } else if (!W.hell() && !(id && W.getragen(id))) {
         titel = id ? T.gross(T.name(id, 'nom', '')) : r.name;
         text = HG.wert(r.fotoDunkel, HG.api) || 'Der Blitz zuckt durch die Dunkelheit. Auf dem Foto: nur Schwärze und ein paar körnige Schatten.';
+      } else if (id && D(id).dokument) {
+        // Dokument: scharf abfotografieren, sofort lesen, Hinweis ins Notizbuch – statt es einzustecken
+        if (H.hatFoto(id)) { HG.ausgabe.text('Du hast ' + T.der(id, 'akk') + ' schon fotografiert. <span class="nebenbei">(„fotos“, dann „lies foto …“)</span>'); return; }
+        var d = D(id), extra = HG.wert(d.foto, HG.api, ctx);
+        hz().fotos.push({ id: id, titel: T.gross(T.name(id, 'nom', '')), text: extra || '', zeit: HG.zeit.text(), dokument: true });
+        HG.ausgabe.text('Klick. Du fotografierst ' + T.der(id, 'akk') + ' – scharf genug zum Nachlesen. <span class="nebenbei">(im Handy unter „fotos“)</span>' +
+          (extra ? ' <span class="nebenbei">Auf dem Display:</span> <i>' + extra + '</i>' : ''));
+        // Dabei liest bzw. betrachtest du es – mit allen Haken des Inhalts (Hinweise, NERVEN-Proben, Bild)
+        HG.spiel.handle({ aktion: d.lesbar ? 'lesen' : 'untersuchen', obj: id, np1: [], np2: [], mehrfach: true });
+        if (d.fotoHinweis) HG.api.hinweis(d.fotoHinweis);
+        if (d.beiFoto) d.beiFoto(HG.api, ctx);
+        return;
       } else if (id) {
         titel = T.gross(T.name(id, 'nom', ''));
         text = HG.wert(D(id).foto, HG.api, ctx) || null;
@@ -161,7 +187,21 @@
   // ------------------------------------------------------------------
   var A = HG.aktionen;
   A.nachrichten = function () { if (!H.dabei()) { HG.ausgabe.text('Du hast dein Handy nicht dabei.'); return; } H.zeigeNachrichten(); };
-  A.fotos = function () { if (!H.dabei()) { HG.ausgabe.text('Du hast dein Handy nicht dabei.'); return; } H.zeigeFotos(); };
+  A.fotos = function (ctx) {
+    if (!H.dabei()) { HG.ausgabe.text('Du hast dein Handy nicht dabei.'); return; }
+    var nr = parseInt(((ctx && ctx.np1) || []).join(''), 10);
+    H.zeigeFotos(nr > 0 ? nr : null);
+  };
+  // Dokumente (dokument: true) wandern nicht ins Inventar – sie werden fotografiert
+  var altNehmen = A.nehmen;
+  A.nehmen = function (ctx) {
+    if (ctx.obj && D(ctx.obj).dokument && !W.getragen(ctx.obj) && H.dabei()) {
+      if (!H.hatFoto(ctx.obj)) HG.ausgabe.text(T.gross(T.der(ctx.obj, 'akk')) + ' lässt du, wo ' + T.pron(ctx.obj, 'nom') + ' ' + T.vb(ctx.obj, 'ist', 'sind') + '. Du fotografierst ' + T.pron(ctx.obj, 'akk') + ' lieber.');
+      H.foto(ctx.obj, ctx);
+      return;
+    }
+    altNehmen(ctx);
+  };
   A.anrufliste = function () { if (!H.dabei()) { HG.ausgabe.text('Du hast dein Handy nicht dabei.'); return; } H.zeigeAnrufe(); };
   A.rangehen = function () { H.rangehen(); };
   A.ablehnen = function () { H.ablehnen(); };

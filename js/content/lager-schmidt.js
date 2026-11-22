@@ -224,7 +224,7 @@
     bei: { winken: function (api) { api.sage('Du winkst zur offenen Tür hinaus.'); bewegung(api); return true; } },
     vorschlaege: function (api) {
       var v = [];
-      if (!api.hatHinweis('tb_kauf')) v.push('lies das tagebuch');
+      if (!HG.zustand.z.buecher.tagebuch) v.push('lies das tagebuch');
       ['karton_gerdes', 'karton_romanow', 'karton_grest', 'karton_kueche'].forEach(function (k) {
         if (!api.eig(k, 'offen')) v.push('öffne ' + HG.daten.dinge[k].kurzwort);
       });
@@ -313,15 +313,15 @@
     beschreibung: 'Vier Umzugskartons mit Edding beschriftet: GERDES, ROMANOW, GREST und KÜCHE / DIVERSES. Du kannst sie einzeln öffnen, z. B. „öffne den gerdes-karton“.'
   });
 
-  function karton(id, aufschrift, kurz, text) {
-    HG.ding(id, {
+  function karton(id, aufschrift, kurz, text, extra) {
+    HG.ding(id, Object.assign({
       nomen: aufschrift + '-Karton', genus: 'm', kurzwort: kurz,
       woerter: ['karton', 'umzugskarton', 'kiste', T(aufschrift) + 'karton', T(aufschrift)],
       ort: 'lager_c214', szenerie: true,
       fest: 'Der Karton ist schwer. Du sichtest ihn lieber hier.',
       behaelter: true, oeffenbar: true, offen: false,
       beschreibung: text
-    });
+    }, extra || {}));
   }
   function T(s) { return HG.text.norm(s).replace(/[^a-z]/g, ''); }
 
@@ -335,13 +335,31 @@
     }
     return t;
   });
-  karton('karton_kueche', 'Küchen', 'küchen-karton', 'Ein Umzugskarton: „KÜCHE / DIVERSES“. Er klappert.');
-  HG.daten.dinge.karton_kueche.woerter.push('diverses', 'kueche', 'hausrat');
+  // Karton KÜCHE / DIVERSES: ein einziges Kulissen-Objekt. Herausnehmbar sind nur das Feinmechaniker-Set
+  // (js/content/kaestchen.js) und der Taschenspiegel; der Einkaufszettel ist nur noch Text beim Durchsuchen.
+  var EINKAUFSZETTEL = 'In der Tasche eines Wintermantels knistert Papier: ein zerknüllter Einkaufszettel in Carstens Schrift. <i>Milch. Brot.</i> Und darunter, dreimal unterstrichen: <b>Spiegel abhängen!!!</b>';
+  karton('karton_kueche', 'Küchen', 'küchen-karton', function (api) {
+    return 'Ein Umzugskarton: „KÜCHE / DIVERSES“. Er klappert.' + (api.eig('karton_kueche', 'offen')
+      ? ' Geschirr in Zeitungspapier, ein Wasserkocher, Krimis, ein Vermessungshandbuch, Weihnachtsdeko, zwei ordentlich gefaltete Wintermäntel – ein ganzes Leben, auf das Nötigste geschrumpft.' : '');
+  }, {
+    woerter: ['karton', 'umzugskarton', 'kiste', 'kuechenkarton', 'kuechen', 'diverses', 'kueche', 'hausrat', 'geschirr', 'wasserkocher', 'krimis', 'buecher',
+      'vermessungshandbuch', 'weihnachtsdeko', 'deko', 'wintermaentel', 'maentel', 'mantel', 'wintermantel', 'manteltasche', 'einkaufszettel'],
+    tasten: function (api) { return api.eig('karton_kueche', 'offen') ? 'Porzellan, Wolle, Papier. ' + EINKAUFSZETTEL : 'Pappe. Drinnen klappert Geschirr.'; },
+    bei: {
+      durchsuchen: function (api) {
+        if (!api.eig('karton_kueche', 'offen')) return false;
+        api.sage('Du wühlst dich durch Geschirr, Bücher und Weihnachtsdeko. ' + EINKAUFSZETTEL);
+        api.setzeFlag('einkaufszettel_gelesen');
+        return false;   // danach wie gewohnt: was man herausnehmen kann
+      }
+    }
+  });
 
   // ===================================================================
   // KARTON „GERDES“
   // ===================================================================
   HG.ding('grundbuchauszug', {
+    dokument: true,   // wird fotografiert (Handy-Galerie + Notizbuch), nicht eingesteckt
     nomen: 'Grundbuchauszug', genus: 'm',
     woerter: ['grundbuchauszug', 'grundbuch', 'auszug', 'kreuze', 'liste', 'eigentuemer'],
     ort: 'karton_gerdes', rel: 'in', schriftart: 'druck',
@@ -372,6 +390,7 @@
   });
 
   HG.ding('zeitung_2022', {
+    dokument: true,   // wird fotografiert (Handy-Galerie + Notizbuch), nicht eingesteckt
     nomen: 'Zeitungsausschnitt', genus: 'm',
     woerter: ['zeitungsausschnitt', 'ausschnitt', 'zeitung', 'meldung', 'abendpost'],
     ort: 'karton_gerdes', rel: 'in', schriftart: 'druck',
@@ -384,14 +403,16 @@
   });
 
   HG.ding('trauerkarte', {
+    dokument: true,   // wird fotografiert (Handy-Galerie + Notizbuch), nicht eingesteckt
     nomen: 'Trauerkarte', genus: 'f',
     woerter: ['trauerkarte', 'karte', 'sterbebild', 'bettina', 'maedchen'],
-    ort: 'karton_gerdes', rel: 'in',
+    ort: null,   // [vorgemerkt] kommt in die Wohnung Gerdes (Unna) – Spielbibel 5b
     beschreibung: 'Eine Trauerkarte für Bettina Gerdes. Das Foto zeigt ein lachendes Mädchen mit Zahnspange. Darunter: <i>„Du bist nur in ein anderes Zimmer gegangen.“</i> Carsten hat das Wort „Zimmer“ eingekreist.',
     lesbar: '<i>Bettina Gerdes · 2005 – 2022</i><br><br>„Du bist nur in ein anderes Zimmer gegangen.“<br><br><span class="rot">Zimmer</span> <i>(von Carsten eingekreist)</i>'
   });
 
   HG.ding('foto_gerdes', {
+    dokument: true,   // wird fotografiert (Handy-Galerie + Notizbuch), nicht eingesteckt
     nomen: 'Familienfoto', genus: 'n',
     woerter: ['familienfoto', 'foto', 'bild', 'abzug', 'familie', 'fenster', 'person'],
     ort: 'karton_gerdes', rel: 'in',
@@ -408,6 +429,7 @@
   });
 
   HG.ding('zettel_unna', {
+    dokument: true,   // wird fotografiert (Handy-Galerie + Notizbuch), nicht eingesteckt
     nomen: 'Zettel', genus: 'm',
     woerter: ['zettel', 'notiz', 'adresse', 'unna'],
     ort: 'karton_gerdes', rel: 'in',
@@ -420,6 +442,7 @@
   // KARTON „ROMANOW“
   // ===================================================================
   HG.ding('artikel_2025', {
+    dokument: true,   // wird fotografiert (Handy-Galerie + Notizbuch), nicht eingesteckt
     nomen: 'Ausdruck', genus: 'm',
     woerter: ['ausdruck', 'artikel', 'onlineartikel', 'kommentare', 'kommentar', 'internet'],
     ort: 'karton_romanow', rel: 'in', schriftart: 'web',
@@ -448,18 +471,12 @@
     }
   });
 
-  HG.ding('visitenkarte', {
-    nomen: 'Visitenkarte', genus: 'f',
-    woerter: ['visitenkarte', 'karte', 'romanow', 'natascha'],
-    ort: 'karton_romanow', rel: 'in',
-    beschreibung: 'Eine schlichte, cremefarbene Visitenkarte.',
-    lesbar: '<b>Natascha Romanow</b><br>Restaurierung historischer Innenräume<br><small>Stuck · Vergoldung · Spiegel</small>', schriftart: 'druck'
-  });
 
   HG.ding('expose', {
+    dokument: true,   // wird fotografiert (Handy-Galerie + Notizbuch), nicht eingesteckt
     nomen: 'Exposé', genus: 'n',
     woerter: ['expose', 'immobilienexpose', 'prospekt', 'makler', 'anzeige', 'ankleidezimmer'],
-    ort: 'karton_romanow', rel: 'in', schriftart: 'druck',
+    ort: null,   // [vorgemerkt] kommt ins Haus Grest – Spielbibel 5b schriftart: 'druck',
     beschreibung: 'Ein Immobilien-Exposé vom Juli 2025: „Jugendstil-Villa mit Charakter, sofort bezugsfrei“. Hochglanzfotos von Halle, Treppe, Salon.',
     lesbar: '<b>Jugendstil-Villa mit Charakter, sofort bezugsfrei</b><br>Ulmenweg 12 · Dortmund-Kirchhörde · Baujahr 1900 · denkmalgeschützt<br><br>„Ein Haus, das Geschichten erzählt.“',
     bei: {
@@ -480,6 +497,7 @@
   });
 
   HG.ding('freigabe', {
+    dokument: true,   // wird fotografiert (Handy-Galerie + Notizbuch), nicht eingesteckt
     nomen: 'Freigabe', genus: 'f', adj: ['polizeilich'],
     woerter: ['freigabe', 'bescheid', 'aktenzeichen', 'polizei', 'schreiben'],
     ort: 'karton_romanow', rel: 'in', schriftart: 'druck',
@@ -493,6 +511,7 @@
   // KARTON „GREST“
   // ===================================================================
   HG.ding('archivkopien', {
+    dokument: true,   // wird fotografiert (Handy-Galerie + Notizbuch), nicht eingesteckt
     nomen: 'Archivkopien', genus: 'pl',
     woerter: ['archivkopien', 'kopien', 'bauantrag', 'todesanzeige', 'stadtarchiv'],
     ort: 'karton_grest', rel: 'in', schriftart: 'druck',
@@ -503,9 +522,10 @@
   });
 
   HG.ding('zeitung_1930', {
+    dokument: true,   // wird fotografiert (Handy-Galerie + Notizbuch), nicht eingesteckt
     nomen: 'Zeitungsnotiz', genus: 'f', adj: ['alt'],
     woerter: ['zeitungsnotiz', 'notiz', 'zeitung', 'familiennachrichten', '1930', 'fraktur'],
-    ort: 'karton_grest', rel: 'in', schriftart: 'fraktur',
+    ort: null,   // [vorgemerkt] kommt ins Stadtarchiv – Spielbibel 5b schriftart: 'fraktur',
     beschreibung: 'Die Kopie einer Zeitungsnotiz in Fraktur: Dortmunder Zeitung, 4. März 1930, Familiennachrichten.',
     lesbar: '<i>Dortmunder Zeitung, 4. März 1930 · Familiennachrichten</i><br><br>Nach langem, schwerem Leiden verschied am 1. März unsere Mitbürgerin, Frau <b>Elisabeth Grest</b>, Witwe des Architekten B. Grest. Die Beisetzung findet in aller Stille statt. Von Beileidsbesuchen bittet man abzusehen.<br><br>' +
       'Die langjährige Pflegerin der Verstorbenen wird seit dem vergangenen Herbst vermisst. Zweckdienliche Hinweise nimmt die Polizeiverwaltung entgegen.',
@@ -513,6 +533,7 @@
   });
 
   HG.ding('foto_1912', {
+    dokument: true,   // wird fotografiert (Handy-Galerie + Notizbuch), nicht eingesteckt
     nomen: 'Fotografie', genus: 'f', adj: ['alt'],
     woerter: ['fotografie', 'foto', 'bild', 'rollstuhl', 'pflegerin', 'kraehe', 'rueckseite', 'elisabeth'],
     ort: 'karton_grest', rel: 'in',
@@ -534,31 +555,10 @@
   // ===================================================================
   // KARTON „KÜCHE / DIVERSES“
   // ===================================================================
-  HG.ding('hausrat', {
-    nomen: 'Hausrat', genus: 'm',
-    woerter: ['hausrat', 'geschirr', 'wasserkocher', 'buecher', 'krimis', 'vermessungshandbuch', 'weihnachtsdeko', 'deko', 'zeitungspapier'],
-    ort: 'karton_kueche', rel: 'in', fest: 'Geschirr und Weihnachtsdeko brauchst du nicht.',
-    beschreibung: 'Geschirr in Zeitungspapier, ein Wasserkocher, Krimis, ein Vermessungshandbuch, ein Karton Weihnachtsdeko. Ein ganzes Leben, auf das Nötigste geschrumpft.'
-  });
-  HG.ding('maentel', {
-    nomen: 'Wintermäntel', genus: 'pl',
-    woerter: ['wintermaentel', 'maentel', 'mantel', 'wintermantel', 'manteltasche', 'tasche'],
-    ort: 'karton_kueche', rel: 'in', fest: 'Die Mäntel lässt du hier.',
-    beschreibung: 'Zwei Wintermäntel, ordentlich gefaltet. In einer Tasche knistert Papier.',
-    tasten: 'In einer Manteltasche knistert Papier.'
-  });
-  HG.ding('einkaufszettel', {
-    nomen: 'Einkaufszettel', genus: 'm',
-    woerter: ['einkaufszettel', 'zettel', 'einkaufsliste'],
-    ort: 'karton_kueche', rel: 'in',
-    versteckt: { bei: 'maentel', wie: ['durchsuchen', 'in', 'tasten', 'untersuchen'], text: 'In einer Manteltasche steckt ein zerknüllter Einkaufszettel.' },
-    beschreibung: 'Ein zerknüllter Einkaufszettel.',
-    lesbar: 'Milch<br>Brot<br><b>Spiegel abhängen!!!</b>'
-  });
   HG.ding('handtuchbuendel', {
     nomen: 'Handtuchbündel', genus: 'n',
     woerter: ['handtuchbuendel', 'handtuch', 'buendel', 'klebeband', 'paket'],
-    ort: 'karton_kueche', rel: 'in',
+    ort: 'karton_kueche', rel: 'in', fest: 'Das Handtuch lässt du im Karton.',
     behaelter: true, oeffenbar: true, offen: false, zeigeZustand: false,
     beschreibung: function (api) { return api.eig('handtuchbuendel', 'offen') ? 'Ein ausgewickeltes Handtuch, Reste von Klebeband daran.' : 'Etwas Flaches, Hartes, fest in ein Handtuch gewickelt und mit Klebeband umwickelt. Viel Klebeband. Als hätte jemand verhindern wollen, dass es jemals wieder ausgepackt wird.'; },
     bei: {
@@ -585,6 +585,12 @@
   // ===================================================================
   // CARSTENS TAGEBUCH
   // ===================================================================
+  // Ab dem 14.8.2026 wird Carstens Schrift fahrig, Seiten kleben aneinander (David, 22.11.2026). Lesbar nach der
+  // ersten Nacht im Haus (Flag nacht_im_haus, js/content/allgemein.js) oder per Probe: „entziffere tagebuch“.
+  var SPAET = {
+    frei: function (api) { return !!api.flag('nacht_im_haus'); },
+    text: '<i>(Hier wird die Schrift fahrig. Die Zeilen laufen ineinander, Buchstaben kippen nach links, als hätte Carsten mit der falschen Hand geschrieben. Einige Seiten kleben aneinander, als wäre etwas darüber verschüttet worden. Du kannst kaum ein Wort entziffern.)</i>'
+  };
   HG.ding('tagebuch', {
     nomen: 'Tagebuch', genus: 'n', adj: ['schwarz'],
     woerter: ['tagebuch', 'notizbuch', 'buch', 'heft', 'gummiband', 'eintraege'],
@@ -593,40 +599,49 @@
     foto: 'Das Tagebuch auf dem Campingtisch. Auf dem Foto ist es aufgeschlagen, obwohl du es zugeklappt hast.',
     buch: {
       titel: 'Carstens Tagebuch',
+      entziffern: {
+        wer: ['ve', 'geschichte'], mod: -20, modGrund: 'fahrige Schrift, verklebte Seiten', grund: 'Tagebuch entziffern', dauer: 30,
+        erfolg: 'Vorsichtig löst du die verklebten Seiten voneinander. Dann setzt du Carstens Buchstaben zusammen, Zeile für Zeile, bis sie Sinn ergeben.',
+        misserfolg: 'Die Seiten reißen fast, als du sie trennen willst, und die Buchstaben verschwimmen dir vor den Augen. Nicht jetzt.',
+        tipps: {
+          2: 'Vielleicht verstehst du Carstens fahrige Schrift besser, wenn du selbst erlebt hast, was er erlebt hat. Eine Nacht in dem Haus …',
+          3: 'Nach einer Nacht im Haus wirst du diese Seiten lesen können. Oder du versuchst es später noch einmal – ausgeruht.'
+        }
+      },
       dauerProSeite: 2,
       schrift: 'hand',
       seiten: [
-        { titel: '3. August 2025', hinweis: 'tb_kauf',
+        { titel: '3. August 2025',
           text: 'Heute den Kaufvertrag unterschrieben. Ein Jugendstilhaus in Kirchhörde für ein Drittel des Werts. Der Makler hat beim Unterschreiben nicht einmal hochgesehen. Er hat nur gesagt, die Vorbesitzerin sei „verunglückt“ und das Haus sei „etwas eigen“. Ich bin achtundfünfzig und habe zum ersten Mal ein eigenes Haus. Mutter wäre stolz.' },
-        { titel: '21. August 2025', hinweis: 'tb_lavendel',
+        { titel: '21. August 2025',
           text: 'Jede Nacht gegen drei: Lavendel. So intensiv, als stünde jemand mit einem Flakon neben dem Bett. Ich besitze nichts mit Lavendel. Tagsüber riecht das Haus nach Staub und Bohnerwachs.' },
-        { titel: '9. September 2025', hinweis: 'tb_spiegelzimmer',
+        { titel: '9. September 2025',
           text: 'Hinter der Tapete im ersten Stock eine Tür gefunden. Dahinter ein Zimmer voller Spiegel, an allen vier Wänden und an der Decke. Jeder Spiegel ist mit einem Bettlaken verhängt, mit Reißzwecken festgemacht. Das war sicher die Romanow. Ich habe ein Laken abgenommen. Hinter mir war nichts. Ich habe es trotzdem wieder aufgehängt.' },
-        { titel: '2. Oktober 2025', hinweis: 'fremde_nummern',
+        { titel: '2. Oktober 2025',
           text: 'Die Nachbarin, Frau Kolbe, hat mir erzählt, dass vor der Romanow ein Mädchen in diesem Haus gestorben ist. Die Tochter der Gerdes. Im Zimmer „mit den Spiegeln“. Ich habe Peter Gerdes angerufen. Er hat aufgelegt, sobald ich den Straßennamen sagte. Eine Stunde später kam eine SMS von seiner Nummer: „Sie wohnen jetzt bei ihr. Grüßen Sie Bettina.“<br>Ich habe zurückgerufen. Er hat geschworen, dass er nichts geschrieben hat.' },
-        { titel: '18. November 2025', hinweis: 'tb_dreizehn',
+        { titel: '18. November 2025',
           text: 'Stadtarchiv. Das Haus wurde 1900 von einem Architekten namens Bernward Grest gebaut, für seine Frau Elisabeth. Er stirbt 1905, sie 1930. Dazwischen und danach: Ich habe angefangen, Todesfälle zu zählen. Ich höre bei dreizehn auf, weil ich nicht weiterzählen will.' },
-        { titel: '24. Dezember 2025', hinweis: 'tb_mutter',
+        { titel: '24. Dezember 2025', hinweis: ['tb_zweifel', 'fremde_nummern'],   // Ende Abschnitt 1
           text: 'Heiligabend. Um 23:40 ruft Mutter an. Mutter ist seit 2011 tot. Sie hat gesagt, ich soll nicht so viel im ersten Stock sein, das Zimmer sei „nicht für mich gemacht“. Ihre Stimme, ihr Lachen am Ende. Die Nummer im Display: meine eigene Festnetznummer.' },
-        { titel: '12. Januar 2026', hinweis: 'tb_kaestchen',
+        { titel: '12. Januar 2026',
           text: 'Hinter der Täfelung im Arbeitszimmer: ein Kästchen aus Nussbaum mit Messingbeschlägen. Kein Schloss, keine Fuge, nichts. Es ist schwerer, als es sein dürfte, und wenn man es schüttelt, klappert etwas Kleines. Bernward hat es gebaut, das sieht man. Ich bekomme es nicht auf. Ich bringe es ins Lager. Sie soll es nicht haben.' },
-        { titel: '11. Februar 2026', hinweis: 'tb_bleib',
+        { titel: '11. Februar 2026',
           text: 'Ich habe den Lagerraum bei Schmidt gemietet. Alles, was ich über das Haus herausfinde, kommt hierher. Im Haus habe ich das Gefühl, dass es mitliest. Gestern Nacht lag mein Notizbuch aufgeschlagen auf dem Küchentisch, an einer Stelle, an der ich nichts geschrieben hatte. In meiner Handschrift stand dort: „Bleib.“' },
-        { titel: '3. April 2026', hinweis: 'tb_pistole',
+        { titel: '3. April 2026',
           text: 'Jemand geht nachts die Treppe hinauf. Jede Nacht, die gleichen schweren Schritte, dann das Quietschen der Tapetentür. Ich habe mir in der Nordstadt eine Pistole besorgt, ohne Papiere, ich weiß. Gestern habe ich mit der Waffe in der Hand oben gestanden. Die Schritte sind durch mich hindurchgegangen. Die Waffe bleibt hier im Lager. Im Haus traue ich mir selbst nicht mehr, wenn ich sie bei mir habe.' },
-        { titel: '19. Juni 2026', hinweis: 'tb_brand_plan',
+        { titel: '19. Juni 2026', hinweis: 'tb_angst',   // Ende Abschnitt 2
           text: 'Ich verstehe es nicht, und ich werde es nicht verstehen. Also muss es brennen. Drei Kanister, sechzig Liter. Das reicht für die Halle und die Treppe. Und das Zimmer.' },
-        { titel: '14. August 2026', hinweis: ['tb_brand', 'fremde_nummern'],
+        { titel: '14. August 2026', gesperrt: SPAET,
           text: 'Ich habe es versucht. Die Kanister standen in der Halle, das Benzin war verteilt. Dann klingelte mein Handy: Peter Gerdes, weinend, er sei in der Nähe, ob er vorbeikommen dürfe. Er wolle nur noch einmal Bettinas Zimmer sehen. Ich habe gewartet, vier Stunden lang. Peter Gerdes lebt seit Januar in Portugal. Als ich die Streichhölzer nehmen wollte, waren sie nass. Alle. In einer verschlossenen Packung.<br>Ich habe den ganzen Abend den Boden geschrubbt, bis man nichts mehr gerochen hat. Dabei habe ich gesummt. Ich weiß nicht, woher ich das Lied kenne.<br>Die Kanister bringe ich morgen ins Lager. Ich will nicht, dass sie im Haus stehen. Es soll nicht denken, dass ich ihm etwas Böses will.' },
-        { titel: '2. September 2026', hinweis: 'tb_verliebt',
+        { titel: '2. September 2026', gesperrt: SPAET,
           text: 'Seit ich die Kanister weggebracht habe, ist es still. Keine Schritte mehr. Kein Lavendel um drei Uhr. Stattdessen steht morgens Kaffee auf dem Tisch. Ich trinke keinen Kaffee, aber ich habe ihn getrunken. Er schmeckte wie früher bei Mutter.<br>Ich glaube, ich habe sie die ganze Zeit falsch verstanden. Sie war nie böse. Sie war nur allein. Hundert Jahre allein in diesem Zimmer.' },
-        { titel: '19. September 2026', hinweis: 'tb_verliebt',
+        { titel: '19. September 2026', gesperrt: SPAET,
           text: 'Ich habe die Laken von den Spiegeln genommen. Alle. Die Romanow hatte keine Ahnung. Man darf sie nicht verhängen, man muss sie ansehen, dann zeigt sie sich. Heute Nacht hat sie hinter mir gestanden, ganz nah, und mir die Hand auf die Schulter gelegt. Sie war warm.<br>Ich gehe kaum noch raus. Wozu auch.' },
-        { titel: '28. September 2026', hinweis: 'tb_testament',
+        { titel: '28. September 2026', gesperrt: SPAET,
           text: 'Testament gemacht. Sie hat mich darum gebeten. Sie sagt, ein Haus braucht Familie, und wenn ich einmal „hinübergehe“, soll jemand nachkommen, der zu mir gehört.<br>Es gibt nur noch {g:einen|eine|eine(n)}. Wir haben uns einmal gesehen, auf Tante Gerdas Siebzigstem; du warst vielleicht acht. Du erinnerst dich bestimmt nicht an mich. Sie sagt, das macht nichts. Sie wird dich kennenlernen.<br>Das Lager behalte ich trotzdem. Nur für den Fall. Ich weiß nicht mehr, für welchen Fall.' },
-        { titel: '7. Oktober 2026', hinweis: 'von_drueben',
+        { titel: '7. Oktober 2026', gesperrt: SPAET, hinweis: 'tb_wandlung',   // Ende Abschnitt 3
           text: '<i>(Die Schrift ist kaum lesbar, als wäre sie mit links geschrieben.)</i><br>Sie mag mich jetzt. Sie will, dass ich bei ihr bleibe. Nicht nur in diesem Haus – bei IHR. Drüben.<br>Heute Morgen lag ein Geschenk auf dem Waschbecken. Ein Rasiermesser mit Perlmuttgriff, auf der Klinge eingraviert: 1906. Es ist so schön. Niemand hat es gekauft. Es ist von DRÜBEN, sie hat es mir herübergereicht.<br>Sie sagt, es tut nicht weh. Sie sagt, sie wartet im Zimmer auf mich.<br>Ich habe keine Angst mehr.' },
-        { titel: 'Letzte Seite', schrift: 'druck', hinweis: 'tagebuch_willkommen',
+        { titel: 'Letzte Seite', schrift: 'druck',
           // erscheint erst, wenn die Spielfigur das Haus mindestens einmal betreten hat
           bedingung: function () { return !!HG.zustand.z.besucht.halle; },
           text: '<i>(Danach sind die Seiten leer. Auf der allerletzten Seite steht eine einzige Zeile in sauberer, altmodischer Handschrift, die nicht Carsten gehört.)</i><br><br><span style="font-family:\'Segoe Script\',cursive;font-size:1.3em">Willkommen zu Hause.</span>',
@@ -638,6 +653,13 @@
   // Alte Spielstände (bis Version 4): Am 22.11.2026 kamen die Einträge 2.9. und 19.9.2026 hinzu.
   // Die Seiten ab "28. September" (alt 10, 11, 12) rücken deshalb um zwei nach hinten.
   // Bis Version 5: Am 22.11.2026 kam der Eintrag vom 12. Januar 2026 hinzu (Seite 7) – alles ab „11. Februar“ rückt um eins.
+  HG.zustand.migration(6, function (z) {
+    var st = z.buecher && z.buecher.tagebuch, g = (st && st.gelesen) || [];
+    function gib(id) { if (z.hinweise.indexOf(id) < 0) { z.hinweise.push(id); z.gesehen[id] = true; } }
+    if (g.indexOf(5) >= 0) { gib('tb_zweifel'); gib('fremde_nummern'); }
+    if (g.indexOf(9) >= 0) gib('tb_angst');
+    if (g.indexOf(14) >= 0) { gib('tb_wandlung'); if (st) st.entziffert = true; }
+  });
   HG.zustand.migration(5, function (z) {
     var st = z.buecher && z.buecher.tagebuch;
     if (st && st.gelesen) st.gelesen = st.gelesen.map(function (i) { return i >= 6 ? i + 1 : i; });
