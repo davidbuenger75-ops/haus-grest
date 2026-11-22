@@ -289,8 +289,9 @@ HG.ding('bauplan', {
   nomen: 'Bauplan', genus: 'm',
   woerter: ['bauplan', 'plan', 'zeichnung', 'grundriss', 'entwurf', 'bogen', 'signatur'], adjektive: ['vergilbt', 'gross'],
   ort: 'schreibtisch', rel: 'auf', beschreibbar: true,
-  beschreibung: 'Ein großer, vergilbter Bogen: der Grundriss dieses Hauses, mit Tusche gezeichnet und sauber bemaßt. In der rechten unteren Ecke steht in sorgfältiger Schrift: „Haus Grest. Entwurf und Ausführung: B. Grest, Architekt.“ Darunter, kleiner und mit anderer Tinte: „Für E.“',
-  lesbar: '„Haus Grest. Entwurf und Ausführung: B. Grest, Architekt.“<br>Darunter, kleiner und mit anderer Tinte: „Für E.“',
+  plan: 'haus',   // Bernwards Bauplan von 1899 (js/content/grundriss.js) – zugleich die Karte des Hauses
+  beschreibung: 'Vier große, vergilbte Bögen, mit Reißzwecken zusammengeheftet: die Grundrisse dieses Hauses – Keller, Erdgeschoss, Obergeschoss, Dach –, mit Tusche gezeichnet und sauber bemaßt. Im Stempelfeld jedes Blatts steht in sorgfältiger Schrift: „Entwurf und Ausführung: B. Grest, Architekt“. Darunter, kleiner und mit anderer Tinte: „Für E.“',
+  lesbar: '„Villa für die Eheleute Grest · Kirchhörde. Entwurf und Ausführung: B. Grest, Architekt. Dortmund, im Mai 1899.“<br>Darunter, kleiner und mit anderer Tinte: „Für E.“',
   hinweis: 'bauplan_signatur', hinweisBei: 'untersuchen',
   bei: { lesen: function (api) { api.hinweis('bauplan_signatur'); return false; } }
 });

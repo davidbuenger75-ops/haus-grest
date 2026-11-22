@@ -153,6 +153,25 @@
         });
       });
       $('karte-zu').addEventListener('click', function () { $('karte').close(); A.fokus(); });
+      // Bauplan: Stockwerk wechseln, Raum antippen
+      $('karte-bild').addEventListener('click', function (e) {
+        var plan = A._plan && HG.daten.plaene[A._plan]; if (!plan) return;
+        var s = e.target.closest('[data-stock]');
+        if (s && s.getAttribute('data-stock')) { A.zeigePlan(plan, s.getAttribute('data-stock')); return; }
+        var f = e.target.closest('.pr-flaeche');
+        if (f) {
+          var zst = { hier: 'Hier bist du.', besucht: 'Schon betreten.', neu: 'Noch nicht betreten.' }[f.getAttribute('data-zustand')];
+          $('karte-bild').querySelector('.plan-info').innerHTML = '<b>' + T.esc(f.getAttribute('data-name')) + '</b> – ' + zst;
+          $('karte-bild').querySelectorAll('.pr-flaeche.gewaehlt').forEach(function (x) { x.classList.remove('gewaehlt'); });
+          $('karte-bild').querySelectorAll('.pr-flaeche[data-name="' + f.getAttribute('data-name').replace(/"/g, '\\"') + '"]').forEach(function (x) { x.classList.add('gewaehlt'); });
+        }
+      });
+      $('karte').addEventListener('keydown', function (e) {
+        var plan = A._plan && HG.daten.plaene[A._plan];
+        if (!plan || !$('karte').classList.contains('mit-plan') || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight' && e.key !== 'PageUp' && e.key !== 'PageDown')) return;
+        var i = plan.stockwerke.map(function (s) { return s.id; }).indexOf(A._planStock) + (e.key === 'ArrowRight' || e.key === 'PageUp' ? 1 : -1);
+        if (i >= 0 && i < plan.stockwerke.length) { A.zeigePlan(plan, plan.stockwerke[i].id); e.preventDefault(); }
+      });
       $('grossbild').addEventListener('click', function () { $('grossbild').close(); A.fokus(); });
 
       // Ton: Browser erlauben ihn erst nach einer Eingabe des Spielers
@@ -373,6 +392,11 @@
         case 'ende': el = document.createElement('div'); el.className = 'ende'; el.innerHTML = b.html; break;
         case 'wurf': el = A.wurfBlock(b); break;
         case 'abbildung': el = A.abbildung(b); break;
+        case 'planknopf':
+          el = document.createElement('p'); el.className = 'planknopf';
+          el.innerHTML = '<button type="button">🗺 ' + b.html + ' ansehen</button> <span class="nebenbei">(„karte“ zeigt ihn jederzeit)</span>';
+          el.querySelector('button').addEventListener('click', function () { var p = HG.daten.plaene[b.plan]; if (p) A.zeigePlan(p); });
+          break;
         case 'schock': el = document.createElement('p'); el.className = 'schock'; el.innerHTML = b.html; break;
         case 'buchinhalt': el = document.createElement('div'); el.className = 'auswahl'; el.innerHTML = b.html; break;
         case 'handy': case 'anruf': case 'auswahl':
@@ -664,6 +688,10 @@
     },
 
     zeigeKarte: function () {
+      // Kennt der Spieler den Bauplan dieses Schauplatzes, ist der Plan die Karte (js/engine/plan.js)
+      var r = HG.welt.raum(), plan = r && HG.plan && HG.plan.fuerSchauplatz(r.schauplatz);
+      if (plan && HG.plan.bekannt(plan)) { A.zeigePlan(plan); return; }
+      A._plan = null;
       var k = HG.welt.kartenDaten();
       var B = 150, H = 70, GX = 210, GY = 130;
       var pos = {};
@@ -699,6 +727,52 @@
       });
       $('karte-bild').innerHTML = '<svg viewBox="' + vb + '" role="img" aria-label="Karte der bekannten Räume">' +
         '<g class="wege">' + linien + '</g>' + kasten + '</svg>';
+      $('karte').classList.remove('mit-plan');
+      if (!$('karte').open) {
+        if ($('karte').showModal) $('karte').showModal(); else $('karte').setAttribute('open', '');
+      }
+    },
+
+    // ---------------- Bauplan als Karte ----------------
+    // Blatt = Fundstück-Foto ding-<ding>-<stockwerk> (falls vorhanden), sonst das gezeichnete SVG.
+    // Darüber die Raumnamen: unbesucht = Name aus dem Plan, besucht = Name im Spiel, aktueller Raum hervorgehoben.
+    zeigePlan: function (plan, stockId) {
+      var z = Z(), hier = HG.plan.finde(plan, z.raum);
+      if (A._plan !== plan.id) A._planStock = null;
+      A._plan = plan.id;
+      var st = plan.stockwerke.filter(function (s) { return s.id === (stockId || A._planStock); })[0] ||
+        (hier && hier.stock) || plan.stockwerke.filter(function (s) { return s.id === 'eg'; })[0] || plan.stockwerke[0];
+      A._planStock = st.id;
+      var reiter = plan.stockwerke.map(function (s) {
+        return '<button type="button" data-stock="' + s.id + '"' + (s.id === st.id ? ' aria-current="true" class="an"' : '') + '>' + T.esc(s.kurz || s.name) +
+          (hier && hier.stock.id === s.id ? ' <span class="plan-du" aria-label="du bist hier">●</span>' : '') + '</button>';
+      }).join('');
+      var i = plan.stockwerke.indexOf(st);
+      var ebene = '';
+      st.raeume.forEach(function (raum) {
+        var lage = HG.plan.lage(raum), besucht = !!(raum.raum && z.besucht[raum.raum]), ist = raum.raum && raum.raum === z.raum;
+        var name = HG.plan.name(raum), kl = (besucht ? ' besucht' : '') + (ist ? ' hier' : '');
+        lage.flaechen.forEach(function (f) {
+          ebene += '<button type="button" class="pr-flaeche' + kl + '" data-name="' + T.esc(name) + '" data-zustand="' + (ist ? 'hier' : besucht ? 'besucht' : 'neu') + '"' +
+            ' style="left:' + f.l.toFixed(2) + '%;top:' + f.t.toFixed(2) + '%;width:' + f.w.toFixed(2) + '%;height:' + f.h.toFixed(2) + '%" aria-label="' + T.esc(name) + '"></button>';
+        });
+        ebene += '<span class="pr-name' + kl + (raum.klein ? ' klein' : '') + '" style="left:' + lage.label.x.toFixed(2) + '%;top:' + lage.label.y.toFixed(2) + '%">' +
+          (ist ? '<b class="pr-du">●</b> ' : besucht ? '<span class="pr-haken">✓</span> ' : '') + T.esc(name) + '</span>';
+      });
+      $('karte-bild').innerHTML = '<div class="plan">' +
+        '<div class="plan-kopf"><button type="button" class="plan-blaettern" data-stock="' + (i > 0 ? plan.stockwerke[i - 1].id : '') + '"' + (i > 0 ? '' : ' disabled') + ' aria-label="Stockwerk darunter">‹</button>' +
+        '<div class="plan-reiter" role="tablist">' + reiter + '</div>' +
+        '<button type="button" class="plan-blaettern" data-stock="' + (i < plan.stockwerke.length - 1 ? plan.stockwerke[i + 1].id : '') + '"' + (i < plan.stockwerke.length - 1 ? '' : ' disabled') + ' aria-label="Stockwerk darüber">›</button></div>' +
+        '<div class="plan-blatt"><div class="plan-grund">' + HG.plan.svg(plan, st.id) + '</div><div class="plan-ebene">' + ebene + '</div></div>' +
+        '<p class="plan-info" aria-live="polite">' + T.esc(st.name) + ' – tippe auf einen Raum. <span class="pr-legende"><b class="pr-du">●</b> du bist hier · <span class="pr-haken">✓</span> betreten</span></p></div>';
+      $('karte').classList.add('mit-plan');
+      // Fundstück-Foto des Blatts, wenn vorhanden (ersetzt die Zeichnung)
+      var token = (A._planToken = (A._planToken || 0) + 1);
+      HG.medien.erstesBild([HG.plan.bildName(plan, st.id)], function (url) {
+        if (!url || token !== A._planToken) return;
+        var g = $('karte-bild').querySelector('.plan-grund');
+        if (g) g.innerHTML = '<img src="' + url + '" alt="Bauplan, ' + T.esc(st.name) + '">';
+      });
       if (!$('karte').open) {
         if ($('karte').showModal) $('karte').showModal(); else $('karte').setAttribute('open', '');
       }

@@ -1,6 +1,72 @@
 // Automatisch erzeugt von tools/bilder.js – nicht von Hand bearbeiten.
 window.KANDIDATEN = [
   {
+    "name": "ding-bauplan-dach",
+    "titel": "Bauplan Dachgeschoss",
+    "prompt": "realistisches Foto eines echten Architekten-Bauplans von 1899, Tusche auf vergilbtem Zeichenkarton, leichte Aquarell-Lavierung, Stockflecken, Knicke, Reißzwecklöcher in den Ecken, Layout und Linien exakt beibehalten, kein neuer Text",
+    "kandidaten": [
+      "ding-bauplan-dach-1.jpg",
+      "ding-bauplan-dach-2.jpg"
+    ],
+    "gewaehlt": "ding-bauplan-dach.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-bauplan-eg",
+    "titel": "Bauplan Erdgeschoss",
+    "prompt": "realistisches Foto eines echten Architekten-Bauplans von 1899, Tusche auf vergilbtem Zeichenkarton, leichte Aquarell-Lavierung, Stockflecken, Knicke, Reißzwecklöcher in den Ecken, Layout und Linien exakt beibehalten, kein neuer Text",
+    "kandidaten": [
+      "ding-bauplan-eg-1.jpg",
+      "ding-bauplan-eg-2.jpg"
+    ],
+    "gewaehlt": "ding-bauplan-eg.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-bauplan-keller",
+    "titel": "Bauplan Kellergeschoss",
+    "prompt": "realistisches Foto eines echten Architekten-Bauplans von 1899, Tusche auf vergilbtem Zeichenkarton, leichte Aquarell-Lavierung, Stockflecken, Knicke, Reißzwecklöcher in den Ecken, Layout und Linien exakt beibehalten, kein neuer Text",
+    "kandidaten": [
+      "ding-bauplan-keller-1.jpg",
+      "ding-bauplan-keller-2.jpg"
+    ],
+    "gewaehlt": "ding-bauplan-keller.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-bauplan-og",
+    "titel": "Bauplan Obergeschoss",
+    "prompt": "realistisches Foto eines echten Architekten-Bauplans von 1899, Tusche auf vergilbtem Zeichenkarton, leichte Aquarell-Lavierung, Stockflecken, Knicke, Reißzwecklöcher in den Ecken, Layout und Linien exakt beibehalten, kein neuer Text",
+    "kandidaten": [
+      "ding-bauplan-og-1.jpg",
+      "ding-bauplan-og-2.jpg"
+    ],
+    "gewaehlt": "ding-bauplan-og.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-foto_1912",
+    "titel": "Fotografie um 1912 (Vorderseite)",
+    "prompt": "Verblichenes Sepia-Foto von etwa 1912 mit abgestoßenen Ecken und Knick, darauf: eine junge Frau im hellen Kleid im Rollstuhl in einem Garten vor einer Jugendstilvilla, hinter ihr eine alte Frau in schwarzem Tuch, deren Gesicht verwischt ist, als hätte sie sich bei der Belichtung bewegt, auf ihrer Schulter sitzt eine Krähe – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, kein Text",
+    "kandidaten": [
+      "ding-foto_1912-1.jpg",
+      "ding-foto_1912-2.jpg"
+    ],
+    "gewaehlt": "ding-foto_1912.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-foto_1912-rueckseite",
+    "titel": "Fotografie um 1912 (Rückseite)",
+    "prompt": "Rückseite eines alten Fotos, vergilbter Karton, Stempel eines Fotoateliers, eine Zeile verblasste deutsche Handschrift mit Tinte – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-foto_1912-rueckseite-1.jpg",
+      "ding-foto_1912-rueckseite-2.jpg"
+    ],
+    "gewaehlt": "ding-foto_1912-rueckseite.jpg",
+    "vorlage": null
+  },
+  {
     "name": "raum-halle",
     "titel": "Eingangshalle",
     "prompt": "Hohe Eingangshalle einer Jugendstilvilla bei Tag, dunkle Holztäfelung, breite Treppe mit staubigem Geländer ins Obergeschoss, buntes halbrundes Oberlicht über der Haustür, abgetretener Teppich, alte Kommode mit Kerze im Messingleuchter, Eichentür links, dunkler Durchgang zum Flur – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",

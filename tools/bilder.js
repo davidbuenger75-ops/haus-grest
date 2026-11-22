@@ -16,6 +16,8 @@
  *   node tools/bilder.js auswahl             Auswahl-Seite im Browser öffnen (Übernehmen per Klick)
  *   node tools/bilder.js nimm halle 2        Kandidat 2 als assets/bilder/raum-halle.jpg übernehmen
  *   node tools/bilder.js nimm halle-nacht 1  Kandidat 1 als assets/bilder/raum-halle-nacht.jpg übernehmen
+ *   node tools/bilder.js bauplan-eg …        Tabelle 2b: Fundstücke aus einer Vorlage (z. B. Grundriss-PNG aus
+ *                                            tools/grundriss.js) per Bildbearbeitung – die Anweisung gilt wörtlich
  *
  * Vor jedem API-Aufruf werden Anzahl und geschätzte Kosten angezeigt und es wird nachgefragt
  * (außer mit --ja).
@@ -76,7 +78,7 @@ function leseMedienliste() {
   for (const zeile of md.split(/\r?\n/)) {
     const ueberschrift = zeile.match(/^##\s+(\d+b?)\./);
     if (ueberschrift) { abschnitt = ueberschrift[1]; continue; }
-    if (!['1', '1b', '2', '3'].includes(abschnitt) || !zeile.startsWith('|')) continue;
+    if (!['1', '1b', '2', '2b', '3'].includes(abschnitt) || !zeile.startsWith('|')) continue;
 
     const zellen = zeile.split('|').slice(1, -1).map(s => s.trim());
     const i = zellen.findIndex(z => /^`(raum|ding|ort)-[^`]+`$/.test(z));
@@ -85,6 +87,13 @@ function leseMedienliste() {
     const roh = zellen[zellen.length - 1].replace(/\s*\*\([^)]*\)\*\s*/g, ' ').trim();   // "*(Vorschlag)*" weg
     if (!roh) continue;
 
+    // Tabelle 2b: Vorlage (Bilddatei) + wörtliche Anweisung für die Bildbearbeitung, kein angehängter Stil
+    if (abschnitt === '2b') {
+      const vorlage = (zellen.find(z => /^`[^`]+.(png|jpg|jpeg|webp)`$/.test(z)) || '').slice(1, -1);
+      if (!vorlage) continue;
+      eintraege.push({ name, titel: zellen[0] || name, art: 'ding', motiv: roh, stil: '', referenz: false, vorlage });
+      continue;
+    }
     if (abschnitt === '1b') {
       const standard = /^Standard (Nacht|Abend)$/i.exec(roh);
       varianten.push({
@@ -494,10 +503,17 @@ async function main() {
   // 1. Tagbilder
   for (const e of tagbilder) {
     if (!offen(e.name)) continue;
-    const prompt = (eigenesMotiv || e.motiv) + ' – ' + (eigenerStil || e.stil);
+    const stil = eigenerStil || e.stil;
+    const prompt = (eigenesMotiv || e.motiv) + (stil ? ' – ' + stil : '');
+    let eingabeBild;
+    if (e.vorlage) {
+      const pfad = path.join(WURZEL, e.vorlage);
+      if (!fs.existsSync(pfad)) { console.log('Vorlage fehlt: ' + e.vorlage + ' (erst „node tools/grundriss.js“ ausführen) – übersprungen.'); continue; }
+      eingabeBild = leseBild(pfad);
+    }
     auftraege.push({
       name: e.name,
-      auftrag: { text: prompt, art: e.art, stilbild: e.referenz ? stilbild : null },
+      auftrag: { text: prompt, art: e.art, stilbild: e.referenz ? stilbild : null, eingabeBild },
       info: { titel: e.titel, prompt }
     });
   }

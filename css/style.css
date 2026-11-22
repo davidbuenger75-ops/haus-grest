@@ -386,3 +386,50 @@ body[data-zeit=nacht] #grossbild-bild.art-svg svg { filter: invert(.86) sepia(.5
   #buch select { max-width: 100%; order: 5; flex-basis: 100%; }
   #karte { width: 96vw; padding: 10px; }
 }
+
+/* ---------- Bauplan als Karte (js/engine/plan.js, A.zeigePlan) ---------- */
+#karte.mit-plan { width: min(1100px, 98vw); max-height: 96vh; padding: 10px 12px 12px; overflow-y: auto; }
+.plan-kopf { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+.plan-reiter { display: flex; gap: 4px; flex: 1; justify-content: center; flex-wrap: wrap; }
+.plan-kopf button { font: inherit; background: #f3ead6; color: var(--tinte); border: 1px solid #2a1d1266; border-radius: 4px; padding: 4px 12px; cursor: pointer; min-height: 36px; }
+.plan-kopf button.an { background: var(--tinte); color: var(--papier); }
+.plan-kopf button:disabled { opacity: .3; cursor: default; }
+.plan-blaettern { font-size: 1.3em !important; padding: 0 14px !important; }
+.plan-du, .pr-du { color: var(--blut); }
+.plan-kopf button.an .plan-du { color: #ff9a8a; }
+.plan-blatt { position: relative; aspect-ratio: 4 / 3; container-type: inline-size; background: #f4ecd8; box-shadow: 0 2px 10px #0004; }
+.plan-grund, .plan-grund svg, .plan-grund img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; object-fit: fill; }
+.plan-ebene { position: absolute; inset: 0; }
+.pr-flaeche { position: absolute; background: transparent; border: none; padding: 0; margin: 0; cursor: pointer; border-radius: 2px; -webkit-tap-highlight-color: transparent; }
+.pr-flaeche.besucht { background: #2f5a2a1a; }
+.pr-flaeche.hier { background: #7a1a121f; box-shadow: inset 0 0 0 3px #7a1a12cc; }
+.pr-flaeche.gewaehlt { box-shadow: inset 0 0 0 2px #2a1d12aa; }
+.pr-flaeche:focus-visible { outline: 2px solid var(--blut); outline-offset: -2px; }
+.pr-name { position: absolute; transform: translate(-50%, -50%); pointer-events: none; white-space: nowrap;
+  font-family: Georgia, 'Times New Roman', serif; font-style: italic; font-size: clamp(8px, 1.5cqw, 16px);
+  color: #4a3826; background: #f4ecd8d9; padding: 0 .35em; border-radius: 3px; }
+.pr-name.besucht { font-style: normal; color: var(--tinte); }
+.pr-name.hier { font-style: normal; font-weight: bold; color: var(--blut); }
+.pr-name.klein { display: none; }
+.pr-haken { color: var(--gruen); }
+.plan-info { margin: 8px 2px 0; font-size: .9em; min-height: 1.4em; }
+.pr-legende { color: var(--tinte-hell); white-space: nowrap; }
+.planknopf button { font: inherit; background: #f3ead6; color: var(--tinte); border: 1px solid #2a1d1266; border-radius: 14px; padding: 3px 12px; cursor: pointer; }
+@media (prefers-reduced-motion: no-preference) {
+  .pr-name.hier .pr-du { animation: puls 1.6s ease-in-out infinite; }
+  @keyframes puls { 50% { opacity: .35; } }
+}
+@media (hover: hover) {
+  .pr-flaeche:hover { box-shadow: inset 0 0 0 2px #2a1d1266; }
+  .plan-kopf button:hover:not(:disabled):not(.an), .planknopf button:hover { background: var(--tinte); color: var(--papier); }
+}
+@media (pointer: coarse) {
+  .plan-kopf button { min-height: 44px; }
+}
+@media (max-width: 600px) {
+  #karte.mit-plan { padding: 6px; }
+  .pr-legende { display: block; }
+}
+#karte-bild .plan-grund svg { max-height: none; }
+.plan-blatt { max-width: calc((96vh - 150px) * 4 / 3); margin: 0 auto; }
+@media (max-width: 600px) { .plan-kopf button { padding: 4px 9px; } .plan-blaettern { padding: 0 9px !important; } .plan-reiter { flex-wrap: nowrap; } }

@@ -549,6 +549,15 @@
     /** Großes Bild eines Fundstücks in den Text schreiben (höchstens einmal pro Handlung).
      *  Dinge mit Rückseite zeigen die Seite, die gerade oben liegt (ding-<id>-rueckseite), und einen Umdreh-Knopf. */
     zeigeFundBild: function (id, ctx) {
+      // Ein Bauplan (plan: 'haus') öffnet die Plan-Ansicht und dient ab jetzt als Karte
+      var plan = D(id).plan && HG.daten.plaene[D(id).plan];
+      if (plan && W.hell() && !(ctx && ctx.bildGezeigt)) {
+        if (ctx) ctx.bildGezeigt = true;
+        HG.plan.merke(plan);
+        HG.ausgabe.schreibe('planknopf', T.gross(T.name(id, 'nom', '')), { plan: plan.id });
+        if (HG.anzeige && HG.anzeige.zeigePlan) HG.anzeige.zeigePlan(plan);
+        return;
+      }
       if ((ctx && ctx.bildGezeigt) || !HG.medien.hatFundBild(id) || D(id).buch || !W.hell()) return;
       if (ctx) ctx.bildGezeigt = true;
       var hinten = !!(D(id).rueckseite && eig(id, 'umgedreht'));
@@ -617,7 +626,7 @@
           break;
         case 'notizbuch': S.zeigeNotizbuch(); if (HG.anzeige && HG.anzeige.zeigeTab) HG.anzeige.zeigeTab('notizbuch'); break;
         case 'karte':
-          if (HG.anzeige && HG.anzeige.zeigeKarte) { HG.anzeige.zeigeKarte(); HG.ausgabe.system('Du wirfst einen Blick auf deine Skizze des Hauses.'); }
+          if (HG.anzeige && HG.anzeige.zeigeKarte) { HG.anzeige.zeigeKarte(); HG.ausgabe.system(HG.anzeige._plan ? 'Du faltest den Bauplan auseinander.' : 'Du wirfst einen Blick auf deine Skizze des Hauses.'); }
           else HG.ausgabe.system('Bekannte Räume: ' + T.liste(W.kartenDaten().raeume.map(function (r) { return r.name; })) + '.');
           break;
         case 'speichern': {

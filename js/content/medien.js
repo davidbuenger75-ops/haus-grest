@@ -7,7 +7,7 @@
   // Fundstücke: beim Untersuchen/Lesen erscheint assets/bilder/ding-<id>.webp|jpg|png groß im Text
   [
     'notarbrief', 'testament',                                   // Prolog
-    'bauplan', 'brief', 'portraet', 'rasiermesser',             // Haus Grest
+    'brief', 'portraet', 'rasiermesser',                        // Haus Grest (der Bauplan hat eigene Blätter: ding-bauplan-<stockwerk>)
     'grundbuchauszug', 'zeitung_2022', 'trauerkarte', 'foto_gerdes', 'zettel_unna',   // Karton GERDES
     'artikel_2025', 'visitenkarte', 'expose', 'freigabe',                              // Karton ROMANOW
     'archivkopien', 'zeitung_1930', 'foto_1912',                                       // Karton GREST
