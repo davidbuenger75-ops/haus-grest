@@ -78,6 +78,61 @@ window.KANDIDATEN = [
     "vorlage": null
   },
   {
+    "name": "raum-arbeitszimmer",
+    "titel": "Arbeitszimmer",
+    "prompt": "Arbeitszimmer eines Architekten um 1900 bei Tag, Wände bis unter die Decke mit Bücherregalen voller Bücher und gerollter Pläne, vor einem hohen Fenster mit schweren staubigen Vorhängen und Blick in einen verwilderten Garten ein wuchtiger Eichenschreibtisch mit grünem Lederbezug und einer Schublade mit kleinem Messingschloss, darauf vier große vergilbte Planbögen mit Reißzwecken zusammengeheftet und ein kurzer Bleistift, an der Wand daneben ein Ölporträt eines ernsten Mannes mit gepflegtem Bart in dunklem Gehrock mit einem Zirkel in der Hand, der Rahmen hängt leicht schief, fahles graues Tageslicht, Staub tanzt im Licht – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-arbeitszimmer-1.jpg",
+      "raum-arbeitszimmer-2.jpg"
+    ],
+    "gewaehlt": "raum-arbeitszimmer.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-arbeitszimmer-nacht",
+    "titel": "Arbeitszimmer – nacht",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, kalkweißes Mondlicht fällt durch das hohe Fenster und macht alles grau und flach wie auf einer alten Fotografie, tiefe Schatten zwischen den Regalen. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-arbeitszimmer-nacht-1.jpg",
+      "raum-arbeitszimmer-nacht-2.jpg"
+    ],
+    "gewaehlt": "raum-arbeitszimmer-nacht.jpg",
+    "vorlage": "raum-arbeitszimmer.jpg"
+  },
+  {
+    "name": "raum-arbeitszimmer-rasiermesser-nacht",
+    "titel": "Arbeitszimmer – rasiermesser-nacht",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, kalkweißes Mondlicht fällt durch das hohe Fenster und macht alles grau und flach wie auf einer alten Fotografie, auf dem Schreibtisch neben den Planbögen liegt ein aufgeklapptes altes Rasiermesser mit Perlmuttgriff, die Klinge fängt das Mondlicht. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-arbeitszimmer-rasiermesser-nacht-1.jpg",
+      "raum-arbeitszimmer-rasiermesser-nacht-2.jpg"
+    ],
+    "gewaehlt": "raum-arbeitszimmer-rasiermesser-nacht.jpg",
+    "vorlage": "raum-arbeitszimmer.jpg"
+  },
+  {
+    "name": "raum-einfahrt",
+    "titel": "Vor Haus Grest",
+    "prompt": "Frontansicht einer dreigeschossigen Jugendstil-Villa aus dunklem Stein um 1900, Walmdach mit spitzen Zwerchgiebeln, hohe schmale Fenster, an der rechten vorderen Ecke ein achteckiges Erkertürmchen mit spitzem Helm, rechts dahinter ein Wintergarten-Anbau aus weiß gestrichenem Eisen und schmutzigem Glas, mittig drei Steinstufen zur schweren dunklen Haustür mit halbrundem Buntglas-Oberlicht, verwilderter Vorgarten, Kiesweg vom schmiedeeisernen Gartentor zur Tür, kahle alte Bäume mit Krähen, Morgennebel, im Fenster des ersten Stocks ein heller Fleck, kaum erkennbar als blasse Frauengestalt – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-einfahrt-1.jpg",
+      "raum-einfahrt-2.jpg"
+    ],
+    "gewaehlt": "raum-einfahrt.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-einfahrt-nacht",
+    "titel": "Vor Haus Grest – nacht",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, tiefe Nacht, das Haus nur noch ein fast schwarzer Umriss vor einem dunklen, wolkenverhangenen Nachthimmel, fahles Mondlicht im Nebel, kein einziges Fenster erleuchtet, die Fensterscheiben spiegeln nichts, nur im Fenster des ersten Stocks ein blasses Oval wie ein Gesicht. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-einfahrt-nacht-1.jpg",
+      "raum-einfahrt-nacht-2.jpg"
+    ],
+    "gewaehlt": "raum-einfahrt-nacht.jpg",
+    "vorlage": "raum-einfahrt.jpg"
+  },
+  {
     "name": "raum-halle",
     "titel": "Eingangshalle",
     "prompt": "Hohe Eingangshalle einer Jugendstilvilla bei Tag, dunkle Holztäfelung, breite Treppe mit staubigem Geländer ins Obergeschoss, buntes halbrundes Oberlicht über der Haustür, abgetretener Teppich, alte Kommode mit Kerze im Messingleuchter, Eichentür links, dunkler Durchgang zum Flur – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",

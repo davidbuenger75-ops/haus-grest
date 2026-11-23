@@ -38,6 +38,10 @@
   // Raum-Bildvarianten (zusätzlich zur automatischen Variante "spuk" nach einem Spuk-Ereignis)
   var halle = HG.daten.raeume.halle;
   if (halle) halle.bildVariante = function (api) { return api.eig('eichentuer', 'offen') ? 'tuer-offen' : null; };
+  // Arbeitszimmer: das Rasiermesser liegt (nach dem Spuk "rasiermesser_erscheint") auf dem Schreibtisch –
+  // Bild raum-arbeitszimmer-rasiermesser-nacht (Mondlicht); keine allgemeine Spuk-Variante (David, 23.11.2026)
+  var arbeitszimmer = HG.daten.raeume.arbeitszimmer;
+  if (arbeitszimmer) arbeitszimmer.bildVariante = function (api) { return api.eig('rasiermesser', 'ort') === 'schreibtisch' ? 'rasiermesser' : null; };
   var hinterdiele = HG.daten.raeume.hinterdiele;
   if (hinterdiele) hinterdiele.bildVariante = function (api) { return api.eig('kraehentuer', 'verschlossen') ? null : 'tuer-offen'; };
 })();
