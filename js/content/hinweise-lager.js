@@ -45,6 +45,12 @@ HG.hinweis('bauantrag_1899', {
   text: 'Bauantrag vom 12. Mai 1899, unterschrieben „B. Grest, Architekt“. Todesanzeige 1905: Bernward Grest verstarb „plötzlich und unerwartet“.',
   stichworte: ['bauantrag', 'todesanzeige', 'kopien']
 });
+HG.hinweis('carstens_plan', {
+  titel: 'Carstens Kopie des Bauplans', strang: 'A',
+  text: 'Im Lager: Carstens Kopie von Bernwards Bauplan (1899). Das Ankleidezimmer im Obergeschoss ist eingekreist, daneben „SIE“. Beim Kohlenkeller unter der Halle: „Wand?? – gemessen: 2,40 m fehlen“. Hinter einer Wand fehlt ein Stück Haus?',
+  stichworte: ['bauplan', 'kopie', 'plan', 'kohlenkeller', 'wand', 'carsten']
+});
+
 HG.hinweis('pflegerin_vermisst', {
   titel: 'Elisabeths Tod 1930', strang: 'B',
   text: 'Dortmunder Zeitung, 4. März 1930: Elisabeth Grest starb am 1. März „nach langem, schwerem Leiden“. Ihre langjährige Pflegerin wird seit dem vergangenen Herbst vermisst.',

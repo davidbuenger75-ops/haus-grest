@@ -150,9 +150,10 @@
     if (W.kinder('spieler').length >= max) { sag('Du hast schon die Hände voll.'); return; }
     var ausBeh = !W.istRaum(eig(id, 'ort')) && eig(id, 'ort') !== 'spieler' ? eig(id, 'ort') : null;
     setze(id, 'ort', 'spieler'); setze(id, 'rel', null);
-    if (ctx.mehrfach) { sag('Genommen.'); return; }
+    if (ctx.mehrfach) { sag('Genommen.'); W.enthuelle(id, 'nehmen'); return; }
     sag(txt(id, 'nehmen', ctx) || ('Du nimmst ' + der(id) + (ausBeh && W.getragen(ausBeh) ? ' aus ' + der(ausBeh, 'dat') : '') + '.'));
     if (d.hinweis && d.hinweisBei === 'nehmen') HG.api.hinweis(d.hinweis);
+    W.enthuelle(id, 'nehmen');   // was darunter lag (versteckt: { auchBei: { id: ['nehmen'] } })
   };
 
   A.abnehmen = function (ctx) {

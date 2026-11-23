@@ -234,7 +234,14 @@
     nomen: 'Zirkel', genus: 'm', adj: ['klein'],
     woerter: ['zirkel', 'zeichenzirkel', 'messingzirkel'],
     ort: 'karton_grest', rel: 'in',
-    versteckt: { bei: 'karton_grest', wie: ['durchsuchen', 'tasten'], nurOffen: true, text: 'Ganz unten im Karton, unter der Fotografie, ertastest du etwas Hartes, in ein Taschentuch gewickelt: ein kleiner Zeichenzirkel aus Messing.' },
+    // Der offene Karton verrät „etwas Hartes unter dem Foto“ – darum finden ihn auch „nimm etwas hartes“, „untersuche das harte“,
+    // „schau unter foto“, „heb foto hoch“, „nimm foto heraus“ (Engine: andeutung, auchBei – js/engine/welt.js)
+    versteckt: {
+      bei: 'karton_grest', wie: ['durchsuchen', 'tasten', 'in', 'unter'], nurOffen: true,
+      auchBei: { foto_1912: ['unter', 'anheben', 'nehmen', 'schieben', 'durchsuchen'] },
+      andeutung: ['hart', 'schwer', 'taschentuch', 'gegenstand', 'ding'],
+      text: 'Ganz unten im Karton, unter der Fotografie, ertastest du etwas Hartes, in ein Taschentuch gewickelt: ein kleiner Zeichenzirkel aus Messing.'
+    },
     beschreibung: function (api) {
       return 'Ein kleiner Zeichenzirkel aus Messing, sorgfältig gearbeitet, die Spitzen seltsam stumpf geschliffen – zum Zeichnen taugt er so nicht. In den Griff sind zwei Buchstaben eingeschlagen: <b>B. G.</b>' +
         (zirkelSteckt(api) ? ' Er steckt im Schlitz des Kästchens.' : '');
@@ -263,10 +270,10 @@
   });
 
   // ------------------------------------------------------------ Inhalt
+  // Ein echter Gegenstand (kein Nur-Foto-Dokument): Bernwards Original kommt ins Inventar (David, 23.11.2026).
   HG.ding('brief_1905', {
-    dokument: true,
-    nomen: 'Brief', genus: 'm', adj: ['gefaltet'], kurzwort: 'brief von 1905',
-    woerter: ['brief', 'briefbogen', '1905', 'letzter', 'papier'],
+    nomen: 'Brief', zusatz: 'von 1905', genus: 'm', adjektive: ['gefaltet', 'letzt', 'zerrissen'], kurzwort: '1905er-brief',
+    woerter: ['brief', 'briefbogen', '1905', '1905er', '1905er-brief', 'abschiedsbrief', 'bernwards', 'papier'],
     ort: 'kaestchen', rel: 'in', schriftart: 'hand',
     beschreibung: function (api) {
       return api.eig('brief_1905', 'zerrissen')

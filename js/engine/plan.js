@@ -300,6 +300,35 @@
     bildName: function (plan, stockId) { return 'ding-' + (plan.ding || plan.id) + '-' + stockId; },
     /** Hat der Spieler den Plan schon gesehen? (Merker im Spielzustand) */
     bekannt: function (plan) { var z = HG.zustand.z; return !!(z && z.flags['_plan_' + plan.id]); },
-    merke: function (plan) { HG.zustand.z.flags['_plan_' + plan.id] = true; }
+    /** Plan als bekannt merken; kam er von einem Ding mit Anmerkungen (planNotizen), gelten auch die. */
+    merke: function (plan, dingId) {
+      var z = HG.zustand.z;
+      z.flags['_plan_' + plan.id] = true;
+      if (dingId && HG.daten.dinge[dingId] && HG.daten.dinge[dingId].planNotizen) z.flags['_plannotiz_' + dingId] = true;
+    },
+    /**
+     * Handschriftliche Anmerkungen auf dem Plan – von Dingen, die man schon angesehen hat:
+     *   Ding: { plan: 'haus', planNotizen: [{ stock: 'og', raum: 'ankleidezimmer', kreis: true, text: 'SIE', l: [x, y] }] }
+     *   raum = id des Raums im Plan; l = Lage des Texts in Metern (sonst knapp unter der Raummitte).
+     * Rückgabe: [{ stock, text, kreis: {l,t,w,h} | null, x, y }] mit Lage in Prozent des Blatts.
+     */
+    notizen: function (plan, stockId) {
+      var z = HG.zustand.z, erg = [];
+      if (!z) return erg;
+      Object.keys(HG.daten.dinge).forEach(function (id) {
+        var d = HG.daten.dinge[id];
+        if (d.plan !== plan.id || !d.planNotizen || !z.flags['_plannotiz_' + id]) return;
+        d.planNotizen.forEach(function (n) {
+          if (stockId && n.stock !== stockId) return;
+          var st = plan.stockwerke.filter(function (s) { return s.id === n.stock; })[0];
+          var raum = st && st.raeume.filter(function (r) { return r.id === n.raum; })[0];
+          var lage = raum ? P.lage(raum) : null;
+          var f = lage && lage.flaechen[0];
+          var pos = n.l ? { x: px(n.l[0]) / G.W * 100, y: py(n.l[1]) / G.H * 100 } : lage ? { x: lage.label.x, y: lage.label.y + 4 } : { x: 50, y: 50 };
+          erg.push({ stock: n.stock, text: n.text, kreis: n.kreis && f ? { l: f.l - 1, t: f.t - 1.5, w: f.w + 2, h: f.h + 3 } : null, x: pos.x, y: pos.y, drehung: n.drehung || -4 });
+        });
+      });
+      return erg;
+    }
   };
 })(window.HG);

@@ -139,7 +139,7 @@ window.HG = window.HG || {};
   /**
    * Name eines Dings in einem Fall.
    * art: 'der' (bestimmt), 'ein' (unbestimmt) oder '' (nur Adjektiv+Nomen).
-   * Definition: { nomen:'Schlüssel', adj:['eisern'], genus:'m', nomenDat:'...' , eigenname:true }
+   * Definition: { nomen:'Schlüssel', adj:['eisern'], genus:'m', nomenDat:'...' , eigenname:true, zusatz:'von 1905' }
    */
   T.name = function (def, kasus, art) {
     if (typeof def === 'string') def = HG.daten.dinge[def];
@@ -155,6 +155,7 @@ window.HG = window.HG || {};
     var nomen = def.nomen;
     if (kasus === 'dat' && def.nomenDat) nomen = def.nomenDat;
     teile.push(nomen);
+    if (def.zusatz) teile.push(def.zusatz);   // nachgestellt, z. B. "der Brief von 1905" – unterscheidet gleichnamige Dinge
     return teile.join(' ');
   };
   T.der = function (def, kasus) { return T.name(def, kasus, 'der'); };

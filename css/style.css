@@ -412,6 +412,11 @@ body[data-zeit=nacht] #grossbild-bild.art-svg svg { filter: invert(.86) sepia(.5
 .pr-name.hier { font-style: normal; font-weight: bold; color: var(--blut); }
 .pr-name.klein { display: none; }
 .pr-haken { color: var(--gruen); }
+/* Carstens Anmerkungen auf dem Plan: blauer Kugelschreiber */
+.pr-notiz { position: absolute; pointer-events: none; white-space: nowrap; color: #1f3a8a;
+  font-family: 'Segoe Script', 'Bradley Hand', 'Comic Sans MS', cursive; font-size: clamp(10px, 2.1cqw, 22px); font-weight: bold; text-align: center; line-height: 1.15;
+  text-shadow: 0 0 3px #f4ecd8, 0 0 3px #f4ecd8; }
+.pr-kreis { position: absolute; pointer-events: none; border: 2px solid #1f3a8acc; border-radius: 50%; transform: rotate(-3deg); }
 .plan-info { margin: 8px 2px 0; font-size: .9em; min-height: 1.4em; }
 .pr-legende { color: var(--tinte-hell); white-space: nowrap; }
 .planknopf button { font: inherit; background: #f3ead6; color: var(--tinte); border: 1px solid #2a1d1266; border-radius: 14px; padding: 3px 12px; cursor: pointer; }

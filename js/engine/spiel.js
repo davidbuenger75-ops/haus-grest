@@ -209,7 +209,8 @@
     abschliessen: { np1: function (id) { return D(id).schluessel !== undefined && !eig(id, 'verschlossen'); }, np2: function (id) { return D(id).istSchluessel && W.getragen(id); } },
     anzuenden: { np1: function (id) { return (D(id).anzuendbar || D(id).schalter) && !eig(id, 'brennt'); }, np2: function (id) { return D(id).feuer; } },
     loeschen: { np1: function (id) { return !!eig(id, 'brennt'); } },
-    lesen: { np1: function (id) { return !!D(id).lesbar && !(D(id).hinweis && Z().hinweise.indexOf(D(id).hinweis) >= 0); } }
+    // Nur Unmögliches aussortieren (Unlesbares) – zwischen zwei lesbaren Briefen wird wie bei jedem Verb nachgefragt
+    lesen: { np1: function (id) { return !!(D(id).lesbar || D(id).buch || D(id).lesen); } }
   };
 
   var INFINITIV = {
@@ -553,6 +554,8 @@
       var r = P.aufloesen(b[slot], opt);
       if (r.fehler) { HG.ausgabe.text(r.fehler); return false; }
       if (r.frage) { S.frage({ art: 'wahl', befehl: b, slot: slot, gruppe: r.gruppe, kandidaten: r.kandidaten }, r.frage); return false; }
+      // "nimm etwas Hartes": das angedeutete, versteckte Ding wird dabei gefunden
+      if (r.aufdecken) r.aufdecken.forEach(function (id) { W.deckeAuf(id); });
       if (r.alles) {
         var ids = S.allesFuer(b.aktion, opt.universum).filter(function (id) { return r.ausser.indexOf(id) < 0; });
         if (!ids.length) { HG.ausgabe.text(b.aktion === 'nehmen' ? 'Hier gibt es nichts, was du mitnehmen könntest.' : 'Du hast nichts bei dir.'); return false; }
@@ -676,7 +679,7 @@
       var plan = D(id).plan && HG.daten.plaene[D(id).plan];
       if (plan && W.hell() && !(ctx && ctx.bildGezeigt)) {
         if (ctx) ctx.bildGezeigt = true;
-        HG.plan.merke(plan);
+        HG.plan.merke(plan, id);
         HG.ausgabe.schreibe('planknopf', T.gross(T.name(id, 'nom', '')), { plan: plan.id });
         if (HG.anzeige && HG.anzeige.zeigePlan) HG.anzeige.zeigePlan(plan);
         return;

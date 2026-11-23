@@ -132,7 +132,7 @@ HG.spielDaten({
 
   // Reisen
   keinAutoText: 'Dein Auto steht nicht hier. Geh erst hinaus.',
-  keineZieleText: 'Du hast im Moment keinen Grund wegzufahren. Vielleicht solltest du zuerst den Brief lesen.',
+  keineZieleText: 'Du hast im Moment keinen Grund wegzufahren. Vielleicht solltest du zuerst den Brief des Notars lesen.',
   fahrtText: { tag: 'Du steigst ins Auto und fährst durch die Stadt.', abend: 'Du fährst durch die Dämmerung. Die Straßenlaternen springen eine nach der anderen an.', nacht: 'Du fährst durch die leeren, nassen Straßen. Im Rückspiegel nur Dunkelheit.' },
 
   // Spielende bei 0 NERVEN – je nach Ort [Vorschlag]

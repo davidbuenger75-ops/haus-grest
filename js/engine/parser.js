@@ -72,6 +72,9 @@
     { a: 'nehmen', w: L('steck stecke stecken'), p: 'ein', o: 1, mehr: true },
     { a: 'nehmen', w: L('aufheben einstecken mitnehmen nimmmit'), o: 1, mehr: true },
     { a: 'nehmen', w: L('nimm nehme'), p: 'mit', o: 1, mehr: true },
+    { a: 'nehmen', w: L('nimm nehme nehm hol hole'), p: 'heraus', o: 1, mehr: true, p2: L('aus') },   // "nimm das Foto heraus"
+    { a: 'nehmen', w: L('nimm nehme nehm hol hole'), p: 'raus', o: 1, mehr: true, p2: L('aus') },
+    { a: 'nehmen', w: L('hol hole zieh ziehe'), p: 'hervor', o: 1, mehr: true, p2: L('aus unter') },
     { a: 'anheben', w: L('heb hebe heben'), p: 'hoch', o: 1 },
     { a: 'anheben', w: L('heb hebe heben'), p: 'an', o: 1 },
     { a: 'anheben', w: L('heb hebe heben anheben hochheben lupfe luefte lueft'), o: 1 },
@@ -227,8 +230,11 @@
     return Object.keys(f);
   }
 
+  // Bindewörter innerhalb einer Wortgruppe ("der Brief von 1905") – zählen beim Vergleich nicht mit
+  var BINDEWORT = { von: 1 };
+
   function baueLexikon() {
-    LEX = { nomen: {}, adj: {}, bekannt: {} };
+    LEX = { nomen: {}, adj: {}, bekannt: {}, andeutung: {} };
     Object.keys(HG.daten.dinge).forEach(function (id) {
       var d = HG.daten.dinge[id];
       var n = {}, a = {};
@@ -236,9 +242,18 @@
         w = T.norm(w); n[w] = 1;
         if (d.genus === 'pl') n[w + 'n'] = 1;
       });
+      // Namenszusatz ("von 1905") gehört zum Namen: seine Wörter treffen das Ding
+      if (d.zusatz) T.norm(d.zusatz).split(/\s+/).forEach(function (w) { if (w && !BINDEWORT[w] && ARTIKEL.indexOf(w) < 0) n[w] = 1; });
       (d.adj || []).concat(d.adjektive || []).forEach(function (s) { adjFormen(s).forEach(function (f) { a[f] = 1; }); });
       LEX.nomen[id] = n; LEX.adj[id] = a;
       Object.keys(n).concat(Object.keys(a)).forEach(function (w) { LEX.bekannt[w] = 1; });
+      // Verstecktes, auf das ein Text hindeutet ("etwas Hartes"): versteckt: { andeutung: ['hart', 'schwer', 'taschentuch'] }
+      var v = d.versteckt && typeof d.versteckt === 'object' ? d.versteckt : null;
+      if (v && v.andeutung) {
+        var an = {};
+        v.andeutung.forEach(function (s) { adjFormen(s).forEach(function (f) { an[f] = 1; LEX.bekannt[f] = 1; }); });
+        LEX.andeutung[id] = an;
+      }
     });
     Object.keys(HG.daten.raeume).forEach(function (id) {
       var r = HG.daten.raeume[id];
@@ -269,10 +284,31 @@
     if (!n) return 0;
     for (var i = 0; i < woerter.length; i++) {
       var w = woerter[i];
+      if (BINDEWORT[w] && i > 0 && i < woerter.length - 1) continue;
       if (nomenForm(n, w)) mitNomen = true;
       else if (!a[w]) return 0;
     }
     return mitNomen ? 2 : 1;
+  }
+
+  /** Versteckte Dinge mit passender Andeutung, deren Versteck hier zugänglich ist. */
+  function angedeutetes(woerter, umfeld) {
+    var an = lex().andeutung;
+    return Object.keys(an).filter(function (id) {
+      var v = eig(id, 'versteckt');
+      if (!v || typeof v !== 'object' || umfeld.indexOf(v.bei) < 0) return false;
+      if (v.nurOffen && !HG.welt.innenZugaenglich(v.bei)) return false;
+      return woerter.every(function (w) { return an[id][w]; });
+    });
+  }
+
+  /** Gehört die Präposition an Stelle x zum Namen eines Dings in der Nähe ("Brief von 1905")? */
+  function gehoertZumDing(r, x, p2) {
+    if (!BINDEWORT[r[x]] || !HG.zustand.z) return false;
+    var ende = r.length;
+    for (var k = x + 1; k < r.length; k++) if (p2.indexOf(r[k]) >= 0) { ende = k; break; }
+    var woerter = r.slice(0, ende).filter(function (t) { return ARTIKEL.indexOf(t) < 0; });
+    return HG.welt.umfeld(true).some(function (id) { return passt(id, woerter) === 2; });
   }
 
   // -----------------------------------------------------------------
@@ -420,7 +456,10 @@
         else if (e.vorPflicht) continue;
         if (e.o === 0 && r.length) continue;
         var j = -1;
-        if (e.p2) for (var x = (e.p2Text ? 0 : 1); x < r.length; x++) { if (e.p2.indexOf(r[x]) >= 0) { j = x; break; } }
+        if (e.p2) for (var x = (e.p2Text ? 0 : 1); x < r.length; x++) {
+          // "nimm den Brief von 1905": passt die Wortfolge samt "von …" auf ein Ding, ist sie EIN Objekt
+          if (e.p2.indexOf(r[x]) >= 0 && (e.p2Text || !gehoertZumDing(r, x, e.p2))) { j = x; break; }
+        }
         var np1 = j >= 0 ? r.slice(0, j) : r;
         var befehl = {
           aktion: e.a, eintrag: e, verb: verb, partikel: partikel, prep: prep, reflexiv: reflexiv,
@@ -482,7 +521,7 @@
       if (gruppen.length > 1 && !opt.mehr) return { fehler: 'Das kannst du nur mit einem Ding auf einmal tun.' };
 
       var umfeld = opt.universum || HG.welt.umfeld(opt.blind);
-      var ids = [];
+      var ids = [], aufdecken = [];
       for (var gi = 0; gi < gruppen.length; gi++) {
         var g = gruppen[gi];
 
@@ -505,6 +544,11 @@
           var s = passt(id, g);
           if (s > besteStufe) { besteStufe = s; treffer = [id]; } else if (s && s === besteStufe) treffer.push(id);
         });
+        // Verstecktes, auf das ein Text hindeutet ("nimm etwas Hartes"): schlägt reine Adjektiv-Treffer, nicht aber Nomen
+        if (besteStufe < 2) {
+          var angedeutet = angedeutetes(g, opt.universum ? umfeld.concat(HG.welt.umfeld(opt.blind)) : umfeld);
+          if (angedeutet.length) { treffer = angedeutet; aufdecken = aufdecken.concat(angedeutet); }
+        }
 
         if (!treffer.length) {
           var irgendwo = Object.keys(HG.daten.dinge).some(function (id) { return passt(id, g); });
@@ -526,12 +570,13 @@
         }
         ids.push(treffer[0]);
       }
-      return { ids: ids };
+      return aufdecken.length ? { ids: ids, aufdecken: aufdecken } : { ids: ids };
     },
 
     /** Passt eine Antwort ("den eisernen") auf einen der Kandidaten? */
     filtereKandidaten: function (tokens, kandidaten) {
       var woerter = tokens.filter(function (t) { return ARTIKEL.indexOf(t) < 0 && FUELL.indexOf(t) < 0; });
+      while (woerter.length > 1 && BINDEWORT[woerter[0]]) woerter.shift();   // "den von 1905"
       if (!woerter.length) return [];
       var best = 0, erg = [];
       kandidaten.forEach(function (id) {

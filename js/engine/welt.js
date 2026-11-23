@@ -132,22 +132,34 @@
     imUmfeld: function (id, blind) { return W.umfeld(blind).indexOf(id) >= 0; },
 
     // --- Verstecktes aufdecken ----------------------------------------
-    /** Deckt alles auf, was bei "beiId" mit der Handlung "modus" zu finden ist. */
+    /**
+     * Deckt alles auf, was bei "beiId" mit der Handlung "modus" zu finden ist.
+     *   versteckt: { bei: 'karton', wie: ['durchsuchen', 'tasten'], nurOffen: true, text: '…', hinweis: 'id',
+     *                auchBei: { foto: ['unter', 'anheben', 'nehmen'] },   // auch über ein anderes Ding zu finden
+     *                andeutung: ['hart', 'schwer'] }                      // Wörter, die ein Text andeutet ("nimm etwas Hartes")
+     */
     enthuelle: function (beiId, modus) {
       var gefunden = [];
       Object.keys(HG.daten.dinge).forEach(function (id) {
         var v = eig(id, 'versteckt');
-        if (!v || v.bei !== beiId) return;
-        if ((v.wie || []).indexOf(modus) < 0) return;
-        if (v.nurOffen && !W.innenZugaenglich(beiId)) return;   // versteckt: { …, nurOffen: true } – nur im offenen Behälter
-        HG.zustand.setze(id, 'versteckt', false);
+        if (!v || typeof v !== 'object') return;
+        var wie = v.bei === beiId ? (v.wie || []) : (v.auchBei && v.auchBei[beiId]) || [];
+        if (wie.indexOf(modus) < 0) return;
+        if (v.nurOffen && !W.innenZugaenglich(v.bei)) return;   // versteckt: { …, nurOffen: true } – nur im offenen Behälter
+        W.deckeAuf(id);
         gefunden.push(id);
-        var txt = HG.wert(v.text, HG.api);
-        HG.ausgabe.text(txt || ('Du findest ' + T.ein(id, 'akk') + '.'));
-        if (v.hinweis) HG.api.hinweis(v.hinweis);
-        HG.api.merkePronomen(id);
       });
       return gefunden;
+    },
+    /** Ein verstecktes Ding aufdecken (mit seinem Fundtext). */
+    deckeAuf: function (id) {
+      var v = eig(id, 'versteckt');
+      if (!v) return;
+      HG.zustand.setze(id, 'versteckt', false);
+      var txt = typeof v === 'object' ? HG.wert(v.text, HG.api) : null;
+      HG.ausgabe.text(txt || ('Du findest ' + T.ein(id, 'akk') + '.'));
+      if (v.hinweis) HG.api.hinweis(v.hinweis);
+      HG.api.merkePronomen(id);
     },
 
     // --- Beschreibungen -------------------------------------------------

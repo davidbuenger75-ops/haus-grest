@@ -162,6 +162,7 @@
           (extra ? ' <span class="nebenbei">Auf dem Display:</span> <i>' + extra + '</i>' : ''));
         // Dabei liest bzw. betrachtest du es – mit allen Haken des Inhalts (Hinweise, NERVEN-Proben, Bild)
         HG.spiel.handle({ aktion: d.lesbar ? 'lesen' : 'untersuchen', obj: id, np1: [], np2: [], mehrfach: true });
+        HG.spiel.zeigeFundBild(id, ctx);   // Bild des Dokuments – ein Bauplan öffnet dabei die Karte
         if (d.fotoHinweis) HG.api.hinweis(d.fotoHinweis);
         if (d.beiFoto) d.beiFoto(HG.api, ctx);
         return;
@@ -198,6 +199,7 @@
     if (ctx.obj && D(ctx.obj).dokument && !W.getragen(ctx.obj) && H.dabei()) {
       if (!H.hatFoto(ctx.obj)) HG.ausgabe.text(T.gross(T.der(ctx.obj, 'akk')) + ' lässt du, wo ' + T.pron(ctx.obj, 'nom') + ' ' + T.vb(ctx.obj, 'ist', 'sind') + '. Du fotografierst ' + T.pron(ctx.obj, 'akk') + ' lieber.');
       H.foto(ctx.obj, ctx);
+      W.enthuelle(ctx.obj, 'nehmen');   // beim Hochnehmen kommt zum Vorschein, was darunter lag
       return;
     }
     altNehmen(ctx);

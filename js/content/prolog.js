@@ -30,8 +30,8 @@ HG.raum('wohnung', {
   keinWeg: 'Wenn du los willst: „fahre los“.',
   vorschlaege: function (api) {
     var v = [];
-    if (!api.eig('umschlag', 'offen')) v.push('öffne den umschlag');
-    if (!api.hatHinweis('notarbrief')) v.push('lies den brief');
+    if (!api.eig('umschlag', 'offen')) { v.push('öffne den umschlag'); return v; }   // erst danach liegt der Inhalt bereit
+    if (!api.hatHinweis('notarbrief')) v.push('lies den notarbrief');
     if (!api.hatHinweis('testament')) v.push('lies das testament');
     return v;
   },
@@ -58,11 +58,13 @@ HG.ding('umschlag', {
   texte: { oeffnen: 'Du ziehst den Inhalt heraus und breitest ihn auf dem Tisch aus.' }
 });
 
+// Eindeutiger Name „Notarbrief“ – im Spiel gibt es mehrere Briefe (Bernward 1900, Bernward 1905).
+// „Brief“ trifft ihn weiterhin; sind mehrere Briefe da, fragt das Spiel nach.
 HG.ding('notarbrief', {
-  nomen: 'Brief', genus: 'm',
-  woerter: ['brief', 'notarbrief', 'mitteilung', 'briefbogen'],
+  nomen: 'Notarbrief', genus: 'm', kurzwort: 'notarbrief',
+  woerter: ['notarbrief', 'brief', 'mitteilung', 'notarschreiben', 'notar', 'notariat'],
   ort: 'umschlag', rel: 'in',
-  beschreibung: 'Ein Brief auf schwerem Papier, mit Briefkopf des Notariats und einer schwungvollen Unterschrift.',
+  beschreibung: 'Das Schreiben des Notars: ein Brief auf schwerem Papier, mit Briefkopf des Notariats und einer schwungvollen Unterschrift.',
   lesbar: '<i>Notariat Dr. M. Brandt · Dortmund</i><br><b>Betreff: Nachlass Herr Carsten Häuser, zuletzt wohnhaft Ulmenweg 12, Dortmund-Kirchhörde</b><br><br>' +
     '{briefanrede},<br><br>zu meinem Bedauern muss ich Ihnen mitteilen, dass Herr Carsten Häuser im Oktober verstorben ist. Nach unseren Ermittlungen sind Sie die letzte lebende Person aus seiner Familie.<br><br>' +
     'Herr Häuser hat Ihnen in seinem Testament (Abschrift anbei) sein Wohnhaus, das sogenannte <b>Haus Grest</b>, sowie den Inhalt eines Lagerraums bei der Firma <b>Lager Schmidt</b> (Einheit C-214) vermacht. Die Schlüssel zu beiden liegen diesem Schreiben bei.<br><br>' +

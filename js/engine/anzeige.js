@@ -891,12 +891,19 @@
         ebene += '<span class="pr-name' + kl + (raum.klein ? ' klein' : '') + '" style="left:' + lage.label.x.toFixed(2) + '%;top:' + lage.label.y.toFixed(2) + '%">' +
           (ist ? '<b class="pr-du">●</b> ' : besucht ? '<span class="pr-haken">✓</span> ' : '') + T.esc(name) + '</span>';
       });
+      // Handschriftliche Anmerkungen (z. B. Carstens Kopie des Plans) – nur, wenn man das Blatt mit ihnen gesehen hat
+      var notizen = HG.plan.notizen(plan, st.id);
+      notizen.forEach(function (n) {
+        if (n.kreis) ebene += '<span class="pr-kreis" aria-hidden="true" style="left:' + n.kreis.l.toFixed(2) + '%;top:' + n.kreis.t.toFixed(2) + '%;width:' + n.kreis.w.toFixed(2) + '%;height:' + n.kreis.h.toFixed(2) + '%"></span>';
+        ebene += '<span class="pr-notiz" style="left:' + n.x.toFixed(2) + '%;top:' + n.y.toFixed(2) + '%;transform:translate(-50%,-50%) rotate(' + n.drehung + 'deg)">' + T.esc(n.text).replace(/\n/g, '<br>') + '</span>';
+      });
       $('karte-bild').innerHTML = '<div class="plan">' +
         '<div class="plan-kopf"><button type="button" class="plan-blaettern" data-stock="' + (i > 0 ? plan.stockwerke[i - 1].id : '') + '"' + (i > 0 ? '' : ' disabled') + ' aria-label="Stockwerk darunter">‹</button>' +
         '<div class="plan-reiter" role="tablist">' + reiter + '</div>' +
         '<button type="button" class="plan-blaettern" data-stock="' + (i < plan.stockwerke.length - 1 ? plan.stockwerke[i + 1].id : '') + '"' + (i < plan.stockwerke.length - 1 ? '' : ' disabled') + ' aria-label="Stockwerk darüber">›</button></div>' +
         '<div class="plan-blatt"><div class="plan-grund">' + HG.plan.svg(plan, st.id) + '</div><div class="plan-ebene">' + ebene + '</div></div>' +
-        '<p class="plan-info" aria-live="polite">' + T.esc(st.name) + ' – tippe auf einen Raum. <span class="pr-legende"><b class="pr-du">●</b> du bist hier · <span class="pr-haken">✓</span> betreten</span></p></div>';
+        '<p class="plan-info" aria-live="polite">' + T.esc(st.name) + ' – tippe auf einen Raum.' +
+        (notizen.length ? ' Anmerkungen in Kugelschreiber: ' + notizen.map(function (n) { return '„' + T.esc(n.text).replace(/\n/g, ' – ') + '“'; }).join(', ') + '.' : '') + ' <span class="pr-legende"><b class="pr-du">●</b> du bist hier · <span class="pr-haken">✓</span> betreten</span></p></div>';
       $('karte').classList.add('mit-plan');
       // Fundstück-Foto des Blatts, wenn vorhanden (ersetzt die Zeichnung)
       var token = (A._planToken = (A._planToken || 0) + 1);

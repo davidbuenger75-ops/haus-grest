@@ -329,30 +329,97 @@
   karton('karton_romanow', 'Romanow', 'romanow-karton', 'Ein Umzugskarton, beschriftet: „ROMANOW“. Die Schrift ist zittriger als auf den anderen.');
   karton('karton_grest', 'Grest', 'grest-karton', function (api) {
     var t = 'Ein Umzugskarton, beschriftet: „GREST“. Der Deckel ist mit Klebeband mehrfach verstärkt.';
-    // Hinweis auf den Zirkel (Rätsel „Bernwards Kästchen“, js/content/kaestchen.js), solange er noch nicht gefunden ist
+    // Hinweis auf den Zirkel (Rätsel „Bernwards Kästchen“, js/content/kaestchen.js), solange er noch nicht gefunden ist.
+    // Der Zirkel hört auf „etwas Hartes“, „das Schwere“ … (versteckt.andeutung) und findet sich auch unter dem Foto.
     if (api.eig('karton_grest', 'offen') && api.eig('zirkel', 'versteckt') && api.eig('zirkel', 'ort') === 'karton_grest') {
-      t += ' Für eine einzige Fotografie ist er erstaunlich schwer. Ganz unten, unter dem Foto, steckt etwas Hartes.';
+      t += ' Für ein paar Papiere ist er erstaunlich schwer. Ganz unten, unter dem Foto, steckt etwas Hartes.';
     }
     return t;
   });
-  // Karton KÜCHE / DIVERSES: ein einziges Kulissen-Objekt. Herausnehmbar ist nur das Feinmechaniker-Set
-  // (js/content/kaestchen.js); der Einkaufszettel ist nur Text beim Durchsuchen. (Der Taschenspiegel ist fürs Haus vorgemerkt.)
+
+  // Alltagskram in den Kartons: wird beim Öffnen aufgezählt, bleibt aber im Karton (fest). Herausnehmbar sind nur die
+  // wichtigen Dinge (Dokumente zum Fotografieren, Zirkel, Feinmechaniker-Set). David, 23.11.2026: „Ergibt keinen Sinn,
+  // wenn im Küchen-Karton nur ein Werkzeug-Set drin ist.“
+  function kram(id, karton, def) {
+    HG.ding(id, Object.assign({ ort: karton, rel: 'in', fest: 'Das lässt du im Karton. Du brauchst es nicht.' }, def));
+  }
+
+  // Karton KÜCHE / DIVERSES: Hausrat; herausnehmbar ist das Feinmechaniker-Set (js/content/kaestchen.js).
+  // Der Einkaufszettel ist nur Text (Manteltasche). (Der Taschenspiegel ist fürs Haus vorgemerkt.)
   var EINKAUFSZETTEL = 'In der Tasche eines Wintermantels knistert Papier: ein zerknüllter Einkaufszettel in Carstens Schrift. <i>Milch. Brot.</i> Und darunter, dreimal unterstrichen: <b>Spiegel abhängen!!!</b>';
+  function einkaufszettel(api) { api.setzeFlag('einkaufszettel_gelesen'); api.sage(EINKAUFSZETTEL); return true; }
   karton('karton_kueche', 'Küchen', 'küchen-karton', function (api) {
-    return 'Ein Umzugskarton: „KÜCHE / DIVERSES“. Er klappert.' + (api.eig('karton_kueche', 'offen')
-      ? ' Geschirr in Zeitungspapier, ein Wasserkocher, Krimis, ein Vermessungshandbuch, Weihnachtsdeko, zwei ordentlich gefaltete Wintermäntel – ein ganzes Leben, auf das Nötigste geschrumpft.' : '');
+    return 'Ein Umzugskarton: „KÜCHE / DIVERSES“. Er klappert.' + (api.eig('karton_kueche', 'offen') ? ' Ein ganzes Leben, auf das Nötigste geschrumpft.' : '');
   }, {
-    woerter: ['karton', 'umzugskarton', 'kiste', 'kuechenkarton', 'kuechen', 'diverses', 'kueche', 'hausrat', 'geschirr', 'wasserkocher', 'krimis', 'buecher',
-      'vermessungshandbuch', 'weihnachtsdeko', 'deko', 'wintermaentel', 'maentel', 'mantel', 'wintermantel', 'manteltasche', 'einkaufszettel'],
+    woerter: ['karton', 'umzugskarton', 'kiste', 'kuechenkarton', 'kuechen', 'diverses', 'kueche', 'hausrat'],
     tasten: function (api) { return api.eig('karton_kueche', 'offen') ? 'Porzellan, Wolle, Papier. ' + EINKAUFSZETTEL : 'Pappe. Drinnen klappert Geschirr.'; },
     bei: {
       durchsuchen: function (api) {
         if (!api.eig('karton_kueche', 'offen')) return false;
         api.sage('Du wühlst dich durch Geschirr, Bücher und Weihnachtsdeko. ' + EINKAUFSZETTEL);
         api.setzeFlag('einkaufszettel_gelesen');
-        return false;   // danach wie gewohnt: was man herausnehmen kann
+        return false;   // danach wie gewohnt: was im Karton liegt
       }
     }
+  });
+  kram('kueche_geschirr', 'karton_kueche', {
+    nomen: 'Geschirr', genus: 'n', eigenname: true, kurzwort: 'geschirr', woerter: ['geschirr', 'teller', 'tassen', 'porzellan', 'zeitungspapier'],
+    beschreibung: 'Teller und Tassen, jedes Stück einzeln in Zeitungspapier gewickelt. Die Zeitungen sind vom Frühjahr 2026.',
+    fest: 'Carstens Geschirr lässt du im Karton.'
+  });
+  kram('kueche_wasserkocher', 'karton_kueche', {
+    nomen: 'Wasserkocher', genus: 'm', woerter: ['wasserkocher', 'kocher'],
+    beschreibung: 'Ein Wasserkocher mit Kalkrand. Das Kabel ist ordentlich aufgewickelt und mit einem Gummi zusammengehalten.'
+  });
+  kram('kueche_buecher', 'karton_kueche', {
+    nomen: 'Bücher', genus: 'pl', woerter: ['buecher', 'krimis', 'krimi', 'taschenbuecher', 'vermessungshandbuch', 'handbuch'],
+    beschreibung: 'Ein Stapel Taschenbuch-Krimis mit Eselsohren und ein abgegriffenes Vermessungshandbuch, gespickt mit Merkzetteln.',
+    fest: 'Die Bücher lässt du im Karton. Zum Lesen ist jetzt nicht die Zeit.'
+  });
+  kram('kueche_deko', 'karton_kueche', {
+    nomen: 'Weihnachtsdeko', genus: 'f', eigenname: true, kurzwort: 'weihnachtsdeko', woerter: ['weihnachtsdeko', 'deko', 'christbaumkugeln', 'kugeln', 'lichterkette', 'strohstern', 'engel'],
+    beschreibung: 'Christbaumkugeln, eine verknotete Lichterkette, ein Strohstern. Obenauf ein kleiner Holzengel, dem die Farbe vom Gesicht geblättert ist.'
+  });
+  kram('kueche_maentel', 'karton_kueche', {
+    nomen: 'Wintermäntel', genus: 'pl', adj: ['gefaltet'], woerter: ['wintermaentel', 'maentel', 'mantel', 'wintermantel', 'manteltasche', 'manteltaschen', 'einkaufszettel'],
+    beschreibung: 'Zwei ordentlich gefaltete Wintermäntel, einer dunkelgrau, einer braun. In einer Tasche knistert Papier.',
+    fest: 'Die Mäntel lässt du im Karton.',
+    tasten: function (api) { return EINKAUFSZETTEL; },
+    bei: { durchsuchen: einkaufszettel, hineinschauen: einkaufszettel, lesen: einkaufszettel }
+  });
+
+  // Karton GERDES – Alltagskram neben den Dokumenten
+  kram('gerdes_huellen', 'karton_gerdes', {
+    nomen: 'Klarsichthüllen', genus: 'pl', adj: ['leer'], woerter: ['klarsichthuellen', 'klarsichthuelle', 'huellen', 'huelle'],
+    beschreibung: 'Ein Stapel leerer Klarsichthüllen. Carsten hatte wohl vor, alles ordentlich abzuheften. Dazu ist er nicht mehr gekommen.',
+    fest: 'Leere Klarsichthüllen brauchst du nicht.'
+  });
+  kram('gerdes_textmarker', 'karton_gerdes', {
+    nomen: 'Textmarker', genus: 'm', adj: ['gelb'], woerter: ['textmarker', 'marker'],
+    beschreibung: 'Ein gelber Textmarker ohne Kappe, längst ausgetrocknet.',
+    fest: 'Der Textmarker ist ausgetrocknet. Den lässt du liegen.'
+  });
+  // Karton ROMANOW
+  kram('romanow_hefter', 'karton_romanow', {
+    nomen: 'Schnellhefter', genus: 'm', adj: ['rot'], woerter: ['schnellhefter', 'hefter', 'mappe'],
+    beschreibung: 'Ein roter Schnellhefter, leer. Auf dem Rücken steht in Carstens Schrift ein einzelnes „R.“.',
+    fest: 'Ein leerer Schnellhefter. Den brauchst du nicht.'
+  });
+  kram('romanow_klebezettel', 'karton_romanow', {
+    nomen: 'Klebezettelblock', genus: 'm', adj: ['gelb'], woerter: ['klebezettelblock', 'klebezettel', 'haftnotizen', 'block'],
+    beschreibung: 'Ein Block gelber Klebezettel. Der oberste ist leer, aber auf ihm haben sich Buchstaben von einem abgerissenen Blatt durchgedrückt: <i>„… geht nicht ans Telefon …“</i>',
+    fest: 'Den Block lässt du im Karton.'
+  });
+  // Karton GREST – neben Foto, Bauplan-Kopie und (versteckt) dem Zirkel
+  kram('grest_roehre', 'karton_grest', {
+    nomen: 'Versandröhre', genus: 'f', adj: ['leer'], woerter: ['versandroehre', 'roehre', 'papproehre', 'versandrolle', 'rolle'],
+    beschreibung: 'Eine leere Versandröhre aus Pappe, die Enden weich gegriffen. Darin war wohl einmal der Plan.',
+    fest: 'Die leere Röhre lässt du im Karton.'
+  });
+  kram('grest_handschuhe', 'karton_grest', {
+    nomen: 'Baumwollhandschuhe', genus: 'pl', adj: ['weiß'], woerter: ['baumwollhandschuhe', 'handschuhe', 'handschuh', 'archivhandschuhe'],
+    beschreibung: 'Ein Paar weiße Baumwollhandschuhe, wie man sie im Archiv bekommt, um alte Papiere anzufassen. Die Fingerspitzen sind grau.',
+    fest: 'Die Handschuhe lässt du, wo sie sind.'
   });
 
   // ===================================================================
@@ -534,6 +601,27 @@
       lesen: function (api) { api.hinweis('pflegerin_kraehe'); return false; },
       umdrehen: function (api) { api.hinweis('pflegerin_kraehe'); return false; }
     }
+  });
+
+  // Carstens Kopie von Bernwards Bauplan (1899) – Dokument: wird fotografiert, öffnet die Karte des Hauses.
+  // Seine Anmerkungen erscheinen auf der Karte (planNotizen, js/engine/plan.js) – nur, wenn man diese Kopie gesehen hat.
+  HG.ding('bauplan_kopie', {
+    dokument: true,   // wird fotografiert (Handy-Galerie + Notizbuch), nicht eingesteckt
+    nomen: 'Bauplan-Kopie', genus: 'f', kurzwort: 'bauplan-kopie', adjektive: ['zusammengeklebt', 'kopiert'],
+    woerter: ['bauplankopie', 'bauplan-kopie', 'bauplan', 'plan', 'kopie', 'grundriss', 'grundrisse', 'zeichnung', 'anmerkungen', 'fotokopie'],
+    ort: 'karton_grest', rel: 'in', schriftart: 'hand',
+    plan: 'haus',
+    beschreibung: 'Fotokopien von Bernwards Bauplan aus dem Jahr 1899, alle vier Blätter, auf DIN A3 verkleinert und an den Rändern mit Klebeband zusammengesetzt. Carsten hat mit blauem Kugelschreiber hineingeschrieben. ' +
+      'Im Obergeschoss ist das Ankleidezimmer dick eingekreist, daneben ein einziges Wort: <b>SIE</b>. Im Keller, beim Kohlenkeller unter der Halle: <i>„Wand?? – gemessen: 2,40 m fehlen“</i>.',
+    lesbar: 'Im Stempelfeld, kopiert: „Villa für die Eheleute Grest · Kirchhörde. Entwurf und Ausführung: B. Grest, Architekt. Dortmund, im Mai 1899.“<br><br>' +
+      '<i>Carstens Anmerkungen, blauer Kugelschreiber:</i><br>Obergeschoss – das Ankleidezimmer eingekreist, daneben: <b>„SIE“</b><br>Keller – beim Kohlenkeller unter der Halle: <b>„Wand?? – gemessen: 2,40 m fehlen“</b>',
+    foto: 'Auf dem Display ist der Kreis um das Ankleidezimmer dunkler als auf dem Papier. Als hätte ihn jemand nachgezogen.',
+    planNotizen: [
+      { stock: 'og', raum: 'ankleidezimmer', kreis: true, text: 'SIE', l: [21.9, 8.2], drehung: -8 },
+      { stock: 'keller', raum: 'kohlenkeller', text: 'Wand??\ngemessen: 2,40 m fehlen', l: [10, 7.4], drehung: -3 }   // \n = neue Zeile
+    ],
+    hinweis: 'carstens_plan', hinweisBei: 'lesen',
+    bei: { untersuchen: function (api) { api.hinweis('carstens_plan'); return false; } }
   });
 
   // ===================================================================
