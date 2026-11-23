@@ -254,6 +254,7 @@
     texte: { oeffnen: 'Die Schnalle ist steif, dann gibt sie nach.' }
   });
   HG.ding('tinktur', {
+  klein: true,      // zählt nicht zur Tragkraft
     nomen: 'Fläschchen', genus: 'n', adj: ['braun'], kurzwort: 'fläschchen',
     woerter: ['flaeschchen', 'flasche', 'tinktur', 'medizin', 'etikett', 'arznei'],
     ort: 'rollstuhltasche', rel: 'in', schriftart: 'hand',

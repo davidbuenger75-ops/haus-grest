@@ -914,7 +914,7 @@
         add(eig(id, 'brennt') ? 'Löschen' : 'Anzünden', eig(id, 'brennt') ? 'lösche ' + k : 'zünde ' + k + ' an');
       }
       if (S.nehmbar(id)) add('Nehmen', 'nimm ' + k);
-      if (d.dokument && !W.getragen(id)) add(HG.handy.hatFoto(id) ? 'Foto ansehen' : 'Fotografieren', HG.handy.hatFoto(id) ? 'fotos' : 'fotografiere ' + k);
+      if (d.dokument && !W.inHand(id)) add(HG.handy.hatFoto(id) ? 'Foto ansehen' : 'Fotografieren', HG.handy.hatFoto(id) ? 'fotos' : 'fotografiere ' + k);
       if (W.inHand(id)) add('Ablegen', 'lege ' + k + ' ab');
       if (d.riechen) add('Riechen', 'rieche an ' + k);
       if (d.horchen) add('Lauschen', 'lausche an ' + k);
@@ -1029,8 +1029,8 @@
       [].concat(HG.wert(r.vorschlaege, api) || []).forEach(add);
       if (hell) {
         W.umfeld().forEach(function (id) {
+          if (D(id).dokument && !W.inHand(id)) { if (!HG.handy.hatFoto(id)) add('fotografiere ' + kw(id)); return; }   // Dokumente: Foto statt Inventar (auch aus getragenen Behältern)
           if (W.getragen(id) || D(id).szenerie || eig(id, 'fest') || D(id).orte) return;
-          if (D(id).dokument) { if (!HG.handy.hatFoto(id)) add('fotografiere ' + kw(id)); return; }   // Dokumente: Foto statt Inventar
           add('nimm ' + kw(id));
         });
         W.umfeld().forEach(function (id) {

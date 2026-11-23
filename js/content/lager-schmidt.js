@@ -303,6 +303,7 @@
     riechen: 'Benzin. Scharf und süßlich.'
   });
   HG.ding('sturmstreichhoelzer', {
+  klein: true,      // zählt nicht zur Tragkraft
     nomen: 'Sturmstreichhölzer', genus: 'pl',
     woerter: ['sturmstreichhoelzer', 'streichhoelzer', 'packung', 'streichholz'],
     ort: 'lager_c214', feuer: true, kurzwort: 'sturmstreichhölzer',
@@ -652,6 +653,7 @@
     }
   });
   HG.ding('taschenspiegel', {
+  klein: true,      // zählt nicht zur Tragkraft
     nomen: 'Taschenspiegel', genus: 'm', adj: ['klein'],
     woerter: ['taschenspiegel', 'spiegel', 'spiegelchen'],
     ort: 'handtuchbuendel', rel: 'in',
@@ -723,7 +725,7 @@
           // erscheint erst, wenn die Spielfigur das Haus mindestens einmal betreten hat
           bedingung: function () { return !!HG.zustand.z.besucht.halle; },
           text: '<i>(Danach sind die Seiten leer. Auf der allerletzten Seite steht eine einzige Zeile in sauberer, altmodischer Handschrift, die nicht Carsten gehört.)</i><br><br><span style="font-family:\'Segoe Script\',cursive;font-size:1.3em">Willkommen zu Hause.</span>',
-          beimLesen: function (api) { api.nervenProbe('1/1W6', { grund: 'Willkommen zu Hause' }); } }
+          beimLesen: function (api) { api.nervenProbe('1/1W6', { grund: 'Willkommen zu Hause', gewoehnung: 'willkommen' }); } }
       ]
     }
   });

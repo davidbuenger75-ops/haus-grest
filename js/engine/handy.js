@@ -196,8 +196,14 @@
   // Dokumente (dokument: true) wandern nicht ins Inventar – sie werden fotografiert
   var altNehmen = A.nehmen;
   A.nehmen = function (ctx) {
-    if (ctx.obj && D(ctx.obj).dokument && !W.getragen(ctx.obj) && H.dabei()) {
-      if (!H.hatFoto(ctx.obj)) HG.ausgabe.text(T.gross(T.der(ctx.obj, 'akk')) + ' lässt du, wo ' + T.pron(ctx.obj, 'nom') + ' ' + T.vb(ctx.obj, 'ist', 'sind') + '. Du fotografierst ' + T.pron(ctx.obj, 'akk') + ' lieber.');
+    if (ctx.obj && D(ctx.obj).dokument && !W.inHand(ctx.obj) && H.dabei()) {
+      if (H.hatFoto(ctx.obj)) {
+        HG.ausgabe.text('Du hast ' + T.der(ctx.obj, 'akk') + ' schon abfotografiert – ' + T.pron(ctx.obj, 'nom') + ' ' + T.vb(ctx.obj, 'ist', 'sind') +
+          ' auf deinem Handy. <span class="nebenbei">(„fotos“, dann „lies foto …“)</span>');
+        return;
+      }
+      HG.ausgabe.text('Mitnehmen musst du ' + T.der(ctx.obj, 'akk') + ' nicht – ein Foto genügt, dann hast du ' +
+        T.pron(ctx.obj, 'akk') + ' jederzeit auf dem Handy.');
       H.foto(ctx.obj, ctx);
       W.enthuelle(ctx.obj, 'nehmen');   // beim Hochnehmen kommt zum Vorschein, was darunter lag
       return;

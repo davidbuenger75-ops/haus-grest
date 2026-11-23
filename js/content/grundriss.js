@@ -70,7 +70,7 @@
           { id: 'kueche', plan: 'Küche', raum: 'kueche', r: [[13, 0, 20, 5.5]] },
           { id: 'arbeitszimmer', plan: 'Arbeitszimmer', raum: 'arbeitszimmer', r: [[0, 5.5, 7, 16]] },
           { id: 'halle', plan: 'Halle', raum: 'halle', r: [[7, 5.5, 13, 14]], l: [10.6, 9.5] },
-          { id: 'garderobe', plan: 'Garderobe', raum: null, r: [[7, 14, 8.5, 16]], klein: true },
+          { id: 'garderobe', plan: 'Garderobe', raum: 'garderobe', r: [[7, 14, 8.5, 16]], klein: true },
           { id: 'windfang', plan: 'Windfang', raum: null, r: [[8.5, 14, 11.5, 16]], klein: true },
           { id: 'speisezimmer', plan: 'Speisezimmer', raum: 'speisezimmer', r: [[13, 5.5, 20, 10.5]] },
           { id: 'salon', plan: 'Salon', raum: 'salon', wand: false, r: [[13, 10.5, 20, 16], [11.5, 14, 13, 16], TURM_FLAECHE], l: [16.3, 13.2] },

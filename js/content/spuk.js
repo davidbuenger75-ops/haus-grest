@@ -182,6 +182,18 @@ HG.spuk('speisekammer_birne', {
   nerven: '1/1W6', grund: 'Glas'
 });
 
+// --- Garderobe -------------------------------------------------------
+HG.spuk('garderobe_buegel', {
+  art: 'geraeusch', orte: ['garderobe'], zeiten: SPUK_TAG, chance: 0.1, max: 1,
+  text: 'Hinter dir ein leises Klirren. Einer der leeren Messinghaken schwingt hin und her, als hätte gerade jemand einen Mantel davon genommen. Die Haustür ist zu. Es zieht nicht.',
+  nerven: '0/1W2', grund: 'Haken'
+});
+HG.spuk('garderobe_mantel', {
+  art: 'illusion', orte: ['garderobe'], zeiten: SPUK_NACHT, chance: 0.2, max: 1, hell: true,
+  text: 'Dein Licht streift die Haken. Neben Carstens Jacke hängt jetzt ein langer schwarzer Mantel mit hohem Kragen. Darunter stehen die Knopfstiefel – und in den Stiefeln stehen Füße. Du hebst das Licht nicht höher. Als du blinzelst, hängt dort nur noch die Jacke.',
+  nerven: '1/1W6', grund: 'Gestalt an der Garderobe'
+});
+
 // --- Speisezimmer ----------------------------------------------------
 HG.spuk('speisezimmer_laken', {
   art: 'illusion', orte: ['speisezimmer'], zeiten: SPUK_TAG, chance: 0.1, max: 1, hell: true,

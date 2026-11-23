@@ -68,11 +68,11 @@ HG.raum('halle', {
     return 'Eine hohe Halle, getäfelt mit dunklem Holz. Eine breite Treppe schwingt sich ins Obergeschoss hinauf, ihr Geländer ist grau vor Staub. ' +
       licht + ' auf einen abgetretenen Teppich. ' +
       'An der Wand steht eine alte Kommode. Im Westen ' + (api.eig('eichentuer', 'offen') ? 'steht eine schwere Eichentür offen' : 'führt eine schwere Eichentür weiter') +
-      ', im Osten eine hohe Flügeltür ins Speisezimmer. Links neben der Haustür führt ein dunkler Durchgang nach Südosten in den Salon, nach Norden öffnet sich ein dunkler Flur. Im Süden liegt die Haustür.';
+      ', im Osten eine hohe Flügeltür ins Speisezimmer. Links neben der Haustür führt ein dunkler Durchgang nach Südosten in den Salon, nach Norden öffnet sich ein dunkler Flur. Im Süden liegt die Haustür; rechts davon, unter dem Treppenabsatz, geht es nach Südwesten in eine kleine Garderobe.';
   },
   kurz: function (api) {
     return 'Die Halle mit der staubigen Treppe, der Kommode und dem abgetretenen Teppich. Die Eichentür im Westen ist ' +
-      (api.eig('eichentuer', 'offen') ? 'offen' : 'geschlossen') + '. Osten: Speisezimmer, Südosten: Salon, Norden: Flur, Süden: Haustür.';
+      (api.eig('eichentuer', 'offen') ? 'offen' : 'geschlossen') + '. Osten: Speisezimmer, Südosten: Salon, Südwesten: Garderobe, Norden: Flur, Süden: Haustür.';
   },
   beimBetreten: function (api, info) {
     if (info.erstesMal) api.nachricht('willkommen');
@@ -84,6 +84,7 @@ HG.raum('halle', {
     norden: 'flur',
     osten: 'speisezimmer',
     suedosten: 'salon',
+    suedwesten: 'garderobe',
     westen: { ziel: 'arbeitszimmer', tuer: 'eichentuer' },
     sueden: {
       ziel: 'einfahrt', tuer: 'haustuer',
@@ -171,6 +172,7 @@ HG.ding('kommodenschublade', {
 });
 
 HG.ding('streichhoelzer', {
+  klein: true,      // zählt nicht zur Tragkraft
   nomen: 'Streichholzschachtel', genus: 'f', kurzwort: 'streichhölzer',
   woerter: ['streichholzschachtel', 'schachtel', 'streichhoelzer', 'streichholz', 'zuendhoelzer', 'hoelzer', 'zuendholz'],
   ort: 'kommodenschublade', rel: 'in',
@@ -223,6 +225,65 @@ HG.ding('eisenschluessel', {
     text: 'Du schlägst die Ecke des Teppichs zurück. Darunter, in einer Mulde zwischen den Dielen, liegt ein großer eiserner Schlüssel.'
   },
   beschreibung: 'Ein schwerer Bartschlüssel aus Eisen, kalt und ein wenig rostig. Er sieht aus, als gehöre er zu einer Tür.'
+});
+
+// =====================================================================
+// GARDEROBE (unter dem Treppenabsatz, neben der Haustür – Bauplan 1899) [Vorschlag: alle Texte]
+// Kein Rätsel, kein Notizbuch-Eintrag (Dichte der Halle). Kleine Spur: Carstens Quittung für Kette und Schloss
+// der Kellertür. Das Fensterchen ist winzig: nachts dunkel wie die Halle.
+// =====================================================================
+// Wer den umgedrehten Wandspiegel trotzdem umdreht: einmal ein Blick, dann hängt man ihn zurück
+// (kein dauerhafter Spiegel im Raum – Dichte der Halle).
+function garderobenspiegelUmdrehen(api) {
+  if (api.zaehle('garderobe_spiegel') === 1) {
+    api.sage('Du nimmst den Spiegel vom Haken und drehst ihn um. Das Glas ist beschlagen, als hätte jemand von innen dagegen geatmet. Langsam klärt es sich – und für einen Herzschlag ist da nicht dein Gesicht, sondern ein schmales, blasses mit offenem Haar, ganz dicht am Glas. Du hängst ihn hastig zurück, mit der Pappe nach vorn. Carsten hatte recht.');
+    api.nervenProbe('1/1W4', { grund: 'Spiegel in der Garderobe', gewoehnung: 'garderobe_spiegel' });
+  } else {
+    api.sage('Du legst die Hand an den Rahmen – und lässt es. <i>NICHT UMDREHEN.</i>');
+  }
+  return true;
+}
+
+HG.raum('garderobe', {
+  name: 'Garderobe',
+  woerter: ['garderobe', 'garderobenkammer', 'kleiderablage'],
+  schauplatz: 'haus',
+  karte: { x: -1, y: 1 },
+  dunkel: function (api) { return api.istNacht(); },
+  dunkelText: 'Stockfinster und eng. Etwas Weiches streift deine Schulter – Stoff, der an einem Haken hängt. Du weißt nicht mehr genau, wie viele Haken leer waren.',
+  beschreibung: function (api) {
+    return 'Eine schmale Kammer unter dem Treppenabsatz; über dir hörst du die Stufen knacken, wenn sich das Haus setzt. ' +
+      (api.istTag() ? 'Durch ein Fensterchen aus Milchglas fällt trübes Licht. ' : 'Das Milchglasfenster ist ein graues Viereck. ') +
+      'An der Wand eine Reihe Messinghaken unter einer Hutablage, alle leer bis auf einen: Dort hängt eine moderne dunkelblaue Regenjacke. ' +
+      'Daneben ein Schirmständer aus Messing, darunter ein Paar Stiefel. Neben der Tür hängt ein kleiner Wandspiegel – mit dem Glas zur Wand. ' +
+      'Im Nordosten geht es zurück in die Halle.';
+  },
+  kurz: 'Die enge Garderobe unter der Treppe: Haken, Hutablage, Carstens Regenjacke, der umgedrehte Spiegel. Nordosten: Halle.',
+  riechen: 'Nasse Wolle, Schuhcreme – und ganz schwach Lavendel, aus der Hutablage.',
+  horchen: { tag: 'Über dir knarrt eine Stufe. Dann noch eine. Dann nichts.', nacht: 'Über dir, auf der Treppe, setzt sich jemand. Ganz langsam. Genau über deinem Kopf.' },
+  versteck: 'Du drückst dich zwischen Wand und Schirmständer. Viel Platz ist hier nicht – aber im Dunkeln würde dich hier niemand suchen.',
+  ausgaenge: { nordosten: 'halle' },
+  vorschlaege: function (api) { return api.hell() ? ['untersuche regenjacke', 'untersuche stiefel'] : ['geh nach nordosten']; },
+  details: [
+    { nomen: 'Regenjacke', genus: 'f', adj: ['blau'], woerter: ['regenjacke', 'jacke', 'carstens', 'tasche', 'taschen', 'jackentasche', 'quittung', 'kassenbon', 'bon'],
+      text: 'Eine dunkelblaue Funktionsjacke, Größe L – Carstens. Sie riecht noch nach ihm, nach Rasierwasser und Regen. In der Tasche knistert ein Kassenbon vom Baumarkt, datiert auf den 2. Juni 2026: <i>Stahlkette 8 mm, 2 m · Vorhängeschloss, gehärtet · Spanplattenschrauben</i>. Darunter, mit Kuli: <b>„KELLER“</b>, zweimal unterstrichen.',
+      lesbar: '„Stahlkette 8 mm, 2 m · Vorhängeschloss, gehärtet · Spanplattenschrauben“ – und mit Kuli: „KELLER“.',
+      riechen: 'Rasierwasser und Regen. Einen Moment lang ist Carsten ganz nah.' },
+    { nomen: 'Stiefel', genus: 'pl', woerter: ['stiefel', 'knopfstiefel', 'schuhe', 'damenstiefel', 'gummistiefel'],
+      text: 'Ein Paar Gummistiefel, Größe 44, mit getrocknetem Gartenschlamm – und daneben, ordentlich ausgerichtet, ein Paar zierlicher schwarzer Damenstiefel mit vielen kleinen Knöpfen, wie man sie um 1900 trug. Das Leder ist weich und glänzt frisch gewichst. Keine Spur von Staub.',
+      tasten: 'Das Leder der Knopfstiefel ist warm. Als hätte sie eben noch jemand getragen.' },
+    { nomen: 'Wandspiegel', genus: 'm', adj: ['klein'], woerter: ['wandspiegel', 'spiegel', 'rueckseite', 'pappe'],
+      text: 'Ein kleiner ovaler Spiegel, umgedreht an seinen Haken gehängt. Auf die Pappe der Rückseite hat jemand mit Filzstift geschrieben: <i>NICHT UMDREHEN</i>. Es ist Carstens Schrift. Du lässt ihn, wie er ist.',
+      lesbar: '„NICHT UMDREHEN“ – in Carstens Schrift.',
+      bei: { umdrehen: garderobenspiegelUmdrehen, drehen: garderobenspiegelUmdrehen, abnehmen: garderobenspiegelUmdrehen },
+      tasten: 'Die Pappe ist kalt. Dahinter, ganz leise, ein Ticken – als klopfe jemand mit dem Fingernagel von innen gegen das Glas.' },
+    { nomen: 'Hutablage', genus: 'f', woerter: ['hutablage', 'ablage', 'haken', 'messinghaken', 'garderobenhaken'],
+      text: 'Eine Ablage aus gedrechseltem Holz über den Messinghaken. Oben liegt nur Staub – und ein einzelnes getrocknetes Lavendelzweiglein.' },
+    { nomen: 'Schirmständer', genus: 'm', woerter: ['schirmstaender', 'schirm', 'schirme', 'regenschirm', 'stock', 'spazierstock'],
+      text: 'Ein Ständer aus getriebenem Messing. Darin ein schwarzer Herrenschirm mit Elfenbeingriff und ein Spazierstock mit silberner Zwinge. Beide sind älter als du.' },
+    { nomen: 'Fensterchen', genus: 'n', woerter: ['fensterchen', 'fenster', 'milchglas'],
+      text: { tag: 'Ein schmales Fenster aus Milchglas. Dahinter bewegen sich Schatten – Zweige im Wind, sicher.', nacht: 'Grau und blind. Einmal, ganz kurz, legt sich von außen eine flache Hand an das Glas.' } }
+  ]
 });
 
 // =====================================================================
@@ -288,6 +349,7 @@ HG.ding('schreibtischschublade', {
 });
 
 HG.ding('bauplan', {
+  dokument: true,   // wird abfotografiert (Handy-Galerie + Notizbuch), nicht eingesteckt
   nomen: 'Bauplan', genus: 'm',
   woerter: ['bauplan', 'plan', 'zeichnung', 'grundriss', 'entwurf', 'bogen', 'signatur'], adjektive: ['vergilbt', 'gross'],
   ort: 'schreibtisch', rel: 'auf', beschreibbar: true,
@@ -299,6 +361,7 @@ HG.ding('bauplan', {
 });
 
 HG.ding('bleistift', {
+  klein: true,      // zählt nicht zur Tragkraft
   nomen: 'Bleistift', genus: 'm',
   woerter: ['bleistift', 'stift'],
   ort: 'schreibtisch', rel: 'auf',
@@ -333,6 +396,7 @@ HG.ding('messingschluessel', {
 });
 
 HG.ding('brief', {
+  dokument: true,   // wird abfotografiert (Handy-Galerie + Notizbuch), nicht eingesteckt
   nomen: 'Brief', genus: 'm', adj: ['vergilbt'],
   woerter: ['brief', 'briefbogen', 'umschlag', 'handschrift'], adjektive: ['alt'],
   ort: 'schreibtischschublade', rel: 'in',
@@ -421,11 +485,11 @@ HG.ding('spiegel', {
         api.abschnitt(13, 'Du hebst dein Licht und siehst in das Glas. Da ist der Flur, das flackernde Licht, dein eigenes bleiches Gesicht. ' +
           'Und hinter deiner linken Schulter, ganz nah, eine Frau im Nachthemd. Ihr Haar ist offen, ihr Kopf zur Seite geneigt, als lausche sie. Ihre Lippen bewegen sich.<br><br>' +
           'Du fährst herum. Der Flur hinter dir ist leer.');
-        api.nervenProbe('1/1W8', { grund: 'Gestalt im Spiegel' });
+        api.nervenProbe('1/1W8', { grund: 'Gestalt im Spiegel', gewoehnung: 'flur_spiegel' });
         api.hinweis('frau_im_spiegel');
       } else if (n === 2) {
         api.sage('Du zwingst dich, noch einmal hinzusehen. Nur du – und dein Spiegelbild, das einen Herzschlag nach dir blinzelt.');
-        api.nervenProbe('1/1W6', { grund: 'Spiegelbild' });
+        api.nervenProbe('1/1W6', { grund: 'Spiegelbild', gewoehnung: 'flur_spiegel' });
       } else {
         var texte = [
           'Die Frau ist wieder da. Diesmal steht sie näher.',
@@ -433,7 +497,7 @@ HG.ding('spiegel', {
           'Im Glas ist der Flur hinter dir länger als in Wirklichkeit. Viel länger.'
         ];
         api.sage(texte[(n - 3) % texte.length]);
-        api.nervenProbe('1/1W6', { grund: 'zu lange in den Spiegel gesehen' });
+        api.nervenProbe('1/1W6', { grund: 'zu lange in den Spiegel gesehen', gewoehnung: 'flur_spiegel' });
       }
       return true;
     },
@@ -449,6 +513,7 @@ HG.ding('spiegel', {
 // DINGE, DIE ERST DURCH SPUK AUFTAUCHEN
 // =====================================================================
 HG.ding('rasiermesser', {
+  klein: true,      // zählt nicht zur Tragkraft
   nomen: 'Rasiermesser', genus: 'n', adj: ['alt'],
   woerter: ['rasiermesser', 'messer', 'klinge'], adjektive: ['aufgeklappt'],
   ort: null,   // erscheint erst durch das Spuk-Ereignis "rasiermesser_erscheint"

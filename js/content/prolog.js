@@ -50,6 +50,7 @@ HG.ding('kuechentisch', {
 });
 
 HG.ding('umschlag', {
+  klein: true,      // zählt nicht zur Tragkraft
   nomen: 'Umschlag', genus: 'm', adj: ['cremefarben'],
   woerter: ['umschlag', 'kuvert', 'post'], adjektive: ['schwer'],
   ort: 'kuechentisch', rel: 'auf',
@@ -61,6 +62,7 @@ HG.ding('umschlag', {
 // Eindeutiger Name „Notarbrief“ – im Spiel gibt es mehrere Briefe (Bernward 1900, Bernward 1905).
 // „Brief“ trifft ihn weiterhin; sind mehrere Briefe da, fragt das Spiel nach.
 HG.ding('notarbrief', {
+  dokument: true,   // wird abfotografiert (Handy-Galerie + Notizbuch), nicht eingesteckt
   nomen: 'Notarbrief', genus: 'm', kurzwort: 'notarbrief',
   woerter: ['notarbrief', 'brief', 'mitteilung', 'notarschreiben', 'notar', 'notariat'],
   ort: 'umschlag', rel: 'in',
@@ -74,6 +76,7 @@ HG.ding('notarbrief', {
 });
 
 HG.ding('testament', {
+  dokument: true,   // wird abfotografiert (Handy-Galerie + Notizbuch), nicht eingesteckt
   nomen: 'Testament', genus: 'n',
   woerter: ['testament', 'abschrift', 'kopie'],
   ort: 'umschlag', rel: 'in',

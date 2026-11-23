@@ -231,6 +231,7 @@
 
   // ------------------------------------------------------------ Zirkel und Werkzeug
   HG.ding('zirkel', {
+    klein: true,      // zählt nicht zur Tragkraft
     nomen: 'Zirkel', genus: 'm', adj: ['klein'],
     woerter: ['zirkel', 'zeichenzirkel', 'messingzirkel'],
     ort: 'karton_grest', rel: 'in',
@@ -255,6 +256,7 @@
     }
   });
   HG.ding('kugelschreiber', {
+    klein: true,      // zählt nicht zur Tragkraft
     nomen: 'Kugelschreiber', genus: 'm', adj: ['leer'],
     woerter: ['kugelschreiber', 'kuli', 'stift'],
     ort: 'campingtisch', rel: 'auf',
@@ -270,8 +272,9 @@
   });
 
   // ------------------------------------------------------------ Inhalt
-  // Ein echter Gegenstand (kein Nur-Foto-Dokument): Bernwards Original kommt ins Inventar (David, 23.11.2026).
+  // Dokument wie alle Papiere: wird abfotografiert, nicht eingesteckt (David, 23.11.2026 – vorher als Gegenstand geplant).
   HG.ding('brief_1905', {
+    dokument: true,   // wird abfotografiert (Handy-Galerie + Notizbuch), nicht eingesteckt
     nomen: 'Brief', zusatz: 'von 1905', genus: 'm', adjektive: ['gefaltet', 'letzt', 'zerrissen'], kurzwort: '1905er-brief',
     woerter: ['brief', 'briefbogen', '1905', '1905er', '1905er-brief', 'abschiedsbrief', 'bernwards', 'papier'],
     ort: 'kaestchen', rel: 'in', schriftart: 'hand',
@@ -294,6 +297,7 @@
     hinweis: 'bernwards_letzter_brief', hinweisBei: 'lesen'
   });
   HG.ding('ehering', {
+    klein: true,      // zählt nicht zur Tragkraft
     nomen: 'Ehering', genus: 'm', adj: ['schmal', 'golden'],
     woerter: ['ehering', 'ring', 'goldring', 'trauring'],
     ort: 'kaestchen', rel: 'in',

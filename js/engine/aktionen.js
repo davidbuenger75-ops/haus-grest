@@ -24,10 +24,24 @@
 
   function istFest(id) { return !!(eig(id, 'fest') || D(id).tuer || D(id).orte || D(id).person); }
 
+  /** Tragkraft: Dinge direkt beim Spieler. Nicht mit zählen: Inhalt getragener Behälter, das Handy
+   *  und kleine Dinge (klein: true, Schlüssel). */
+  function istKlein(id) { var d = D(id); return !!(d.istHandy || d.klein || d.istSchluessel); }
+  function getragenZahl() {
+    return W.kinder('spieler').filter(function (k) { return !istKlein(k); }).length;
+  }
+  function tragkraftVoll() {
+    var max = HG.daten.spiel.tragkraft || 10;
+    if (getragenZahl() < max) return false;
+    sag('Du kannst nicht noch mehr tragen – du hast schon ' + max + ' Dinge bei dir. Leg zuerst etwas ab („lege … ab“).');
+    return true;
+  }
+
   /** Sorgt dafür, dass der Spieler das Ding hält (nimmt es notfalls). */
   function inDieHand(id) {
     if (W.getragen(id)) return true;
     if (istFest(id)) { sag('Dafür müsstest du ' + der(id) + ' in der Hand halten.'); return false; }
+    if (!istKlein(id) && tragkraftVoll()) return false;
     setze(id, 'ort', 'spieler'); setze(id, 'rel', null);
     sag('<span class="nebenbei">(Du nimmst zuerst ' + der(id) + '.)</span>');
     return true;
@@ -152,8 +166,7 @@
       var f = HG.wert(eig(id, 'fest'), HG.api, ctx);
       sag(typeof f === 'string' ? f : Der(id) + ' ' + vb(id, 'lässt', 'lassen') + ' sich nicht mitnehmen.'); return;
     }
-    var max = HG.daten.spiel.tragkraft || 10;
-    if (W.kinder('spieler').length >= max) { sag('Du hast schon die Hände voll.'); return; }
+    if (!istKlein(id) && tragkraftVoll()) return;
     var ausBeh = !W.istRaum(eig(id, 'ort')) && eig(id, 'ort') !== 'spieler' ? eig(id, 'ort') : null;
     setze(id, 'ort', 'spieler'); setze(id, 'rel', null);
     if (ctx.mehrfach) { sag('Genommen.'); W.enthuelle(id, 'nehmen'); return; }

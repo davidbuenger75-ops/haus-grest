@@ -175,11 +175,13 @@ function briefPruefen(s, weg) {
   // a) "nimm brief" und "nimm brief aus kästchen" verhalten sich gleich
   const sicher = JSON.stringify(HG.zustand.z);
   const t1 = s.tu('nimm brief');
-  const getragen1 = HG.welt.getragen('brief_1905');
+  const foto = () => HG.handy.hatFoto('brief_1905') && !HG.welt.inHand('brief_1905');
+  const foto1 = foto();
   HG.spiel.offen = null; HG.zustand.z = JSON.parse(sicher);
   const t2 = s.tu('nimm brief aus kästchen');
-  const getragen2 = HG.welt.getragen('brief_1905');
-  pruefe(getragen1 && getragen2, weg + ': „nimm brief“ und „nimm brief aus kästchen“ stecken den Brief ein' + (getragen1 ? '' : '  →  ' + t1.split('\n')[0]) + (getragen2 ? '' : '  →  ' + t2.split('\n')[0]));
+  const foto2 = foto();
+  HG.zustand.z = JSON.parse(sicher);
+  pruefe(foto1 && foto2, weg + ': „nimm brief“ und „nimm brief aus kästchen“ fotografieren den Brief (statt ihn einzustecken)' + (foto1 ? '' : '  →  ' + t1.split('\n')[0]) + (foto2 ? '' : '  →  ' + t2.split('\n')[0]));
   // b) Lesen per Menü (Verb-Leiste und Wort-Menü)
   const lies = HG.spiel.objekteFuer('lies').filter(id => id === 'brief_1905').map(id => 'lies ' + HG.spiel.kurzwort(id))[0];
   pruefe(!!lies, weg + ': Brief steht im Lies-Menü');
@@ -225,7 +227,7 @@ function briefPruefen(s, weg) {
   pruefe(s.HG.zustand.eig('kaestchen', 'weg') === 'gewalt', 'Kästchen aufgebrochen (' + n + ' Versuche)');
   pruefe(s.HG.zustand.eig('brief_1905', 'zerrissen'), 'Brief ist zerrissen');
   const t = s.tu('nimm brief');
-  pruefe(s.HG.welt.getragen('brief_1905'), 'Gewalt: zerrissener Brief eingesteckt');
+  pruefe(s.HG.handy.hatFoto('brief_1905'), 'Gewalt: zerrissener Brief fotografiert');
   const l = s.tu('lies brief');
   pruefe(/Riss/.test(l), 'Gewalt: zerrissener Brief lesbar');
 }
@@ -233,25 +235,25 @@ function briefPruefen(s, weg) {
 // --- 5. Mehrdeutigkeit „Brief“ ----------------------------------------------
 {
   console.log('\n5. Rückfragen bei „Brief“');
-  const s = imLager();
-  s.tu('nimm notarbrief');
-  // Notarbrief mitnehmen? (er liegt im Umschlag zu Hause – dort holen)
-  const s2 = prolog();
-  s2.tu('öffne umschlag'); s2.tu('nimm notarbrief');
-  pruefe(s2.HG.welt.getragen('notarbrief'), 'Notarbrief lässt sich einstecken');
-  zumLager(s2);
-  s2.tu('schiebe leiste'); s2.tu('öffne grest-karton'); s2.tu('nimm etwas hartes'); s2.tu('stecke zirkel in schlitz'); s2.tu('drehe ringe auf 1205');
-  {
-    const sicher = JSON.stringify(s2.HG.zustand.z);
-    s2.tu('nimm brief');   // den Notarbrief hat man schon – gemeint ist der aus dem Kästchen
-    pruefe(s2.HG.welt.getragen('brief_1905'), '„nimm brief“ nimmt den Brief von 1905 (den Notarbrief hast du schon)');
-    s2.HG.zustand.z = JSON.parse(sicher);
-  }
+  // Dokumente werden abfotografiert statt eingesteckt
+  const s1 = prolog();
+  s1.tu('öffne umschlag');
+  const tn = s1.tu('nimm notarbrief');
+  pruefe(!s1.HG.welt.getragen('notarbrief') && s1.HG.handy.hatFoto('notarbrief') && /Foto genügt/.test(tn),
+    '„nimm notarbrief“ fotografiert ihn ab, statt ihn einzustecken');
+  pruefe(/schon abfotografiert/.test(s1.tu('nimm notarbrief')), 'Zweites „nimm notarbrief“: schon auf dem Handy');
+  // Zwei Briefe zugleich: Bernwards Brief von 1905 (im Gepäck) und der von 1900 in der Schreibtischschublade
+  const s2 = imHaus();
+  s2.HG.zustand.setze('brief_1905', 'ort', 'spieler');
+  s2.HG.zustand.setze('messingschluessel', 'ort', 'spieler'); s2.HG.zustand.setze('messingschluessel', 'versteckt', false);
+  s2.HG.zustand.z.raum = 'arbeitszimmer';
+  s2.tu('schließe schublade mit messingschlüssel auf'); s2.tu('öffne schublade');
+  pruefe(s2.HG.zustand.eig('schreibtischschublade', 'offen'), 'Schreibtischschublade offen (Vorbereitung)');
   ['lies brief', 'untersuche brief', 'riech an brief'].forEach(b => {
     const sicher = JSON.stringify(s2.HG.zustand.z);
     const t = s2.tu(b);
     const frage = s2.HG.spiel.offen && s2.HG.spiel.offen.art === 'wahl';
-    pruefe(frage && /Notarbrief/.test(t) && /1905/.test(t), '„' + b + '“ fragt nach: ' + t.split('\n').pop());
+    pruefe(frage && /vergilbt/.test(t) && /1905/.test(t), '„' + b + '“ fragt nach: ' + t.split('\n').pop());
     if (frage) {
       const a = s2.tu('den von 1905');
       pruefe(!KAPUTT.test(a) && !s2.HG.spiel.offen, '  Antwort „den von 1905“ wird verstanden');
@@ -295,7 +297,7 @@ function imHaus(opt) {
   return s;
 }
 function geh(s, ...wege) { wege.forEach(w => s.tu('geh nach ' + w)); return s.HG.zustand.z.raum; }
-const EG = ['halle', 'arbeitszimmer', 'flur', 'hinterdiele', 'dienstbotenzimmer', 'anrichte', 'kueche', 'speisekammer', 'speisezimmer', 'salon', 'wintergarten'];
+const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'dienstbotenzimmer', 'anrichte', 'kueche', 'speisekammer', 'speisezimmer', 'salon', 'wintergarten'];
 
 {
   console.log('\n8. Erdgeschoss: Räume und Spuk-Daten');
@@ -460,6 +462,34 @@ const EG = ['halle', 'arbeitszimmer', 'flur', 'hinterdiele', 'dienstbotenzimmer'
   HG.zufall = () => 0.97;
   const b = HG.api.nervenProbe('1/1W6', { gewoehnung: 'test' });
   pruefe(a.erfolg && b.gewoehnt && b.verlust === 0, 'Gewöhnung: nach bestandener Probe keine zweite');
+  // Großer Spiegel im Flur: nach bestandener Probe kein neuer NERVEN-Verlust beim erneuten Hineinsehen
+  HG.zufall = () => 0.05;
+  const spBei = HG.daten.dinge.spiegel.bei;
+  spBei.hineinschauen(HG.api, {});
+  HG.zufall = () => 0.97;
+  const nervenVor = HG.zustand.z.werte.nerven;
+  spBei.hineinschauen(HG.api, {}); spBei.hineinschauen(HG.api, {}); spBei.hineinschauen(HG.api, {});
+  pruefe(HG.zustand.z.werte.nerven === nervenVor, 'Flur-Spiegel: nach bestandener Probe keine weiteren Proben');
+  // Tragkraft: auch automatisches Nehmen (lesen, benutzen …) hält die Grenze ein; das Handy zählt nicht
+  {
+    const t = imHaus({}); const H = t.HG, Z = H.zustand;
+    const max = H.daten.spiel.tragkraft;
+    const frei = Object.keys(H.daten.dinge).filter(id => {
+      const d = H.daten.dinge[id];
+      return !d.istHandy && !d.fest && !d.tuer && !d.person && !d.orte && !d.dokument && Z.eig(id, 'ort') !== 'spieler';
+    });
+    Object.keys(H.daten.dinge).forEach(id => { if (Z.eig(id, 'ort') === 'spieler' && !H.daten.dinge[id].istHandy) Z.setze(id, 'ort', Z.z.raum); });
+    frei.slice(0, max).forEach(id => Z.setze(id, 'ort', 'spieler'));
+    const extra = frei[max];
+    Z.setze(extra, 'ort', Z.z.raum); Z.setze(extra, 'versteckt', false);
+    const zahl = () => H.welt.kinder('spieler').filter(id => !H.daten.dinge[id].istHandy).length;
+    H.spiel.eingabe('nimm ' + (H.daten.dinge[extra].woerter || [extra])[0]);
+    pruefe(zahl() === max, 'Tragkraft: bei ' + max + ' Dingen kein weiteres');
+    pruefe(Z.eig('handy', 'ort') === 'spieler', 'Tragkraft: Handy zählt nicht mit');
+    Z.setze(frei[0], 'ort', Z.z.raum);
+    H.spiel.eingabe('nimm ' + (H.daten.dinge[extra].woerter || [extra])[0]);
+    pruefe(Z.eig(extra, 'ort') === 'spieler', 'Tragkraft: nach dem Ablegen eines Dings klappt das Nehmen wieder');
+  }
   // Nachts keine Ablenkungen
   const s2 = imHaus({ spuk: true }); const H2 = s2.HG;
   s2.tu('warte bis nacht');
