@@ -149,6 +149,10 @@
     uhrzeit: function () { return HG.zeit.uhr(); },
     /** Minuten seit Spielbeginn – für "ist das schon lange her?" */
     minuten: function () { return HG.zeit.jetzt(); },
+    /** Minuten, die die Spielfigur heute schon an diesem Schauplatz verbracht hat. */
+    verweilt: function (schauplatz) { var v = Z().verweil; return v && v.tag === Z().zeit.tag ? (v.orte[schauplatz] || 0) : 0; },
+    /** Ist gerade Tag (Morgen oder Mittag)? */
+    istTag: function () { var p = HG.zeit.phase(); return p === 'morgen' || p === 'mittag'; },
     zeitVergeht: function (min) { HG.zeit.vergeht(min); },
     zeitBis: function (phase) { HG.zeit.bis(phase); },
     istOffen: function (spec) { return HG.zeit.istOffen(spec); },
@@ -219,7 +223,7 @@
     oeffnen: 'öffnen', schliessen: 'schließen', druecken: 'drücken', ziehen: 'ziehen', drehen: 'drehen', umdrehen: 'umdrehen', einstellen: 'einstellen', knacken: 'knacken', schieben: 'schieben',
     anzuenden: 'anzünden', loeschen: 'löschen', zerbrechen: 'zerbrechen', reissen: 'zerreißen', sprechen: 'ansprechen',
     fragen: 'fragen', zeigen: 'zeigen', geben: 'geben', benutzen: 'benutzen', kombinieren: 'kombinieren',
-    hineinschauen: 'hineinschauen', unterschauen: 'darunter ansehen', hinterschauen: 'dahinter ansehen'
+    hineinschauen: 'hineinschauen', unterschauen: 'darunter ansehen', hinterschauen: 'dahinter ansehen', oelen: 'ölen', spielen: 'spielen'
   };
 
   var S = HG.spiel = {
@@ -698,8 +702,15 @@
       var z = Z();
       if (z.vorbei) return;
       z.zug++;
+      var dauer = S._dauer === null || S._dauer === undefined ? 1 : S._dauer;
+      // Aufenthaltsdauer pro Schauplatz und Tag (api.verweilt('haus')) – z. B. für die Ablenkungen des Hauses bei Tag
+      var sp = W.raum() && W.raum().schauplatz;
+      if (sp) {
+        if (!z.verweil || z.verweil.tag !== z.zeit.tag) z.verweil = { tag: z.zeit.tag, orte: {} };
+        z.verweil.orte[sp] = (z.verweil.orte[sp] || 0) + dauer;
+      }
       // erst vergeht die Zeit, dann reagieren Raum und Spiel darauf
-      HG.zeit.vergeht(S._dauer === null || S._dauer === undefined ? 1 : S._dauer);
+      HG.zeit.vergeht(dauer);
       S._dauer = null;
       var r = W.raum();
       if (r.jedeRunde) r.jedeRunde(api);

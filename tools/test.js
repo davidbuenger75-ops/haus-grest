@@ -284,5 +284,188 @@ function briefPruefen(s, weg) {
   pruefe(/nichts dergleichen|nicht/.test(t), '„untersuche den brief von carsten“ ohne Treffer bleibt eine klare Meldung');
 }
 
+// ================================================================== Haus Grest, Erdgeschoss
+function imHaus(opt) {
+  const s = prolog();
+  if (!(opt && opt.spuk)) s.HG.spukwerk.zug = () => {};   // zufälliger Spuk stört die Abläufe (Schock-Flucht!)
+  s.tu('öffne umschlag'); s.tu('lies notarbrief'); s.tu('nimm hausschlüssel');
+  s.tu('fahre zum haus');
+  s.tu('schließe haustür auf'); s.tu('öffne haustür'); s.tu('geh nach norden');
+  s.tu('schalte taschenlampe ein');
+  return s;
+}
+function geh(s, ...wege) { wege.forEach(w => s.tu('geh nach ' + w)); return s.HG.zustand.z.raum; }
+const EG = ['halle', 'arbeitszimmer', 'flur', 'hinterdiele', 'dienstbotenzimmer', 'anrichte', 'kueche', 'speisekammer', 'speisezimmer', 'salon', 'wintergarten'];
+
+{
+  console.log('\n8. Erdgeschoss: Räume und Spuk-Daten');
+  const s = imHaus();
+  const HG = s.HG;
+  pruefe(HG.zustand.z.raum === 'halle', 'In der Halle angekommen');
+  EG.concat(['einfahrt']).forEach(r => {
+    const ev = Object.keys(HG.daten.spuk).map(k => HG.daten.spuk[k]).filter(d => (d.orte || []).includes(r));
+    const tag = ev.some(d => !d.zeiten || d.zeiten.some(z => z === 'morgen' || z === 'mittag'));
+    const nacht = ev.some(d => !d.zeiten || d.zeiten.includes('nacht'));
+    pruefe(tag && nacht, r + ': Spuk bei Tag und bei Nacht vorhanden');
+  });
+  // Alle Ausgänge führen in vorhandene Räume, und jeder Raum ist auf dem Bauplan
+  EG.forEach(r => {
+    const aus = HG.daten.raeume[r].ausgaenge || {};
+    const kaputt = Object.keys(aus).filter(k => { const a = aus[k]; const z = typeof a === 'string' ? a : a.ziel; return z && !HG.daten.raeume[z]; });
+    pruefe(!kaputt.length, r + ': alle Ausgänge führen zu Räumen' + (kaputt.length ? ' (' + kaputt.join(', ') + ')' : ''));
+    pruefe(!!HG.plan.finde(HG.daten.plaene.haus, r), r + ': steht im Bauplan');
+  });
+  // Menüs in jedem erreichbaren Raum (bei Tag)
+  pruefeMenues(s, 'Halle');
+  geh(s, 'osten'); pruefeMenues(s, 'Speisezimmer');
+  geh(s, 'süden'); pruefeMenues(s, 'Salon');
+  geh(s, 'nordwesten', 'norden'); pruefeMenues(s, 'Flur');
+  geh(s, 'osten'); pruefeMenues(s, 'Anrichte');
+  geh(s, 'osten'); pruefeMenues(s, 'Küche');
+  geh(s, 'südwesten'); pruefeMenues(s, 'Speisekammer');
+  geh(s, 'nordosten', 'westen', 'westen', 'westen'); pruefeMenues(s, 'Hinterdiele');
+  pruefe(HG.zustand.z.raum === 'hinterdiele', 'Weg Halle → … → Hinterdiele stimmt');
+}
+
+{
+  console.log('\n9. Rätsel „Der Riegel“ (Dienstbotenzimmer)');
+  // Kopf: Öl aus der Speisekammer
+  let s = imHaus(); let HG = s.HG;
+  geh(s, 'norden', 'westen');
+  s.tu('schiebe riegel');
+  const t2 = s.tu('schiebe riegel');
+  pruefe(HG.zustand.eig('kraehentuer', 'verschlossen'), 'Bei Tag: Riegel festgerostet');
+  pruefe(s.bloecke.some(b => b.typ === 'tipp'), 'Nach Fehlversuchen kommt ein Tipp');
+  geh(s, 'osten', 'osten', 'osten', 'südwesten');
+  s.tu('nimm ölkännchen');
+  pruefe(HG.welt.getragen('oelkanne'), 'Ölkännchen aus der Speisekammer genommen');
+  geh(s, 'nordosten', 'westen', 'westen', 'westen');
+  s.tu('öle riegel');
+  s.tu('schiebe riegel');
+  pruefe(!HG.zustand.eig('kraehentuer', 'verschlossen'), 'Kopf: geölter Riegel lässt sich schieben');
+  pruefe(HG.zustand.z.hinweise.includes('elisabeths_siegel'), 'Hinweis „Ein versiegeltes Zimmer“');
+  geh(s, 'westen');
+  pruefe(HG.zustand.z.raum === 'dienstbotenzimmer', 'Im Dienstbotenzimmer');
+  pruefeMenues(s, 'Dienstbotenzimmer');
+  s.tu('heb diele an');
+  s.tu('untersuche zigarrenkiste');
+  pruefe(HG.zustand.z.hinweise.includes('vogelschaedel'), 'Zigarrenkiste unter der Diele gefunden');
+  s.tu('nimm gebetbuch');
+  HG.zufall = () => 0.97;   // Verstand-Probe misslingt
+  s.tu('lies gebetbuch');
+  pruefe(!HG.zustand.z.hinweise.includes('kraehe_gebetbuch'), 'Spiegelschrift ohne Spiegel: nicht gelesen');
+  // Mit dem Taschenspiegel aus der Küche
+  HG.zufall = () => 0.05;   // NERVEN-Proben gelingen (sonst droht eine Schock-Flucht)
+  geh(s, 'osten', 'osten', 'osten', 'osten');
+  s.tu('öffne schublade'); s.tu('öffne handtuch'); s.tu('nimm taschenspiegel');
+  pruefe(HG.welt.getragen('taschenspiegel'), 'Taschenspiegel aus der Küchenschublade');
+  HG.zufall = () => 0.05;
+  s.tu('lies gebetbuch');
+  pruefe(HG.zustand.z.hinweise.includes('kraehe_gebetbuch'), 'Mit Taschenspiegel: Spiegelschrift gelesen');
+  // Mit dem Flurspiegel (ohne Taschenspiegel)
+  s = imHaus(); HG = s.HG;
+  HG.zustand.setze('kraehentuer', 'verschlossen', false); HG.api.bewege('gebetbuch', 'spieler');
+  geh(s, 'norden');
+  s.tu('lies gebetbuch');
+  pruefe(HG.zustand.z.hinweise.includes('kraehe_gebetbuch'), 'Mit dem Flurspiegel: Spiegelschrift gelesen');
+
+  // Gewalt
+  s = imHaus(); HG = s.HG;
+  geh(s, 'norden', 'westen');
+  HG.zufall = () => 0.05;
+  s.tu('reiß am riegel');
+  pruefe(!HG.zustand.eig('kraehentuer', 'verschlossen'), 'Gewalt: Riegel losgerissen');
+  // Werkzeug
+  s = imHaus(); HG = s.HG;
+  HG.api.bewege('feinwerkzeug', 'spieler');
+  geh(s, 'norden', 'westen');
+  HG.zufall = () => 0.05;
+  s.tu('benutze werkzeug mit riegel');
+  pruefe(!HG.zustand.eig('kraehentuer', 'verschlossen'), 'Werkzeug: Rost gelöst, Riegel offen');
+  // Nacht
+  s = imHaus(); HG = s.HG;
+  s.tu('warte bis nacht');
+  geh(s, 'norden', 'westen');
+  s.tu('schiebe riegel');
+  pruefe(HG.api.istNacht() && !HG.zustand.eig('kraehentuer', 'verschlossen'), 'Nachts gleitet der Riegel von selbst');
+}
+
+{
+  console.log('\n10. Rätsel „Carstens Wintergarten“');
+  let s = imHaus(); let HG = s.HG;
+  geh(s, 'osten');
+  s.tu('öffne glastür'); s.tu('öffne glastür'); const t = s.tu('geh nach osten');
+  pruefe(HG.zustand.z.raum === 'speisezimmer', 'Glastür abgeschlossen');
+  pruefe(s.bloecke.some(b => b.typ === 'tipp' && /Kühlschrank/.test(b.html)), 'Tipp verweist auf den Zettel am Kühlschrank');
+  geh(s, 'norden');
+  s.tu('lies zettel');
+  pruefe(HG.zustand.z.hinweise.includes('carstens_wg_zettel'), 'Zettel am Kühlschrank gelesen');
+  geh(s, 'westen');
+  const nervenVorher = HG.zustand.z.werte.nerven;
+  s.tu('schau hinter spiegel');
+  pruefe(HG.welt.imUmfeld('wg_schluessel'), 'Schlüssel hinter dem verhängten Spiegel');
+  pruefe(HG.zustand.z.werte.nerven === nervenVorher, 'Ohne Hineinsehen keine NERVEN-Probe');
+  s.tu('nimm wg-schlüssel');
+  geh(s, 'osten', 'süden');
+  s.tu('schließe glastür auf'); geh(s, 'osten');
+  pruefe(HG.zustand.z.raum === 'wintergarten', 'Kopf: Wintergarten aufgeschlossen');
+  pruefeMenues(s, 'Wintergarten');
+  s.tu('untersuche rollstuhl'); s.tu('öffne tasche'); s.tu('lies fläschchen');
+  pruefe(HG.zustand.z.hinweise.includes('rollstuhl_elisabeth') && HG.zustand.z.hinweise.includes('tinktur'), 'Rollstuhl und Tinktur gefunden');
+  // Gewalt
+  s = imHaus(); HG = s.HG;
+  geh(s, 'osten'); s.tu('zerbrich glastür');
+  geh(s, 'osten');
+  pruefe(HG.zustand.z.raum === 'wintergarten', 'Gewalt: Scheibe eingeschlagen, Wintergarten erreicht');
+  s.tu('warte'); s.tu('warte');
+  pruefe(HG.zustand.eig('wg_tuer_speise', 'zerbrochen'), 'Die Scheibe bleibt bis zur Nacht kaputt');
+  s.tu('warte bis nacht'); while (HG.zeit.phase() === 'nacht') s.tu('warte');
+  const glas = s.tu('untersuche glastür zum speisezimmer');
+  pruefe(!HG.zustand.eig('wg_tuer_speise', 'zerbrochen') && !HG.zustand.eig('wg_tuer_speise', 'verschlossen'), 'Über Nacht hat sich die Scheibe erneuert wie ein Spiegel (Tür bleibt offen)');
+  // Werkzeug
+  s = imHaus(); HG = s.HG;
+  HG.api.bewege('feinwerkzeug', 'spieler'); HG.zufall = () => 0.05;
+  geh(s, 'südosten'); s.tu('knacke glastür mit werkzeug'); geh(s, 'osten');
+  pruefe(HG.zustand.z.raum === 'wintergarten', 'Werkzeug: Schloss geknackt (vom Salon aus)');
+}
+
+{
+  console.log('\n11. Salon, Speisezimmer bei Nacht');
+  const s = imHaus(); const HG = s.HG;
+  geh(s, 'südosten');
+  s.tu('lies gravur');
+  pruefe(HG.zustand.z.hinweise.includes('hochzeitstag'), 'Kaminsims: „Unser Tag“ (zweite Quelle für den Code)');
+  s.tu('nimm notenheft');
+  pruefe(HG.zustand.z.hinweise.includes('renate_vogt'), 'Notenheft von Renate Vogt fotografiert');
+  s.tu('spiele flügel');
+  s.tu('warte bis nacht');
+  geh(s, 'norden');
+  pruefe(HG.zustand.z.hinweise.includes('dreizehn_gedecke'), 'Nachts: Tafel für dreizehn gedeckt');
+  pruefeMenues(s, 'Speisezimmer (Nacht)');
+  geh(s, 'westen');
+  pruefe(HG.zustand.z.raum === 'halle', 'Zurück in der Halle bei Nacht');
+}
+
+{
+  console.log('\n12. Ablenkungen bei Tag, Gewöhnung');
+  const s = imHaus({ spuk: true }); const HG = s.HG;
+  let n = 0;
+  while (!HG.zustand.z.flags.ablenkung_polizei && n++ < 40 && HG.api.istTag()) { s.tu('warte'); if (HG.HG) break; if (HG.zustand.z.handy.klingelt) s.tu('geh ran'); }
+  pruefe(!!HG.zustand.z.flags.ablenkung_polizei, 'Nach einer Weile im Haus ruft „die Polizei“ an (' + HG.api.verweilt('haus') + ' Min. im Haus)');
+  s.tu('ruf polizei an');
+  pruefe(HG.zustand.z.hinweise.includes('falscher_anruf_polizei'), 'Rückruf entlarvt den Anruf');
+  // Gewöhnung
+  HG.zufall = () => 0.05;
+  const a = HG.api.nervenProbe('1/1W6', { gewoehnung: 'test' });
+  HG.zufall = () => 0.97;
+  const b = HG.api.nervenProbe('1/1W6', { gewoehnung: 'test' });
+  pruefe(a.erfolg && b.gewoehnt && b.verlust === 0, 'Gewöhnung: nach bestandener Probe keine zweite');
+  // Nachts keine Ablenkungen
+  const s2 = imHaus({ spuk: true }); const H2 = s2.HG;
+  s2.tu('warte bis nacht');
+  for (let i = 0; i < 30; i++) s2.tu('warte');
+  pruefe(!H2.zustand.z.flags.ablenkung_polizei || H2.zustand.z.zeit.minute < 22 * 60, 'Nachts keine Ablenkungs-Anrufe');
+}
+
 console.log('\n' + (tests - fehler) + ' von ' + tests + ' Prüfungen bestanden.' + (fehler ? ' ' + fehler + ' FEHLGESCHLAGEN.' : ''));
 process.exit(fehler ? 1 : 0);

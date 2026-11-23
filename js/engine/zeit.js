@@ -35,7 +35,7 @@
     lesen: 3, nehmen: 1, ablegen: 1, legen: 1, oeffnen: 1, schliessen: 1, aufschliessen: 1, abschliessen: 1,
     anzuenden: 1, loeschen: 1, warten: 10, sprechen: 5, fragen: 3, sagen: 1, anrufen: 4, rangehen: 2,
     fotografieren: 1, schreiben: 3, kombinieren: 2, klettern: 2, verstecken: 2, anheben: 2, schieben: 2,
-    fahren: 0, schlafen: 0, buchseite: 2, einstellen: 1, knacken: 15, ersteHilfe: 10, zerbrechen: 5, entziffern: 20
+    fahren: 0, schlafen: 0, buchseite: 2, einstellen: 1, knacken: 15, ersteHilfe: 10, zerbrechen: 5, entziffern: 20, oelen: 2, spielen: 2
   };
 
   function Z() { return HG.zustand.z; }

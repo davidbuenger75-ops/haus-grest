@@ -80,7 +80,7 @@
         },
         falsch: {
           2: '„Was ich für E. erbaute, öffnet nur, wer unseren Tag kennt.“ Vier Ringe – vier Ziffern. Ein Tag, den nur zwei Menschen „unseren“ nennen.',
-          3: 'Ein Datum mit vier Ziffern: Tag und Monat. Bernwards eigene Papiere – sein Brief im Arbeitszimmer des Hauses – erzählen vielleicht, welcher Tag ihnen gehörte.'
+          3: 'Ein Datum mit vier Ziffern: Tag und Monat. Bernwards eigene Papiere – sein Brief im Arbeitszimmer, der Kaminsims im Salon – erzählen vielleicht, welcher Tag ihnen gehörte.'
         }
       },
       falsch: function (api) { return 'Die Ringe rasten ein: ' + String(api.eig('kaestchen', 'ziffern')).split('').join(' – ') + '. Ein leises Klicken im Inneren – dann nichts. Der Deckel bleibt, wo er ist.'; }
@@ -324,7 +324,8 @@
   });
   HG.hinweis('hochzeitstag', {
     titel: '„Unser Tag“: der 12. Mai', strang: 'B',
-    text: 'Bernwards Brief von 1900: Am zwölften Mai, „an unserem Tag“, wollte er Elisabeth das fertige Haus schenken – zum zweiten Hochzeitstag.',
+    // Zwei Quellen im Haus: Bernwards Brief von 1900 (Arbeitszimmer) und die Gravur am Kaminsims (Salon)
+    text: 'Bernward und Elisabeth Grest haben am 12. Mai 1898 geheiratet – „unser Tag“, wie Bernward ihn nennt.',
     stichworte: ['hochzeitstag', 'mai', 'tag']
   });
   HG.hinweis('bernwards_letzter_brief', {

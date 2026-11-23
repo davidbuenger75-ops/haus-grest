@@ -13,7 +13,8 @@
     'archivkopien', 'zeitung_1930', 'foto_1912',                                       // Karton GREST
     'taschenspiegel', 'pistole',                                     // Küche, Schuhkarton
     'bauakte',                                                                         // Stadtverwaltung
-    'kaestchen', 'zirkel', 'brief_1905', 'ehering'                                     // Bernwards Kästchen
+    'kaestchen', 'zirkel', 'brief_1905', 'ehering',                                    // Bernwards Kästchen
+    'gebetbuch', 'vogelkiste', 'kuehlschrankzettel', 'notenheft', 'tinktur'            // Erdgeschoss Nord und Ost
   ].forEach(function (id) { if (HG.daten.dinge[id]) HG.daten.dinge[id].fundstueck = true; });
   // Tagebuchseiten: assets/bilder/ding-tagebuch-<seite>.webp erscheint in der Lese-Ansicht
 
@@ -27,6 +28,7 @@
     kerze: { anzuenden: 'streichholz', loeschen: 'auspusten' },
     gluehbirne: { ziehen: 'zugschnur', anzuenden: 'zugschnur', loeschen: 'zugschnur' },
     handtuchbuendel: { oeffnen: 'klebeband' },
+    kuechenschublade: { oeffnen: 'schublade' },
     umschlag: { oeffnen: 'papier' },
     karton_gerdes: { oeffnen: 'karton' }, karton_romanow: { oeffnen: 'karton' },
     karton_grest: { oeffnen: 'karton' }, karton_kueche: { oeffnen: 'karton' }, schuhkarton: { oeffnen: 'karton' }
@@ -36,4 +38,6 @@
   // Raum-Bildvarianten (zusätzlich zur automatischen Variante "spuk" nach einem Spuk-Ereignis)
   var halle = HG.daten.raeume.halle;
   if (halle) halle.bildVariante = function (api) { return api.eig('eichentuer', 'offen') ? 'tuer-offen' : null; };
+  var hinterdiele = HG.daten.raeume.hinterdiele;
+  if (hinterdiele) hinterdiele.bildVariante = function (api) { return api.eig('kraehentuer', 'verschlossen') ? null : 'tuer-offen'; };
 })();

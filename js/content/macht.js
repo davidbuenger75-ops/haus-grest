@@ -55,12 +55,14 @@
     handy: 'winzig',                                        // das Display
     rasiermesser: 'winzig',                                 // die polierte Klinge
     arbeitszimmer_detail0: { nacht: 'klein', sonst: null }, // Fenster im Arbeitszimmer
-    wohnung_detail1: { nacht: 'klein', sonst: null }        // Fenster deiner Wohnung
+    wohnung_detail1: { nacht: 'klein', sonst: null },       // Fenster deiner Wohnung
+    dienstbotenzimmer_detail2: { nacht: 'klein', sonst: null }, // Fenster im Dienstbotenzimmer
+    wintergarten_detail0: { nacht: 'klein', sonst: null }   // die Scheiben des Wintergartens (wc_spiegel: siehe erdgeschoss-nord.js)
   };
   Object.keys(SPIEGEL).forEach(function (id) { if (HG.daten.dinge[id]) HG.daten.dinge[id].spiegel = SPIEGEL[id]; });
 
   // Diese spiegeln zwar, lassen sich aber nicht als Spiegel zerschlagen (eigene Regeln bzw. eigener Text)
-  ['handy', 'rasiermesser', 'arbeitszimmer_detail0', 'wohnung_detail1'].forEach(function (id) {
+  ['handy', 'rasiermesser', 'arbeitszimmer_detail0', 'wohnung_detail1', 'dienstbotenzimmer_detail2', 'wintergarten_detail0'].forEach(function (id) {
     if (HG.daten.dinge[id]) HG.daten.dinge[id].spiegelZerbrechlich = false;
   });
 })();

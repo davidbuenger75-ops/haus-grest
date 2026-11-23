@@ -8,7 +8,8 @@
 //             Schwer verletzt (LP ≤ 2): −20 % auf körperliche Proben (Inhalt: schwerMalus, koerperlich)
 // Ergebnis:   { erfolg, kritisch, patzer, wurf, ziel, auto } – kritisch/Patzer wie Delta Green:
 //             Pasch (11, 22 …) oder 01 unter dem Ziel = kritisch; Pasch über dem Ziel oder 100 = Patzer.
-// NERVEN:     api.nervenProbe('1/1W6', { grund: 'Gestalt im Spiegel' })
+// NERVEN:     api.nervenProbe('1/1W6', { grund: 'Gestalt im Spiegel', gewoehnung: 'lavendel' })
+//             gewoehnung: nach einer bestandenen Probe mit diesem Schlüssel gibt es keine Probe mehr (Spuk: automatisch).
 //             Erfolg/Misserfolg-Verlust wie bei Delta Green: "0/1W3", "1/1W6", "1/1W8", "1W3/1W10", "1W4/1W12".
 //             Nachts an Orten aus HG.daten.spiel.nachtMalusOrte (Standard: 'haus') gibt es −10 %.
 //             Wer 5 oder mehr Punkte auf einmal verliert (HG.daten.spiel.schockAb), erleidet am Zugende einen Schock.
@@ -98,6 +99,10 @@
     /** NERVEN-Probe mit Verlust "Erfolg/Misserfolg". */
     nerven: function (spec, opt) {
       opt = opt || {};
+      // Gewöhnung (opt.gewoehnung = Schlüssel): Wer denselben Schrecken einmal mit bestandener Probe überstanden hat,
+      // würfelt beim nächsten Mal nicht mehr. Gemerkt im Spielzustand (z.gewoehnt).
+      var gz = Z().gewoehnt || (Z().gewoehnt = {});
+      if (opt.gewoehnung && gz[opt.gewoehnung]) return { erfolg: true, gewoehnt: true, verlust: 0, wurf: 0, ziel: 0 };
       spec = String(HG.wert(spec, HG.api) || '0/1W3');
       var teile = spec.split('/');
       if (teile.length < 2) teile = ['0', teile[0]];
@@ -108,6 +113,7 @@
       HG.api.aendere('nerven', -verlust, null, true);
       e.verlustSpec = spec; e.verlustTeil = teil; e.verlust = verlust; e.neu = Z().werte.nerven;
       P.zeige(e);
+      if (opt.gewoehnung && e.erfolg) gz[opt.gewoehnung] = true;
       if (verlust >= (HG.daten.spiel.schockAb || 5) && Z().werte.nerven > 0) P.schockFaellig = true;
       return e;
     },

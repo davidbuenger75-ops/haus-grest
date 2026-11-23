@@ -97,9 +97,10 @@ HG.spielDaten({
     nacht: 'Es ist Nacht geworden.'
   },
 
-  // Spuk: Mindestabstand in Zügen, nachts häufiger
+  // Spuk: Mindestabstand in Zügen, nachts häufiger, bei Tag selten (David, 23.11.2026: „bei Tag gibt es nur wenige Spukerscheinungen“)
   spukAbstand: 4,
   spukNachtFaktor: 2.5,
+  spukTagFaktor: 0.3,            // [Vorschlag] morgens und mittags nur knapp ein Drittel so oft
 
   einleitung: [
     'Der Brief kam mit der Morgenpost: ein schwerer, cremefarbener Umschlag, wie ihn heute niemand mehr verschickt. Der Absender ist ein Notariat.',

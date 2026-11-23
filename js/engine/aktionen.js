@@ -38,6 +38,12 @@
     return Array.isArray(s) ? s.indexOf(schl) >= 0 : s === schl;
   }
 
+  /** Gestaffelte Hinweise an verschlossenen Türen und Behältern: tipps: { verschlossen: { 2: '…', 3: '…' } } */
+  function verschlossenTipp(id) {
+    var t = D(id).tipps && D(id).tipps.verschlossen;
+    if (t) HG.api.fehlversuch(id + '_verschlossen', t);
+  }
+
   function inhaltListe(id, rel) {
     return W.kinder(id, rel).filter(function (k) { return !D(k).szenerie; });
   }
@@ -203,7 +209,7 @@
     if (eig(id, 'offen')) { sag(Der(id) + ' ' + ist(id) + ' schon offen.'); return; }
     if (eig(id, 'verschlossen')) {
       if (ctx.obj2 && D(ctx.obj2).istSchluessel) { A.aufschliessen(ctx); if (eig(id, 'verschlossen')) return; }
-      else { sag(txt(id, 'verschlossen', ctx) || Der(id) + ' ' + ist(id) + ' verschlossen.'); return; }
+      else { sag(txt(id, 'verschlossen', ctx) || Der(id) + ' ' + ist(id) + ' verschlossen.'); verschlossenTipp(id); return; }
     }
     setze(id, 'offen', true);
     var t = txt(id, 'oeffnen', ctx) || ('Du öffnest ' + der(id) + '.');
@@ -471,6 +477,7 @@
     var neu = function (aktion, obj, obj2) { HG.spiel.handle(Object.assign({}, ctx, { aktion: aktion, obj: obj, obj2: obj2 })); };
     if (a.istSchluessel && b) return neu(eig(ctx.obj2, 'verschlossen') ? 'aufschliessen' : 'abschliessen', ctx.obj2, ctx.obj);
     if (a.feuer && b) return neu('anzuenden', ctx.obj2, ctx.obj);
+    if (a.oel && b) return neu('oelen', ctx.obj2, ctx.obj);
     if (b && b.feuer && a.anzuendbar) return neu('anzuenden', ctx.obj, ctx.obj2);
     if (a.anzuendbar && !b) return neu(eig(ctx.obj, 'brennt') ? 'loeschen' : 'anzuenden', ctx.obj, null);
     if (a.lesbar && !b) return neu('lesen', ctx.obj, null);
@@ -552,6 +559,15 @@
     else A.untersuchen(ctx);
   };
   A.schuetteln = function (ctx) { sag(txt(ctx.obj, 'schuetteln', ctx) || (istFest(ctx.obj) ? Der(ctx.obj) + ' ' + vb(ctx.obj, 'rührt', 'rühren') + ' sich nicht.' : 'Du schüttelst ' + der(ctx.obj) + '. Nichts klappert.')); };
+  // Ölen: braucht ein Ding mit "oel: true" (angegeben oder im Inventar). Inhalte übersteuern mit bei.oelen / texte.oelen.
+  A.oelen = function (ctx) {
+    var oel = ctx.obj2 || W.inventar().filter(function (k) { return D(k).oel; })[0];
+    if (!oel) { sag('Du hast nichts, womit du ' + der(ctx.obj) + ' ölen könntest.'); return; }
+    if (!D(oel).oel) { sag('Mit ' + der(oel, 'dat') + ' kannst du nichts ölen.'); return; }
+    if (!inDieHand(oel)) return;
+    sag(txt(ctx.obj, 'oelen', ctx) || 'Du träufelst ein wenig Öl auf ' + der(ctx.obj) + '. ' + Pron(ctx.obj) + ' ' + vb(ctx.obj, 'glänzt', 'glänzen') + ' jetzt. Sonst ändert sich nichts.');
+  };
+  A.spielen = function (ctx) { sag(HG.wert(D(ctx.obj).spielen, HG.api, ctx) || 'Auf ' + der(ctx.obj, 'dat') + ' kannst du nicht spielen.'); };
   A.knacken = function (ctx) { sag('An ' + der(ctx.obj, 'dat') + ' gibt es nichts, was du knacken könntest.'); };
   A.winken = function () { sag(HG.wert(raum().winken, HG.api) || 'Du fuchtelst mit den Armen. Niemand sieht es – hoffentlich.'); };
 
@@ -567,7 +583,7 @@
       if (s) { sag(s); return; }
     }
     if (a.tuer && !eig(a.tuer, 'offen')) {
-      if (eig(a.tuer, 'verschlossen')) { sag(txt(a.tuer, 'verschlossen', ctx) || Der(a.tuer) + ' ' + ist(a.tuer) + ' verschlossen.'); return; }
+      if (eig(a.tuer, 'verschlossen')) { sag(txt(a.tuer, 'verschlossen', ctx) || Der(a.tuer) + ' ' + ist(a.tuer) + ' verschlossen.'); verschlossenTipp(a.tuer); return; }
       setze(a.tuer, 'offen', true);
       sag('<span class="nebenbei">(Du öffnest zuerst ' + der(a.tuer) + '.)</span>');
     }

@@ -106,7 +106,13 @@
     beimBetreten: function (api, info) {
       if (info.erstesMal) {
         api.sage('Der Mann blickt auf und nimmt die Lesebrille ab. „Moin! Was kann ich … Moment.“ Er mustert dich. „Sie sind {g:der Erbe|die Erbin|die Person mit dem Erbe}, oder? Von Herrn Häuser. Der Notar hat angerufen. Herzliches Beileid.“ <span class="nebenbei">(„frage schmidt nach …“)</span>');
-      } else if (falscheNachrichtBekommen() && !api.flag('schmidtKuendigung')) {
+      }
+      // Ablenkung des Hauses: die Nachricht „von Schmidt“ war gefälscht [Vorschlag]
+      if (api.flag('ablenkung_schmidt') && !api.flag('ablenkung_schmidt_geklaert')) {
+        api.setzeFlag('ablenkung_schmidt_geklaert');
+        api.sage('Du zeigst Schmidt die Nachricht auf deinem Handy. Er setzt die Lesebrille auf, liest, nimmt sie wieder ab. „Hab ich nicht geschrieben. Ich kann gar nicht simsen.“ Er sieht dich lange an. „Bei Ihrer Einheit war keiner. Ich hab heute früh selbst noch den Gang gekehrt.“ Leiser: „Genau so was ist Herrn Häuser auch passiert. Leute, die anrufen, die’s nicht gibt.“');
+        api.hinweis('falscher_anruf_schmidt');
+      } else if (!info.erstesMal && falscheNachrichtBekommen() && !api.flag('schmidtKuendigung')) {
         api.setzeFlag('schmidtKuendigung', true);
         api.sage(HG.daten.dinge.schmidt.themen['kuendigung,gekuendigt,kuendigen'](api));
       }
@@ -630,7 +636,7 @@
   HG.ding('handtuchbuendel', {
     nomen: 'Handtuchbündel', genus: 'n',
     woerter: ['handtuchbuendel', 'handtuch', 'buendel', 'klebeband', 'paket'],
-    ort: null, fest: 'Das Handtuch lässt du, wo es ist.',   // [vorgemerkt] mit dem Taschenspiegel ins Haus Grest – Spielbibel 5b
+    ort: 'kuechenschublade', rel: 'in', fest: 'Das Handtuch lässt du, wo es ist.',   // liegt in der Küche von Haus Grest (js/content/erdgeschoss-nord.js) – Spielbibel 5b
     behaelter: true, oeffenbar: true, offen: false, zeigeZustand: false,
     beschreibung: function (api) { return api.eig('handtuchbuendel', 'offen') ? 'Ein ausgewickeltes Handtuch, Reste von Klebeband daran.' : 'Etwas Flaches, Hartes, fest in ein Handtuch gewickelt und mit Klebeband umwickelt. Viel Klebeband. Als hätte jemand verhindern wollen, dass es jemals wieder ausgepackt wird.'; },
     bei: {

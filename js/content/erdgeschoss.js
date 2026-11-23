@@ -68,11 +68,11 @@ HG.raum('halle', {
     return 'Eine hohe Halle, getäfelt mit dunklem Holz. Eine breite Treppe schwingt sich ins Obergeschoss hinauf, ihr Geländer ist grau vor Staub. ' +
       licht + ' auf einen abgetretenen Teppich. ' +
       'An der Wand steht eine alte Kommode. Im Westen ' + (api.eig('eichentuer', 'offen') ? 'steht eine schwere Eichentür offen' : 'führt eine schwere Eichentür weiter') +
-      ', nach Norden öffnet sich ein dunkler Flur. Im Süden liegt die Haustür.';
+      ', im Osten eine hohe Flügeltür ins Speisezimmer. Links neben der Haustür führt ein dunkler Durchgang nach Südosten in den Salon, nach Norden öffnet sich ein dunkler Flur. Im Süden liegt die Haustür.';
   },
   kurz: function (api) {
     return 'Die Halle mit der staubigen Treppe, der Kommode und dem abgetretenen Teppich. Die Eichentür im Westen ist ' +
-      (api.eig('eichentuer', 'offen') ? 'offen' : 'geschlossen') + ', im Norden liegt der dunkle Flur, im Süden die Haustür.';
+      (api.eig('eichentuer', 'offen') ? 'offen' : 'geschlossen') + '. Osten: Speisezimmer, Südosten: Salon, Norden: Flur, Süden: Haustür.';
   },
   beimBetreten: function (api, info) {
     if (info.erstesMal) api.nachricht('willkommen');
@@ -82,6 +82,8 @@ HG.raum('halle', {
   versteck: 'Der Raum unter der Treppe wäre ein Versteck – aber im Moment gibt es nichts, wovor du dich verstecken müsstest. Noch nicht.',
   ausgaenge: {
     norden: 'flur',
+    osten: 'speisezimmer',
+    suedosten: 'salon',
     westen: { ziel: 'arbeitszimmer', tuer: 'eichentuer' },
     sueden: {
       ziel: 'einfahrt', tuer: 'haustuer',
@@ -358,9 +360,10 @@ HG.raum('flur', {
   beschreibung: function (api) {
     var licht = api.eig('kerze', 'brennt') && api.traegt('kerze') ? 'Im Kerzenschein' : 'Im Lichtkegel deiner Lampe';
     return 'Ein langer, schmaler Flur. Die Tapete hat sich an den Nähten gelöst und hängt in Fahnen herab. ' +
-      'Am Ende des Flurs hängt ein großer Spiegel in einem schwarzen Rahmen, fast so hoch wie eine Tür. ' + licht + ' siehst du darin einen zweiten Flur, der dir entgegenkommt. Im Süden liegt die Halle.';
+      'Am Ende des Flurs hängt ein großer Spiegel in einem schwarzen Rahmen, fast so hoch wie eine Tür. ' + licht + ' siehst du darin einen zweiten Flur, der dir entgegenkommt. ' +
+      'Links eine niedrige Tür mit einer Kette davor – der Keller. Weiter hinten zweigt nach Westen ein Gang zur Hinterdiele ab, nach Osten eine Tür zur Anrichte. Im Süden liegt die Halle.';
   },
-  kurz: 'Der schmale Flur mit der abblätternden Tapete. Am Ende wartet der große Spiegel. Im Süden liegt die Halle.',
+  kurz: 'Der schmale Flur mit der abblätternden Tapete. Am Ende wartet der große Spiegel. Westen: Hinterdiele, Osten: Anrichte, Süden: Halle. Die Kellertür ist mit einer Kette gesichert.',
   tasten: function (api) {
     return api.hell()
       ? 'Die Tapete fühlt sich feucht an, fast lebendig.'
@@ -368,10 +371,18 @@ HG.raum('flur', {
   },
   horchen: 'Stille. Nur einmal meinst du, vom Ende des Flurs ein leises Atmen zu hören.',
   riechen: 'Feuchter Putz. Und ganz schwach: Lavendel.',
-  ausgaenge: { sueden: 'halle' },
+  ausgaenge: {
+    sueden: 'halle', westen: 'hinterdiele', osten: 'anrichte',
+    runter: { sperre: 'Die Kellertür ist mit einer schweren Kette und einem Vorhängeschloss gesichert. <span class="nebenbei">(Der Keller wird noch gebaut.)</span>' }
+  },
   vorschlaege: function (api) { return api.hell() ? ['untersuche spiegel', 'schau in den spiegel'] : ['geh nach süden']; },
   details: [
-    { nomen: 'Tapete', genus: 'f', woerter: ['tapete', 'tapeten', 'fahnen', 'wand', 'waende'], text: 'Ein Muster aus dunklen Lilien. An den Nähten hat sie sich gelöst; darunter ist der Putz fleckig und feucht.', reissen: 'Du reißt einen Streifen Tapete ab. Darunter: nur fleckiger Putz. Irgendwie hattest du etwas anderes erwartet.' }
+    { nomen: 'Tapete', genus: 'f', woerter: ['tapete', 'tapeten', 'fahnen', 'wand', 'waende'], text: 'Ein Muster aus dunklen Lilien. An den Nähten hat sie sich gelöst; darunter ist der Putz fleckig und feucht.', reissen: 'Du reißt einen Streifen Tapete ab. Darunter: nur fleckiger Putz. Irgendwie hattest du etwas anderes erwartet.' },
+    // [später] Keller: Schlüssel zum Vorhängeschloss und Rätsel folgen mit dem Keller
+    { nomen: 'Kellertür', genus: 'f', woerter: ['kellertuer', 'keller', 'kette', 'vorhaengeschloss', 'kellertreppe', 'pappschild', 'schild'],
+      text: 'Eine niedrige Brettertür. Jemand hat zwei Ösen ins Holz geschraubt und eine schwere Kette hindurchgezogen, gesichert mit einem neuen Vorhängeschloss. An der Kette hängt ein Pappschild, in Carstens Schrift: <b>NICHT RUNTER.</b>',
+      horchen: 'Von unten kommt kalte Luft durch die Ritzen. Und ein Geräusch, gleichmäßig, wie jemand, der sehr langsam atmet. Oder eine Heizung. Es gibt keine Heizung, die läuft.',
+      zerbrechen: 'Die Kette ist neu und dick. Mit bloßen Händen keine Chance.' }
   ]
 });
 

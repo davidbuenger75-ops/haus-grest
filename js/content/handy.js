@@ -48,6 +48,32 @@ HG.kontakt('carsten', {
   rueckruf: 'Eine Computerstimme: „Kein Anschluss unter dieser Nummer.“'
 });
 
+// Rückruf entlarvt die Ablenkungen des Hauses (js/content/spuk.js, „Ablenkungen bei Tag“) [Vorschlag]
+HG.kontakt('polizei', {
+  name: 'Polizeiwache Hombruch',
+  woerter: ['polizei', 'wache', 'polizeiwache', 'revier', 'brenner', 'kommissar', 'hauptkommissar', 'hombruch'],
+  bedingung: function (api) { return !!api.flag('ablenkung_polizei'); },
+  rueckruf: function (api) {
+    api.setzeFlag('ablenkung_polizei_geklaert');
+    api.hinweis('falscher_anruf_polizei');
+    return 'Eine Frauenstimme, müde: „Polizeiwache Hombruch.“ Du fragst nach Hauptkommissar Brenner. Tastaturklappern. „Einen Brenner haben wir hier nicht. Und angerufen hat Sie von uns heute auch keiner – ich seh hier nichts.“ Pause. „Ulmenweg zwölf, sagen Sie?“ Noch eine Pause. „Passen Sie auf sich auf.“';
+  }
+});
+HG.kontakt('lager', {
+  name: 'Lager Schmidt (Büro)',
+  woerter: ['lager', 'schmidt', 'heinz', 'buero', 'lagerschmidt'],
+  bedingung: function (api) { return api.hatHinweis('notarbrief'); },
+  rueckruf: function (api) {
+    if (!api.istOffen({ von: '07:00', bis: '19:00' })) return 'Anrufbeantworter: „Lager Schmidt, das Büro ist von sieben bis neunzehn Uhr besetzt. Mieter erreichen ihre Einheit rund um die Uhr mit ihrem Code.“';
+    if (api.flag('ablenkung_schmidt')) {
+      api.setzeFlag('ablenkung_schmidt_geklaert');
+      api.hinweis('falscher_anruf_schmidt');
+      return '„Schmidt, Lager Schmidt.“ Du fragst nach seiner Nachricht. „Nachricht? Ich? Ich kann gar nicht simsen, fragen Sie meine Frau.“ Er lacht. „Bei Ihrer Einheit ist alles ruhig. War den ganzen Tag keiner da.“ Dann leiser: „Komisch. Genau so was hab ich mit Herrn Häuser auch erlebt.“';
+    }
+    return '„Schmidt, Lager Schmidt.“ Im Hintergrund läuft Schlager. „Alles in Ordnung bei Ihnen? Kommen Sie ruhig vorbei, Kaffee ist immer da.“';
+  }
+});
+
 // ---------------------------------------------------------------------
 // Nachrichten
 // ---------------------------------------------------------------------
@@ -71,9 +97,25 @@ HG.nachricht('falscher_notar_keller', {
   text: 'Strom ist wieder da. Der Sicherungskasten ist im Keller, falls etwas klemmt. Gehen Sie ruhig nachts hinunter.'
 });
 
+// --- Ablenkungen bei Tag (David, 23.11.2026: Das Haus will nicht bei Tag durchsucht werden) [Vorschlag] ---
+HG.nachricht('sms_schmidt', {
+  von: 'Lager Schmidt', falsch: true,
+  text: 'Hallo, hier Schmidt vom Lager. Bei Ihrer Einheit C-214 war heute Nacht jemand am Schloss. Kommen Sie bitte gleich mal vorbei und schauen nach, ob was fehlt. Ich bin bis 19 Uhr im Büro. H. Schmidt'
+});
+HG.nachricht('komm_nachts', {
+  von: 'Unbekannte Nummer', falsch: true,
+  text: 'Bei Tag findest du nichts. Komm heute Nacht wieder. Dann zeige ich dir alles.'
+});
+
 // ---------------------------------------------------------------------
 // Anrufe
 // ---------------------------------------------------------------------
+HG.anruf('anruf_polizei', {
+  von: 'Polizeiwache Hombruch', falsch: true,
+  text: '„Brenner, Hauptkommissar, Polizeiwache Hombruch. Spreche ich mit {anrede}?“ Eine ruhige, freundliche Männerstimme. „Es geht um den Nachlass Ihres Verwandten. Wir haben hier noch persönliche Gegenstände von Herrn Häuser, die Sie abholen müssten, und ich bräuchte eine Unterschrift fürs Protokoll. Am besten heute noch – kommen Sie gleich vorbei, ja? Ich warte auf Sie.“ Klick. Er hat aufgelegt, bevor du etwas sagen konntest.',
+  danach: function (api) { api.zielFrei('polizei'); }   // der Merker „ablenkung_polizei“ wird schon beim Klingeln gesetzt (spuk.js)
+});
+
 HG.anruf('anruf_carsten', {
   von: 'Carsten Häuser', falsch: true,
   text: 'Zuerst nur Rauschen. Dann, sehr weit weg, eine Frau, die eine Melodie summt – ein altes Wiegenlied. Das Summen kommt näher, als ginge sie auf das Telefon zu. Ein Klicken. Stille.',

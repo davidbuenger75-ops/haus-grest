@@ -5,8 +5,10 @@
 //     orte: ['halle', 'flur'],  // in diesen Räumen …
 //     schauplatz: 'haus',       // … oder überall an diesem Schauplatz
 //     zeiten: ['abend', 'nacht'],  // optional: nur zu diesen Tageszeiten
-//     chance: 0.08,             // Wahrscheinlichkeit pro Zug (nachts × nachtFaktor)
+//     chance: 0.08,             // Wahrscheinlichkeit pro Zug (nachts × nachtFaktor, morgens/mittags × tagFaktor)
 //     nachtFaktor: 2,           // optional, sonst HG.daten.spiel.spukNachtFaktor (Standard 2)
+//     tagFaktor: 1,             // optional, sonst HG.daten.spiel.spukTagFaktor (bei Tag spukt es wenig)
+//     gewoehnung: false,        // Standard: nach einer bestandenen NERVEN-Probe keine Probe mehr für dieses Ereignis
 //     einmalig: true,           // oder max: 3
 //     hell: true,               // nur, wenn man etwas sehen kann
 //     bedingung: function (api) { return …; },
@@ -85,8 +87,11 @@
       if (t) HG.ausgabe.schreibe('spuk', t);
       if (d.aktion) d.aktion(api);
       var n = HG.wert(d.nerven, api);
-      // Ein starkes Haus macht die Probe schwerer (indirekte Anzeige der MACHT)
-      if (typeof n === 'string') api.nervenProbe(n, { grund: d.grund || HG.text.gross(d.art || 'Spuk'), mod: HG.macht.probenMod() });
+      // Ein starkes Haus macht die Probe schwerer (indirekte Anzeige der MACHT).
+      // Gewöhnung: Wer die Probe für dieses Ereignis einmal bestanden hat, würfelt beim nächsten Mal nicht mehr
+      // (gewoehnung: false schaltet das ab, gewoehnung: 'schluessel' teilt sie sich mit anderen Ereignissen).
+      var gew = d.gewoehnung === false ? null : (d.gewoehnung || 'spuk_' + id);
+      if (typeof n === 'string') api.nervenProbe(n, { grund: d.grund || HG.text.gross(d.art || 'Spuk'), mod: HG.macht.probenMod(), gewoehnung: gew });
       else if (n) api.nerven(n, d.grund || 'Schrecken');
       if (d.hinweis) api.hinweis(d.hinweis);
       HG.macht._imSpuk = true;     // schon bezahlt
@@ -102,7 +107,7 @@
       var z = Z(), sp = HG.daten.spiel;
       if (z.vorbei) return;
       if (z.zug - sz().letzter < (sp.spukAbstand === undefined ? 4 : sp.spukAbstand)) return;
-      var nacht = HG.zeit.istNacht();
+      var nacht = HG.zeit.istNacht(), phase = HG.zeit.phase(), tag = phase === 'morgen' || phase === 'mittag';
       var kand = Object.keys(HG.daten.spuk).filter(function (id) { return SD(id).ausloeser !== 'manuell' && SP.moeglich(id) && HG.macht.kannZahlen(SP.kosten(id)); });
       // zufällige Reihenfolge
       for (var i = kand.length - 1; i > 0; i--) { var j = Math.floor(HG.zufall() * (i + 1)); var t = kand[i]; kand[i] = kand[j]; kand[j] = t; }
@@ -110,6 +115,8 @@
         var d = SD(kand[k]);
         var c = d.chance === undefined ? 0.1 : d.chance;
         if (nacht) c *= d.nachtFaktor || sp.spukNachtFaktor || 2;
+        // Bei Tag spukt es wenig (HG.daten.spiel.spukTagFaktor, pro Ereignis überschreibbar mit tagFaktor)
+        if (tag) c *= d.tagFaktor !== undefined ? d.tagFaktor : (sp.spukTagFaktor === undefined ? 1 : sp.spukTagFaktor);
         c *= HG.macht.haeufigkeit();     // wenig MACHT = seltener Spuk
         if (HG.zufall() < c) { SP.ausloesen(kand[k]); return; }
       }

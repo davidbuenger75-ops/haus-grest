@@ -108,6 +108,8 @@
     { a: 'einstellen', w: L('dreh drehe drehen'), o: 1, p2: L('auf'), p2Text: true },   // "drehe ringe auf 1205" (Zahlenschloss)
     { a: 'drehen', w: L('dreh drehe drehen kurbel kurble'), o: 1 },
     { a: 'knacken', w: L('knack knacke knacken'), o: 1, p2: L('mit') },
+    { a: 'spielen', w: L('spiel spiele spielen klimper klimpere'), vor: L('auf an'), o: 1 },   // "spiele flügel", "spiel auf dem klavier"
+    { a: 'oelen', w: L('oel oele oelen schmier schmiere schmieren fette fetten'), o: 1, p2: L('mit') },   // "öle den Riegel"
     { a: 'nahansicht', w: L('nahansicht'), o: 1 },
     { a: 'entziffern', w: L('entziffer entziffere entziffern'), o: '?', text: true },   // gesperrte Buchseiten
     { a: 'ersteHilfe', w: L('versorg versorge versorgen verarzt verarzte verarzten'), o: '?', text: true },
@@ -139,7 +141,7 @@
     { a: 'zerbrechen', w: L('zerbrich zerbreche zerbrechen zerschlag zerschlage zertruemmere zertruemmer zerstoer zerstoere zerstoeren brich breche'), o: 1, p2: L('mit') },
     { a: 'zerbrechen', w: L('schlag schlage tritt'), p: 'ein', o: 1, p2: L('mit') },
     { a: 'zerbrechen', w: L('schlag schlage hau haue'), o: 1, p2: L('mit') },
-    { a: 'reissen', w: L('reiss reisse reissen zerreiss zerreisse zerreissen zerr'), o: 1 },
+    { a: 'reissen', w: L('reiss reisse reissen zerreiss zerreisse zerreissen zerr'), vor: L('an'), o: 1 },   // "reiß am Riegel"
     { a: 'reissen', w: L('reiss reisse'), p: 'ab', o: 1 },
     { a: 'reissen', w: L('reiss reisse'), p: 'heraus', o: 1 },
     { a: 'klettern', w: L('kletter klettere klettre klettern steig steige steigen klimm klimme'), vor: L('auf ueber in durch hinauf unter'), o: '?' },
@@ -231,7 +233,7 @@
   }
 
   // Bindewörter innerhalb einer Wortgruppe ("der Brief von 1905") – zählen beim Vergleich nicht mit
-  var BINDEWORT = { von: 1 };
+  var BINDEWORT = { von: 1, zu: 1 };   // "Brief von 1905", "Glastür zum Salon"
 
   function baueLexikon() {
     LEX = { nomen: {}, adj: {}, bekannt: {}, andeutung: {} };
@@ -243,7 +245,7 @@
         if (d.genus === 'pl') n[w + 'n'] = 1;
       });
       // Namenszusatz ("von 1905") gehört zum Namen: seine Wörter treffen das Ding
-      if (d.zusatz) T.norm(d.zusatz).split(/\s+/).forEach(function (w) { if (w && !BINDEWORT[w] && ARTIKEL.indexOf(w) < 0) n[w] = 1; });
+      if (typeof d.zusatz === 'string') T.norm(d.zusatz).split(/\s+/).forEach(function (w) { if (w && !BINDEWORT[w] && ARTIKEL.indexOf(w) < 0) n[w] = 1; });
       (d.adj || []).concat(d.adjektive || []).forEach(function (s) { adjFormen(s).forEach(function (f) { a[f] = 1; }); });
       LEX.nomen[id] = n; LEX.adj[id] = a;
       Object.keys(n).concat(Object.keys(a)).forEach(function (w) { LEX.bekannt[w] = 1; });
@@ -320,7 +322,7 @@
     'untersuche …', 'nimm …', 'öffne …', 'schließe …', 'lies …', 'durchsuche …', 'schau', 'schau in …',
     'schau unter …', 'schau hinter …', 'geh …', 'zünde … an', 'lösche …', 'schalte … ein', 'schalte … aus',
     'schließe … auf', 'schließe … ab', 'lege … ab', 'lege … in …', 'lege … auf …', 'gib … an …', 'zeige … …',
-    'sprich mit …', 'frage … nach …', 'benutze …', 'kombiniere … mit …', 'drücke …', 'ziehe an …', 'drehe …', 'drehe … um', 'drehe … auf …', 'knacke …', 'brich … auf', 'versorge wunde', 'erste hilfe', 'entziffere …',
+    'sprich mit …', 'frage … nach …', 'benutze …', 'kombiniere … mit …', 'drücke …', 'ziehe an …', 'drehe …', 'drehe … um', 'drehe … auf …', 'knacke …', 'öle …', 'brich … auf', 'versorge wunde', 'erste hilfe', 'entziffere …',
     'schiebe …', 'horche', 'lausche an …', 'rieche an …', 'taste …', 'taste umher', 'klopfe an …', 'zerbrich …',
     'reiße an …', 'klettere auf …', 'verstecke dich hinter …', 'warte', 'warte bis …', 'schlafe', 'fahre los',
     'fahre zu …', 'ruf … an', 'fotografiere …', 'schreibe …', 'tippe …', 'winke', 'blättere weiter',

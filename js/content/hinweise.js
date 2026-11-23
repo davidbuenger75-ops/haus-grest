@@ -76,6 +76,88 @@ HG.schluss('haus_fuer_elisabeth', {
   text: 'Bernward hat das Haus eigens für Elisabeth entworfen – „Für E.“. Doch kaum waren sie eingezogen, wurde sie krank. Hat ihre Krankheit etwas mit dem Haus selbst zu tun?'
 });
 
+// ---------------------------------------------------------------------
+// Erdgeschoss Nord und Ost (js/content/erdgeschoss-nord.js, erdgeschoss-ost.js) – [Vorschlag von Claude, 23.11.2026]
+// ---------------------------------------------------------------------
+HG.hinweis('elisabeths_siegel', {
+  titel: 'Ein versiegeltes Zimmer', strang: 'B',
+  text: 'Das Dienstbotenzimmer hinter der Hinterdiele war von außen verriegelt und mit rotem Siegelwachs verschlossen. Im Siegel die Initialen E. G. Hat Elisabeth jemanden eingeschlossen – oder etwas?',
+  stichworte: ['siegel', 'dienstbotenzimmer', 'riegel']
+});
+HG.hinweis('kraehe_gebetbuch', {
+  titel: 'Das Gebetbuch der Pflegerin', strang: 'C',
+  text: 'Im Dienstbotenzimmer ein Gebetbuch, die Gebete durchgestrichen. Dazwischen, in Spiegelschrift: Jeden Neumond „ein Vogel“, damit „Er“ hört. „Die Herrin schläft, und was in ihr krank ist, schläft mit ihr.“ Nach zehn Wintern soll „die Tür unter dem Haus“ weit genug sein.',
+  stichworte: ['gebetbuch', 'spiegelschrift', 'pflegerin', 'neumond']
+});
+HG.hinweis('vogelschaedel', {
+  titel: 'Die Zigarrenkiste unter der Diele', strang: 'C',
+  text: 'Unter einer losen Diele im Dienstbotenzimmer: eine Zigarrenkiste voller winziger Vogelschädel. Im Deckel Striche in Zwölferblöcken – zehn volle und ein angefangener.',
+  stichworte: ['schaedel', 'vogelschaedel', 'zigarrenkiste', 'striche']
+});
+HG.hinweis('carstens_wg_zettel', {
+  titel: 'Carstens Zettel am Kühlschrank', strang: 'E',
+  text: '„Wintergarten ZU LASSEN!! Nachts sind die Scheiben wie Spiegel. Alle. Schlüssel: da, wo ich nicht mehr hinsehe.“',
+  stichworte: ['zettel', 'kuehlschrank', 'wintergarten', 'schluessel']
+});
+HG.hinweis('dreizehn_gedecke', {
+  titel: 'Gedeckt für dreizehn', strang: 'D',
+  text: 'Bei Tag liegen im Speisezimmer Laken über Tisch und Stühlen. Nachts ist die Tafel gedeckt: dreizehn Gedecke, verblasste Tischkarten mit Namen – am Kopfende nur ein „E.“',
+  stichworte: ['tafel', 'gedecke', 'speisezimmer', 'tischkarten']
+});
+HG.hinweis('renate_vogt', {
+  titel: 'Renate Vogt und die Dame oben', strang: 'D',
+  text: 'Im Salon ein Notenheft von Renate Vogt, die hier Klavierstunden gab. Eine Schülerin hat „die Dame oben, die immer mitsingt“ gemalt. Darunter, mit Bleistift: „Sie singt nicht mit. Sie singt vor.“',
+  stichworte: ['renate', 'vogt', 'notenheft', 'fluegel', 'klavier']
+});
+HG.hinweis('rollstuhl_elisabeth', {
+  titel: 'Der Rollstuhl im Wintergarten', strang: 'B',
+  text: 'Im verwilderten Wintergarten steht ein alter Rollstuhl aus Korbgeflecht, die Decke darauf warm. Ringsum blüht Lavendel – im November.',
+  stichworte: ['rollstuhl', 'wintergarten']
+});
+HG.hinweis('tinktur', {
+  titel: 'Die Tinktur der Pflegerin', strang: 'C',
+  text: 'In der Tasche des Rollstuhls ein Apothekerfläschchen mit einer dunklen, bitteren Tinktur. Auf dem Etikett, in spitzer, fremder Schrift: „Für die Herrin. Abends zwölf Tropfen, in Wein. Nie vergessen. Nie, solange ich wache.“',
+  stichworte: ['tinktur', 'flaeschchen', 'medizin', 'herrin']
+});
+
+HG.schluss('pflegerin_wachte', {
+  aus: ['kraehe_gebetbuch', 'tinktur'],
+  titel: '„Solange ich wache“',
+  text: 'Gebetbuch und Tinktur, dieselbe spitze Schrift: Die Pflegerin hat Elisabeths Krankheit nicht geheilt. Sie hat sie schlafen gelegt – mit Tropfen, Opfern und einem Ritual, „solange ich wache“. Was geschah, als sie nicht mehr wachte?'
+});
+HG.schluss('elf_jahre', {
+  aus: ['kraehe_gebetbuch', 'vogelschaedel'],
+  titel: 'Jeden Monat ein Opfer',
+  text: 'Zehn volle Zwölferblöcke und ein angefangener: Mehr als zehn Jahre lang hat die Pflegerin jeden Neumond einen Vogel getötet, damit „Er“ hört. Zehn Winter, bis sich „die Tür unter dem Haus“ öffnet.'
+});
+HG.schluss('rollstuhl_foto', {
+  aus: ['rollstuhl_elisabeth', 'pflegerin_kraehe'],
+  titel: 'Der Rollstuhl vom Foto',
+  text: 'Es ist derselbe Rollstuhl wie auf Carstens Foto von 1912: Elisabeth darin, hinter ihr die Pflegerin mit der Krähe. Er steht noch immer da, wo sie ihn abgestellt hat. Und jemand hält den Lavendel am Blühen.'
+});
+HG.schluss('dreizehn_am_tisch', {
+  aus: ['dreizehn_gedecke', 'dreizehn_kreuze'],
+  titel: 'Dreizehn am Tisch',
+  text: 'Dreizehn Kreuze in Carstens Grundbuchauszug, dreizehn Gedecke an der nächtlichen Tafel. Das Haus deckt für seine Toten. Am Kopfende sitzt „E.“ – und Carsten hat seinen Platz schon.'
+});
+
+// --- Ablenkungen: Das Haus lockt die Spielfigur bei Tag weg (js/content/spuk.js, handy.js) ---
+HG.hinweis('falscher_anruf_polizei', {
+  titel: 'Die Polizei hat nicht angerufen',
+  text: 'Ein „Hauptkommissar Brenner“ rief an, ich solle sofort auf die Wache kommen. Auf der Wache kennt ihn niemand, und angerufen hat von dort keiner.',
+  stichworte: ['polizei', 'brenner', 'anruf']
+});
+HG.hinweis('falscher_anruf_schmidt', {
+  titel: 'Schmidt hat nicht geschrieben',
+  text: 'Eine Nachricht „von Schmidt“: Bei meiner Einheit sei jemand am Schloss gewesen, ich solle kommen. Schmidt weiß von nichts, und das Schloss ist unberührt.',
+  stichworte: ['schmidt', 'nachricht', 'einheit']
+});
+HG.schluss('haus_will_nachts', {
+  aus: ['falscher_anruf_polizei', 'falscher_anruf_schmidt'],
+  titel: 'Das Haus will mich nachts',
+  text: 'Zweimal hat mich jemand bei Tag aus dem Haus gelockt – mit Stimmen und Nummern, die nicht stimmen. Das Haus will nicht, dass ich es im Hellen durchsuche. Es will, dass ich wiederkomme, wenn es dunkel ist.'
+});
+
 // --- Stadtverwaltung / Bauamt (David, 22.11.2026; Wortlaut [Vorschlag], Hintergründe: Spielbibel 8.4) ---
 HG.hinweis('hallmann_brand', {
   titel: 'Der Brand von 1974', strang: 'D',

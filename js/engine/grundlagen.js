@@ -155,7 +155,7 @@ window.HG = window.HG || {};
     var nomen = def.nomen;
     if (kasus === 'dat' && def.nomenDat) nomen = def.nomenDat;
     teile.push(nomen);
-    if (def.zusatz) teile.push(def.zusatz);   // nachgestellt, z. B. "der Brief von 1905" – unterscheidet gleichnamige Dinge
+    if (def.zusatz) teile.push(HG.wert(def.zusatz, HG.api));   // nachgestellt (Text oder Funktion), z. B. "der Brief von 1905" – unterscheidet gleichnamige Dinge
     return teile.join(' ');
   };
   T.der = function (def, kasus) { return T.name(def, kasus, 'der'); };
@@ -217,7 +217,7 @@ window.HG = window.HG || {};
     if (!m) return parseInt(formel, 10) || 0;
     var anzahl = parseInt(m[1] || '1', 10), seiten = parseInt(m[2], 10);
     var summe = m[3] ? parseInt(m[3].replace(/\s/g, ''), 10) : 0;
-    for (var i = 0; i < anzahl; i++) summe += 1 + Math.floor(Math.random() * seiten);
+    for (var i = 0; i < anzahl; i++) summe += 1 + Math.floor(HG.zufall() * seiten);
     return summe;
   };
 })(window.HG);
