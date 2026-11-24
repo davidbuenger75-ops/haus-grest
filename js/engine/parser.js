@@ -102,7 +102,7 @@
 
     // Bewegen
     { a: 'druecken', w: L('drueck druecke druecken press presse betaetige'), vor: L('auf gegen'), o: 1 },
-    { a: 'ziehen', w: L('zieh ziehe ziehen zerr zerre'), vor: L('an'), o: 1 },
+    { a: 'ziehen', w: L('zieh ziehe ziehen zerr zerre'), vor: L('an'), o: 1, p2: L('mit') },   // "zieh kette mit hakenstange"
     { a: 'umdrehen', w: L('dreh drehe drehen wend wende wenden'), p: 'um', o: '?' },   // "dreh das Foto um", "dreh dich um"
     { a: 'umdrehen', w: L('wend wende wenden umdrehen umwenden'), o: 1 },
     { a: 'einstellen', w: L('dreh drehe drehen'), o: 1, p2: L('auf'), p2Text: true },   // "drehe ringe auf 1205" (Zahlenschloss)
@@ -183,6 +183,10 @@
     { a: 'sagen', w: L('sag sage sagen ruf rufe rufen fluester fluestere schrei schreie'), o: '?', text: true, p2: L('zu') },
     { a: 'zeigen', w: L('zeig zeige zeigen'), o: 1, p2: L('an'), doppel: true },
     { a: 'entladen', w: L('entlad entlade entladen'), o: 1 },                          // "entlade die Pistole"
+    { a: 'nennen', w: L('nenn nenne nennen'), o: '?' },
+    { a: 'erwaermen', w: L('erwaerm erwaerme erwaermen waerm waerme waermen halt halte halten'), o: 1, p2: L('ueber mit an vor') },   // "halte tagebuch über kerze"
+    { a: 'schoepfen', w: L('schoepf schoepfe schoepfen'), o: '?', p2: L('mit aus') },          // "schöpfe wasser mit eimer"
+    { a: 'verhaengen', w: L('verhaeng verhaenge verhaengen bedeck bedecke bedecken'), o: 1, p2: L('mit') },   // "verhänge spiegel (mit laken)"                                  // "nenne sie beim Namen" (Diener bannen)
     { a: 'geben', w: L('gib gebe geben reich reiche ueberreiche biete'), o: 1, p2: L('an'), doppel: true },
 
     // Werkzeuge und Notizen

@@ -121,7 +121,7 @@ HG.hinweis('tinktur', {
 });
 
 HG.schluss('pflegerin_wachte', {
-  aus: ['kraehe_gebetbuch', 'tinktur'],
+  aus: ['kraehe_gebetbuch', 'tinktur', 'kraeuterbuch'], mindestens: 2,
   titel: '„Solange ich wache“',
   text: 'Gebetbuch und Tinktur, dieselbe spitze Schrift: Die Pflegerin hat Elisabeths Krankheit nicht geheilt. Sie hat sie schlafen gelegt – mit Tropfen, Opfern und einem Ritual, „solange ich wache“. Was geschah, als sie nicht mehr wachte?'
 });
@@ -175,4 +175,46 @@ HG.schluss('das_haus_brennt_nicht', {
   aus: ['hallmann_brand', 'tb_wandlung'],
   titel: 'Das Haus lässt sich nicht verbrennen',
   text: '1974 Wolfgang Hallmann, 2026 Carsten: Zweimal wollte jemand das Haus anzünden, beide Male kamen Anrufe mit Stimmen, die es nicht geben dürfte. 1974 hat das Haus sogar selbst die Feuerwehr gerufen. Wer es anzünden will, darf es niemanden rufen lassen.'
+});
+
+// --- Obergeschoss (24.11.2026) -------------------------------------------------------------
+HG.hinweis('elisabeths_tagebuch', {
+  titel: 'Elisabeths verborgene Schrift', strang: 'B',
+  text: 'Elisabeths Tagebuch, mit Zitronensaft geschrieben, damit die Pflegerin es nicht lesen konnte: Sie war gesund – nur im Spiegel sah sie sich krank, und „die andere“ sprach nachts mit ihrer Stimme. 1929 hat sie im Keller die Beschwörung abgelehnt („Lieber krank und mein eigen“) und die Kammer der Pflegerin versiegelt. Letzter Eintrag 1930: „Wenn B. mir den Ring wiedergibt, bin ich frei.“',
+  stichworte: ['elisabeth', 'tagebuch', 'zitrone', 'ring', 'zwei']
+});
+HG.hinweis('kraeuterbuch', {
+  titel: 'Das Kräuterbuch der Pflegerin', strang: 'C',
+  text: 'Versteckt in Bernwards Bibliothek: das Kräuterbuch der Pflegerin. Die Tropfen (Wermut, Mohn, Bilsenkraut): „Drei Tropfen, und die Kranke schläft – und was in ihr krank ist, schläft mit ihr. Wirkt nur, solange ich wache.“ Dazu: Eine Salzlinie ohne Lücke hält auf, was aus dem Glas kommt – für eine Nacht.',
+  stichworte: ['kraeuterbuch', 'tropfen', 'tinktur', 'salz']
+});
+HG.hinweis('brinkhoff_plaene', {
+  titel: 'Brinkhoffs zweites Spiegelzimmer', strang: 'D',
+  text: 'Hinter einem Regal der Bibliothek: Brinkhoffs Entwurf von 1986 für ein „Spiegelkabinett II“ neben dem Ankleidezimmer. „Abnahme durch: E.“ – und quer darüber: „Sie will mehr Platz.“ Der Architekt hat am Ende für sie gebaut.',
+  stichworte: ['brinkhoff', 'plaene', 'spiegelkabinett', 'architekt']
+});
+HG.hinweis('puppenhaus_modell', {
+  titel: 'Das Puppenhaus zeigt das Haus, wie es ist', strang: 'B',
+  text: 'Bernwards Modell von 1900 im Kinderzimmer. Es weicht vom Bauplan ab, genau wie das Haus heute: Das Ankleidezimmer ist innen mit Spiegelscherben ausgekleidet – und die Tür zum Kohlenkeller ist zugemauert. Nachts stehen in manchen Zimmern kleine dunkle Figuren.',
+  stichworte: ['puppenhaus', 'modell', 'kohlenkeller', 'ankleidezimmer']
+});
+HG.hinweis('geheimschrift', {
+  titel: 'Zitronentinte', strang: 'B',
+  text: '„Geheimschriften für kluge Kinder“ (1898), Eselsohr bei der Zitronentinte: unsichtbar, bis man das Blatt über eine Kerzenflamme hält. Am Rand, in Elisabeths Handschrift: „Für das Kind, das wir haben werden. E.“',
+  stichworte: ['geheimschrift', 'zitrone', 'kinderbuch', 'kerze']
+});
+HG.schluss('zwei_elisabeths', {
+  aus: ['kraehe_gebetbuch', 'elisabeths_siegel', 'elisabeths_tagebuch'], mindestens: 2,
+  titel: 'Es gibt zwei Elisabeths',
+  text: 'Was in Elisabeth krank war, hat eine eigene Stimme bekommen – die Pflegerin hat es in die Spiegel gebannt. Die echte Elisabeth hat sich gewehrt: Sie hat abgelehnt und die Kammer versiegelt. Die Frau im Spiegel ist nicht sie. Sie ist „die andere“.'
+});
+HG.schluss('ring_ist_anker', {
+  aus: ['bernwards_letzter_brief', 'elisabeths_ring', 'elisabeths_tagebuch'], mindestens: 2,
+  titel: 'Der Ring ist der Anker',
+  text: 'Bernward hat den Ring verwahrt, „bis unser Tag wiederkommt“. Elisabeth schreibt: „Wenn B. mir den Ring wiedergibt, bin ich frei.“ Du hast den Ring. Er gehört der guten Elisabeth.'
+});
+HG.schluss('tuer_unter_dem_haus', {
+  aus: ['kraehe_gebetbuch', 'carstens_plan', 'puppenhaus_modell'], mindestens: 2,
+  titel: 'Die Tür unter dem Haus',
+  text: 'Die Pflegerin schreibt von einer „Tür unter dem Haus“. Carsten hat im Keller 2,40 Meter vermisst. Und im Puppenhaus ist die Tür zum Kohlenkeller zugemauert. Unter der Halle ist ein Raum, den es nicht mehr geben soll.'
 });

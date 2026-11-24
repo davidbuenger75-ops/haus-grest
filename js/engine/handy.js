@@ -21,6 +21,9 @@
       return ids[0] || null;
     },
     dabei: function () { var id = H.id(); return !!id && W.getragen(id); },
+    /** Akku leer (js/engine/gefahr.js, Ding-Eigenschaft vorrat)? Dann bleibt das Display schwarz. */
+    leer: function () { var id = H.id(); return !!id && !!HG.licht && HG.licht.leer(id); },
+    LEER: 'Das Display bleibt schwarz. Der Akku ist leer. <span class="nebenbei">(Im Auto lädt es wieder.)</span>',
     ungelesen: function () { return hz().nachrichten.filter(function (n) { return !n.gelesen; }).length; },
 
     /** Neue Nachricht empfangen. */
@@ -31,8 +34,8 @@
       // Gefälschte Nachricht = Handlung des Hauses: kostet MACHT (außer im Spuk-Ereignis schon bezahlt)
       if (d.falsch && HG.macht && !HG.macht._imSpuk) HG.macht.verbrauche(HG.macht.kosten('nachricht'));
       hz().nachrichten.push({ id: nid, zeit: HG.zeit.text(), gelesen: false });
-      if (H.dabei()) HG.medien.effekt('handy-vibriert');
-      if (H.dabei()) HG.ausgabe.schreibe('handy', HG.wert(HG.daten.spiel.vibrierText, HG.api) ? HG.wert(HG.daten.spiel.vibrierText, HG.api).replace('%VON%', T.esc(HG.wert(d.von, HG.api)))
+      if (H.dabei() && !H.leer()) HG.medien.effekt('handy-vibriert');
+      if (H.dabei() && !H.leer()) HG.ausgabe.schreibe('handy', HG.wert(HG.daten.spiel.vibrierText, HG.api) ? HG.wert(HG.daten.spiel.vibrierText, HG.api).replace('%VON%', T.esc(HG.wert(d.von, HG.api)))
         : 'Dein Handy vibriert. Neue Nachricht von <b>' + T.esc(HG.wert(d.von, HG.api)) + '</b>. <span class="nebenbei">(„lies nachrichten“)</span>');
       return true;
     },
@@ -43,7 +46,7 @@
       if (!d) return false;
       if (!d.wiederholbar && hz().anrufe.some(function (a) { return a.id === aid; })) return false;
       if (d.falsch && HG.macht && !HG.macht._imSpuk) HG.macht.verbrauche(HG.macht.kosten('anruf'));
-      if (!H.dabei()) { hz().anrufe.push({ id: aid, zeit: HG.zeit.text(), status: 'verpasst' }); return true; }
+      if (!H.dabei() || H.leer()) { hz().anrufe.push({ id: aid, zeit: HG.zeit.text(), status: 'verpasst' }); return true; }
       hz().klingelt = { id: aid, zug: Z().zug };
       HG.medien.effekt('handy-klingelt');
       HG.ausgabe.schreibe('handy', 'Dein Handy klingelt. Auf dem Display: <b>' + T.esc(HG.wert(d.von, HG.api)) + '</b>. <span class="nebenbei">(„geh ran“ oder „ignoriere“)</span>');
@@ -84,6 +87,7 @@
 
     anrufen: function (tokens) {
       if (!H.dabei()) { HG.ausgabe.text('Du hast dein Handy nicht dabei.'); return; }
+      if (H.leer()) { HG.ausgabe.text(H.LEER); return; }
       var w = (tokens || []).filter(function (t) { return !/^(der|die|das|den|dem|bei|mit|herrn|frau|herr)$/.test(t); });
       if (!w.length) { HG.ausgabe.text('Wen willst du anrufen? Deine Kontakte: ' + T.liste(Object.keys(HG.daten.kontakte).map(function (k) { return HG.daten.kontakte[k].name; })) + '.'); return; }
       var kid = Object.keys(HG.daten.kontakte).filter(function (k) {
@@ -146,6 +150,7 @@
     /** Foto von einem Ding (id) oder vom Raum (null). */
     foto: function (id, ctx) {
       if (!H.dabei()) { HG.ausgabe.text('Du hast dein Handy nicht dabei.'); return; }
+      if (H.leer()) { HG.ausgabe.text(H.LEER); return; }
       var r = W.raum(), titel, text;
       if (ctx && ctx.reflexiv && !id) {
         titel = 'Selfie';
@@ -187,15 +192,20 @@
   // Handlungen
   // ------------------------------------------------------------------
   var A = HG.aktionen;
-  A.nachrichten = function () { if (!H.dabei()) { HG.ausgabe.text('Du hast dein Handy nicht dabei.'); return; } H.zeigeNachrichten(); };
+  A.nachrichten = function () { if (!H.dabei()) { HG.ausgabe.text('Du hast dein Handy nicht dabei.'); return; } if (H.leer()) { HG.ausgabe.text(H.LEER); return; } H.zeigeNachrichten(); };
   A.fotos = function (ctx) {
     if (!H.dabei()) { HG.ausgabe.text('Du hast dein Handy nicht dabei.'); return; }
+    if (H.leer()) { HG.ausgabe.text(H.LEER); return; }
     var nr = parseInt(((ctx && ctx.np1) || []).join(''), 10);
     H.zeigeFotos(nr > 0 ? nr : null);
   };
   // Dokumente (dokument: true) wandern nicht ins Inventar – sie werden fotografiert
   var altNehmen = A.nehmen;
   A.nehmen = function (ctx) {
+    if (ctx.obj && D(ctx.obj).dokument && !W.inHand(ctx.obj) && H.dabei() && H.leer()) {
+      HG.ausgabe.text('Fotografieren geht nicht – dein Akku ist leer. Du kannst ' + T.der(ctx.obj, 'akk') + ' hier lesen. <span class="nebenbei">(„lies …“)</span>');
+      return;
+    }
     if (ctx.obj && D(ctx.obj).dokument && !W.inHand(ctx.obj) && H.dabei()) {
       if (H.hatFoto(ctx.obj)) {
         HG.ausgabe.text('Du hast ' + T.der(ctx.obj, 'akk') + ' schon abfotografiert – ' + T.pron(ctx.obj, 'nom') + ' ' + T.vb(ctx.obj, 'ist', 'sind') +
@@ -210,7 +220,7 @@
     }
     altNehmen(ctx);
   };
-  A.anrufliste = function () { if (!H.dabei()) { HG.ausgabe.text('Du hast dein Handy nicht dabei.'); return; } H.zeigeAnrufe(); };
+  A.anrufliste = function () { if (!H.dabei()) { HG.ausgabe.text('Du hast dein Handy nicht dabei.'); return; } if (H.leer()) { HG.ausgabe.text(H.LEER); return; } H.zeigeAnrufe(); };
   A.rangehen = function () { H.rangehen(); };
   A.ablehnen = function () { H.ablehnen(); };
   A.anrufen = function (ctx) { H.anrufen(ctx.np1); };

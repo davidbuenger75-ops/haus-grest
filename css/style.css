@@ -184,6 +184,7 @@ body[data-zeit=nacht] #bild.art-svg svg { filter: invert(.86) sepia(.55) brightn
 body[data-zeit=nacht] .buehne { box-shadow: 0 10px 40px #000c, inset 0 0 110px #2a1d12aa; }
 #log .zeitwechsel { text-align: center; font-variant: small-caps; letter-spacing: 2px; color: var(--tinte-hell); margin: 14px 0; }
 #log .spuk { font-style: italic; color: #4a1410; border-left: 3px solid #7a1a1266; padding-left: 10px; }
+#log .kampf { margin: 10px 0; padding: 8px 12px; border: 2px solid #7a1a12aa; border-radius: 3px; background: #7a1a120d; color: #3a0e0a; }
 #log .handy, #log .anruf, #log .auswahl { font-family: 'Trebuchet MS', Verdana, sans-serif; font-size: .88em; margin: 6px 0 12px; padding: 8px 12px; border-radius: 10px; background: #f6efdc; border: 1px solid #2a1d1233; }
 #log .anruf { border-left: 4px solid var(--tinte); border-radius: 3px; }
 #log .auswahl ol { margin: 6px 0; padding-left: 24px; }
@@ -505,3 +506,4 @@ ol.berufe li { margin-bottom: 4px; }
 /* Gestaffelter Hinweis nach Fehlversuchen (api.fehlversuch) */
 #log .tipp, .nah-text .nah-tipp { font-style: italic; color: #5a4a2e; border-left: 2px dotted #b98a3e; padding-left: 8px; margin-left: 2px; }
 .tipp-zeichen { color: #b98a3e; font-style: normal; }
+.akku { margin: 0 0 6px; font-size: .9em; color: var(--tinte-hell); } .akku.knapp { color: var(--blut, #7a1a12); font-weight: bold; }

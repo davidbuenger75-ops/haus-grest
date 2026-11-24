@@ -125,7 +125,7 @@
           { id: 'kinderzimmer', plan: 'Kinderzimmer', raum: 'kinderzimmer', r: [[0, 0, 7, 5.5]] },
           { id: 'bodentreppe', plan: 'Bodentreppe', raum: null, r: [[7, 0, 8.5, 3.5]], klein: true },
           { id: 'bad', plan: 'Bad', raum: 'bad', r: [[8.5, 0, 11.5, 3.5]] },
-          { id: 'kammer', plan: 'Kammer', raum: null, r: [[11.5, 0, 13, 3.5]], klein: true },
+          { id: 'kammer', plan: 'Kammer', raum: 'waeschekammer', r: [[11.5, 0, 13, 3.5]], klein: true },
           { id: 'gaestezimmer', plan: 'Gästezimmer', raum: 'gaestezimmer', r: [[13, 0, 20, 6.5]] },
           { id: 'galerie', plan: 'Galerie', raum: 'galerie', r: [[7, 3.5, 13, 16]], l: [10, 15] },
           { id: 'bibliothek', plan: 'Bibliothek', raum: 'bibliothek', r: [[0, 5.5, 7, 16]] },

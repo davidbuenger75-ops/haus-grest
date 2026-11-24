@@ -4,11 +4,12 @@
 (function (HG) {
   'use strict';
 
-  var VERSION = 8; // 2: Tageszeit, Reiseziele, Handy, Spuk · 3: Spielfigur, Uhrzeit, NERVEN in Prozent, Bücher · 4: MACHT des Hauses
+  var VERSION = 9; // 2: Tageszeit, Reiseziele, Handy, Spuk · 3: Spielfigur, Uhrzeit, NERVEN in Prozent, Bücher · 4: MACHT des Hauses
                    // 5: angesehene Hinweise (gesehen), erledigte Handlungen an Dingen (getan)
                    // 6: Regelsystem nach Delta Green: Eigenschaften, Fertigkeiten, Beruf, LP, WP, Wunden
                    // 7: Tagebuch mit zusammenfassenden Hinweisen und gesperrten Seiten (nur Inhalts-Migration)
                    // 8: Werte-Bonus getragener Dinge (tragBonus, z. B. Pistole +5 NERVEN)
+                   // 9: Gefahren, Kämpfe, Seelen (gefahren, kampf)
 
   // Ältere Spielstände an das aktuelle Format anpassen: MIGRATION[v] macht aus Version v die Version v+1.
   var MIGRATION = {
@@ -28,7 +29,8 @@
       if (z.spieler && z.spieler.geschlecht) z.spieler.fertig = true;
     },
     6: function () { /* Inhalte passen sich per HG.zustand.migration(6, …) an */ },
-    7: function (z) { z.tragBonus = {}; }
+    7: function (z) { z.tragBonus = {}; },
+    8: function (z) { z.gefahren = { nacht: {}, gebannt: {}, seelen: {}, wanderer: null, da: null, aktiv: null }; z.kampf = null; }
   };
   // Inhalte können eigene Schritte anhängen, z. B. wenn sich Buchseiten verschoben haben:
   // HG.zustand.migration(4, function (z) { ... })  läuft beim Laden nach MIGRATION[4].
@@ -62,6 +64,8 @@
         zaehler: {},     // freie Zähler für den Inhalt
         besucht: {},     // raumId -> true
         hinweise: [],    // gefundene Hinweis-IDs (in Reihenfolge)
+        gefahren: { nacht: {}, gebannt: {}, seelen: {}, wanderer: null, da: null, aktiv: null },   // js/engine/gefahr.js
+        kampf: null,     // laufender Kampf mit einer Manifestation
         tragBonus: {},   // Werte-Bonus getragener Dinge: dingId -> tatsächlich gewährte Punkte (spiel.js tragBoni)
         schluesse: [],   // gefundene Schlussfolgerungen
         notizen: [],     // eigene Notizen des Spielers

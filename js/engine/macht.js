@@ -75,7 +75,7 @@
       var g = HG.wert(d.spiegel, HG.api);
       return GROESSEN.indexOf(g) >= 0 ? g : null;
     },
-    istPortal: function (id) { return !!M.groesse(id) && !(HG.daten.dinge[id] && eig(id, 'zerbrochen')); },
+    istPortal: function (id) { return !!M.groesse(id) && !(HG.daten.dinge[id] && (eig(id, 'zerbrochen') || eig(id, 'verhaengt'))); },
     /** Größter intakter Spiegel in der Nähe (mind. Größe min) – Ding-ID, Raum-ID (Spiegelzimmer) oder null. */
     spiegelHier: function (min) {
       var mi = min ? GROESSEN.indexOf(min) : 0, best = null, bi = -1;
@@ -98,6 +98,7 @@
     beschreibungZusatz: function (id) {
       if (!M.groesse(id) && !eig(id, 'zerbrochen')) return '';
       if (eig(id, 'zerbrochen')) return M.text('zerbrochen');
+      if (eig(id, 'verhaengt')) return M.text('verhaengt') || 'Ein Laken hängt darüber.';
       if (eig(id, 'erneuert')) { HG.zustand.setze(id, 'erneuert', false); return M.text('erneuert'); }
       return '';
     },

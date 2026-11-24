@@ -290,6 +290,7 @@ function briefPruefen(s, weg) {
 function imHaus(opt) {
   const s = prolog();
   if (!(opt && opt.spuk)) s.HG.spukwerk.zug = () => {};   // zufälliger Spuk stört die Abläufe (Schock-Flucht!)
+  if (!(opt && opt.gefahren)) s.HG.gefahren.darf = () => false;   // zufällige Gefahren ebenso (eigener Abschnitt 14)
   s.tu('öffne umschlag'); s.tu('lies notarbrief'); s.tu('nimm hausschlüssel');
   s.tu('fahre zum haus');
   s.tu('schließe haustür auf'); s.tu('öffne haustür'); s.tu('geh nach norden');
@@ -565,6 +566,264 @@ const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'diens
   HG.zustand.z.werte.nerven = 9; s.tu('warte');
   pruefe(!HG.zustand.z.vorbei && !HG.zustand.z.flags.pistole_ereignis, 'Entladen: kein Ereignis bei NERVEN < 10');
   pruefe(/nicht entladen/.test(s.tu('entlade handy')), 'Andere Dinge lassen sich nicht entladen');
+}
+
+
+{
+  console.log('\n14. Obergeschoss: Räume, Rätsel, Funde');
+  const s = imHaus(); const HG = s.HG; const Z = () => HG.zustand.z;
+  const OG = ['galerie', 'schlafzimmer', 'bibliothek', 'kinderzimmer', 'bad', 'waeschekammer', 'gaestezimmer'];
+  OG.forEach(r => {
+    const ev = Object.keys(HG.daten.spuk).map(k => HG.daten.spuk[k]).filter(d => (d.orte || []).includes(r));
+    pruefe(ev.some(d => !d.zeiten || d.zeiten.some(z => z === 'morgen' || z === 'mittag')) && ev.some(d => !d.zeiten || d.zeiten.includes('nacht')), r + ': Spuk bei Tag und bei Nacht vorhanden');
+    const aus = HG.daten.raeume[r].ausgaenge || {};
+    const kaputt = Object.keys(aus).filter(k => { const a = aus[k]; const z = typeof a === 'string' ? a : a.ziel; return z && !HG.daten.raeume[z]; });
+    pruefe(!kaputt.length, r + ': alle Ausgänge führen zu Räumen' + (kaputt.length ? ' (' + kaputt.join(', ') + ')' : ''));
+    pruefe(!!HG.plan.finde(HG.daten.plaene.haus, r), r + ': steht im Bauplan');
+  });
+  // Die Treppe ist frei (bei Tag ohne Gefahr)
+  geh(s, 'hoch');
+  pruefe(Z().raum === 'galerie', 'Treppe: hinauf auf die Galerie');
+  pruefeMenues(s, 'Galerie');
+  geh(s, 'nordwesten'); pruefeMenues(s, 'Kinderzimmer');
+  geh(s, 'osten', 'westen'); pruefeMenues(s, 'Bibliothek');
+  geh(s, 'osten', 'norden'); pruefeMenues(s, 'Bad');
+  geh(s, 'süden', 'nordosten'); pruefeMenues(s, 'Wäschekammer');
+  geh(s, 'südwesten', 'osten'); pruefeMenues(s, 'Gästezimmer');
+  geh(s, 'westen', 'südosten'); pruefeMenues(s, 'Krankenzimmer');
+  geh(s, 'westen');
+  pruefe(/Bodenklappe ist zu/.test(s.tu('geh hoch')), 'Bodenklappe: ohne Hakenstange zu hoch');
+
+  // Wäschekammer: Werkzeuge
+  geh(s, 'nordosten');
+  s.tu('nimm hakenstange'); s.tu('nimm laken'); s.tu('nimm eimer'); s.tu('öffne schublade'); s.tu('nimm schere');
+  pruefe(['hakenstange', 'laken', 'eimer', 'schere'].every(id => HG.welt.getragen(id)), 'Wäschekammer: Hakenstange, Laken, Eimer, Schere');
+  geh(s, 'südwesten');
+  s.tu('öffne klappe mit hakenstange');
+  pruefe(HG.api.eig('bodenklappe', 'offen'), 'Bodenklappe mit der Hakenstange geöffnet');
+  pruefe(/noch nicht gebaut/.test(s.tu('geh hoch')), 'Dachboden ist noch gesperrt (nächster Schritt)');
+
+  // Bad: „Das schwarze Wasser“ – Kopf-Weg mit der Hakenstange
+  geh(s, 'norden');
+  s.tu('zieh kette mit hakenstange');
+  pruefe(HG.api.eig('wanne', 'leer') && HG.api.eig('stimmgabel', 'ort') === 'wanne', 'Bad: Wanne mit der Hakenstange geleert, Stimmgabel am Grund');
+  s.tu('nimm stimmgabel');
+  pruefe(HG.welt.getragen('stimmgabel'), 'Stimmgabel genommen');
+  geh(s, 'süden');
+
+  // Krankenzimmer: „Die unsichtbare Schrift“
+  geh(s, 'südosten');
+  s.tu('nimm tagebuch von elisabeth');
+  pruefe(HG.welt.getragen('elisabeths_tagebuch'), 'Elisabeths Tagebuch genommen');
+  s.tu('lies tagebuch von elisabeth');
+  pruefe(!Z().hinweise.includes('elisabeths_tagebuch'), 'Ohne Wärme bleibt die Schrift unsichtbar');
+  HG.api.bewege('kerze', 'spieler'); HG.zustand.setze('kerze', 'brennt', true);
+  HG.zufall = () => 0.05;
+  s.tu('halte tagebuch über kerze');
+  pruefe(Z().flags.zitronentinte, '„halte tagebuch über kerze“: Zitronentinte sichtbar');
+  s.tu('lies tagebuch von elisabeth'); s.tu('lies eintrag 7');
+  pruefe(Z().hinweise.includes('elisabeths_tagebuch'), 'Elisabeths Tagebuch gelesen (Hinweis)');
+  geh(s, 'westen');
+
+  // Kinderzimmer: Puppenhaus und Bettinas Haarspange
+  geh(s, 'nordwesten');
+  s.tu('untersuche puppenhaus');
+  pruefe(Z().hinweise.includes('puppenhaus_modell'), 'Puppenhaus: Hinweis auf die zugemauerte Tür');
+  HG.zufall = () => 0.97;
+  s.tu('öffne puppenhaus');
+  pruefe(!HG.api.eig('puppenhaus', 'offen'), 'Puppenhaus: Haken klemmt (ohne Werkzeug, Probe misslungen)');
+  HG.api.bewege('feinwerkzeug', 'spieler');
+  s.tu('öffne puppenhaus mit werkzeug');
+  pruefe(HG.api.eig('puppenhaus', 'offen'), 'Puppenhaus mit der Pinzette geöffnet');
+  s.tu('schau unter puppenbett'); s.tu('nimm haarspange');
+  pruefe(HG.welt.getragen('haarspange'), 'Bettinas Haarspange gefunden');
+  s.tu('nimm kinderbuch');
+  pruefe(Z().hinweise.includes('geheimschrift'), 'Kinderbuch „Geheimschriften“ fotografiert');
+  geh(s, 'osten');
+
+  // Bibliothek: „Ein Buch zu viel“
+  geh(s, 'westen');
+  s.tu('untersuche etiketten');
+  pruefe(Z().flags.buch_ohne_etikett, 'Etiketten: das Buch ohne Etikett entdeckt');
+  s.tu('nimm kräuterbuch');
+  pruefe(!HG.welt.getragen('kraeuterbuch'), 'Kräuterbuch: ohne Leiter zu hoch');
+  HG.zufall = () => 0.05;
+  s.tu('kletter auf die leiter'); s.tu('nimm kräuterbuch');
+  pruefe(HG.welt.getragen('kraeuterbuch'), 'Kräuterbuch von der Rollleiter geholt');
+  s.tu('lies kräuterbuch'); s.tu('lies eintrag 2');
+  pruefe(Z().hinweise.includes('kraeuterbuch'), 'Kräuterbuch gelesen (Hinweis)');
+  s.tu('schau hinter regale'); s.tu('nimm zeichenrolle');
+  pruefe(Z().hinweise.includes('brinkhoff_plaene'), 'Brinkhoffs Pläne hinter dem Regal');
+  geh(s, 'osten');
+
+  // Gästezimmer: „Der Koffer“
+  geh(s, 'osten');
+  s.tu('lies klebezettel');
+  s.tu('drehe rädchen auf 0308');
+  pruefe(HG.api.eig('koffer', 'offen'), 'Koffer mit 0308 geöffnet');
+  s.tu('nimm laser');
+  pruefe(HG.welt.getragen('laser') && !HG.api.eig('laser', 'kaputt'), 'Laser-Entfernungsmesser heil');
+  // Schlussfolgerungen
+  Z().hinweise.push('kraehe_gebetbuch');
+  HG.spiel.kombiniereHinweise('kraehe_gebetbuch', 'elisabeths_tagebuch');
+  pruefe(Z().schluesse.includes('zwei_elisabeths'), 'Schlussfolgerung „Es gibt zwei Elisabeths“');
+
+  // Gewalt-Wege
+  const g = imHaus(); const H2 = g.HG;
+  geh(g, 'hoch', 'osten');
+  g.tu('brich koffer auf');
+  pruefe(H2.api.eig('koffer', 'offen') && H2.api.eig('laser', 'kaputt'), 'Koffer aufgebrochen: Laser kaputt, kein Sackgasse');
+  geh(g, 'westen', 'nordwesten');
+  g.tu('brich puppenhaus auf');
+  pruefe(H2.api.eig('puppenhaus', 'offen') && H2.api.eig('puppenhaus', 'kaputt'), 'Puppenhaus aufgebrochen (taugt nachts nicht mehr als Karte)');
+  geh(g, 'osten', 'westen');
+  g.tu('reiß bücher heraus');
+  pruefe(H2.api.eig('kraeuterbuch', 'ort') === 'bibliothek' && !H2.api.eig('kraeuterbuch', 'oben'), 'Bücher herausgerissen: Kräuterbuch liegt am Boden');
+  geh(g, 'osten', 'nordosten'); g.tu('nimm eimer'); geh(g, 'südwesten', 'norden');
+  g.tu('benutze eimer mit wanne');
+  pruefe(H2.api.eig('wanne', 'leer'), 'Wanne mit dem Eimer ausgeschöpft');
+}
+
+{
+  console.log('\n15. Gefahren, Kämpfe, Nacht, Seelen');
+  const s = imHaus({ gefahren: true }); const HG = s.HG; const Z = () => HG.zustand.z;
+  HG.gefahren.zug = () => {};   // zufällige Raum-Gefahren, Seelen und Wanderer hier gezielt auslösen
+  const nachtUm = (min) => { Z().zeit.minute = min; };
+  // Witwe auf der Treppe: Auswahl, vorsichtig gehen
+  nachtUm(60);
+  HG.daten.gefahren.witwe.chance = 1; HG.daten.gefahren.baumeister.phasen = ['nie'];
+  HG.zufall = () => 0.05;
+  s.tu('geh hoch');
+  pruefe(HG.spiel.offen && HG.spiel.offen.art === 'auswahl', 'Witwe auf der Treppe: Auswahl erscheint');
+  pruefe(HG.spiel.vorschlaege().some(v => /Langsam/.test(v)), 'Auswahl steht in den Vorschlägen');
+  s.tu('2');
+  pruefe(Z().raum === 'galerie', 'Langsam gegangen: oben angekommen');
+  // Sturz
+  Z().gefahren.nacht = {};
+  HG.zufall = () => 0.93;   // misslungen, aber kein Patzer
+  const lp = Z().werte.lp;
+  s.tu('geh runter'); s.tu('1');
+  pruefe(Z().raum === 'halle' && Z().werte.lp < lp, 'Treppensturz: unten in der Halle, verletzt');
+  // „geh vorsichtig hoch“ ohne Auswahl
+  Z().gefahren.nacht = {}; HG.zufall = () => 0.05;
+  s.tu('geh vorsichtig hoch');
+  pruefe(Z().raum === 'galerie' && !HG.spiel.offen, '„geh vorsichtig hoch“: direkt die vorsichtige Probe');
+  // Beim Namen nennen (mit Wissen): bannen für die Nacht
+  Z().hinweise.push('dreizehn_kreuze', 'kiste_ostermann');
+  Z().gefahren.nacht = {};
+  s.tu('geh runter');
+  pruefe(HG.spiel.vorschlaege().some(v => /beim Namen/.test(v)), 'Mit Wissen: „Sie beim Namen nennen“ wird angeboten');
+  s.tu('Sie beim Namen nennen');
+  pruefe(HG.spiel.vorschlaege().includes('Margarete Ostermann'), 'Namen zur Auswahl');
+  s.tu('Margarete Ostermann');
+  const wahr = HG.spiel.vorschlaege().find(v => /Heinrich ist tot/.test(v));
+  pruefe(!!wahr, 'Wahrheiten zur Auswahl');
+  s.tu(wahr);
+  pruefe(HG.gefahren.gebannt('margarete') && Z().raum === 'halle', 'Margarete gebannt, unten angekommen');
+  Z().gefahren.nacht = {};
+  s.tu('geh hoch');
+  pruefe(Z().raum === 'galerie' && !HG.spiel.offen, 'Gebannt: die Treppe ist für diese Nacht sicher');
+
+  // Kampf: Die Hand aus dem Badspiegel – verhängen
+  geh(s, 'nordosten'); s.tu('nimm laken'); s.tu('nimm schere'); s.tu('öffne schublade'); s.tu('nimm schere');
+  geh(s, 'südwesten', 'norden');
+  HG.zufall = () => 0.05;
+  HG.api.kampf('die_hand', { spiegel: 'badspiegel' });
+  pruefe(!!Z().kampf, 'Kampf „Die Hand“ beginnt');
+  pruefe(HG.spiel.vorschlaege().some(v => /verhänge/.test(v)), 'Kampf-Vorschläge: Spiegel verhängen');
+  pruefe(/keine Zeit/.test(s.tu('öffne die schublade')), 'Im Kampf: andere Befehle zählen nicht');
+  s.tu('weiche aus');
+  pruefe(Z().kampf && Z().kampf.runde === 1, 'Ausweichen: eine Runde');
+  s.tu('verhänge den spiegel');
+  pruefe(!Z().kampf && HG.api.eig('badspiegel', 'verhaengt'), 'Spiegel verhängt: Manifestation abgeschnitten');
+  pruefe(!HG.macht.istPortal('badspiegel'), 'Verhängter Spiegel ist kein Portal mehr');
+  // Kampf: Die Näherin – Schere
+  geh(s, 'süden', 'nordosten');
+  HG.api.kampf('naeherin', {});
+  let n = 0; while (Z().kampf && n++ < 10) s.tu('schneide dich frei');
+  pruefe(!Z().kampf, 'Die Näherin: mit der Schere freigeschnitten');
+  // Kampf: Licht und Flucht
+  HG.zustand.setze('handy', 'brennt', true);
+  HG.api.kampf('die_wandernde', {});
+  s.tu('halte das Licht auf sie');
+  pruefe(Z().kampf && Z().kampf.halt === 8, 'Licht (Handy): HALT −2');
+  s.tu('flieh');
+  pruefe(!Z().kampf && Z().raum !== 'waeschekammer', 'Flucht gelungen: anderer Raum');
+  // Kampf: Pistole ist nutzlos
+  HG.api.bewege('pistole', 'spieler');
+  HG.api.kampf('die_hand', { spiegel: 'gaeste_spiegel' });
+  const halt = Z().kampf.halt;
+  s.tu('schieß');
+  pruefe(Z().kampf && Z().kampf.halt === halt, 'Pistole: nutzlos gegen Manifestationen');
+  s.tu('zerschlage den spiegel');
+  pruefe(!Z().kampf && HG.api.eig('gaeste_spiegel', 'zerbrochen'), 'Spiegel zerschlagen: abgeschnitten');
+  HG.api.bewege('pistole', 'schuhkarton', 'in');
+
+  // Bekehren: Bettina
+  Z().hinweise.push('bettina_gerdes', 'gespraech_brigitte');
+  HG.api.bewege('haarspange', 'spieler');
+  Z().raum = 'kinderzimmer';
+  const machtVorher = Z().macht;
+  HG.gefahren.erscheine('bettina');
+  s.tu('sprich mit bettina');
+  const satz = HG.spiel.vorschlaege().find(v => /nicht deine Schuld/.test(v));
+  pruefe(!!satz, 'Bettina: Wahrheiten zur Auswahl');
+  s.tu(satz);
+  pruefe(HG.gefahren.istBekehrt('bettina') && Z().macht < machtVorher, 'Bettina bekehrt, MACHT gesunken');
+
+  // Puppenhaus zeigt nachts die Gefahren
+  Z().gefahren.wanderer = { raum: 'bibliothek', nacht: HG.nacht.nummer(), zuletzt: HG.zeit.jetzt() };
+  HG.zustand.setze('handy', 'brennt', true); HG.zustand.setze('handy', 'vorrat', 80);
+  pruefe(/Bibliothek/.test(s.tu('schau ins puppenhaus')), 'Puppenhaus: nachts Figuren, wo etwas lauert');
+
+  // Verstecken vor dem Wanderer
+  Z().raum = 'gaestezimmer';
+  s.tu('versteck dich unter dem bett');
+  pruefe(Z().versteckt, 'Versteckt unter dem Bett');
+  HG.zufall = () => 0.05;
+  HG.gefahren.wandererKommt();
+  pruefe(!Z().kampf, 'Versteckt: der Wanderer geht vorbei');
+  Z().versteckt = null;
+  HG.gefahren.wandererKommt();
+  pruefe(!!Z().kampf, 'Nicht versteckt: Kampf mit der Wandernden');
+  Z().kampf = null;
+
+  // Andere Gefahren mit Auswahl
+  Z().raum = 'gaestezimmer'; Z().gefahren.nacht = {};
+  HG.gefahren.loese('schlaefer');
+  s.tu('Sofort hinausgehen');
+  pruefe(Z().raum === 'galerie', 'Der Schläfer: hinausgegangen');
+  Z().raum = 'kueche';
+  HG.gefahren.loese('gas');
+  s.tu('Raus aus der Küche');
+  pruefe(Z().raum === 'anrichte', 'Das Gas: aus der Küche geflohen');
+  Z().raum = 'schlafzimmer'; HG.api.bewege('stimmgabel', 'spieler');
+  HG.gefahren.loese('fenster');
+  pruefe(HG.spiel.vorschlaege().some(v => /Stimmgabel/.test(v)), 'Die am Fenster: Stimmgabel wird angeboten');
+  s.tu('Die Stimmgabel anschlagen');
+  pruefe(!HG.spiel.offen && Z().werte.lp > 0, 'Die am Fenster: mit der Stimmgabel widerstanden');
+  // Baumeister mit dem Bauplan
+  HG.daten.gefahren.baumeister.phasen = ['daemmerung', 'tief'];
+  HG.api.bewege('bauplan', 'spieler');
+  Z().raum = 'bibliothek'; Z().zeit.minute = 60; Z().gefahren.baumeister = HG.nacht.nummer();
+  HG.zufall = () => 0.1;
+  s.tu('geh nach osten');
+  pruefe(HG.spiel.offen && Z().raum !== 'galerie', 'Der Baumeister: die Tür führt in den falschen Raum');
+  s.tu('Bernwards Plan mit dem Raum vergleichen');
+  pruefe(Z().raum === 'galerie' && HG.gefahren.gebannt('brinkhoff'), 'Mit Bernwards Plan: richtiger Raum, Baumeister gebannt');
+
+  // Akku
+  HG.zustand.setze('handy', 'brennt', true); HG.zustand.setze('handy', 'vorrat', 1);
+  s.tu('warte');
+  pruefe(!HG.api.eig('handy', 'brennt') && HG.licht.leer('handy'), 'Akku leer: Taschenlampe aus');
+  pruefe(/leer/.test(s.tu('schalte taschenlampe ein')), 'Leerer Akku: Lampe lässt sich nicht einschalten');
+  HG.licht.fahrt(30);
+  pruefe(HG.licht.prozent('handy') === 30, 'Im Auto geladen (30 Minuten → 30 %)');
+  // Nachtphasen und 3-Uhr-Höhepunkt
+  pruefe(HG.nacht.phase(20 * 60) === 'daemmerung' && HG.nacht.phase(60) === 'tief' && HG.nacht.phase(4 * 60) === 'abebben' && HG.nacht.phase(12 * 60) === null, 'Nachtphasen');
+  Z().raum = 'halle'; Z().zeit.minute = 2 * 60 + 58; Z().flags.klappe_ankleidezimmer = false;
+  HG.api.zeitVergeht(5);
+  pruefe(Z().flags.klappe_ankleidezimmer, '3 Uhr: Höhepunkt (Klingel „Ankleidezimmer“)');
 }
 
 console.log('\n' + (tests - fehler) + ' von ' + tests + ' Prüfungen bestanden.' + (fehler ? ' ' + fehler + ' FEHLGESCHLAGEN.' : ''));

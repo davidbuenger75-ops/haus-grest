@@ -163,6 +163,15 @@
     /** Kurzen Soundeffekt abspielen: assets/sound/effekt-<name>.ogg|mp3 (fehlt er, passiert nichts). */
     sound: function (name) { HG.medien.effekt(name); },
     /** Zeigt kurz (bis Ende des nächsten Zugs) eine Bildvariante des aktuellen Raums, z. B. 'spuk' → raum-<id>-spuk. */
+    /** Kampf mit einer Manifestation beginnen (js/engine/gefahr.js). */
+    kampf: function (id, opt) { return HG.kampf.starte(id, opt); },
+    /** Auswahl im Spielbuch-Stil: [{ text, tu: function () {} }] – antippbar, auch per Nummer. */
+    auswahl: function (frage, optionen) { S.auswahl(frage, optionen); },
+    nachtphase: function () { return HG.nacht.phase(); },
+    gebannt: function (seele) { return HG.gefahren.gebannt(seele); },
+    bekehrt: function (seele) { return HG.gefahren.istBekehrt(seele); },
+    weiss: function (seele) { return HG.gefahren.weiss(seele); },
+    gefahr: function (id, ctx) { return HG.gefahren.loese(id, ctx); },
     zeigeBild: function (variante) { HG.medien.spukVariante = { raum: Z().raum, bisZug: Z().zug + 1, variante: variante || 'spuk' }; },
     /** Spuk-Ereignis gezielt auslösen (ohne Zufall und Ortsprüfung). */
     spuk: function (id) {
@@ -374,6 +383,7 @@
       W.beschreibeRaum(erstes);
       z.besucht[raumId] = true;
       if (r.beimBetreten) r.beimBetreten(api, { erstesMal: erstes });
+      if (HG.gefahren) HG.gefahren.betreten();
     },
 
     // =============== Eingabe verarbeiten ============================
@@ -412,9 +422,25 @@
       if (S.offen) {
         var o = S.offen; S.offen = null;
         var erst = befehle[0];
+        // Auswahl (Spielbuch) zuerst: Antworten wie „Raus aus der Küche“ wären sonst eine Richtung
+        if (o.art === 'auswahl') {
+          var nr = parseInt(roh, 10), wahl = null;
+          var norm = function (x) { return String(x).replace(/<[^>]+>|[„“"]/g, '').toLowerCase().replace(/\s+/g, ' ').trim(); };
+          if (nr >= 1 && nr <= o.optionen.length && String(nr) === roh.trim()) wahl = o.optionen[nr - 1];
+          if (!wahl) o.optionen.some(function (op) { var n = norm(op.text), e = norm(roh); if (e && (n === e || n.indexOf(e) === 0)) { wahl = op; return true; } return false; });
+          if (wahl) {
+            S._tiefe = 0; HG.ausgabe.puffer = [];
+            var imKampf = !!Z().kampf;
+            wahl.tu(api);
+            if (!S.offen && !imKampf && !Z().vorbei) S.zugEnde();
+            return;
+          }
+        }
         var neuerBefehl = (P.istVerb(erst[0]) && !P.filtereKandidaten([erst[0]], o.kandidaten || []).length) || HG.welt.RICHTUNG_WORT[erst[0]];
         if (!neuerBefehl) {
-          if (o.art === 'ziel') {
+          if (o.art === 'auswahl') {
+            S.offen = o; HG.ausgabe.text('Wähle eine der Möglichkeiten (Nummer oder Text) – oder tippe einen anderen Befehl.'); return;
+          } else if (o.art === 'ziel') {
             var zid = HG.reisen.finde(erst, o.liste);
             if (zid) { S.handle({ aktion: 'fahren', zielId: zid, np1: erst }); return; }
           } else if (o.art === 'wahl') {
@@ -434,8 +460,20 @@
         }
       }
 
+      // Während eines Kampfs zählen nur Kampf-Aktionen (und Meta-Befehle wie hilfe, werte, rückgängig)
+      if (Z().kampf && !Z().vorbei) {
+        var bk = P.analysiere(befehle[0]);
+        if (!(bk.eintrag && bk.eintrag.meta)) {
+          if (HG.kampf.eingabe(roh)) return;
+          HG.ausgabe.text('Dafür ist jetzt keine Zeit!');
+          HG.kampf.frage();
+          return;
+        }
+      }
+
       for (var i = 0; i < befehle.length; i++) {
         var b = P.analysiere(befehle[i]);
+        if (!b.fehler && /(^| )(vorsichtig|langsam)( |$)/.test(befehle[i].join(" "))) b.vorsichtig = true;   // "geh vorsichtig hoch"
         if (b.fehler) { HG.ausgabe.text(b.fehler); return; }
         if (b.aktion === 'nochmal') {
           if (!S.letzter) { HG.ausgabe.text('Es gibt nichts zu wiederholen.'); return; }
@@ -447,6 +485,13 @@
         if (weiter === false || S.offen || Z().vorbei) return;
       }
     },
+
+    /** Auswahl (Spielbuch): Text plus nummerierte Möglichkeiten; die Antwort führt eine Funktion aus. */
+    auswahl: function (frage, optionen) {
+      S.offen = { art: 'auswahl', optionen: optionen };
+      HG.ausgabe.schreibe('auswahl', frage + '<ol>' + optionen.map(function (o) { return '<li>' + o.text + '</li>'; }).join('') + '</ol>');
+    },
+    setzeDauer: function (n) { S._dauer = n; },
 
     frage: function (offen, text) {
       S.offen = offen;
@@ -474,7 +519,7 @@
 
       // "nimm ab" bei klingelndem Handy
       if (b.aktion === 'abnehmen' && !b.np1.length && z.handy && z.handy.klingelt) { b.aktion = 'rangehen'; e = { o: 0 }; }
-      var ctx = { aktion: b.aktion, verb: b.verb, prep: b.prep, prep2: b.prep2, reflexiv: b.reflexiv, richtung: b.richtung, np1: b.np1, np2: b.np2, buchZiel: b.buchZiel };
+      var ctx = { aktion: b.aktion, verb: b.verb, prep: b.prep, prep2: b.prep2, reflexiv: b.reflexiv, richtung: b.richtung, np1: b.np1, np2: b.np2, buchZiel: b.buchZiel, vorsichtig: b.vorsichtig };
       // "frage nach Carsten", "sprich mit ihm": ist nur eine Person da, ist sie gemeint
       if ((b.aktion === 'fragen' || b.aktion === 'sprechen') && !b.np1.length) {
         var leute = W.umfeld().filter(function (id) { return D(id).person; });
@@ -750,7 +795,8 @@
       if (HG.daten.spiel.jedeRunde) HG.daten.spiel.jedeRunde(api);
       HG.handy.zug();
       HG.macht.zug();        // zerbrochene Spiegel erneuern sich über Nacht
-      HG.spukwerk.zug();
+      if (!z.kampf) HG.spukwerk.zug();
+      HG.gefahren.zug();
       if (HG.proben.schockFaellig && z.werte.nerven > 0) HG.proben.schock();
       if (z.werte.nerven <= 0 && !z.vorbei) api.ende(HG.wert(HG.daten.spiel.endeNerven, api) || 'Dein Verstand gibt nach.');
       else if (z.max.lp !== undefined && z.werte.lp <= 0 && !z.vorbei) api.ende(HG.wert(HG.daten.spiel.endeLp, api) || 'Deine Kräfte verlassen dich.');
@@ -767,8 +813,9 @@
       if (!sid) { HG.ausgabe.text(HG.daten.spiel.keinSchlussText || 'Du legst die beiden Notizen nebeneinander, aber sie scheinen nicht zusammenzuhängen. Noch nicht.'); return; }
       var s = HG.daten.schluesse[sid];
       if (z.schluesse.indexOf(sid) >= 0) { HG.ausgabe.text('Diesen Schluss hast du bereits gezogen („' + s.titel + '“).'); return; }
-      var fehlt = s.aus.filter(function (h) { return z.hinweise.indexOf(h) < 0; });
-      if (fehlt.length) { HG.ausgabe.text('Da fehlt noch ein Puzzlestück. Irgendwo im Haus gibt es mehr darüber zu erfahren.'); return; }
+      // "mindestens: 2" – bei drei Quellen genügen zwei (Drei-Hinweise-Regel); sonst alle
+      var da = s.aus.filter(function (h) { return z.hinweise.indexOf(h) >= 0; }).length;
+      if (da < (s.mindestens || s.aus.length)) { HG.ausgabe.text('Da fehlt noch ein Puzzlestück. Irgendwo im Haus gibt es mehr darüber zu erfahren.'); return; }
       z.schluesse.push(sid);
       z.flags['schluss_' + sid] = true;
       HG.ausgabe.hinweis('Schlussfolgerung: <b>' + s.titel + '</b><br>' + s.text);
@@ -1043,6 +1090,8 @@
       if (S.offen && S.offen.art === 'name') return [];
       if (z.vorbei) return ['rückgängig', 'laden', 'neustart'];
       if (z.handy && z.handy.klingelt) return ['geh ran', 'ignoriere'];
+      if (S.offen && S.offen.art === 'auswahl') return S.offen.optionen.map(function (o) { return String(o.text).replace(/<[^>]+>/g, ''); });
+      if (z.kampf) return HG.kampf.moeglich().map(function (a) { return a.vorschlag; });
       if (S.offen && S.offen.art === 'ziel') return S.offen.liste.map(function (id) { return 'fahre zu ' + HG.daten.ziele[id].name; });
       if (S.offen && S.offen.art === 'wahl') {
         return S.offen.kandidaten.map(function (id) { return T.name(id, 'akk', ''); });

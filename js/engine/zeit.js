@@ -66,6 +66,8 @@
       return 'morgen';
     },
     phase: function () { return ZT.phaseVon(Z().zeit.minute); },
+    /** Beginn einer Tageszeit in Minuten des Tages ('morgen', 'mittag', 'abend', 'nacht'). */
+    beginn: function (p) { return BEGINN[p]; },
     name: function (p) { return NAMEN[p || ZT.phase()]; },
     istNacht: function () { return ZT.phase() === 'nacht'; },
 
@@ -99,10 +101,13 @@
       opt = opt || {};
       if (!min || min < 0) return;
       var z = Z(), r = W.raum();
-      var altPhase = ZT.phase(), altTag = z.zeit.tag, warHell = r ? W.hell() : true;
+      var altPhase = ZT.phase(), altTag = z.zeit.tag, warHell = r ? W.hell() : true, vorherAbs = ZT.jetzt();
       var m = z.zeit.minute + Math.round(min);
       z.zeit.tag += Math.floor(m / 1440);
       z.zeit.minute = m % 1440;
+      // Lichtvorrat (Akku, Kerzen) und der 3-Uhr-Höhepunkt (js/engine/gefahr.js)
+      if (HG.licht) HG.licht.vergeht(Math.round(min));
+      if (HG.gefahren) HG.gefahren.vergeht(Math.round(min), vorherAbs);
       var p = ZT.phase();
       if (p === altPhase && z.zeit.tag === altTag) return;
       if (p === altPhase) return; // ganzer Tag vergangen, gleiche Tageszeit

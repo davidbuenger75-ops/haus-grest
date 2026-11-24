@@ -92,6 +92,8 @@
     nachtMalus: function () {
       var r = W.raum(), sp = HG.daten.spiel;
       var orte = sp.nachtMalusOrte || ['haus'];
+      // Nach 3 Uhr ebbt die Nacht ab: NERVEN-Proben leichter (kein Malus mehr)
+      if (HG.nacht && HG.nacht.phase() === 'abebben') return { mod: 0, grund: '' };
       if (HG.zeit.istNacht() && r && orte.indexOf(r.schauplatz) >= 0) return { mod: -(sp.nachtMalus === undefined ? 10 : sp.nachtMalus), grund: 'Nacht im Haus' };
       return { mod: 0, grund: '' };
     },

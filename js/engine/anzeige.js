@@ -399,7 +399,7 @@
     block: function (b) {
       var log = $('log'), el;
       // Während eines Befehls aus der Nahansicht die Antwort mitschneiden (wird dort angezeigt)
-      if (A._nahLog && ['text', 'wurf', 'hinweis', 'wert', 'schrift', 'system', 'frage', 'spuk', 'schock', 'andeutung', 'tipp'].indexOf(b.typ) >= 0) A._nahLog.push(b);
+      if (A._nahLog && ['text', 'wurf', 'hinweis', 'wert', 'schrift', 'system', 'frage', 'spuk', 'schock', 'andeutung', 'tipp', 'kampf', 'auswahl'].indexOf(b.typ) >= 0) A._nahLog.push(b);
       switch (b.typ) {
         case 'eingabe': el = document.createElement('p'); el.className = 'eingabe'; el.innerHTML = '› ' + b.html; break;
         case 'titel': el = document.createElement('h2'); el.className = 'raumtitel'; el.innerHTML = b.html; break;
@@ -429,6 +429,7 @@
         case 'zeit': el = document.createElement('p'); el.className = 'zeitwechsel'; el.innerHTML = '— ' + b.html + ' —'; break;
         case 'tipp': el = document.createElement('p'); el.className = 'tipp'; el.innerHTML = '<span class="tipp-zeichen" aria-hidden="true">☞</span> ' + b.html; break;
         case 'spuk': el = document.createElement('p'); el.className = 'spuk'; el.innerHTML = b.html; break;
+        case 'kampf': el = document.createElement('div'); el.className = 'kampf'; el.innerHTML = b.html; break;
         case 'ziel': el = document.createElement('p'); el.className = 'hinweis'; el.innerHTML = '➜ ' + b.html; break;
         default:
           el = document.createElement('p'); el.className = b.typ === 'text' ? '' : b.typ === 'andeutung' ? 'system' : b.typ;
@@ -750,6 +751,7 @@
     handy: function () {
       var h = Z().handy, html = '';
       if (!HG.handy.dabei()) html += '<p class="leer">Du hast dein Handy nicht dabei.</p>';
+      else if (HG.licht && HG.daten.dinge[HG.handy.id()].vorrat) html += '<p class="akku' + (HG.licht.prozent(HG.handy.id()) <= 20 ? ' knapp' : '') + '">🔋 Akku ' + HG.licht.prozent(HG.handy.id()) + ' %' + (HG.zustand.eig(HG.handy.id(), 'brennt') ? ' · Taschenlampe an' : '') + '</p>';
       var neu = HG.handy.ungelesen();
       html += '<div class="handy-knoepfe"><button type="button" data-befehl="lies nachrichten">Nachrichten' + (neu ? ' (' + neu + ' neu)' : '') + '</button>' +
         '<button type="button" data-befehl="anrufliste">Anrufe</button><button type="button" data-befehl="fotos">Fotos (' + h.fotos.length + ')</button>' +

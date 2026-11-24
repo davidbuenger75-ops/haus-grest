@@ -344,6 +344,7 @@
 
   // ================= Licht ===========================================
   A.anzuenden = function (ctx) {
+    if (ctx.obj && HG.licht && HG.licht.leer(ctx.obj)) { sag(HG.wert(D(ctx.obj).vorrat.leerText, HG.api, ctx) || Der(ctx.obj) + ' ' + vb(ctx.obj, 'ist', 'sind') + ' leer.'); return; }
     var id = ctx.obj, d = D(id);
     if (eig(id, 'brennt')) { sag(Der(id) + ' ' + vb(id, 'brennt', 'brennen') + (d.schalter ? ' schon.' : ' schon.')); return; }
     if (d.schalter) {
@@ -428,6 +429,9 @@
   };
   A.verstecken = function (ctx) {
     if (ctx.obj && !ctx.prep && !ctx.reflexiv) { sag('Es gibt keinen Grund, ' + der(ctx.obj) + ' zu verstecken.'); return; }
+    // Echte Verstecke (versteckOrt: { text, mod }) – zählen, wenn etwas durchs Haus wandert (js/engine/gefahr.js)
+    var vo = ctx.obj ? HG.wert(D(ctx.obj).versteckOrt, HG.api, ctx) : HG.wert(raum().versteckOrt, HG.api, ctx);
+    if (vo) { Z().versteckt = ctx.obj || raum().id; sag(typeof vo === 'string' ? vo : vo.text); ctx.dauer = 2; return; }
     if (ctx.obj) {
       var v = HG.wert(D(ctx.obj).versteck, HG.api, ctx);
       if (v) { Z().versteckt = ctx.obj; sag(v); return; }
@@ -501,6 +505,26 @@
 
   A.entladen = function (ctx) {
     sag(Der(ctx.obj) + ' ' + vb(ctx.obj, 'lässt', 'lassen') + ' sich nicht entladen.');
+  };
+
+  A.erwaermen = function (ctx) { sag('Davon wird ' + der(ctx.obj) + ' nur ein bisschen warm. Es ändert sich nichts.'); };
+  A.schoepfen = function () { sag('Hier gibt es nichts zu schöpfen.'); };
+  /** Spiegel verhängen: mit einem Ding, das "tuch: true" hat (Laken). Verhängte Spiegel sind kein Portal (js/engine/macht.js). */
+  A.verhaengen = function (ctx) {
+    var M = HG.macht;
+    if (!M.groesse(ctx.obj) && !eig(ctx.obj, 'verhaengt')) { sag('Es gibt keinen Grund, ' + der(ctx.obj) + ' zu verhängen.'); return; }
+    if (eig(ctx.obj, 'verhaengt')) { sag(Der(ctx.obj) + ' ' + vb(ctx.obj, 'ist', 'sind') + ' schon verhängt.'); return; }
+    var tuch = ctx.obj2 && D(ctx.obj2).tuch ? ctx.obj2 : HG.welt.inventar().filter(function (id) { return D(id).tuch; })[0];
+    if (!tuch) { sag('Womit? Du hast nichts dabei, was groß genug wäre – ein Laken, ein Tuch.'); return; }
+    if (!HG.welt.getragen(tuch)) { sag('Dafür musst du ' + der(tuch, 'akk') + ' in der Hand haben.'); return; }
+    HG.tuchVerbrauchen(tuch, ctx.obj);
+    sag(HG.wert(D(ctx.obj).verhaengen, HG.api, ctx) || 'Du wirfst ' + der(tuch, 'akk') + ' über ' + der(ctx.obj, 'akk') + ' und steckst die Ecken fest. Das Glas ist blind.');
+  };
+  A.nennen = function () {
+    // Beim Namen nennen (js/engine/gefahr.js): nur, wenn sich gerade ein Diener zeigt
+    var akt = HG.gefahren.st().aktiv;
+    if (!akt || !akt.seele) { sag('Du sprichst einen Namen in die Stille. Niemand antwortet.'); return; }
+    HG.gefahren.nennen();
   };
 
   A.kombinieren = function (ctx) {
@@ -605,6 +629,12 @@
       sag('<span class="nebenbei">(Du öffnest zuerst ' + der(a.tuer) + '.)</span>');
     }
     if (r.beimVerlassen && r.beimVerlassen(HG.api, { richtung: richtung, ziel: a.ziel })) return;
+    // Gefahren unterwegs (Treppe, Baumeister …): false = abgebrochen, String = anderes Ziel
+    if (HG.gefahren) {
+      var g = HG.gefahren.weg(a, { richtung: richtung, vorsichtig: ctx.vorsichtig });
+      if (g === false || Z().kampf || (HG.spiel.offen && HG.spiel.offen.art === 'auswahl')) return;
+      if (typeof g === 'string') { HG.spiel.betrete(g); return; }
+    }
     if (a.text) sag(HG.wert(a.text, HG.api, ctx));
     HG.spiel.betrete(a.ziel);
   };

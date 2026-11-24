@@ -10,7 +10,8 @@ HG.ding('handy', {
   lichtquelle: true, schalter: true, brennt: false,   // Taschenlampe
   beschreibung: function (api) {
     var n = HG.handy.ungelesen();
-    return 'Dein Handy. Der Akku ist fast voll.' + (n ? ' <b>' + n + ' ungelesene Nachricht' + (n > 1 ? 'en' : '') + '.</b>' : '') +
+    return 'Dein Handy.' + (n ? ' <b>' + n + ' ungelesene Nachricht' + (n > 1 ? 'en' : '') + '.</b>' : '') +
+      (HG.licht && HG.daten.dinge.handy.vorrat ? ' Akku: ' + HG.licht.prozent('handy') + ' %.' : '') +
       (api.eig('handy', 'brennt') ? ' Die Taschenlampe ist eingeschaltet.' : '') +
       ' <span class="nebenbei">(„lies nachrichten“, „anrufliste“, „fotos“, „fotografiere …“, „ruf … an“, „schalte die taschenlampe ein“)</span>';
   },

@@ -86,6 +86,7 @@
       HG.ausgabe.text(HG.wert(d.fahrt, HG.api) || HG.wert(HG.daten.spiel.fahrtText, HG.api) || ('Du fährst los, nach ' + d.name + '.'));
       var min = R.fahrzeit(id);
       HG.zeit.vergeht(min);
+      if (HG.licht) HG.licht.fahrt(min);   // im Auto lädt das Handy
       HG.ausgabe.text('<span class="nebenbei">(' + min + ' Minuten Fahrt – es ist ' + HG.zeit.uhr() + ' Uhr.)</span>');
       HG.spiel.betrete(HG.wert(d.ankunft, HG.api));
     }
