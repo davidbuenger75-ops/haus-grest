@@ -146,5 +146,16 @@ HG.spielDaten({
     return '<b>Dein Abenteuer endet hier.</b><br>Du sitzt im Auto und kannst nicht aufhören zu zittern. Als dein Handy klingelt, gehst du ran. Eine freundliche Frauenstimme sagt: „Komm nach Hause.“ ' +
       'Und du startest den Motor.';
   },
-  endeAusdauer: '<b>Dein Abenteuer endet hier.</b><br>Deine Kräfte verlassen dich. Das Haus behält dich.'
+  endeAusdauer: '<b>Dein Abenteuer endet hier.</b><br>Deine Kräfte verlassen dich. Das Haus behält dich.',
+
+  // Verantwortung (Spielbibel 8.6.6, David 24.11.2026): Inhaltshinweis beim Start, Hilfe-Adresse unter „hilfe“ und im Abspann
+  inhaltshinweis: '<b>Inhaltshinweis:</b> „Haus Grest“ ist eine Horrorgeschichte für Erwachsene. Sie handelt unter anderem von Tod, Suizid, ' +
+    'psychischen Krisen, Gewalt und einer Schusswaffe – erzählt in Andeutungen, nicht in Einzelheiten. ' +
+    'Wenn dich das gerade belastet oder es dir nicht gut geht: Die <b>Telefonseelsorge</b> ist rund um die Uhr erreichbar, kostenlos und anonym – ' +
+    '<b>0800 111 0 111</b> oder 0800 111 0 222, Chat und Mail auf telefonseelsorge.de. Du findest die Nummer jederzeit unter „hilfe“.',
+  hilfeZusatz: '<b>Wenn es dir nicht gut geht:</b> Telefonseelsorge <b>0800 111 0 111</b> oder 0800 111 0 222 – kostenlos, anonym, rund um die Uhr. ' +
+    'Chat und Mail: telefonseelsorge.de. In akuter Gefahr: Notruf <b>112</b>.',
+  abspann: '<b>Danke fürs Spielen.</b> „Haus Grest“ ist erfunden. Was manche Figuren durchmachen, erleben echte Menschen wirklich. ' +
+    'Wenn dich etwas davon bewegt oder es dir nicht gut geht, sprich mit jemandem: Telefonseelsorge <b>0800 111 0 111</b> oder 0800 111 0 222 ' +
+    '(kostenlos, anonym, rund um die Uhr, telefonseelsorge.de). In akuter Gefahr: Notruf <b>112</b>.'
 });

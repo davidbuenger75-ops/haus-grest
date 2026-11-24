@@ -499,6 +499,10 @@
     sag('Wie genau willst du ' + der(ctx.obj) + ' benutzen? Versuche einen genaueren Befehl, z.&nbsp;B. „öffne …“, „schließe … mit … auf“ oder „zünde … an“.');
   };
 
+  A.entladen = function (ctx) {
+    sag(Der(ctx.obj) + ' ' + vb(ctx.obj, 'lässt', 'lassen') + ' sich nicht entladen.');
+  };
+
   A.kombinieren = function (ctx) {
     if (!ctx.obj2) { sag('Womit willst du ' + der(ctx.obj) + ' kombinieren?'); return; }
     var h1 = D(ctx.obj).hinweis, h2 = D(ctx.obj2).hinweis;

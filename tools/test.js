@@ -525,5 +525,47 @@ const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'diens
   pruefe(!H2.zustand.z.flags.ablenkung_polizei || H2.zustand.z.zeit.minute < 19 * 60, 'Nachts keine Ablenkungs-Anrufe');
 }
 
+
+{
+  console.log('\n13. Pistole, Inhaltshinweis, Hilfe, Abspann');
+  // Inhaltshinweis beim Start, Telefonseelsorge unter „hilfe“
+  const p = prolog(); const HP = p.HG;
+  pruefe(p.bloecke.some(b => /Inhaltshinweis/.test(b.html || '') && /0800 111 0 111/.test(b.html || '')), 'Inhaltshinweis mit Telefonseelsorge beim Spielstart');
+  pruefe(/0800 111 0 111/.test(p.tu('hilfe')), '„hilfe“ nennt die Telefonseelsorge');
+  // +5 NERVEN beim Tragen, zurück beim Ablegen
+  let s = imHaus(); let HG = s.HG; const Z = HG.zustand.z;
+  Z.werte.nerven = 50;
+  HG.api.bewege('pistole', 'spieler'); s.tu('warte');
+  pruefe(Z.werte.nerven === 55, 'Pistole tragen: +5 NERVEN (' + Z.werte.nerven + ')');
+  s.tu('lege pistole ab');
+  pruefe(Z.werte.nerven === 50, 'Pistole abgelegt: Bonus wieder weg (' + Z.werte.nerven + ')');
+  s.tu('nimm pistole');
+  pruefe(Z.werte.nerven === 55, 'Wieder aufgenommen: +5 NERVEN');
+  // Ereignis: Willenskraft-Probe gelingt → Magazin weg, Spiel geht weiter
+  HG.zufall = () => 0.01;
+  Z.werte.nerven = 9; s.tu('warte');
+  pruefe(!Z.vorbei && !HG.api.eig('pistole', 'geladen') && Z.flags.pistole_ereignis, 'Die Pistole: widerstanden, Magazin weggeworfen');
+  Z.werte.nerven = 8; s.tu('warte');
+  pruefe(!Z.vorbei, 'Entladene Pistole: kein neues Ereignis');
+  // Ereignis: beide Proben misslingen → Ende „Willkommen zu Hause“ mit Abspann
+  s = imHaus(); HG = s.HG;
+  HG.api.bewege('pistole', 'spieler'); s.tu('warte');
+  HG.zufall = () => 0.99;
+  const wpVorher = HG.zustand.z.werte.wp;
+  HG.zustand.z.werte.nerven = 9; s.tu('warte');
+  const ende = s.bloecke.filter(b => b.typ === 'ende').map(b => b.html).join(' ');
+  pruefe(HG.zustand.z.vorbei && /Willkommen zu Hause/.test(ende), 'Die Pistole: beide Proben misslungen → „Willkommen zu Hause“');
+  pruefe(HG.zustand.z.werte.wp < wpVorher, 'Zweite Chance kostet WP');
+  pruefe(s.bloecke.some(b => /0800 111 0 111/.test(b.html || '') && /Danke fürs Spielen/.test(b.html || '')), 'Abspann mit Telefonseelsorge');
+  // „entlade pistole“
+  s = imHaus(); HG = s.HG;
+  HG.api.bewege('pistole', 'spieler');
+  s.tu('entlade pistole');
+  pruefe(!HG.api.eig('pistole', 'geladen'), '„entlade pistole“');
+  HG.zustand.z.werte.nerven = 9; s.tu('warte');
+  pruefe(!HG.zustand.z.vorbei && !HG.zustand.z.flags.pistole_ereignis, 'Entladen: kein Ereignis bei NERVEN < 10');
+  pruefe(/nicht entladen/.test(s.tu('entlade handy')), 'Andere Dinge lassen sich nicht entladen');
+}
+
 console.log('\n' + (tests - fehler) + ' von ' + tests + ' Prüfungen bestanden.' + (fehler ? ' ' + fehler + ' FEHLGESCHLAGEN.' : ''));
 process.exit(fehler ? 1 : 0);

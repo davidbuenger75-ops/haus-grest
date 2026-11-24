@@ -8,7 +8,7 @@
 // Nach Änderungen am Spiel VERSION hochzählen, damit alte Speicherstände verschwinden.
 'use strict';
 
-var VERSION = 'haus-grest-17';
+var VERSION = 'haus-grest-18';
 var GRUNDDATEIEN = ['./', './index.html', './manifest.webmanifest', './assets/icons/icon.svg',
   './assets/icons/icon-192.png', './assets/icons/icon-512.png'];
 

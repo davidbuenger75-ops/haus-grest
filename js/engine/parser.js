@@ -182,6 +182,7 @@
     { a: 'fragen', w: L('frag frage fragen befrag befrage'), o: 1, p2: L('nach ueber zu wegen'), p2Text: true },
     { a: 'sagen', w: L('sag sage sagen ruf rufe rufen fluester fluestere schrei schreie'), o: '?', text: true, p2: L('zu') },
     { a: 'zeigen', w: L('zeig zeige zeigen'), o: 1, p2: L('an'), doppel: true },
+    { a: 'entladen', w: L('entlad entlade entladen'), o: 1 },                          // "entlade die Pistole"
     { a: 'geben', w: L('gib gebe geben reich reiche ueberreiche biete'), o: 1, p2: L('an'), doppel: true },
 
     // Werkzeuge und Notizen

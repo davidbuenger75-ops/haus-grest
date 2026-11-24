@@ -282,10 +282,55 @@
     nomen: 'Pistole', genus: 'f',
     woerter: ['pistole', 'waffe', 'walther', 'p99', 'knarre', 'geschirrtuch'],
     ort: 'schuhkarton', rel: 'in',
-    beschreibung: 'Eine Walther P99, schwarz und schwerer als erwartet. Keine Seriennummer mehr, sie ist herausgefeilt. Gegen das, was in dem Haus wartet, wird sie nichts nützen. Aber sie liegt sehr ruhig in der Hand.',
+    beschreibung: function (api) {
+      return 'Eine Walther P99, schwarz und schwerer als erwartet. Keine Seriennummer mehr, sie ist herausgefeilt. Gegen das, was in dem Haus wartet, wird sie nichts nützen. Aber sie liegt sehr ruhig in der Hand.' +
+        (api.eig('pistole', 'geladen') ? ' Ein Magazin steckt. <span class="nebenbei">(„entlade pistole“)</span>' : ' Sie ist entladen.');
+    },
     texte: { nehmen: 'Du nimmst die Pistole. Sie ist kalt und schwer, und sofort fühlst du dich wie jemand, der etwas Verbotenes tut. Das bist du auch.' },
-    zerbrechen: 'Mit bloßen Händen? Keine Chance.'
+    zerbrechen: 'Mit bloßen Händen? Keine Chance.',
+    geladen: true,
+    // Spielbibel 8.6.6: trügerische Sicherheit, solange man sie trägt
+    beimTragen: { wert: 'nerven', menge: 5, an: 'die Pistole gibt dir Sicherheit', ab: 'ohne die Pistole fühlst du dich schutzlos' },
+    bei: {
+      entladen: function (api) {
+        if (!api.eig('pistole', 'geladen')) { api.sage('Die Pistole ist schon entladen.'); return true; }
+        api.setze('pistole', 'geladen', false);
+        api.sage('Du drückst das Magazin heraus und ziehst den Schlitten zurück. Die Patrone aus dem Lauf springt heraus und rollt davon; du lässt sie liegen. ' +
+          'Das Magazin steckst du in eine andere Tasche als die Waffe. Ein kleiner Umweg – für den Fall, dass deine Hände einmal schneller sind als dein Kopf.');
+        return true;
+      }
+    }
   });
+
+  // Ereignis „Die Pistole“ (Spielbibel 8.6.6): Sinken die NERVEN unter 10, während man die geladene Pistole trägt,
+  // greift das Haus nach ihr. Willenskraft-Probe (WP × 5 %), mit WP eine zweite Chance (−20), sonst endet das Spiel
+  // mit „Willkommen zu Hause“ – als Abblende, ohne Einzelheiten.
+  function pistolePruefen(api) {
+    var z = HG.zustand.z, n = z.werte.nerven;
+    if (z.vorbei || n === undefined) return;
+    if (n >= 10) { if (api.flag('pistole_ereignis')) api.setzeFlag('pistole_ereignis', false); return; }
+    if (n <= 0 || api.flag('pistole_ereignis') || !api.traegt('pistole') || !api.eig('pistole', 'geladen')) return;
+    api.setzeFlag('pistole_ereignis');
+    api.abschnitt(40, 'Die Pistole liegt in deiner Hand. Du weißt nicht, wann du sie herausgenommen hast. Sie ist warm, als hätte jemand anderes sie lange gehalten. ' +
+      'Und die Stimme, die jetzt spricht, ist so freundlich. Sie sagt, dass es nicht mehr wehtun muss. Dass du bleiben darfst. Dass du endlich zu Hause bist.');
+    var probe = function (mod) {
+      return api.probe(Math.max(1, (z.werte.wp || 0) * 5), { titel: 'Willenskraft-Probe', grund: 'Die Pistole', mod: mod || 0, modGrund: mod ? 'zweite Chance' : '' });
+    };
+    var widerstanden = function () {
+      api.setze('pistole', 'geladen', false);
+      api.sage('<b>Nein.</b> Du sagst es laut, und deine Stimme zittert. Du drückst das Magazin heraus und schleuderst es von dir, so weit du kannst. ' +
+        'Die Stimme schweigt. Irgendwo im Haus fällt eine Tür ins Schloss, leise, beinahe enttäuscht.');
+    };
+    if (probe().erfolg) return widerstanden();
+    var wp = z.werte.wp || 0;
+    if (wp >= 1 && api.willenskraft(Math.min(2, wp), 'gegen die Stimme')) {
+      api.sage('Deine Hand gehorcht dir nicht mehr. Du nimmst alles zusammen, was du noch hast – jeden Grund, jedes Gesicht, jeden Morgen, der noch kommen kann.');
+      if (probe(-20).erfolg) return widerstanden();
+    }
+    api.ende('Es wird still im Haus. Das Licht wird schwächer, bis nur noch das Glas der Spiegel schimmert. Dann wird es dunkel.<br><br><b>Willkommen zu Hause.</b>');
+  }
+  var jedeRundeVorher = HG.daten.spiel.jedeRunde;
+  HG.spielDaten({ jedeRunde: function (api) { if (jedeRundeVorher) jedeRundeVorher(api); pistolePruefen(api); } });
   HG.ding('magazine', {
     nomen: 'Magazine', genus: 'pl', adj: ['voll'],
     woerter: ['magazine', 'magazin', 'munition', 'patronen'],

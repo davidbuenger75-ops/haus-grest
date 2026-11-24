@@ -196,6 +196,8 @@
     ende: function (html) {
       Z().vorbei = true;
       HG.ausgabe.ende(html);
+      var abspann = HG.wert(HG.daten.spiel.abspann, api);   // Abspann nach jedem Ende (allgemein.js)
+      if (abspann) HG.ausgabe.system(abspann);
       HG.ausgabe.system('Tippe „rückgängig“, „laden“ oder „neustart“.');
     }
   };
@@ -250,6 +252,7 @@
       S.offen = null;
       var sp = HG.daten.spiel;
       if (sp.titel) HG.ausgabe.titel(sp.titel);
+      if (sp.inhaltshinweis) HG.ausgabe.system(HG.wert(sp.inhaltshinweis));
       // Charaktererstellung: erst Name, dann Geschlecht
       if (sp.charakter !== false) {
         if (sp.charakterText) HG.ausgabe.text(HG.wert(sp.charakterText));
@@ -705,6 +708,27 @@
       });
     },
 
+    /** Dinge mit "beimTragen: { wert: 'nerven', menge: 5, an: '…', ab: '…' }" geben einen Bonus, solange man sie trägt.
+     *  Gemerkt wird, wie viel tatsächlich dazukam (z.tragBonus); genau das geht beim Ablegen wieder weg (nie unter 1)
+     *  – ohne das Haus mit "Angst" zu füttern. */
+    tragBoni: function () {
+      var z = Z(), tb = z.tragBonus || (z.tragBonus = {});
+      Object.keys(HG.daten.dinge).forEach(function (id) {
+        var b = D(id).beimTragen; if (!b) return;
+        var traegt = W.getragen(id), wert = b.wert || 'nerven', alt = z.werte[wert];
+        if (alt === undefined) return;
+        if (traegt && tb[id] === undefined) {
+          var plus = Math.max(0, Math.min(b.menge, (z.max[wert] || 99) - alt));
+          tb[id] = plus; z.werte[wert] = alt + plus;
+          if (plus) HG.ausgabe.wert('+' + plus + ' ' + WERTNAME[wert] + (b.an ? ' <span class="grund">(' + b.an + ')</span>' : '') + ' – jetzt ' + z.werte[wert], { wert: wert, delta: plus });
+        } else if (!traegt && tb[id] !== undefined) {
+          var minus = Math.min(tb[id], Math.max(0, alt - 1));
+          delete tb[id]; z.werte[wert] = alt - minus;
+          if (minus) HG.ausgabe.wert('−' + minus + ' ' + WERTNAME[wert] + (b.ab ? ' <span class="grund">(' + b.ab + ')</span>' : '') + ' – jetzt ' + z.werte[wert], { wert: wert, delta: -minus });
+        }
+      });
+    },
+
     /** Ein Spielzug ist vorbei: Ereignisse, Spielende prüfen. */
     zugEnde: function () {
       var z = Z();
@@ -720,6 +744,7 @@
       // erst vergeht die Zeit, dann reagieren Raum und Spiel darauf
       HG.zeit.vergeht(dauer);
       S._dauer = null;
+      S.tragBoni();
       var r = W.raum();
       if (r.jedeRunde) r.jedeRunde(api);
       if (HG.daten.spiel.jedeRunde) HG.daten.spiel.jedeRunde(api);
@@ -764,7 +789,7 @@
     meta: function (b) {
       var z = Z(), text = P.freierText(b.np1 || []).trim();
       switch (b.aktion) {
-        case 'hilfe': HG.ausgabe.system(HILFE); break;
+        case 'hilfe': HG.ausgabe.system(HILFE + (HG.daten.spiel.hilfeZusatz ? '<br><br>' + HG.wert(HG.daten.spiel.hilfeZusatz) : '')); break;
         case 'inventar': S.zeigeInventar(); break;
         case 'werte':
           HG.ausgabe.system(S.charakterbogen());

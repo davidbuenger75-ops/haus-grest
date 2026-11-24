@@ -4,10 +4,11 @@
 (function (HG) {
   'use strict';
 
-  var VERSION = 7; // 2: Tageszeit, Reiseziele, Handy, Spuk · 3: Spielfigur, Uhrzeit, NERVEN in Prozent, Bücher · 4: MACHT des Hauses
+  var VERSION = 8; // 2: Tageszeit, Reiseziele, Handy, Spuk · 3: Spielfigur, Uhrzeit, NERVEN in Prozent, Bücher · 4: MACHT des Hauses
                    // 5: angesehene Hinweise (gesehen), erledigte Handlungen an Dingen (getan)
                    // 6: Regelsystem nach Delta Green: Eigenschaften, Fertigkeiten, Beruf, LP, WP, Wunden
                    // 7: Tagebuch mit zusammenfassenden Hinweisen und gesperrten Seiten (nur Inhalts-Migration)
+                   // 8: Werte-Bonus getragener Dinge (tragBonus, z. B. Pistole +5 NERVEN)
 
   // Ältere Spielstände an das aktuelle Format anpassen: MIGRATION[v] macht aus Version v die Version v+1.
   var MIGRATION = {
@@ -26,7 +27,8 @@
       HG.zustand.z = alt;
       if (z.spieler && z.spieler.geschlecht) z.spieler.fertig = true;
     },
-    6: function () { /* Inhalte passen sich per HG.zustand.migration(6, …) an */ }
+    6: function () { /* Inhalte passen sich per HG.zustand.migration(6, …) an */ },
+    7: function (z) { z.tragBonus = {}; }
   };
   // Inhalte können eigene Schritte anhängen, z. B. wenn sich Buchseiten verschoben haben:
   // HG.zustand.migration(4, function (z) { ... })  läuft beim Laden nach MIGRATION[4].
@@ -60,6 +62,7 @@
         zaehler: {},     // freie Zähler für den Inhalt
         besucht: {},     // raumId -> true
         hinweise: [],    // gefundene Hinweis-IDs (in Reihenfolge)
+        tragBonus: {},   // Werte-Bonus getragener Dinge: dingId -> tatsächlich gewährte Punkte (spiel.js tragBoni)
         schluesse: [],   // gefundene Schlussfolgerungen
         notizen: [],     // eigene Notizen des Spielers
         gesehen: {},     // Hinweis-ID -> true, sobald der Hinweis im Notizbuch aufgeklappt wurde
