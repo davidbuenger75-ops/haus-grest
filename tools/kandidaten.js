@@ -45,6 +45,26 @@ window.KANDIDATEN = [
     "vorlage": null
   },
   {
+    "name": "ding-brinkhoff_plaene",
+    "titel": "Brinkhoffs Pläne",
+    "prompt": "Entrollte Rolle Transparentpapier mit einem Architekten-Grundriss der Achtzigerjahre in Bleistift und Tusche, ein Raum ist rundum schraffiert wie mit Spiegeln ausgekleidet, Architektenstempel, quer darüber ein zittriger Bleistiftstrich – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-brinkhoff_plaene-1.jpg"
+    ],
+    "gewaehlt": "ding-brinkhoff_plaene.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-elisabeths_tagebuch",
+    "titel": "Elisabeths Tagebuch",
+    "prompt": "Schmales Tagebuch in rotem Leder mit geprägtem „E.“, aufgeschlagen auf einem Nussbaum-Lesepult, die Seiten zeigen eine braune, leicht verblasste Handschrift, die aussieht wie mit Wärme hervorgeholt, eine Ecke leicht angesengt, daneben eine Kerze – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-elisabeths_tagebuch-1.jpg"
+    ],
+    "gewaehlt": "ding-elisabeths_tagebuch.jpg",
+    "vorlage": null
+  },
+  {
     "name": "ding-foto_1912",
     "titel": "Fotografie um 1912 (Vorderseite)",
     "prompt": "Verblichenes Sepia-Foto von etwa 1912 mit abgestoßenen Ecken und Knick, darauf: eine junge Frau im hellen Kleid im Rollstuhl in einem Garten vor einer Jugendstilvilla, hinter ihr eine alte Frau in schwarzem Tuch, deren Gesicht verwischt ist, als hätte sie sich bei der Belichtung bewegt, auf ihrer Schulter sitzt eine Krähe – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, kein Text",
@@ -67,6 +87,16 @@ window.KANDIDATEN = [
     "vorlage": null
   },
   {
+    "name": "ding-haarspange",
+    "titel": "Bettinas Haarspange",
+    "prompt": "Blaue Haarspange mit kleinen Glitzersteinchen auf der Handfläche, daneben ein winziges Puppenbett mit einer Decke aus Stoffresten – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, kein Text",
+    "kandidaten": [
+      "ding-haarspange-1.jpg"
+    ],
+    "gewaehlt": "ding-haarspange.jpg",
+    "vorlage": null
+  },
+  {
     "name": "ding-kaestchen",
     "titel": "Bernwards Kästchen",
     "prompt": "Altes Kästchen aus dunklem Nussbaumholz, schuhkartongroß, Messingbeschläge an den Ecken, auf dem Deckel eine ovale Messingrosette mit vier kleinen drehbaren Zahlenrädern nebeneinander in einer Reihe, Deckel und Korpus wie aus einem Stück ohne sichtbare Fuge, kein Schloss, kein Schlüsselloch, kein Scharnier – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, kein Text",
@@ -75,6 +105,76 @@ window.KANDIDATEN = [
       "ding-kaestchen-2.jpg"
     ],
     "gewaehlt": "ding-kaestchen.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-kinderbuch",
+    "titel": "Kinderbuch „Geheimschriften“",
+    "prompt": "Altes Kinderbuch von 1898 mit Goldschnitt, aufgeschlagen auf einer Seite mit einem Kupferstich: Kinder halten ein Blatt über eine Kerzenflamme, auf dem braune Schrift erscheint, ein Eselsohr, am Rand eine zarte Bleistiftnotiz – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-kinderbuch-1.jpg"
+    ],
+    "gewaehlt": "ding-kinderbuch.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-kraeuterbuch",
+    "titel": "Kräuterbuch der Pflegerin",
+    "prompt": "Dünnes Buch in schwarzem Leinen ohne Titel, aufgeschlagen, gepresste Pflanzen zwischen den Seiten (Lavendel, Wermut, Mohn), enge spitze Handschrift mit Rezepten – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-kraeuterbuch-1.jpg"
+    ],
+    "gewaehlt": "ding-kraeuterbuch.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-laser",
+    "titel": "Laser-Entfernungsmesser",
+    "prompt": "Gelber Laser-Entfernungsmesser in einem silbernen Alukoffer mit grauem Schaumstoff, daneben Zollstock und Wasserwaage, ein Bündel karierter Zettel mit Zahlenkolonnen – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-laser-1.jpg"
+    ],
+    "gewaehlt": "ding-laser.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-messnotizen",
+    "titel": "Carstens Messnotizen",
+    "prompt": "Karierte Notizzettel mit Zahlenkolonnen und einer Grundriss-Skizze in Kugelschreiber, eine Zahl dick eingekreist und mehrfach unterstrichen, Kaffeefleck – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-messnotizen-1.jpg"
+    ],
+    "gewaehlt": "ding-messnotizen.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-puppenhaus",
+    "titel": "Puppenhaus",
+    "prompt": "Großes, sehr detailliertes Puppenhaus um 1900, Modell einer dunklen Jugendstilvilla mit Walmdach, spitzen Giebeln und achteckigem Erkertürmchen, Blick durch die winzigen Fenster in winzige möblierte Zimmer, ein Zimmer innen mit glitzernden Spiegelscherben ausgekleidet, Holzsockel mit eingeschnitzter Widmung – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-puppenhaus-1.jpg"
+    ],
+    "gewaehlt": "ding-puppenhaus.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-spachtel",
+    "titel": "Nataschas Spachtel",
+    "prompt": "Schmaler Restauratorenspachtel mit abgegriffenem Holzgriff und eingebrannten Initialen, auf frisch abgeschliffenem hellem Eichenholz eines Treppengeländers, etwas Schleifstaub – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, kein Text",
+    "kandidaten": [
+      "ding-spachtel-1.jpg"
+    ],
+    "gewaehlt": "ding-spachtel.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-stimmgabel",
+    "titel": "Stimmgabel",
+    "prompt": "Stimmgabel aus angelaufenem Stahl auf schwarz-weißen Fliesen, um den Griff ein Streifen vergilbtes Klebeband mit Kugelschreiber-Handschrift, Wassertropfen darauf, daneben ein einzelnes langes graues Haar – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, auf dem Klebeband steht gut lesbar in Handschrift „R. Vogt“, sonst kein Text im Bild",
+    "kandidaten": [
+      "ding-stimmgabel-1.jpg"
+    ],
+    "gewaehlt": "ding-stimmgabel.jpg",
     "vorlage": null
   },
   {
@@ -139,6 +239,66 @@ window.KANDIDATEN = [
     ],
     "gewaehlt": "raum-arbeitszimmer-rasiermesser-nacht.jpg",
     "vorlage": "raum-arbeitszimmer.jpg"
+  },
+  {
+    "name": "raum-bad",
+    "titel": "Bad",
+    "prompt": "Altes Badezimmer um 1900, schwarz-weiße Fliesen, ein Waschbecken mit Messinghähnen, darüber ein Spiegel mit blinden Rändern, in der Mitte eine Badewanne auf Löwenfüßen, randvoll mit schwarzem, vollkommen glattem Wasser, das die Decke spiegelt wie Glas, eine dünne Messingkette hängt vom Wannenrand ins schwarze Wasser, kaltes fahles Licht – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-bad-1.jpg"
+    ],
+    "gewaehlt": "raum-bad.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-bad-nacht",
+    "titel": "Bad – nacht",
+    "prompt": "Bearbeite das beigefügte Bild: Standard Nacht; das schwarze Wasser in der Wanne glänzt wie ein Spiegel. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-bad-nacht-1.jpg"
+    ],
+    "gewaehlt": "raum-bad-nacht.jpg",
+    "vorlage": "raum-bad.jpg"
+  },
+  {
+    "name": "raum-bad-spuk",
+    "titel": "Bad – spuk",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, auf dem schwarzen Wasser steigen Blasen auf, in der Mitte bricht die Oberfläche einen Fingerbreit auf wie von einem Mund. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-bad-spuk-1.jpg"
+    ],
+    "gewaehlt": "raum-bad-spuk.jpg",
+    "vorlage": "raum-bad.jpg"
+  },
+  {
+    "name": "raum-bibliothek",
+    "titel": "Bibliothek",
+    "prompt": "Bibliothek eines Architekten um 1900, Regale bis unter die Decke hinter Glastüren mit Messingrahmen, Fachbücher mit kleinen weißen Etiketten auf den Buchrücken, eine Rollleiter aus Eiche an einer Messingschiene unter der Decke, ganz oben im obersten Fach ein einzelnes dünnes schwarzes Buch ohne Etikett, vor dem Fenster ein rissiger Ohrensessel aus Leder, Staub tanzt im Licht – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-bibliothek-1.jpg"
+    ],
+    "gewaehlt": "raum-bibliothek.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-bibliothek-nacht",
+    "titel": "Bibliothek – nacht",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, die Glastüren der Regale sind schwarze Spiegel, in denen sich der Lichtkegel einer Taschenlampe vielfach spiegelt. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-bibliothek-nacht-1.jpg"
+    ],
+    "gewaehlt": "raum-bibliothek-nacht.jpg",
+    "vorlage": "raum-bibliothek.jpg"
+  },
+  {
+    "name": "raum-bibliothek-spuk",
+    "titel": "Bibliothek – spuk",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, in einer der schwarzen Glastüren spiegelt sich eine blasse Frau in hellem Kleid mit offenem Haar, die sich über eine Schulter beugt, als lese sie mit – im Raum selbst steht niemand. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-bibliothek-spuk-1.jpg"
+    ],
+    "gewaehlt": "raum-bibliothek-spuk.jpg",
+    "vorlage": "raum-bibliothek.jpg"
   },
   {
     "name": "raum-dienstbotenzimmer",
@@ -211,6 +371,56 @@ window.KANDIDATEN = [
     ],
     "gewaehlt": "raum-flur-spuk.jpg",
     "vorlage": "raum-flur.jpg"
+  },
+  {
+    "name": "raum-gaestezimmer",
+    "titel": "Gästezimmer",
+    "prompt": "Gästezimmer einer Jugendstilvilla, ein ungemachtes Doppelbett mit zwei eingedrückten Kissen, auf dem Nachttisch zwei Kaffeetassen mit braunem Rand, in einer Ecke ein Stapel ordentlich gefalteter weißer Laken, über einer Kommode ein ovaler Wandspiegel im Goldrahmen mit einem gelben Klebezettel am Rahmen, vor dem Bett ein silberner Alukoffer mit Zahlenschloss, graues Licht – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-gaestezimmer-1.jpg"
+    ],
+    "gewaehlt": "raum-gaestezimmer.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-gaestezimmer-nacht",
+    "titel": "Gästezimmer – nacht",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, nur Mondlicht bzw. Notbeleuchtung und der Lichtkegel einer Taschenlampe. Perspektive, Bildaufbau, Gegenstände und Malstil exakt beibehalten, nur Licht und Stimmung ändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-gaestezimmer-nacht-1.jpg"
+    ],
+    "gewaehlt": "raum-gaestezimmer-nacht.jpg",
+    "vorlage": "raum-gaestezimmer.jpg"
+  },
+  {
+    "name": "raum-gaestezimmer-spuk",
+    "titel": "Gästezimmer – spuk",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, die Bettdecke wölbt sich, als läge jemand darunter und atme, das Kissen ist eingedrückt. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-gaestezimmer-spuk-1.jpg"
+    ],
+    "gewaehlt": "raum-gaestezimmer-spuk.jpg",
+    "vorlage": "raum-gaestezimmer.jpg"
+  },
+  {
+    "name": "raum-galerie",
+    "titel": "Galerie (OG)",
+    "prompt": "Galerie im Obergeschoss einer Jugendstilvilla um 1900, ein umlaufender Treppenflur mit geschnitztem Eichengeländer mit Lilienmotiv, Blick über das Geländer hinunter in eine dunkle Eingangshalle mit abgetretenem Teppich, ein zwei Meter langes Stück Geländer frisch abgeschliffen und hell, mit Kreppband abgeklebt, am Fuß des Geländers ein schmaler Spachtel, in der Wand eine kaum sichtbare Tapetentür ohne Griff, nur ein feiner Umriss in der Tapete, an der Decke eine geschlossene Bodenklappe mit Eisenring, mehrere dunkle Holztüren, fahles Tageslicht – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-galerie-1.jpg"
+    ],
+    "gewaehlt": "raum-galerie.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-galerie-nacht",
+    "titel": "Galerie (OG) – nacht",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, tiefe Dunkelheit, die Halle unten ist ein schwarzer Abgrund, nur der Lichtkegel einer Taschenlampe auf dem Geländer, aus einem haarfeinen Spalt am Rand der Tapetentür fällt fahles, graues Licht wie aus einem Spiegel. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-galerie-nacht-1.jpg"
+    ],
+    "gewaehlt": "raum-galerie-nacht.jpg",
+    "vorlage": "raum-galerie.jpg"
   },
   {
     "name": "raum-garderobe",
@@ -315,6 +525,36 @@ window.KANDIDATEN = [
     ],
     "gewaehlt": "raum-hinterdiele-tuer-offen.jpg",
     "vorlage": "raum-hinterdiele.jpg"
+  },
+  {
+    "name": "raum-kinderzimmer",
+    "titel": "Kinderzimmer",
+    "prompt": "Jugendzimmer in einer Jugendstilvilla, vergilbte Tapete mit hellen Rechtecken, wo Poster hingen, ein Schülerkalender an einem Nagel, ein schmales Jugendbett mit nackter Matratze, ein Schreibtisch, ein Regal mit Schulbüchern und einem alten Kinderbuch mit Goldrand, in der Mitte auf einem niedrigen Tisch ein großes, sehr detailliertes Puppenhaus: ein genaues Modell einer dunklen Jugendstilvilla mit Walmdach, spitzen Zwerchgiebeln und einem achteckigen Erkertürmchen an der Ecke, die Vorderwand geschlossen, trübes Licht – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-kinderzimmer-1.jpg"
+    ],
+    "gewaehlt": "raum-kinderzimmer.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-kinderzimmer-nacht",
+    "titel": "Kinderzimmer – nacht",
+    "prompt": "Bearbeite das beigefügte Bild: Standard Nacht; in den winzigen Fenstern des Puppenhauses stehen kleine dunkle Figuren. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-kinderzimmer-nacht-1.jpg"
+    ],
+    "gewaehlt": "raum-kinderzimmer-nacht.jpg",
+    "vorlage": "raum-kinderzimmer.jpg"
+  },
+  {
+    "name": "raum-kinderzimmer-spuk",
+    "titel": "Kinderzimmer – spuk",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, an der Wand neben dem Bett sitzt ein durchscheinendes Mädchen von siebzehn im Kapuzenpulli mit angezogenen Knien und sieht zur Tür. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-kinderzimmer-spuk-1.jpg"
+    ],
+    "gewaehlt": "raum-kinderzimmer-spuk.jpg",
+    "vorlage": "raum-kinderzimmer.jpg"
   },
   {
     "name": "raum-kueche",
@@ -443,6 +683,36 @@ window.KANDIDATEN = [
     "vorlage": "raum-salon.jpg"
   },
   {
+    "name": "raum-schlafzimmer",
+    "titel": "Elisabeths Krankenzimmer",
+    "prompt": "Großes Krankenzimmer einer Jugendstilvilla um 1900, ein weiß lackiertes eisernes Krankenbett mit breiten Ledergurten, im Parkett zwei glänzende Rollstuhlspuren vom Bett zum Fenster, am Fenster ein schräges Lesepult aus Nussbaum mit einem schmalen roten Ledertagebuch, an der Wand ein Klingelzug mit verblichener Quaste, eine hohe Glastür zu einem kleinen Balkon mit schmiedeeisernem Gitter, ein runder Turmerker mit Fenstern ringsum und getrockneten Lavendelblüten auf dem Fensterbrett, ein wuchtiger dunkler Eichenschrank, kaltes graues Licht – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-schlafzimmer-1.jpg"
+    ],
+    "gewaehlt": "raum-schlafzimmer.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-schlafzimmer-nacht",
+    "titel": "Elisabeths Krankenzimmer – nacht",
+    "prompt": "Bearbeite das beigefügte Bild: Standard Nacht; die Decke auf dem Krankenbett ist zerwühlt, die Gurte hängen offen herab. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-schlafzimmer-nacht-1.jpg"
+    ],
+    "gewaehlt": "raum-schlafzimmer-nacht.jpg",
+    "vorlage": "raum-schlafzimmer.jpg"
+  },
+  {
+    "name": "raum-schlafzimmer-spuk",
+    "titel": "Elisabeths Krankenzimmer – spuk",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, im Turmerker steht ein leerer altmodischer Rollstuhl aus Korbgeflecht mit einer Wolldecke, die Rollspuren im Parkett glänzen im Mondlicht. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-schlafzimmer-spuk-1.jpg"
+    ],
+    "gewaehlt": "raum-schlafzimmer-spuk.jpg",
+    "vorlage": "raum-schlafzimmer.jpg"
+  },
+  {
     "name": "raum-speisekammer",
     "titel": "Speisekammer",
     "prompt": "Fensterlose Speisekammer im Lichtkegel einer Taschenlampe, Regale bis unter die Decke voller alter Einmachgläser mit trübem Inhalt und verschnörkelten Etiketten, von einer Leine hängen getrocknete Kräuterbündel und frischer blühender Lavendel, auf dem untersten Regal ein kleines grünes Ölkännchen, Eimer und Besen am Boden – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
@@ -471,6 +741,36 @@ window.KANDIDATEN = [
     ],
     "gewaehlt": "raum-speisezimmer-nacht.jpg",
     "vorlage": "raum-speisezimmer.jpg"
+  },
+  {
+    "name": "raum-waeschekammer",
+    "titel": "Wäschekammer",
+    "prompt": "Schmale Wäschekammer, Regale bis zur Decke voller sorgfältig gefalteter weißer Bettwäsche, unter einem kleinen Fenster eine alte schwarze Singer-Nähmaschine mit goldenen Schnörkeln und Fußpedal, unter dem Nähfuß ein winziger hellblauer Kinderärmel, daneben ein Bügelbrett mit gusseisernem Bügeleisen, in der Ecke eine fast zwei Meter lange Holzstange mit Eisenhaken und ein Zinkeimer, gedämpftes Licht – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-waeschekammer-1.jpg"
+    ],
+    "gewaehlt": "raum-waeschekammer.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-waeschekammer-nacht",
+    "titel": "Wäschekammer – nacht",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, nur Mondlicht bzw. Notbeleuchtung und der Lichtkegel einer Taschenlampe. Perspektive, Bildaufbau, Gegenstände und Malstil exakt beibehalten, nur Licht und Stimmung ändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-waeschekammer-nacht-1.jpg"
+    ],
+    "gewaehlt": "raum-waeschekammer-nacht.jpg",
+    "vorlage": "raum-waeschekammer.jpg"
+  },
+  {
+    "name": "raum-waeschekammer-spuk",
+    "titel": "Wäschekammer – spuk",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, die Nähmaschine näht von selbst, endloser hellblauer Stoff quillt unter der Nadel hervor und fällt zu Boden, niemand sitzt davor. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-waeschekammer-spuk-1.jpg"
+    ],
+    "gewaehlt": "raum-waeschekammer-spuk.jpg",
+    "vorlage": "raum-waeschekammer.jpg"
   },
   {
     "name": "raum-wintergarten",

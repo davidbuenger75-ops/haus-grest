@@ -725,7 +725,7 @@
     nomen: 'Laser-Entfernungsmesser', genus: 'm', kurzwort: 'laser',
     woerter: ['laserentfernungsmesser', 'entfernungsmesser', 'laser', 'messgeraet', 'distanzmesser'],
     ort: 'koffer', rel: 'in',
-    beschreibung: function (api) { return api.eig('laser', 'kaputt') ? 'Ein gelber Laser-Entfernungsmesser. Das Display ist gesprungen; er zeigt nur noch Striche. Messen musst du jetzt von Hand.' : 'Ein gelber Laser-Entfernungsmesser, Carstens wichtigstes Werkzeug. Damit misst man Räume auf den Millimeter genau – und findet, was fehlt.'; },
+    beschreibung: function (api) { return api.eig('laser', 'kaputt') ? 'Ein gelber Laser-Entfernungsmesser. Das Display ist gesprungen; er zeigt nur noch Striche. Messen musst du jetzt von Hand.' : 'Ein gelber Laser-Entfernungsmesser, Carstens wichtigstes Werkzeug. Quer über das Display läuft ein feiner Riss, aber er funktioniert noch. Damit misst man Räume auf den Millimeter genau – und findet, was fehlt.'; },
     bei: { benutzen: function (api) { api.sage(api.eig('laser', 'kaputt') ? 'Das Display bleibt dunkel.' : 'Ein roter Punkt springt an die Wand. „' + (3 + Math.floor(HG.zufall() * 600) / 100).toFixed(2) + ' m“. Hier oben stimmt alles mit Bernwards Plan überein. Die fehlenden Meter, von denen Carsten schreibt, liegen woanders – unten.'); return true; } }
   });
   HG.ding('messnotizen', {
