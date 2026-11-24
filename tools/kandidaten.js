@@ -148,6 +148,16 @@ window.KANDIDATEN = [
     "vorlage": null
   },
   {
+    "name": "ding-messprotokolle",
+    "titel": "Hallmanns Messprotokolle",
+    "prompt": "Stapel karierter Schulhefte aus den Siebzigern mit Gummiband, ein Heft aufgeschlagen mit sauberen Tabellen, Uhrzeiten und Randnotizen in kleiner genauer Handschrift – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-messprotokolle-1.jpg"
+    ],
+    "gewaehlt": "ding-messprotokolle.jpg",
+    "vorlage": null
+  },
+  {
     "name": "ding-puppenhaus",
     "titel": "Puppenhaus",
     "prompt": "Großes, sehr detailliertes Puppenhaus um 1900, Modell einer dunklen Jugendstilvilla mit Walmdach, spitzen Giebeln und achteckigem Erkertürmchen, Blick durch die winzigen Fenster in winzige möblierte Zimmer, ein Zimmer innen mit glitzernden Spiegelscherben ausgekleidet, Holzsockel mit eingeschnitzter Widmung – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
@@ -155,6 +165,16 @@ window.KANDIDATEN = [
       "ding-puppenhaus-1.jpg"
     ],
     "gewaehlt": "ding-puppenhaus.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-ritzung",
+    "titel": "Ritzung in der Mädchenkammer",
+    "prompt": "Kindliche, mühsam ins dunkle Holz einer Wandverkleidung geritzte Buchstaben und eine Jahreszahl, daneben ein rostiger Nagel, Streiflicht – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, geritzt steht dort „L. W. 1928“, sonst kein Text im Bild",
+    "kandidaten": [
+      "ding-ritzung-1.jpg"
+    ],
+    "gewaehlt": "ding-ritzung.jpg",
     "vorlage": null
   },
   {
@@ -175,6 +195,26 @@ window.KANDIDATEN = [
       "ding-stimmgabel-1.jpg"
     ],
     "gewaehlt": "ding-stimmgabel.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-taschenkalender",
+    "titel": "Hallmanns Taschenkalender",
+    "prompt": "Kleiner abgegriffener Taschenkalender von 1974 aus Kunstleder, aufgeschlagen auf der ersten Novemberwoche, der Montag mit blauer Tinte dick eingekreist, daneben ein paar Wörter in einer zarten, steilen, fremden Handschrift, auf den übrigen Tagen kleine Uhrzeit-Notizen, im Hintergrund ein grauer Lodenmantel – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, oben „November 1974“, die Tage „Mo 4“, „Di 5“, „Mi 6“, eingekreist ist „Mo 4“; die Handschrift daneben bleibt unleserlich, sonst kein Text im Bild",
+    "kandidaten": [
+      "ding-taschenkalender-1.jpg"
+    ],
+    "gewaehlt": "ding-taschenkalender.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-taschenuhr",
+    "titel": "Hallmanns Taschenuhr",
+    "prompt": "Silberne Taschenuhr mit aufgesprungenem Deckel auf einer Holzkiste, das Zifferblatt rußig, die Zeiger stehen auf zwei Uhr achtundfünfzig, im Deckel eine feine Gravur – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-taschenuhr-1.jpg"
+    ],
+    "gewaehlt": "ding-taschenuhr.jpg",
     "vorlage": null
   },
   {
@@ -653,6 +693,36 @@ window.KANDIDATEN = [
     "vorlage": "raum-lager_tor.jpg"
   },
   {
+    "name": "raum-maedchenkammer",
+    "titel": "Mädchenkammer",
+    "prompt": "Winzige Dienstmädchenkammer unter einer Dachschräge, ein schmales, kurzes Eisenbett, ein Waschgestell mit gesprungener Emailleschüssel, ein Haken an der Tür, ein Streifen Licht durch eine kleine Gaube, am Kopfende des Bettes kindlich ins Holz der Wandverkleidung geritzte Buchstaben – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-maedchenkammer-1.jpg"
+    ],
+    "gewaehlt": "raum-maedchenkammer.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-maedchenkammer-nacht",
+    "titel": "Mädchenkammer – nacht",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, nur Mondlicht bzw. Notbeleuchtung und der Lichtkegel einer Taschenlampe. Perspektive, Bildaufbau, Gegenstände und Malstil exakt beibehalten, nur Licht und Stimmung ändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-maedchenkammer-nacht-1.jpg"
+    ],
+    "gewaehlt": "raum-maedchenkammer-nacht.jpg",
+    "vorlage": "raum-maedchenkammer.jpg"
+  },
+  {
+    "name": "raum-maedchenkammer-spuk",
+    "titel": "Mädchenkammer – spuk",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, auf dem Eisenbett liegt eine Decke, die sich über einer kleinen Gestalt wölbt, als weine darunter ein Kind. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-maedchenkammer-spuk-1.jpg"
+    ],
+    "gewaehlt": "raum-maedchenkammer-spuk.jpg",
+    "vorlage": "raum-maedchenkammer.jpg"
+  },
+  {
     "name": "raum-salon",
     "titel": "Salon",
     "prompt": "Salon einer Jugendstilvilla, hohe Fenster mit schweren Samtvorhängen, Kamin aus grünem Marmor mit geschnitztem Eichensims und kleiner Messingplatte, zwei Sessel mit verblichenem Rosenmuster, mitten im Raum ein schwarzer Flügel halb unter einem Tuch mit aufgeschlagenem Notenheft, runder Turmerker mit Fensterbank und Kissen – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
@@ -713,6 +783,36 @@ window.KANDIDATEN = [
     "vorlage": "raum-schlafzimmer.jpg"
   },
   {
+    "name": "raum-speicher",
+    "titel": "Speicher (Dachboden)",
+    "prompt": "Großer Dachboden unter einem Walmdach, sichtbare dunkle Eichenbalken und Sparren wie die Rippen eines umgedrehten Schiffs, Licht durch zwei Dachgauben, Staub in der Luft, an der Wand aufgereiht alte Kisten und Koffer der Vorbesitzer mit Namen in verschiedenen Schriften (eine graue Pappkiste, ein brauner Arztkoffer, eine blaue Hutschachtel, eine schwarze Holzkiste, eine längliche Planlade), etwas abseits eine Holzkiste mit Eisenbändern und Zahlenschloss, darüber an einem Nagel ein alter grauer Lodenmantel, eine offene Bodenluke mit Leiter im Vordergrund – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-speicher-1.jpg"
+    ],
+    "gewaehlt": "raum-speicher.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-speicher-nacht",
+    "titel": "Speicher (Dachboden) – nacht",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, nur Mondlicht bzw. Notbeleuchtung und der Lichtkegel einer Taschenlampe. Perspektive, Bildaufbau, Gegenstände und Malstil exakt beibehalten, nur Licht und Stimmung ändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-speicher-nacht-1.jpg"
+    ],
+    "gewaehlt": "raum-speicher-nacht.jpg",
+    "vorlage": "raum-speicher.jpg"
+  },
+  {
+    "name": "raum-speicher-spuk",
+    "titel": "Speicher (Dachboden) – spuk",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, eine der Kisten steht ein Stück weiter vorn als vorher, Schleifspuren im Staub, neben der Holzkiste mit dem Zahlenschloss sitzt ein durchscheinender Mann mit Hornbrille und Strickweste auf einem Schemel, Ruß im Gesicht, und schreibt in ein Heft. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-speicher-spuk-1.jpg"
+    ],
+    "gewaehlt": "raum-speicher-spuk.jpg",
+    "vorlage": "raum-speicher.jpg"
+  },
+  {
     "name": "raum-speisekammer",
     "titel": "Speisekammer",
     "prompt": "Fensterlose Speisekammer im Lichtkegel einer Taschenlampe, Regale bis unter die Decke voller alter Einmachgläser mit trübem Inhalt und verschnörkelten Etiketten, von einer Leine hängen getrocknete Kräuterbündel und frischer blühender Lavendel, auf dem untersten Regal ein kleines grünes Ölkännchen, Eimer und Besen am Boden – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
@@ -741,6 +841,66 @@ window.KANDIDATEN = [
     ],
     "gewaehlt": "raum-speisezimmer-nacht.jpg",
     "vorlage": "raum-speisezimmer.jpg"
+  },
+  {
+    "name": "raum-turmerker",
+    "titel": "Turmerker",
+    "prompt": "Enger achteckiger Ausguck oben in einem Erkertürmchen, schmale Fenster nach allen Seiten, ein Fenster zerbrochen, darin ein großes Krähennest aus Zweigen, Draht und glitzerndem Kram, Krähen auf dem Fensterrahmen, Blick über nasse Dächer einer Vorstadtstraße mit einer gusseisernen Laterne – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-turmerker-1.jpg"
+    ],
+    "gewaehlt": "raum-turmerker.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-turmerker-nacht",
+    "titel": "Turmerker – nacht",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, die Krähen sind dunkle Umrisse, unten auf der nassen Straße unter der gelben Laterne steht eine Frau in einem hellen Kleid mit offenem Haar und sieht herauf. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-turmerker-nacht-1.jpg"
+    ],
+    "gewaehlt": "raum-turmerker-nacht.jpg",
+    "vorlage": "raum-turmerker.jpg"
+  },
+  {
+    "name": "raum-turmerker-spuk",
+    "titel": "Turmerker – spuk",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, die Frau unter der Laterne hebt den Arm und zeigt auf das Haus. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-turmerker-spuk-1.jpg"
+    ],
+    "gewaehlt": "raum-turmerker-spuk.jpg",
+    "vorlage": "raum-turmerker.jpg"
+  },
+  {
+    "name": "raum-waescheboden",
+    "titel": "Wäscheboden",
+    "prompt": "Trockenboden unter dem Dach, Wäscheleinen kreuz und quer unter die Sparren gespannt, daran alte graue, steife Laken, die sich leicht bauschen, in einer Ecke ein Weidenkorb mit Holzklammern, staubiges graues Licht – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-waescheboden-1.jpg"
+    ],
+    "gewaehlt": "raum-waescheboden.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-waescheboden-nacht",
+    "titel": "Wäscheboden – nacht",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, nur Mondlicht bzw. Notbeleuchtung und der Lichtkegel einer Taschenlampe. Perspektive, Bildaufbau, Gegenstände und Malstil exakt beibehalten, nur Licht und Stimmung ändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-waescheboden-nacht-1.jpg"
+    ],
+    "gewaehlt": "raum-waescheboden-nacht.jpg",
+    "vorlage": "raum-waescheboden.jpg"
+  },
+  {
+    "name": "raum-waescheboden-spuk",
+    "titel": "Wäscheboden – spuk",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, zwischen den Laken stehen Gestalten, ein Laken liegt über einem Gesicht wie ein Tuch über einer Totenmaske. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-waescheboden-spuk-1.jpg"
+    ],
+    "gewaehlt": "raum-waescheboden-spuk.jpg",
+    "vorlage": "raum-waescheboden.jpg"
   },
   {
     "name": "raum-waeschekammer",
