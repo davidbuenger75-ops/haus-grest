@@ -78,6 +78,36 @@ window.KANDIDATEN = [
     "vorlage": null
   },
   {
+    "name": "raum-anrichte",
+    "titel": "Anrichte",
+    "prompt": "Schmale Anrichte einer Villa um 1900, Wandschränke mit Glastüren und Goldrandgeschirr, Marmorplatte, Klingelzug aus Messing, rechts eine offene moderne Schiebetür zu einem winzigen Gäste-WC, darin über dem Waschbecken ein kleiner Spiegel, mit einem grauen Handtuch verhängt und mit Reißzwecken festgesteckt – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-anrichte-1.jpg"
+    ],
+    "gewaehlt": "raum-anrichte.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-anrichte-nacht",
+    "titel": "Anrichte – nacht",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, nur Mondlicht bzw. Notbeleuchtung und der Lichtkegel einer Taschenlampe. Perspektive, Bildaufbau, Gegenstände und Malstil exakt beibehalten, nur Licht und Stimmung ändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-anrichte-nacht-1.jpg"
+    ],
+    "gewaehlt": "raum-anrichte-nacht.jpg",
+    "vorlage": "raum-anrichte.jpg"
+  },
+  {
+    "name": "raum-anrichte-spuk",
+    "titel": "Anrichte – spuk",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, das Handtuch über dem kleinen Spiegel wölbt sich nach außen wie über einem Gesicht. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-anrichte-spuk-1.jpg"
+    ],
+    "gewaehlt": "raum-anrichte-spuk.jpg",
+    "vorlage": "raum-anrichte.jpg"
+  },
+  {
     "name": "raum-arbeitszimmer",
     "titel": "Arbeitszimmer",
     "prompt": "Arbeitszimmer eines Architekten um 1900 bei Tag, Wände bis unter die Decke mit Bücherregalen voller Bücher und gerollter Pläne, vor einem hohen Fenster mit schweren staubigen Vorhängen und Blick in einen verwilderten Garten ein wuchtiger Eichenschreibtisch mit grünem Lederbezug und einer Schublade mit kleinem Messingschloss, darauf vier große vergilbte Planbögen mit Reißzwecken zusammengeheftet und ein kurzer Bleistift, an der Wand daneben ein Ölporträt eines ernsten Mannes mit gepflegtem Bart in dunklem Gehrock mit einem Zirkel in der Hand, der Rahmen hängt leicht schief, fahles graues Tageslicht, Staub tanzt im Licht – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
@@ -111,6 +141,36 @@ window.KANDIDATEN = [
     "vorlage": "raum-arbeitszimmer.jpg"
   },
   {
+    "name": "raum-dienstbotenzimmer",
+    "titel": "Dienstbotenzimmer",
+    "prompt": "Schmale Dienstbotenkammer um 1910, eisernes Bettgestell ohne Matratze, Waschtisch mit Marmorplatte, Porzellankrug und Schüssel, darauf ein kleines schwarzes Gebetbuch, in der Ecke ein dunkler Schaukelstuhl, über dem Waschtisch ein heller ovaler Fleck an der Tapete, wo ein Spiegel hing, überall schwarze Krähenfedern auf Boden und Fensterbank, blindes Fenster mit fahlem Licht – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-dienstbotenzimmer-1.jpg"
+    ],
+    "gewaehlt": "raum-dienstbotenzimmer.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-dienstbotenzimmer-nacht",
+    "titel": "Dienstbotenzimmer – nacht",
+    "prompt": "Bearbeite das beigefügte Bild: Standard Nacht; das Fenster ist schwarz und spiegelt den Schaukelstuhl. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-dienstbotenzimmer-nacht-1.jpg"
+    ],
+    "gewaehlt": "raum-dienstbotenzimmer-nacht.jpg",
+    "vorlage": "raum-dienstbotenzimmer.jpg"
+  },
+  {
+    "name": "raum-dienstbotenzimmer-spuk",
+    "titel": "Dienstbotenzimmer – spuk",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, im schwarzen Fensterglas spiegelt sich eine alte Frau in schwarzem Tuch im Schaukelstuhl, eine Krähe auf ihrer Schulter; der Schaukelstuhl selbst ist leer. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-dienstbotenzimmer-spuk-1.jpg"
+    ],
+    "gewaehlt": "raum-dienstbotenzimmer-spuk.jpg",
+    "vorlage": "raum-dienstbotenzimmer.jpg"
+  },
+  {
     "name": "raum-einfahrt",
     "titel": "Vor Haus Grest",
     "prompt": "Frontansicht einer dreigeschossigen Jugendstil-Villa aus dunklem Stein um 1900, Walmdach mit spitzen Zwerchgiebeln, hohe schmale Fenster, an der rechten vorderen Ecke ein achteckiges Erkertürmchen mit spitzem Helm, rechts dahinter ein Wintergarten-Anbau aus weiß gestrichenem Eisen und schmutzigem Glas, mittig drei Steinstufen zur schweren dunklen Haustür mit halbrundem Buntglas-Oberlicht, verwilderter Vorgarten, Kiesweg vom schmiedeeisernen Gartentor zur Tür, kahle alte Bäume mit Krähen, Morgennebel, im Fenster des ersten Stocks ein heller Fleck, kaum erkennbar als blasse Frauengestalt – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
@@ -131,6 +191,56 @@ window.KANDIDATEN = [
     ],
     "gewaehlt": "raum-einfahrt-nacht.jpg",
     "vorlage": "raum-einfahrt.jpg"
+  },
+  {
+    "name": "raum-flur",
+    "titel": "Flur",
+    "prompt": "Langer schmaler Flur in Zentralperspektive, Tapete mit dunklen Lilien löst sich in Fahnen, Dielenboden, am Ende ein türhoher Spiegel im schwarzen Rahmen, Licht nur von einer Kerze im Vordergrund, tiefe Dunkelheit an den Rändern – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-flur-1.jpg"
+    ],
+    "gewaehlt": "raum-flur.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-flur-spuk",
+    "titel": "Flur – spuk",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, aber im Spiegel am Ende des Flurs ist eine schemenhafte Bewegung zu ahnen, wie eine blasse Gestalt. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-flur-spuk-1.jpg"
+    ],
+    "gewaehlt": "raum-flur-spuk.jpg",
+    "vorlage": "raum-flur.jpg"
+  },
+  {
+    "name": "raum-garderobe",
+    "titel": "Garderobe",
+    "prompt": "Enge Garderobe unter einem Treppenabsatz in einer Jugendstilvilla, schräge Decke aus dunklem Holz, Reihe leerer Messinghaken unter einer gedrechselten Hutablage, an einem Haken eine moderne dunkelblaue Regenjacke, darunter Gummistiefel und ein Paar zierlicher schwarzer Damen-Knopfstiefel um 1900, Schirmständer aus Messing mit altem Schirm und Spazierstock, kleiner ovaler Wandspiegel mit der Rückseite nach vorn, trübes Licht durch ein schmales Milchglasfenster – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-garderobe-1.jpg"
+    ],
+    "gewaehlt": "raum-garderobe.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-garderobe-nacht",
+    "titel": "Garderobe – nacht",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, nur Mondlicht bzw. Notbeleuchtung und der Lichtkegel einer Taschenlampe. Perspektive, Bildaufbau, Gegenstände und Malstil exakt beibehalten, nur Licht und Stimmung ändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-garderobe-nacht-1.jpg"
+    ],
+    "gewaehlt": "raum-garderobe-nacht.jpg",
+    "vorlage": "raum-garderobe.jpg"
+  },
+  {
+    "name": "raum-garderobe-spuk",
+    "titel": "Garderobe – spuk",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts im Lichtkegel einer Taschenlampe, neben der Regenjacke hängt ein langer schwarzer altmodischer Damenmantel mit hohem Kragen, darunter in den Knopfstiefeln zwei blasse Füße, das Gesicht außerhalb des Lichts. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-garderobe-spuk-1.jpg"
+    ],
+    "gewaehlt": "raum-garderobe-spuk.jpg",
+    "vorlage": "raum-garderobe.jpg"
   },
   {
     "name": "raum-halle",
@@ -155,6 +265,86 @@ window.KANDIDATEN = [
     ],
     "gewaehlt": "raum-halle-nacht.jpg",
     "vorlage": "raum-halle.jpg"
+  },
+  {
+    "name": "raum-halle-spuk",
+    "titel": "Eingangshalle – spuk",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, aber die Kerze im Messingleuchter steht jetzt auf der untersten Treppenstufe, ein feiner fliederfarbener Dunst wie von Lavendel hängt in der Luft. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-halle-spuk-1.jpg"
+    ],
+    "gewaehlt": "raum-halle-spuk.jpg",
+    "vorlage": "raum-halle.jpg"
+  },
+  {
+    "name": "raum-halle-tuer-offen",
+    "titel": "Eingangshalle – tuer-offen",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, aber die schwere Eichentür links steht offen, dahinter liegt ein dunkles Arbeitszimmer. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-halle-tuer-offen-1.jpg"
+    ],
+    "gewaehlt": "raum-halle-tuer-offen.jpg",
+    "vorlage": "raum-halle.jpg"
+  },
+  {
+    "name": "raum-hinterdiele",
+    "titel": "Hinterdiele",
+    "prompt": "Schmale Hinterdiele einer Jugendstilvilla, schwarz-weiße Steinfliesen wie ein Schachbrett, leere Garderobenhaken bis auf einen langen schwarzen altmodischen Damenmantel, im Hintergrund eine Hintertür mit kleinem Fenster, quer mit drei rohen Brettern vernagelt, links eine schmale Holztür mit schwerem rostigem Eisenriegel, über dem Türspalt rotes Siegelwachs – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-hinterdiele-1.jpg"
+    ],
+    "gewaehlt": "raum-hinterdiele.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-hinterdiele-nacht",
+    "titel": "Hinterdiele – nacht",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, nur Mondlicht bzw. Notbeleuchtung und der Lichtkegel einer Taschenlampe. Perspektive, Bildaufbau, Gegenstände und Malstil exakt beibehalten, nur Licht und Stimmung ändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-hinterdiele-nacht-1.jpg"
+    ],
+    "gewaehlt": "raum-hinterdiele-nacht.jpg",
+    "vorlage": "raum-hinterdiele.jpg"
+  },
+  {
+    "name": "raum-hinterdiele-tuer-offen",
+    "titel": "Hinterdiele – tuer-offen",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, aber die schmale Holztür links ist weit nach innen aufgeschwungen, so dass man in einen schwarzen leeren Türspalt blickt; der rostige Eisenriegel ist ganz zur Seite geschoben, das rote Siegelwachs ist in zwei Hälften zerbrochen, ein paar schwarze Federn liegen auf der Schwelle. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-hinterdiele-tuer-offen-1.jpg"
+    ],
+    "gewaehlt": "raum-hinterdiele-tuer-offen.jpg",
+    "vorlage": "raum-hinterdiele.jpg"
+  },
+  {
+    "name": "raum-kueche",
+    "titel": "Küche",
+    "prompt": "Große hohe Villenküche, schwarzer gusseiserner Kohleherd mit Messingstangen, daneben ein weißer Gasherd aus den Fünfzigern mit abgeplatzter Emaille, ein moderner Kühlschrank mit einem gelben Zettel unter einem Magneten, über der Tür ein dunkler Holz-Klingelkasten mit acht kleinen Fensterchen, Küchentisch mit einer Tasse, ungeöffneter Post und einem Ladekabel – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-kueche-1.jpg"
+    ],
+    "gewaehlt": "raum-kueche.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-kueche-nacht",
+    "titel": "Küche – nacht",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, nur Mondlicht bzw. Notbeleuchtung und der Lichtkegel einer Taschenlampe. Perspektive, Bildaufbau, Gegenstände und Malstil exakt beibehalten, nur Licht und Stimmung ändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-kueche-nacht-1.jpg"
+    ],
+    "gewaehlt": "raum-kueche-nacht.jpg",
+    "vorlage": "raum-kueche.jpg"
+  },
+  {
+    "name": "raum-kueche-spuk",
+    "titel": "Küche – spuk",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, im Klingelkasten über der Tür ist eine Klappe gefallen und zeigt ein rotes Fensterchen. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-kueche-spuk-1.jpg"
+    ],
+    "gewaehlt": "raum-kueche-spuk.jpg",
+    "vorlage": "raum-kueche.jpg"
   },
   {
     "name": "raum-lager_gang",
@@ -201,6 +391,86 @@ window.KANDIDATEN = [
     ],
     "gewaehlt": "raum-lager_tor-nacht.jpg",
     "vorlage": "raum-lager_tor.jpg"
+  },
+  {
+    "name": "raum-salon",
+    "titel": "Salon",
+    "prompt": "Salon einer Jugendstilvilla, hohe Fenster mit schweren Samtvorhängen, Kamin aus grünem Marmor mit geschnitztem Eichensims und kleiner Messingplatte, zwei Sessel mit verblichenem Rosenmuster, mitten im Raum ein schwarzer Flügel halb unter einem Tuch mit aufgeschlagenem Notenheft, runder Turmerker mit Fensterbank und Kissen – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-salon-1.jpg"
+    ],
+    "gewaehlt": "raum-salon.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-salon-nacht",
+    "titel": "Salon – nacht",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, nur Mondlicht bzw. Notbeleuchtung und der Lichtkegel einer Taschenlampe. Perspektive, Bildaufbau, Gegenstände und Malstil exakt beibehalten, nur Licht und Stimmung ändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-salon-nacht-1.jpg"
+    ],
+    "gewaehlt": "raum-salon-nacht.jpg",
+    "vorlage": "raum-salon.jpg"
+  },
+  {
+    "name": "raum-salon-spuk",
+    "titel": "Salon – spuk",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, die Tasten des Flügels sind eingedrückt, als spielte eine unsichtbare Hand. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-salon-spuk-1.jpg"
+    ],
+    "gewaehlt": "raum-salon-spuk.jpg",
+    "vorlage": "raum-salon.jpg"
+  },
+  {
+    "name": "raum-speisekammer",
+    "titel": "Speisekammer",
+    "prompt": "Fensterlose Speisekammer im Lichtkegel einer Taschenlampe, Regale bis unter die Decke voller alter Einmachgläser mit trübem Inhalt und verschnörkelten Etiketten, von einer Leine hängen getrocknete Kräuterbündel und frischer blühender Lavendel, auf dem untersten Regal ein kleines grünes Ölkännchen, Eimer und Besen am Boden – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-speisekammer-1.jpg"
+    ],
+    "gewaehlt": "raum-speisekammer.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-speisezimmer",
+    "titel": "Speisezimmer",
+    "prompt": "Langes Speisezimmer einer Jugendstilvilla bei Tag, dunkle Holzdecke, staubiger Kristall-Kronleuchter, lange Tafel und zwölf Stühle unter weißen Laken wie Buckel in Reih und Glied, Durchreiche in der Wand, im Hintergrund zwei Glastüren, von der anderen Seite mit Laken verhängt, grünliches Licht – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-speisezimmer-1.jpg"
+    ],
+    "gewaehlt": "raum-speisezimmer.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-speisezimmer-nacht",
+    "titel": "Speisezimmer – nacht",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, die Laken liegen am Boden, die lange Tafel ist gedeckt: dreizehn Gedecke mit weißem Goldrand-Porzellan, Silberbesteck und Kristallgläsern, ungezündete schwarze Kerzendochte, Mondlicht. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-speisezimmer-nacht-1.jpg"
+    ],
+    "gewaehlt": "raum-speisezimmer-nacht.jpg",
+    "vorlage": "raum-speisezimmer.jpg"
+  },
+  {
+    "name": "raum-wintergarten",
+    "titel": "Wintergarten",
+    "prompt": "Verwilderter Wintergarten aus weiß gestrichenem Eisen und schmutzigem Glas, Palmen mit braunen Spitzen, ein Feigenbaum drückt gegen das Glasdach, überall blühender Lavendel in Kübeln und Fugen, in der Mitte ein alter Rollstuhl aus Korbgeflecht mit großen Speichenrädern und einer Wolldecke, Krähen auf dem Glasdach, grünes Licht – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-wintergarten-1.jpg"
+    ],
+    "gewaehlt": "raum-wintergarten.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-wintergarten-nacht",
+    "titel": "Wintergarten – nacht",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, alle Glasscheiben sind schwarz und spiegeln den Raum wie Spiegel, Mondlicht auf dem Lavendel. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-wintergarten-nacht-1.jpg"
+    ],
+    "gewaehlt": "raum-wintergarten-nacht.jpg",
+    "vorlage": "raum-wintergarten.jpg"
   },
   {
     "name": "raum-wohnung",
