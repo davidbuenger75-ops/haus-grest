@@ -36,7 +36,7 @@ const readline = require('readline');
 
 // ---------------------------------------------------------------- Einstellungen
 const MODELL = 'gemini-nano-banana-2.1';
-const VARIANTEN = 2;                // Kandidaten pro Bild (Davids Vorgabe vom 22.11.2026)
+let VARIANTEN = 1;                  // Kandidaten pro Bild (Davids Vorgabe vom 24.11.2026; --varianten=2 für eine Auswahl)
 const BILDGROESSE = '1K';           // 1K (≈1600 px breit, passt zur Medienliste), 2K oder 4K
 // Preis pro erzeugtem Bild in US-Dollar (Gemini-Preisliste, Stand Nov. 2026 – bitte gelegentlich prüfen)
 const PREIS = { '1K': 0.0336, '2K': 0.0504, '4K': 0.113 };
@@ -291,6 +291,8 @@ async function erzeugeKandidaten(name, auftrag, info) {
       console.log('  Kandidat ' + n + ' FEHLER: ' + err.message);
     }
   }
+  // Nur ein Kandidat: gleich ins Spiel übernehmen (Davids Vorgabe vom 24.11.2026)
+  if (VARIANTEN === 1 && !fehler) console.log('  Übernommen: ' + uebernimm(name, 1));
   return fehler;
 }
 
@@ -438,6 +440,7 @@ async function fuehreAus(auftraege) {
 // ---------------------------------------------------------------- Hauptprogramm
 async function main() {
   const { schalter, woerter } = leseSchalter(process.argv.slice(2));
+  if (schalter.varianten) VARIANTEN = Math.max(1, parseInt(schalter.varianten, 10) || 1);
   const { eintraege, varianten, stile } = leseMedienliste();
   const eigenerStil = typeof schalter.stil === 'string' ? schalter.stil : null;
   const eigenesMotiv = typeof schalter.motiv === 'string' ? schalter.motiv : null;
