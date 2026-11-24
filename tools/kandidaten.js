@@ -347,6 +347,26 @@ window.KANDIDATEN = [
     "vorlage": "raum-kueche.jpg"
   },
   {
+    "name": "raum-lager_c214",
+    "titel": "Einheit C-214",
+    "prompt": "Lagerabteil drei mal vier Meter in einer Selfstorage-Halle, Betonboden, Wände aus Wellblech, an der Decke eine brennende nackte Glühbirne mit herabhängender Zugschnur als einzige Lichtquelle, warmes hartes Licht und tiefe Schatten in den Ecken, an der linken Wand vier mit Edding beschriftete Umzugskartons, daneben drei rote Benzinkanister und ein Schuhkarton, in der Mitte ein Campingtisch mit einem kleinen schwarzen Notizbuch mit Gummiband, davor ein grüner Klappstuhl, hinten die offene gelbe Stahltür zum Gang – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-lager_c214-1.jpg"
+    ],
+    "gewaehlt": "raum-lager_c214.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-lager_empfang",
+    "titel": "Büro von Lager Schmidt",
+    "prompt": "Enges Büro in einem Bürocontainer mit Resopaltheke, Gummibaum, Wandkalender mit einem roten Sportwagen vor einem Bergsee, Filterkaffeemaschine mit halbvoller Glaskanne auf der Warmhalteplatte, kleines Kofferradio, dahinter sitzt ein freundlicher alter Mann um die siebzig in grauer Strickjacke mit Lesebrille auf der Nase über einem Rätselheft, Kugelschreiber in der Hand, Tür zum Parkplatz mit grauem Tageslicht – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-lager_empfang-1.jpg"
+    ],
+    "gewaehlt": "raum-lager_empfang.jpg",
+    "vorlage": null
+  },
+  {
     "name": "raum-lager_gang",
     "titel": "Gang C",
     "prompt": "Langer Gang in einer Selfstorage-Lagerhalle bei Tag, Betonboden, flackernde Neonröhren an der Decke, links und rechts gelb gestrichene Stahltüren mit schwarzen Nummern und schweren Vorhängeschlössern, Überwachungskameras mit lose herabhängenden Kabeln, Fluchtpunkt in der Ferne – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
