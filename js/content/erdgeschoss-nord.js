@@ -219,36 +219,45 @@
     'Die Herrin schläft, und was in ihr krank ist, schläft mit ihr. Solange ich wache.<br><br>' +
     'Noch zehn Winter. Jeden Monat ein Leben. Dann ist die Tür unter dem Haus weit genug, und Er kommt hindurch.<br><br>' +
     'Sie wird Ihm gehören. Oder keinem.';
-  function spiegelDa(api) {
-    if (api.traegt('taschenspiegel')) return 'taschenspiegel';
-    var s = HG.macht.spiegelHier('klein');
-    return s && s !== 'gebetbuch' ? s : null;
+  // Ist dieses Ding ein Spiegel, vor den man das Buch halten kann? (Taschenspiegel, Flurspiegel, nachts das Fenster …)
+  function istSpiegel(api, id) {
+    if (!id || id === 'gebetbuch') return false;
+    if (id === 'taschenspiegel') return true;
+    var d = HG.daten.dinge[id];
+    return !!(d && HG.wert(d.spiegel, api)) || HG.macht.spiegelHier('klein') === id;
+  }
+  // „benutze taschenspiegel mit gebetbuch“ (oder umgekehrt, auch „kombiniere …“). Lesen allein nimmt
+  // keinen Spiegel mehr von selbst – man muss ihn gezielt benutzen (David, 24.11.2026).
+  function mitSpiegel(api, ctx) {
+    var sp = ctx.obj === 'gebetbuch' ? ctx.obj2 : ctx.obj;
+    if (!ctx.obj2 || !istSpiegel(api, sp)) return false;
+    if (!api.hell()) { api.sage('Es ist zu dunkel zum Lesen.'); return true; }
+    api.sage(sp === 'taschenspiegel'
+      ? 'Du hältst den Taschenspiegel schräg über die Seite. Im kleinen runden Glas drehen sich die Buchstaben um und werden lesbar. Am Rand des Spiegels, ganz kurz, ein Auge, das nicht deins ist.'
+      : 'Du hältst das Gebetbuch vor ' + api.der(sp, 'akk') + '. Im Glas drehen sich die Buchstaben um und werden lesbar – und hinter deinem Spiegelbild ist es dunkler, als es sein dürfte.');
+    api.nervenProbe('0/1W3', { grund: 'Blick in den Spiegel', gewoehnung: 'spiegelschrift' });
+    return leseSpiegelschrift(api);
   }
   function leseSpiegelschrift(api) {
+    api.setzeFlag('spiegelschrift_gelesen');
     api.schrift(SPIEGELSCHRIFT, 'hand');
     api.hinweis('kraehe_gebetbuch');
     return true;
   }
   HG.ding('gebetbuch', {
     nomen: 'Gebetbuch', genus: 'n', adj: ['abgegriffen'],
-    woerter: ['gebetbuch', 'buechlein', 'gesangbuch', 'spiegelschrift', 'schrift'], adjektive: ['schwarz', 'klein'],
+    woerter: ['gebetbuch', 'gebetsbuch', 'buch', 'buechlein', 'gesangbuch', 'spiegelschrift', 'schrift'], adjektive: ['schwarz', 'klein'],
     ort: 'waschtisch', rel: 'auf',
-    beschreibung: 'Ein kleines, abgegriffenes Gebetbuch mit schwarzem Einband. Die gedruckten Gebete sind sorgfältig durchgestrichen, Zeile für Zeile. Dazwischen hat jemand in winziger, spitzer Schrift geschrieben – spiegelverkehrt. <span class="nebenbei">(„lies gebetbuch“)</span>',
+    beschreibung: 'Ein kleines, abgegriffenes Gebetbuch mit schwarzem Einband. Die gedruckten Gebete sind sorgfältig durchgestrichen, Zeile für Zeile. Dazwischen hat jemand in winziger, spitzer Schrift geschrieben – spiegelverkehrt.',
     riechen: 'Wermut und Wachs.',
-    lesen: true,   // erscheint im Lies-Menü (lesbar nur mit Spiegel oder Probe, siehe bei.lesen)
-    dauer: { lesen: 5 },
+    lesen: true,   // erscheint im Lies-Menü (lesbar mit einem Spiegel – siehe mitSpiegel – oder per Probe)
+    dauer: { lesen: 5, benutzen: 5, kombinieren: 5 },
     bei: {
+      benutzen: mitSpiegel,
+      kombinieren: mitSpiegel,
       lesen: function (api) {
         if (!api.hell()) { api.sage('Es ist zu dunkel zum Lesen.'); return true; }
-        var sp = spiegelDa(api);
-        if (sp) {
-          api.sage(sp === 'taschenspiegel'
-            ? 'Du hältst den Taschenspiegel schräg über die Seite. Im kleinen runden Glas drehen sich die Buchstaben um und werden lesbar. Am Rand des Spiegels, ganz kurz, ein Auge, das nicht deins ist.'
-            : 'Du hältst das Gebetbuch vor ' + api.der(sp, 'akk') + '. Im Glas drehen sich die Buchstaben um und werden lesbar – und hinter deinem Spiegelbild ist es dunkler, als es sein dürfte.');
-          api.nervenProbe('0/1W3', { grund: 'Blick in den Spiegel', gewoehnung: 'spiegelschrift' });
-          return leseSpiegelschrift(api);
-        }
-        if (api.flag('spiegelschrift_entziffert')) return leseSpiegelschrift(api);
+        if (api.flag('spiegelschrift_gelesen')) return leseSpiegelschrift(api);
         var e = api.probe('ve', { mod: -20, modGrund: 'spiegelverkehrt', grund: 'Spiegelschrift entziffern' });
         if (e.erfolg) {
           api.setzeFlag('spiegelschrift_entziffert');
@@ -259,8 +268,8 @@
         api.fehlversuch('gebetbuch', {
           2: 'Spiegelschrift liest man am besten in einem Spiegel. Hier hing einmal einer – jetzt nicht mehr.',
           3: function (api2) {
-            return api2.traegt('taschenspiegel') ? 'Halt den Taschenspiegel daneben. <span class="nebenbei">(„lies gebetbuch“)</span>'
-              : 'Nimm das Gebetbuch mit zu einem Spiegel: dem großen im Flur, dem kleinen im Gäste-WC – oder such einen Taschenspiegel. Nachts spiegelt auch das Fenster.';
+            return api2.traegt('taschenspiegel') ? 'Halt den Taschenspiegel daneben. <span class="nebenbei">(„benutze taschenspiegel mit gebetbuch“)</span>'
+              : 'Nimm das Gebetbuch mit zu einem Spiegel – dem großen im Flur, dem kleinen im Gäste-WC – oder such einen Taschenspiegel. <span class="nebenbei">(„benutze spiegel mit gebetbuch“)</span>';
           }
         });
         return true;
@@ -303,7 +312,7 @@
     dunkel: nacht,
     dunkelText: 'Stockfinster. Irgendwo tropft Wasser in ein Becken. Tropf. Tropf.',
     beschreibung: function (api) {
-      return 'Ein schmaler Raum zwischen Flur und Küche. Wandschränke bis unter die Decke, eine Marmorplatte zum Anrichten, ein Klingelzug aus Messing. ' +
+      return 'Ein schmaler Raum zwischen Flur und Küche. Wandschränke bis unter die Decke, eine Marmorplatte zum Anrichten, an der Wand eine Messingglocke an einer Feder. ' +
         'In der Nordwand eine Schiebetür, viel neuer als alles andere: das später eingebaute Gäste-WC mit einem kleinen Waschbecken. Über dem Waschbecken hängt ein Spiegel – ' +
         (api.eig('wc_handtuch', 'ab') ? 'unverhängt.' : 'jemand hat ein Handtuch darübergehängt und mit Reißzwecken festgesteckt.') +
         ' Im Westen der Flur, im Osten die Küche.';
@@ -315,7 +324,14 @@
     details: [
       { nomen: 'Wandschränke', genus: 'pl', woerter: ['wandschraenke', 'schraenke', 'schrank', 'geschirr', 'silber'], text: 'Glastüren, dahinter Geschirr mit Goldrand, ordentlich gestapelt. Auf jedem Teller dasselbe Monogramm: ein verschlungenes E und G.' },
       { nomen: 'Waschbecken', genus: 'n', woerter: ['waschbecken', 'becken', 'wasserhahn', 'hahn', 'seife', 'lavendelseife', 'schiebetuer'], text: 'Ein kleines Waschbecken, der Hahn tropft. Daneben ein ausgetrocknetes Stück Lavendelseife.', riechen: 'Lavendel.' },
-      { nomen: 'Klingelzug', genus: 'm', woerter: ['klingelzug', 'zug', 'klingel'], text: 'Ein Messinggriff an einem Draht, der in der Wand verschwindet. Damit rief man früher die Dienstboten.', bei: { ziehen: function (api) { api.sage('Du ziehst. Nebenan in der Küche schlägt eine Glocke an, dünn und weit weg.'); return true; } } }
+      // Kein Klingelzug: Hier läutet es, wenn oben jemand zieht – die Dienstboten waren ja in der Anrichte (David, 24.11.2026)
+      { nomen: 'Glocke', genus: 'f', adj: ['messingfarben'], woerter: ['glocke', 'messingglocke', 'klingel', 'feder', 'band', 'klingelzug', 'zug'],
+        text: 'Eine Glocke aus Messing an einer gebogenen Stahlfeder, darunter hängt ein verblichenes Band. Ein Draht führt aus ihr in die Wand und nach oben. Wenn in einem der Zimmer jemand am Klingelzug zog, schlug sie hier an – damit man es auch in der Anrichte hörte, nicht nur in der Küche. Ziehen kann man hier nichts; rufen konnten nur die anderen.',
+        bei: {
+          ziehen: function (api) { api.sage('Du ziehst an dem Band. Die Glocke schlägt einmal an, hell und dünn, und die Feder zittert lange nach. Niemand kommt. Wer sollte auch – gerufen wurde immer von oben.'); return true; },
+          klopfen: function (api) { api.sage('Du stößt die Glocke mit dem Finger an. Ein heller, dünner Ton, der viel zu lange im Raum hängt.'); return true; },
+          druecken: function (api) { api.sage('Du drückst die Glocke zur Seite. Die Feder federt zurück, die Glocke schlägt leise an.'); return true; }
+        } }
     ]
   });
 
@@ -347,15 +363,29 @@
     woerter: ['handtuch', 'tuch', 'reisszwecken', 'reisszwecke'],
     ort: 'anrichte', szenerie: true,
     fest: 'Das Handtuch lässt du hier.',
-    beschreibung: function (api) { return api.eig('wc_handtuch', 'ab') ? 'Ein graues Handtuch, zusammengeknüllt im Waschbecken.' : 'Ein graues Frotteehandtuch, mit vier Reißzwecken über dem Spiegel festgesteckt. Carsten wollte offenbar nicht hineinsehen.'; },
+    beschreibung: function (api) {
+      if (api.eig('wc_handtuch', 'ab')) return 'Ein graues Handtuch, zusammengeknüllt im Waschbecken.';
+      return 'Ein graues Frotteehandtuch, mit vier Reißzwecken über dem Spiegel festgesteckt. Carsten wollte offenbar nicht hineinsehen.' +
+        (api.flag('handtuch_gesicht') ? ' Es hängt ganz flach und still. Wenn du wissen willst, was darunter ist, musst du dich überwinden und es noch einmal versuchen.' : '');
+    },
     bei: {
       nehmen: abHandtuch, abnehmen: abHandtuch, reissen: abHandtuch, ziehen: abHandtuch, schieben: abHandtuch
     }
   });
   function abHandtuch(api) {
     if (api.eig('wc_handtuch', 'ab')) { api.sage('Das Handtuch ist schon ab.'); return true; }
+    // Erster Versuch: das Gesicht im Handtuch (Bild raum-anrichte-spuk) – man zuckt zurück (David, 24.11.2026)
+    if (!api.flag('handtuch_gesicht')) {
+      api.setzeFlag('handtuch_gesicht');
+      api.zeigeBild('spuk');
+      api.sound('spuk-anrichte_spiegel');
+      api.sage('Du greifst nach der ersten Reißzwecke. Da wölbt sich das Handtuch dir entgegen. Unter dem grauen Frottee drückt sich etwas nach vorn – eine Stirn, eine Nase, eingefallene Wangen, ein Mund, der sich öffnet. Ein Gesicht, eine Handbreit vor deinen Fingern.');
+      api.nervenProbe('1/1W6', { grund: 'Gesicht im Handtuch' });
+      api.sage('Du reißt die Hand zurück. Das Tuch fällt flach. Nur ein Handtuch über einem kleinen Spiegel. Carsten hat es nicht ohne Grund festgesteckt. Du willst es nicht noch einmal anfassen.');
+      return true;
+    }
     api.setze('wc_handtuch', 'ab', true);
-    api.sage('Du ziehst die Reißzwecken heraus. Das Handtuch rutscht ins Waschbecken – und du siehst in den Spiegel, ob du willst oder nicht. Dein Gesicht. Und hinter dir, im dunklen Rechteck der Tür, eine Gestalt, die genau so schnell verschwindet, wie du sie bemerkst.');
+    api.sage('Du nimmst all deinen Mut zusammen und greifst zu, schnell, bevor du es dir anders überlegst. Das Tuch ist nur Stoff, kühl und ein wenig feucht. Du ziehst die Reißzwecken heraus. Das Handtuch rutscht ins Waschbecken – und du siehst in den Spiegel, ob du willst oder nicht. Dein Gesicht. Und hinter dir, im dunklen Rechteck der Tür, eine Gestalt, die genau so schnell verschwindet, wie du sie bemerkst.');
     api.nervenProbe('1/1W6', { grund: 'unverhängter Spiegel', gewoehnung: 'wc_spiegel' });
     return true;
   }
@@ -393,7 +423,16 @@
     details: [
       { nomen: 'Kohleherd', genus: 'm', woerter: ['kohleherd', 'herd', 'ofen', 'ofenklappe'], text: 'Ein gusseiserner Herd mit Messingstangen. In der Ofenklappe Asche, längst kalt.' },
       { nomen: 'Gasherd', genus: 'm', woerter: ['gasherd', 'gashahn', 'gashaehne', 'haehne', 'brenner'], text: 'Ein weißer Gasherd mit vier Brennern, die Emaille abgeplatzt. Die Gasleitung dahinter ist abgeklemmt, ein Plombenschild hängt daran: „Stillgelegt 1946“.', riechen: 'Nichts. Fast nichts.' },
-      { nomen: 'Klingelkasten', genus: 'm', woerter: ['klingelkasten', 'klingeltafel', 'tableau', 'klappen', 'klappe', 'fenster', 'namen'], text: 'Ein Kasten aus dunklem Holz mit acht kleinen Fenstern. Darunter, in goldener Schrift: Salon · Speisezimmer · Arbeitszimmer · Schlafzimmer · Ankleidezimmer · Bad · Kinderzimmer · Mädchenkammer. Wenn irgendwo im Haus jemand am Klingelzug zieht, fällt hier eine Klappe. Alle Klappen sind oben.' },
+      { nomen: 'Klingelkasten', genus: 'm', woerter: ['klingelkasten', 'klingeltafel', 'tableau', 'klappen', 'klappe', 'fenster', 'namen'], text: function () { return 'Ein Kasten aus dunklem Holz mit acht kleinen Fenstern. Darunter, in goldener Schrift: Salon · Speisezimmer · Arbeitszimmer · Schlafzimmer · Ankleidezimmer · Bad · Kinderzimmer · Mädchenkammer. Wenn irgendwo im Haus jemand am Klingelzug zieht, fällt hier eine Klappe. ' +
+          (HG.zustand.z.flags.klappe_ankleidezimmer ? 'Eine Klappe ist gefallen. Im Fensterchen steht rot: <b>ANKLEIDEZIMMER</b>.' : 'Alle Klappen sind oben.'); },
+        bei: {
+          druecken: function (api) {
+            if (!api.flag('klappe_ankleidezimmer')) { api.sage('Alle Klappen sind oben. Es gibt nichts zurückzustellen.'); return true; }
+            api.setzeFlag('klappe_ankleidezimmer', false);
+            api.sage('Du drückst die Klappe mit dem Finger hoch. Sie rastet ein. ANKLEIDEZIMMER verschwindet hinter dem kleinen Fenster – für jetzt.');
+            return true;
+          }
+        } },
       { nomen: 'Post', genus: 'f', woerter: ['post', 'briefe', 'stapel', 'werbung', 'rechnungen'], text: 'Werbung, eine Rechnung der Stadtwerke, ein Katalog. Alles an Carsten adressiert, alles ungeöffnet. Der jüngste Poststempel: Anfang Oktober.' },
       { nomen: 'Tasse', genus: 'f', woerter: ['tasse', 'kaffeetasse', 'becher'], text: 'Eine weiße Tasse mit einem braunen Rand. Kaffee. Carsten hat keinen Kaffee getrunken, steht in seinem Tagebuch.', riechen: 'Kaffee. Frischer Kaffee.' }
     ]

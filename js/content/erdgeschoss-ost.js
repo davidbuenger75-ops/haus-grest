@@ -101,20 +101,28 @@
 
   HG.ding('kamin', {
     nomen: 'Kamin', genus: 'm', adj: ['grün'],
-    woerter: ['kamin', 'kaminsims', 'sims', 'marmor', 'gravur', 'inschrift', 'schnitzerei', 'feuerstelle'], adjektive: ['marmorn'],
+    woerter: ['kamin', 'marmorkamin', 'kaminsims', 'sims', 'marmor', 'schnitzerei', 'feuerstelle'], adjektive: ['marmorn'],
     ort: 'salon', fest: true, szenerie: true,
-    beschreibung: 'Ein Kamin aus grünem, weiß geädertem Marmor. Der Sims darüber ist aus Eichenholz, geschnitzt mit Lilienranken – und in der Mitte, zwischen zwei Lilien, eine kleine Messingplatte mit einer Gravur. <span class="nebenbei">(„lies gravur“)</span>',
-    lesbar: '<b>B. &amp; E.</b><br>12. V. 1898<br><i>Unser Tag</i>',
-    hinweis: 'hochzeitstag', hinweisBei: 'lesen',
+    beschreibung: 'Ein Kamin aus grünem, weiß geädertem Marmor. Der Sims darüber ist aus Eichenholz, geschnitzt mit Lilienranken – und in der Mitte, zwischen zwei Lilien, eine kleine Messingplatte mit einer Gravur. <span class="nebenbei">(„lies messingplatte“)</span>',
     tasten: 'Kalter Marmor. In der Feuerstelle feine, weiße Asche. Jemand hat hier vor nicht allzu langer Zeit Papier verbrannt.',
     riechen: 'Kalte Asche – und verbranntes Papier.'
+  });
+
+  // Die Messingplatte am Kaminsims (Hochzeitstag = zweite Quelle für den Code des Kästchens)
+  HG.ding('kaminplatte', {
+    nomen: 'Messingplatte', genus: 'f', adj: ['klein'],
+    woerter: ['messingplatte', 'platte', 'gravur', 'inschrift', 'schild'],
+    ort: 'kamin', rel: 'teil', fest: true, szenerie: true,
+    beschreibung: 'Eine kleine Messingplatte zwischen zwei geschnitzten Lilien, blank gerieben, als hätte jemand oft mit dem Daumen darübergestrichen. Darauf eine Gravur.',
+    lesbar: '<b>B. &amp; E.</b><br>12. V. 1898<br><i>Unser Tag</i>',
+    hinweis: 'hochzeitstag', hinweisBei: 'lesen'
   });
 
   HG.ding('fluegel', {
     nomen: 'Flügel', genus: 'm', adj: ['schwarz'],
     woerter: ['fluegel', 'klavier', 'piano', 'tasten', 'taste', 'deckel', 'tuch', 'notenpult'],
     ort: 'salon', fest: 'Ein Konzertflügel. Den trägt niemand irgendwohin.', szenerie: true, ablage: true,
-    beschreibung: 'Ein schwarzer Flügel, halb unter einem Tuch. Der Deckel über den Tasten ist offen, das Elfenbein vergilbt. Auf dem Notenpult steht ein Heft.',
+    beschreibung: 'Ein schwarzer Flügel, halb unter einem Tuch. Der Deckel über den Tasten ist offen, das Elfenbein vergilbt. Auf dem Notenpult steht ein altes Notenheft.',
     horchen: 'Wenn du das Ohr an das Holz legst, summt es darin. Ganz leise. Eine Melodie, die du kennst und nicht kennst.',
     bei: {
       spielen: function (api) {
@@ -131,9 +139,9 @@
   HG.ding('notenheft', {
     dokument: true,   // wird fotografiert
     nomen: 'Notenheft', genus: 'n', adj: ['alt'],
-    woerter: ['notenheft', 'heft', 'noten', 'klavierschule', 'kinderzeichnung', 'zeichnung'],
+    woerter: ['notenheft', 'heft', 'noten', 'klavierschule', 'kinderzeichnung', 'zeichnung', 'deckblatt', 'stempel'],
     ort: 'fluegel', rel: 'auf', schriftart: 'hand',
-    beschreibung: 'Eine Klavierschule für Anfänger mit Eselsohren. Auf dem Umschlag ein Stempel: „Renate Vogt – Klavierunterricht – Ulmenweg 12“. Auf der letzten Seite eine Kinderzeichnung mit Buntstift.',
+    beschreibung: 'Eine Klavierschule für Anfänger mit Eselsohren. Auf dem Deckblatt ein Stempel: „Renate Vogt – Klavierunterricht – Ulmenweg 12“. Auf der letzten Seite eine Kinderzeichnung mit Buntstift.',
     lesbar: 'Die Kinderzeichnung: eine Frau mit Dutt am Klavier, daneben ein kleines Mädchen. Darüber, im ersten Stock des Hauses, am Fenster, eine zweite Frau in einem langen hellen Kleid, den Mund weit offen, und Noten fliegen aus ihrem Mund.<br><br>' +
       'Darunter, in Kinderschrift: <i>„Frau Vogt und ich. Und die Dame oben, die immer mitsingt.“</i><br>Und kleiner, mit Bleistift, in der Handschrift einer Erwachsenen: <i>„Sie singt nicht mit. Sie singt vor.“</i>',
     foto: 'Auf deinem Foto ist die Dame oben am Fenster nicht gemalt. Sie ist ein graues, unscharfes Gesicht, wie auf einer alten Fotografie.',

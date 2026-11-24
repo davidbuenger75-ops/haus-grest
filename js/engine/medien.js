@@ -71,7 +71,7 @@
   var M = HG.medien = {
     ordnerBilder: 'assets/bilder/',
     ordnerTon: 'assets/sound/',
-    spukVariante: null,      // { raum, bisZug } – kurz nach einem Spuk zeigt der Raum seine Spuk-Variante
+    spukVariante: null,      // { raum, bisZug, variante } – kurz nach einem Spuk (bild: true) oder api.zeigeBild zeigt der Raum diese Variante
     einst: { lautstaerke: 0.6, stumm: false },
     entsperrt: false,        // Browser erlauben Ton erst nach der ersten Eingabe
 
@@ -84,7 +84,7 @@
       var eigeneZeit = (phase === 'abend' || phase === 'nacht') ? phase : null; // eigenes Abend-/Nachtbild
       var varianten = [];
       var v = HG.wert(r.bildVariante, HG.api);
-      if (M.spukVariante && M.spukVariante.raum === r.id && z.zug <= M.spukVariante.bisZug) varianten.push('spuk');
+      if (M.spukVariante && M.spukVariante.raum === r.id && z.zug <= M.spukVariante.bisZug) varianten.push(M.spukVariante.variante || 'spuk');
       if (v) varianten.push(v);
       varianten.push('');
       var basen = [r.bildDatei || 'raum-' + r.id];

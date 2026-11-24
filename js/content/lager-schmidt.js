@@ -655,7 +655,7 @@
   HG.ding('taschenspiegel', {
   klein: true,      // zählt nicht zur Tragkraft
     nomen: 'Taschenspiegel', genus: 'm', adj: ['klein'],
-    woerter: ['taschenspiegel', 'spiegel', 'spiegelchen'],
+    woerter: ['taschenspiegel', 'handspiegel', 'spiegel', 'spiegelchen'],
     ort: 'handtuchbuendel', rel: 'in',
     beschreibung: 'Ein kleiner, runder Taschenspiegel mit angelaufenem Silberrand.',
     foto: 'Im Taschenspiegel auf dem Foto: eine Zimmerdecke, die nicht diese ist. Stuck. Ein Kronleuchter.',

@@ -135,7 +135,8 @@
 
   // ------------------------------------------------------------ Teile (rel: 'teil' – immer mit dem Kästchen sichtbar)
   HG.ding('gravur', {
-    nomen: 'Gravur', genus: 'f', woerter: ['gravur', 'inschrift', 'schrift', 'spruch'],
+    nomen: 'Gravur', genus: 'f',
+    woerter: ['gravur', 'inschrift', 'schrift', 'spruch'],
     ort: 'kaestchen', rel: 'teil', fest: true, szenerie: true,
     beschreibung: 'Feine, sorgfältige Buchstaben, ins Holz des Deckels gestochen und mit Messing ausgelegt.',
     lesbar: '„Was ich für E. erbaute, öffnet nur, wer unseren Tag kennt.“',

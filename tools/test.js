@@ -361,14 +361,17 @@ const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'diens
   geh(s, 'osten', 'osten', 'osten', 'osten');
   s.tu('öffne schublade'); s.tu('öffne handtuch'); s.tu('nimm taschenspiegel');
   pruefe(HG.welt.getragen('taschenspiegel'), 'Taschenspiegel aus der Küchenschublade');
-  HG.zufall = () => 0.05;
+  HG.zufall = () => 0.97;
   s.tu('lies gebetbuch');
+  pruefe(!HG.zustand.z.hinweise.includes('kraehe_gebetbuch'), 'Lesen nimmt den Taschenspiegel nicht von selbst');
+  HG.zufall = () => 0.05;
+  s.tu('benutze handspiegel mit buch');
   pruefe(HG.zustand.z.hinweise.includes('kraehe_gebetbuch'), 'Mit Taschenspiegel: Spiegelschrift gelesen');
   // Mit dem Flurspiegel (ohne Taschenspiegel)
   s = imHaus(); HG = s.HG;
   HG.zustand.setze('kraehentuer', 'verschlossen', false); HG.api.bewege('gebetbuch', 'spieler');
   geh(s, 'norden');
-  s.tu('lies gebetbuch');
+  s.tu('benutze spiegel mit gebetbuch');
   pruefe(HG.zustand.z.hinweise.includes('kraehe_gebetbuch'), 'Mit dem Flurspiegel: Spiegelschrift gelesen');
 
   // Gewalt
@@ -408,7 +411,22 @@ const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'diens
   pruefe(HG.welt.imUmfeld('wg_schluessel'), 'Schlüssel hinter dem verhängten Spiegel');
   pruefe(HG.zustand.z.werte.nerven === nervenVorher, 'Ohne Hineinsehen keine NERVEN-Probe');
   s.tu('nimm wg-schlüssel');
-  geh(s, 'osten', 'süden');
+  // Handtuch: erst das Gesicht (Spukbild), erst der zweite Versuch nimmt es ab
+  HG.medien.spukVariante = null;
+  s.tu('nimm handtuch');
+  pruefe(!HG.api.eig('wc_handtuch', 'ab') && HG.zustand.z.flags.handtuch_gesicht, 'Erster Griff zum Handtuch: Gesicht, Hand zurück');
+  pruefe(HG.medien.raumKandidaten().some(k => k.name === 'raum-anrichte-spuk'), 'Gesicht im Handtuch zeigt das Spukbild der Anrichte');
+  s.tu('nimm handtuch');
+  pruefe(HG.api.eig('wc_handtuch', 'ab'), 'Zweiter Versuch nimmt das Handtuch ab');
+  // Allgemeiner Spuk (Lavendel) zeigt kein raumeigenes Spukbild
+  HG.medien.spukVariante = null; HG.spukwerk.ausloesen('lavendel');
+  pruefe(!HG.medien.spukVariante, 'Allgemeiner Spuk zeigt kein Spukbild');
+  geh(s, 'osten');
+  HG.spukwerk.ausloesen('kueche_klingel');
+  pruefe(/ANKLEIDEZIMMER/.test(s.tu('untersuche klingelkasten')), 'Nach der Klingel ist die Klappe im Klingelkasten unten');
+  s.tu('drücke klappe');
+  pruefe(/Alle Klappen sind oben/.test(s.tu('untersuche klingelkasten')), 'Klappe lässt sich hochdrücken');
+  geh(s, 'süden');
   s.tu('schließe glastür auf'); geh(s, 'osten');
   pruefe(HG.zustand.z.raum === 'wintergarten', 'Kopf: Wintergarten aufgeschlossen');
   pruefeMenues(s, 'Wintergarten');
@@ -435,8 +453,18 @@ const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'diens
   console.log('\n11. Salon, Speisezimmer bei Nacht');
   const s = imHaus(); const HG = s.HG;
   geh(s, 'südosten');
-  s.tu('lies gravur');
+  // Mit Kästchen (eigene Gravur) und Tagebuch („Heft“) im Gepäck – Davids Spieltest 24.11.2026
+  HG.api.bewege('kaestchen', 'spieler'); HG.api.bewege('tagebuch', 'spieler');
+  pruefe(!KAPUTT.test(s.tu('untersuche marmorkamin')), '„untersuche marmorkamin“ verstanden');
+  const frage = s.tu('lies gravur');
+  pruefe(/Messingplatte/.test(frage) && /Gravur/.test(frage), 'Rückfrage: Messingplatte oder Gravur (Kästchen)');
+  s.tu('messingplatte');
   pruefe(HG.zustand.z.hinweise.includes('hochzeitstag'), 'Kaminsims: „Unser Tag“ (zweite Quelle für den Code)');
+  s.tu('lies gravur');
+  const t2 = s.tu('gravur');
+  pruefe(!HG.spiel.offen && /erbaute/.test(t2), 'Antwort „gravur“ wählt die Gravur am Kästchen – keine Endlosschleife');
+  pruefe(/Notenheft/.test(s.tu('untersuche flügel')), 'Flügel nennt das Notenheft');
+  pruefe(!/Umschlag/.test(s.tu('untersuche notenheft')), 'Notenheft erwähnt keinen Umschlag mehr');
   s.tu('nimm notenheft');
   pruefe(HG.zustand.z.hinweise.includes('renate_vogt'), 'Notenheft von Renate Vogt fotografiert');
   s.tu('spiele flügel');

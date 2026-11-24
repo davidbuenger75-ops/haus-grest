@@ -162,6 +162,8 @@
     handyDabei: function () { return HG.handy.dabei(); },
     /** Kurzen Soundeffekt abspielen: assets/sound/effekt-<name>.ogg|mp3 (fehlt er, passiert nichts). */
     sound: function (name) { HG.medien.effekt(name); },
+    /** Zeigt kurz (bis Ende des nächsten Zugs) eine Bildvariante des aktuellen Raums, z. B. 'spuk' → raum-<id>-spuk. */
+    zeigeBild: function (variante) { HG.medien.spukVariante = { raum: Z().raum, bisZug: Z().zug + 1, variante: variante || 'spuk' }; },
     /** Spuk-Ereignis gezielt auslösen (ohne Zufall und Ortsprüfung). */
     spuk: function (id) {
       var d = HG.daten.spuk[id]; if (!d) return false;
@@ -414,6 +416,12 @@
             if (zid) { S.handle({ aktion: 'fahren', zielId: zid, np1: erst }); return; }
           } else if (o.art === 'wahl') {
             var ks = P.filtereKandidaten(erst, o.kandidaten);
+            // Passt die Antwort auf mehrere, entscheidet das Hauptwort: "Gravur" meint die Gravur, nicht den Kamin
+            // mit dem Nebenwort "gravur" (sonst fragt das Spiel endlos weiter).
+            if (ks.length > 1) {
+              var genau = ks.filter(function (k) { var w = D(k).woerter; return w && erst.length && w[0] === erst[erst.length - 1]; });
+              if (genau.length === 1) ks = genau;
+            }
             if (ks.length === 1) { S.ersetzeGruppe(o, ks[0]); S.fuehreAus(o.befehl); return; }
             if (ks.length > 1) { o.kandidaten = ks; S.frage(o, 'Welchen davon: ' + T.liste(ks.map(function (k) { return T.der(k, 'akk'); }), 'oder') + '?'); return; }
           } else if (o.art === 'fehlt') {

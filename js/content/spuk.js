@@ -27,7 +27,7 @@ HG.spuk('schritte_oben', {
 
 // --- Illusion --------------------------------------------------------
 HG.spuk('spiegel_bewegung', {
-  art: 'illusion', orte: ['flur'], zeiten: ['abend', 'nacht'], chance: 0.15, max: 2, hell: true,
+  art: 'illusion', bild: true, orte: ['flur'], zeiten: ['abend', 'nacht'], chance: 0.15, max: 2, hell: true,
   spiegel: 'gross',   // nur, solange der Flurspiegel heil ist
   text: 'Aus dem Augenwinkel: Im Spiegel am Ende des Flurs bewegt sich etwas, obwohl du ganz still stehst. Als du hinsiehst, ist da nur dein eigenes Bild.',
   nerven: '1/1W6', grund: 'kurze Illusion'
@@ -35,7 +35,7 @@ HG.spuk('spiegel_bewegung', {
 
 // --- Bewegter Gegenstand ---------------------------------------------
 HG.spuk('kerze_wandert', {
-  art: 'bewegung', orte: ['halle'], chance: 0.12, einmalig: true,
+  art: 'bewegung', bild: true, orte: ['halle'], chance: 0.12, einmalig: true,
   // nur, wenn die Kerze noch auf der Kommode steht und du nicht hinsiehst
   bedingung: function (api) { return api.eig('kerze', 'ort') === 'kommode' && !api.eig('kerze', 'brennt'); },
   bewege: { ding: 'kerze', nach: 'halle', rel: null },
@@ -136,7 +136,7 @@ HG.spuk('kammer_schaukelstuhl', {
   nerven: '0/1W3', grund: 'Schaukelstuhl'
 });
 HG.spuk('kammer_gestalt', {
-  art: 'illusion', orte: ['dienstbotenzimmer'], zeiten: SPUK_NACHT, chance: 0.25, max: 1, hell: true,
+  art: 'illusion', bild: true, orte: ['dienstbotenzimmer'], zeiten: SPUK_NACHT, chance: 0.25, max: 1, hell: true,
   spiegel: 'klein',   // das schwarze Fenster spiegelt
   text: 'Im schwarzen Fensterglas siehst du die Kammer hinter dir – und im Schaukelstuhl eine alte Frau in schwarzem Tuch, die Hände im Schoß, auf ihrer Schulter ein Vogel. Sie nickt dir zu, als hätte sie lange gewartet. Du fährst herum: Der Stuhl ist leer. Er schaukelt.',
   nerven: '1/1W8', grund: 'Gestalt im Fenster'
@@ -165,8 +165,9 @@ HG.spuk('kueche_kaffee', {
   nerven: '0/1W3', grund: 'Kaffee'
 });
 HG.spuk('kueche_klingel', {
-  art: 'geraeusch', orte: ['kueche'], zeiten: SPUK_NACHT, chance: 0.25, max: 2,
+  art: 'geraeusch', bild: true, orte: ['kueche'], zeiten: SPUK_NACHT, chance: 0.25, max: 2,
   text: 'Über der Tür schlägt eine Glocke an, schrill und blechern. Im Klingelkasten ist eine der kleinen Klappen gefallen. Im Fensterchen steht: <b>ANKLEIDEZIMMER</b>. Oben, im ersten Stock, wartet jemand darauf, dass du kommst.',
+  aktion: function (api) { api.setzeFlag('klappe_ankleidezimmer'); },   // bleibt unten, bis man sie hochdrückt (Klingelkasten, erdgeschoss-nord.js)
   nerven: '1/1W6', grund: 'Klingel'
 });
 
@@ -189,7 +190,7 @@ HG.spuk('garderobe_buegel', {
   nerven: '0/1W2', grund: 'Haken'
 });
 HG.spuk('garderobe_mantel', {
-  art: 'illusion', orte: ['garderobe'], zeiten: SPUK_NACHT, chance: 0.2, max: 1, hell: true,
+  art: 'illusion', bild: true, orte: ['garderobe'], zeiten: SPUK_NACHT, chance: 0.2, max: 1, hell: true,
   text: 'Dein Licht streift die Haken. Neben Carstens Jacke hängt jetzt ein langer schwarzer Mantel mit hohem Kragen. Darunter stehen die Knopfstiefel – und in den Stiefeln stehen Füße. Du hebst das Licht nicht höher. Als du blinzelst, hängt dort nur noch die Jacke.',
   nerven: '1/1W6', grund: 'Gestalt an der Garderobe'
 });
@@ -214,7 +215,7 @@ HG.spuk('salon_taste', {
   nerven: '0/1W2', grund: 'Flügel'
 });
 HG.spuk('salon_lied', {
-  art: 'geraeusch', orte: ['salon'], zeiten: SPUK_NACHT, chance: 0.2, max: 2,
+  art: 'geraeusch', bild: true, orte: ['salon'], zeiten: SPUK_NACHT, chance: 0.2, max: 2,
   text: 'Der Flügel spielt. Unter dem Tuch, langsam, ein Wiegenlied, Ton für Ton. Oben, im ersten Stock, singt eine Frauenstimme mit – nein, sie singt vor, und der Flügel folgt ihr.',
   nerven: '1/1W6', grund: 'Wiegenlied'
 });

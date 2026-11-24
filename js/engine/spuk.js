@@ -21,6 +21,8 @@
 //     aktion: function (api) { … },        // beliebige weitere Wirkung
 //     ausloeser: 'manuell',     // nie zufällig, nur per api.spuk('id')
 //     sound: 'name',            // Effekt assets/sound/effekt-<name>; Standard: effekt-spuk-<id>
+//     bild: true,               // kurz die Raum-Bildvariante "spuk" zeigen (raum-<id>-spuk) – nur, wenn das Bild
+//                               // genau dieses Ereignis zeigt; auch ein Variantenname oder function (api) {…}
 //     spiegel: 'gross',         // nur, wenn ein intakter Spiegel mindestens dieser Größe in der Nähe ist
 //                               // (winzig | klein | gross | spiegelzimmer, siehe js/engine/macht.js)
 //     kosten: 5                 // MACHT-Kosten; sonst aus der Tabelle nach "art" (+ Spiegel-Zuschlag)
@@ -78,8 +80,9 @@
       s.letzter = Z().zug;
       HG.macht.verbrauche(SP.kosten(id));
       HG.macht.letzterSpiegel = d.spiegel ? HG.macht.spiegelHier(d.spiegel) : null;
-      // Bildvariante "spuk" bis zum Ende des nächsten Zugs, dazu ein Soundeffekt
-      HG.medien.spukVariante = { raum: Z().raum, bisZug: Z().zug + 1 };
+      // Bildvariante (nur mit "bild") bis zum Ende des nächsten Zugs, dazu ein Soundeffekt
+      var bild = HG.wert(d.bild, api);
+      if (bild) api.zeigeBild(typeof bild === 'string' ? bild : 'spuk');
       HG.medien.effekt(HG.wert(d.sound, api) || 'spuk-' + id);
       if (d.bewege) api.bewege(d.bewege.ding, d.bewege.nach, d.bewege.rel);
       if (d.erscheine) { api.setze(d.erscheine.ding, 'versteckt', false); api.bewege(d.erscheine.ding, d.erscheine.nach, d.erscheine.rel); }
