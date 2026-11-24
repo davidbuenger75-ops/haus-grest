@@ -339,7 +339,7 @@ window.KANDIDATEN = [
   {
     "name": "raum-kueche-spuk",
     "titel": "Küche – spuk",
-    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, im Klingelkasten über der Tür ist eine Klappe gefallen und zeigt ein rotes Fensterchen. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts; im vorhandenen dunklen Holzkasten mit den kleinen Fensterchen oben links an der Wand ist hinter genau einem Fensterchen ein leuchtend rotes Täfelchen gefallen, alle anderen Fensterchen bleiben dunkel; keine neuen Gegenstände hinzufügen. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
     "kandidaten": [
       "raum-kueche-spuk-1.jpg"
     ],
@@ -415,7 +415,7 @@ window.KANDIDATEN = [
   {
     "name": "raum-salon-spuk",
     "titel": "Salon – spuk",
-    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, die Tasten des Flügels sind eingedrückt, als spielte eine unsichtbare Hand. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts; an der Tastatur des Flügels sind mehrere weiße und schwarze Tasten deutlich sichtbar tief eingedrückt, wie von einer unsichtbaren Hand angeschlagen, das Notenheft ist umgeblättert, ein feiner Staubschleier steigt von den Tasten auf, das Tuch über dem Flügel ist leicht verrutscht. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
     "kandidaten": [
       "raum-salon-spuk-1.jpg"
     ],
