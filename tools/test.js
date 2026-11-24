@@ -522,7 +522,7 @@ const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'diens
   const s2 = imHaus({ spuk: true }); const H2 = s2.HG;
   s2.tu('warte bis nacht');
   for (let i = 0; i < 30; i++) s2.tu('warte');
-  pruefe(!H2.zustand.z.flags.ablenkung_polizei || H2.zustand.z.zeit.minute < 22 * 60, 'Nachts keine Ablenkungs-Anrufe');
+  pruefe(!H2.zustand.z.flags.ablenkung_polizei || H2.zustand.z.zeit.minute < 19 * 60, 'Nachts keine Ablenkungs-Anrufe');
 }
 
 console.log('\n' + (tests - fehler) + ' von ' + tests + ' Prüfungen bestanden.' + (fehler ? ' ' + fehler + ' FEHLGESCHLAGEN.' : ''));

@@ -2,7 +2,7 @@
 //
 // Die Spielzeit läuft in Minuten (z.zeit = { tag, minute }). Daraus ergeben sich
 //   - die Uhrzeit ("09:40") und das Datum (ab HG.daten.spiel.startDatum),
-//   - die Tageszeit: Morgen 6–11, Mittag 11–17, Abend 17–22, Nacht 22–6 Uhr.
+//   - die Tageszeit: Morgen 6–11, Mittag 11–17, Abend 17–19, Nacht 19–6 Uhr.
 // Jede Handlung kostet ein paar Minuten (Tabelle DAUER unten; Inhalte können pro Ding
 // "dauer: { lesen: 20 }" angeben). Fahrten kosten die Fahrzeit des Ziels.
 //
@@ -17,9 +17,9 @@
   var W = HG.welt;
   var PHASEN = ['morgen', 'mittag', 'abend', 'nacht'];
   var NAMEN = { morgen: 'Morgen', mittag: 'Mittag', abend: 'Abend', nacht: 'Nacht' };
-  var BEGINN = { morgen: 6 * 60, mittag: 11 * 60, abend: 17 * 60, nacht: 22 * 60 };
+  var BEGINN = { morgen: 6 * 60, mittag: 11 * 60, abend: 17 * 60, nacht: 19 * 60 };   // Nacht ab 19 Uhr (David, 24.11.2026)
   // "warte bis morgen" usw. springt zu dieser Uhrzeit
-  var ZIELZEIT = { morgen: 7 * 60, mittag: 12 * 60, abend: 18 * 60, nacht: 22 * 60 };
+  var ZIELZEIT = { morgen: 7 * 60, mittag: 12 * 60, abend: 18 * 60, nacht: 19 * 60 };
   var WOERTER = {
     morgen: 'morgen', morgens: 'morgen', frueh: 'morgen', vormittag: 'morgen', tagesanbruch: 'morgen', sonnenaufgang: 'morgen', hell: 'morgen', tag: 'morgen',
     mittag: 'mittag', mittags: 'mittag', nachmittag: 'mittag', nachmittags: 'mittag',
