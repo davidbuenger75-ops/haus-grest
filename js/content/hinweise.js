@@ -204,7 +204,7 @@ HG.hinweis('geheimschrift', {
   stichworte: ['geheimschrift', 'zitrone', 'kinderbuch', 'kerze']
 });
 HG.schluss('zwei_elisabeths', {
-  aus: ['kraehe_gebetbuch', 'elisabeths_siegel', 'elisabeths_tagebuch'], mindestens: 2,
+  aus: ['kraehe_gebetbuch', 'elisabeths_siegel', 'elisabeths_tagebuch', 'zwei_gesichter'], mindestens: 2,
   titel: 'Es gibt zwei Elisabeths',
   text: 'Was in Elisabeth krank war, hat eine eigene Stimme bekommen – die Pflegerin hat es in die Spiegel gebannt. Die echte Elisabeth hat sich gewehrt: Sie hat abgelehnt und die Kammer versiegelt. Die Frau im Spiegel ist nicht sie. Sie ist „die andere“.'
 });
@@ -217,4 +217,42 @@ HG.schluss('tuer_unter_dem_haus', {
   aus: ['kraehe_gebetbuch', 'carstens_plan', 'puppenhaus_modell'], mindestens: 2,
   titel: 'Die Tür unter dem Haus',
   text: 'Die Pflegerin schreibt von einer „Tür unter dem Haus“. Carsten hat im Keller 2,40 Meter vermisst. Und im Puppenhaus ist die Tür zum Kohlenkeller zugemauert. Unter der Halle ist ein Raum, den es nicht mehr geben soll.'
+});
+
+
+// --- Dachboden (24.11.2026): das Wissen über die Diener (beim Namen nennen, Spielbibel 8.9.0) ---------
+HG.hinweis('kiste_ostermann', {
+  titel: 'Heinrich und Margarete Ostermann', strang: 'D',
+  text: 'Kiste OSTERMANN: Heinrich nahm Veronal, um schlafen zu können, und starb 1933 im Schlaf. Margarete sah ihn danach jeden Abend im Spiegel – „er sagt, er schläft jetzt so gut, ich soll zu ihm kommen“. Ihr letzter Eintrag 1938: „Er steht unten an der Treppe und ruft.“',
+  stichworte: ['ostermann', 'heinrich', 'margarete', 'veronal', 'treppe']
+});
+HG.hinweis('kiste_albers', {
+  titel: 'Dr. Karl Albers', strang: 'D',
+  text: 'Koffer DR. ALBERS: Der Zahnarzt überlebte den Krieg im einzigen Haus der Straße, das keine Bombe traf („Ich weiß nicht, ob ich dankbar sein soll“). Im Oktober 1946 sperrten die Stadtwerke den Gasanschluss „nach Unglücksfall“ und verplombten den Herd.',
+  stichworte: ['albers', 'zahnarzt', 'gas', 'krieg']
+});
+HG.hinweis('kiste_teubner', {
+  titel: 'Wilhelmine Teubner', strang: 'D',
+  text: 'Hutschachtel TEUBNER: Feldpostbriefe von Otto Teubner, gefallen im August 1944. Auf der Rückseite der Todesnachricht schrieb Wilhelmine 1955: „Er steht wieder vor dem Fenster. Im ersten Stock. Wie kann er da stehen?“',
+  stichworte: ['teubner', 'wilhelmine', 'otto', 'fenster']
+});
+HG.hinweis('kiste_brzezinski', {
+  titel: 'Josef Brzezinski', strang: 'D',
+  text: 'Kiste BRZEZINSKI: Der Steiger hatte drei Grubenunglücke überlebt. 1963 zerschlug er in einer Nacht alle Spiegel im Haus – am Morgen waren sie heil, und er saß davor mit zerschnittenen Händen, tot. Seine Grubenlampe liegt noch in der Kiste.',
+  stichworte: ['brzezinski', 'josef', 'spiegel', 'grubenlampe']
+});
+HG.hinweis('kiste_brinkhoff', {
+  titel: 'Brinkhoffs Notizblock', strang: 'D',
+  text: 'Planlade BRINKHOFF: Dutzende Pläne dieses Hauses, jeder etwas anders. 1986: „Sie sagt, ich soll weiterbauen … Bernwards Pläne sind das Einzige, was sie nicht ändern kann.“',
+  stichworte: ['brinkhoff', 'plaene', 'baumeister', 'bernward']
+});
+HG.hinweis('hallmann_protokolle', {
+  titel: 'Wie man die MACHT schwächt', strang: 'C',
+  text: 'Wolfgang Hallmanns Messprotokolle 1972–74: „Je mehr Angst ich habe, desto mehr kann sie.“ – „Wenn ich nicht ans Telefon gehe, ist es drei Nächte still.“ – „Sie nährt sich von uns. Man muss sie aushungern.“ Dazu: Irmgard starb an Entkräftung, weil „die Dame im Spiegel“ ihr ein Kind versprochen hatte.',
+  stichworte: ['hallmann', 'protokolle', 'macht', 'telefon', 'irmgard']
+});
+HG.hinweis('zwei_gesichter', {
+  titel: '„Die gnädige Frau hat zwei Gesichter“', strang: 'B',
+  text: 'In der Mädchenkammer unter dem Dach, von Kinderhand ins Holz geritzt: „L. W. 1928 – die gnädige Frau hat zwei Gesichter“. Hier schlief die Köchin der Grests mit ihrer Tochter. Ob L. W. noch lebt? Sie wäre heute weit über hundert.',
+  stichworte: ['ritzung', 'lotte', 'zwei', 'gesichter', 'maedchenkammer']
 });

@@ -184,6 +184,9 @@
     { a: 'zeigen', w: L('zeig zeige zeigen'), o: 1, p2: L('an'), doppel: true },
     { a: 'entladen', w: L('entlad entlade entladen'), o: 1 },                          // "entlade die Pistole"
     { a: 'nennen', w: L('nenn nenne nennen'), o: '?' },
+    { a: 'saegen', w: L('saeg saege saegen zersaeg zersaege zersaegen durchsaeg durchsaege durchsaegen'), o: 1, p2: L('mit') },   // "säge kette mit bügelsäge"
+    { a: 'saegen', w: L('saeg saege'), p: 'durch', o: 1, p2: L('mit') },
+    { a: 'fuellen', w: L('fuell fuelle fuellen nachfuellen'), o: 1, p2: L('in mit') },          // "fülle karbid in lampe"
     { a: 'erwaermen', w: L('erwaerm erwaerme erwaermen waerm waerme waermen halt halte halten'), o: 1, p2: L('ueber mit an vor') },   // "halte tagebuch über kerze"
     { a: 'schoepfen', w: L('schoepf schoepfe schoepfen'), o: '?', p2: L('mit aus') },          // "schöpfe wasser mit eimer"
     { a: 'verhaengen', w: L('verhaeng verhaenge verhaengen bedeck bedecke bedecken'), o: 1, p2: L('mit') },   // "verhänge spiegel (mit laken)"                                  // "nenne sie beim Namen" (Diener bannen)

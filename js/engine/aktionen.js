@@ -507,6 +507,8 @@
     sag(Der(ctx.obj) + ' ' + vb(ctx.obj, 'lässt', 'lassen') + ' sich nicht entladen.');
   };
 
+  A.saegen = function (ctx) { sag('Es gibt keinen Grund, ' + der(ctx.obj, 'akk') + ' zu zersägen.'); };
+  A.fuellen = function (ctx) { sag(Der(ctx.obj) + ' ' + vb(ctx.obj, 'lässt', 'lassen') + ' sich nicht füllen.'); };
   A.erwaermen = function (ctx) { sag('Davon wird ' + der(ctx.obj) + ' nur ein bisschen warm. Es ändert sich nichts.'); };
   A.schoepfen = function () { sag('Hier gibt es nichts zu schöpfen.'); };
   /** Spiegel verhängen: mit einem Ding, das "tuch: true" hat (Laken). Verhängte Spiegel sind kein Portal (js/engine/macht.js). */

@@ -10,7 +10,7 @@
 // --- Lichtvorrat ----------------------------------------------------------------------------
 //   Ding: vorrat: { start: 100, proMinute: 0.5, einheit: '%', warnung: [20, 5], warnText, leerText,
 //                   laden: function (api) { return Prozent pro Minute | 0 }, fahrt: 1 (pro Minute im Auto) }
-//   Solange das Ding brennt, sinkt der Vorrat (eig 'vorrat'); bei 0 geht es aus und lässt sich nicht einschalten.
+//   Solange das Ding brennt, sinkt der Vorrat (eig 'vorratStand'); bei 0 geht es aus und lässt sich nicht einschalten.
 //
 // --- Manifestationen (Kämpfe) ------------------------------------------------------------------
 //   HG.manifestation('die_hand', {
@@ -43,7 +43,7 @@
 // --- Seelen ---------------------------------------------------------------------------------------
 //   HG.seele('bettina', {
 //     name: 'Bettina Gerdes', art: 'diener' | 'gefangen' | 'gut',
-//     wissen: ['hinweisA', 'hinweisB'],     // Geschichte (alle nötig): erst dann kann man sie nennen/bekehren
+//     wissen: ['hinweisA', ['hinweisB', 'hinweisC']],   // Geschichte: alle nötig; eine Liste = eine davon genügt
 //     anker: 'haarspange',                  // bekehrbare: muss man bei sich tragen
 //     wahrheit: 'Es war nicht deine Schuld.', falsch: ['…', '…'],
 //     ding: { nomen, genus, woerter, beschreibung },   // so erscheint sie (Ding 'seele_<id>')
@@ -130,7 +130,7 @@
 
   // ============================================================== Lichtvorrat
   var L = HG.licht = {
-    vorrat: function (id) { var d = D(id), v = eig(id, 'vorrat'); return v === undefined || v === null ? (d.vorrat.start === undefined ? 100 : d.vorrat.start) : v; },
+    vorrat: function (id) { var d = D(id), v = eig(id, 'vorratStand'); return v === undefined || v === null ? (d.vorrat.start === undefined ? 100 : d.vorrat.start) : v; },
     prozent: function (id) { return Math.max(0, Math.round(L.vorrat(id))); },
     leer: function (id) { var d = D(id); return !!(d && d.vorrat && L.vorrat(id) <= 0); },
     sichtbar: function (id) { return W.getragen(id) || eig(id, 'ort') === Z().raum || W.sammle(Z().raum).indexOf(id) >= 0; },
@@ -140,10 +140,10 @@
         var d = D(id); if (!d.vorrat) return;
         var v = L.vorrat(id), alt = v, cfg = d.vorrat;
         var laden = cfg.laden ? (wert(cfg.laden) || 0) : 0;
-        if (laden > 0 && v < (cfg.start || 100)) { v = Math.min(cfg.start || 100, v + laden * min); HG.zustand.setze(id, 'vorrat', v); return; }
+        if (laden > 0 && v < (cfg.start || 100)) { v = Math.min(cfg.start || 100, v + laden * min); HG.zustand.setze(id, 'vorratStand', v); return; }
         if (!eig(id, 'brennt')) return;
         v = Math.max(0, v - (cfg.proMinute || 1) * min);
-        HG.zustand.setze(id, 'vorrat', v);
+        HG.zustand.setze(id, 'vorratStand', v);
         var zeigen = L.sichtbar(id);
         (cfg.warnung || []).forEach(function (g) {
           if (alt > g && v <= g && v > 0 && zeigen) HG.ausgabe.system(T.fuelle(wert(cfg.warnText) || (T.gross(T.der(id, 'nom')) + ': noch ' + Math.round(v) + (cfg.einheit || ' %') + '.')).replace('{rest}', Math.round(v)));
@@ -158,7 +158,7 @@
     fahrt: function (min) {
       Object.keys(HG.daten.dinge).forEach(function (id) {
         var d = D(id); if (!d.vorrat || !d.vorrat.fahrt || !W.getragen(id)) return;
-        HG.zustand.setze(id, 'vorrat', Math.min(d.vorrat.start || 100, L.vorrat(id) + d.vorrat.fahrt * min));
+        HG.zustand.setze(id, 'vorratStand', Math.min(d.vorrat.start || 100, L.vorrat(id) + d.vorrat.fahrt * min));
       });
     }
   };
@@ -279,7 +279,8 @@
     /** Kennt die Spielfigur die Geschichte dieser Seele? */
     weiss: function (seeleId) {
       var se = HG.daten.seelen[seeleId];
-      return !!se && (se.wissen || []).every(function (h) { return Z().hinweise.indexOf(h) >= 0; });
+      var hat = function (h) { return Z().hinweise.indexOf(h) >= 0; };
+      return !!se && (se.wissen || []).every(function (h) { return Array.isArray(h) ? h.some(hat) : hat(h); });
     },
 
     // ---------------------------------------------------------- Auswahl (Spielbuch-Stil)
@@ -358,8 +359,8 @@
       var cfg = HG.daten.spiel.wanderer, s = st(), z = Z(), api = A();
       if (!cfg) return;
       var ph = N.phase(), r = W.raum();
-      var aktiv = cfg.phasen.indexOf(ph) >= 0 && r.schauplatz === cfg.schauplatz;
-      if (!aktiv) { if (s.wanderer && ph !== 'tief') s.wanderer = null; return; }
+      var aktiv = (HG.wert(cfg.phasen, api) || []).indexOf(ph) >= 0 && r.schauplatz === cfg.schauplatz;
+      if (!aktiv) { if (s.wanderer && !ph) s.wanderer = null; return; }
       if (s.wanderer && s.wanderer.nacht === N.nummer() && s.wanderer.fertig) return;
       var jetzt = HG.zeit.jetzt();
       if (!s.wanderer || s.wanderer.nacht !== N.nummer()) {
@@ -567,7 +568,7 @@
           return null;
         case 'licht': {
           var q = lichtQuelle(), st_ = D(q).lichtStaerke || 1;
-          if (D(q).vorrat && D(q).vorrat.kampfKosten) HG.zustand.setze(q, 'vorrat', Math.max(0, HG.licht.vorrat(q) - D(q).vorrat.kampfKosten));
+          if (D(q).vorrat && D(q).vorrat.kampfKosten) HG.zustand.setze(q, 'vorratStand', Math.max(0, HG.licht.vorrat(q) - D(q).vorrat.kampfKosten));
           k.halt -= st_;
           sag(wert(tx.licht) || ('Du hältst ' + T.der(q, 'akk') + ' auf sie. Sie weicht zurück, als brenne das Licht.') + ' <span class="nebenbei">(HALT −' + st_ + ')</span>');
           return null;

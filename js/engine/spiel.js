@@ -215,6 +215,9 @@
   // Vorlieben bei mehrdeutigen Wörtern (z. B. "nimm" mag Dinge, die man nicht hat)
   // ---------------------------------------------------------------
   var VORLIEBE = {
+    // Sprechen: Personen und Erscheinungen vor Dingen ("sprich mit hallmann" meint den Mann, nicht seine Kiste)
+    sprechen: { np1: function (id) { return !!D(id).person; } },
+    sagen: { np1: function (id) { return !!D(id).person; } },
     nehmen: { np1: function (id) { return !W.inHand(id) && !eig(id, 'fest') && !D(id).orte; } },
     ablegen: { np1: function (id) { return W.getragen(id); } },
     legen: { np1: function (id) { return W.getragen(id); } },

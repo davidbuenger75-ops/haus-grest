@@ -50,6 +50,8 @@
       hz().klingelt = { id: aid, zug: Z().zug };
       HG.medien.effekt('handy-klingelt');
       HG.ausgabe.schreibe('handy', 'Dein Handy klingelt. Auf dem Display: <b>' + T.esc(HG.wert(d.von, HG.api)) + '</b>. <span class="nebenbei">(„geh ran“ oder „ignoriere“)</span>');
+      // Inhalt darf auf gefälschte Anrufe reagieren (z. B. Hallmanns Warnung, js/content/dachboden.js)
+      if (d.falsch && HG.daten.spiel.beiFalschemAnruf) HG.daten.spiel.beiFalschemAnruf(HG.api, aid);
       return true;
     },
 

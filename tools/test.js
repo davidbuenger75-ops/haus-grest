@@ -290,7 +290,8 @@ function briefPruefen(s, weg) {
 function imHaus(opt) {
   const s = prolog();
   if (!(opt && opt.spuk)) s.HG.spukwerk.zug = () => {};   // zufälliger Spuk stört die Abläufe (Schock-Flucht!)
-  if (!(opt && opt.gefahren)) s.HG.gefahren.darf = () => false;   // zufällige Gefahren ebenso (eigener Abschnitt 14)
+  if (!(opt && opt.gefahren)) s.HG.gefahren.darf = () => false;   // zufällige Gefahren ebenso (eigener Abschnitt 15)
+  if (!(opt && opt.licht)) s.HG.licht.vergeht = () => {};          // Akku und Kerze brennen nur in Abschnitt 15/16 herunter
   s.tu('öffne umschlag'); s.tu('lies notarbrief'); s.tu('nimm hausschlüssel');
   s.tu('fahre zum haus');
   s.tu('schließe haustür auf'); s.tu('öffne haustür'); s.tu('geh nach norden');
@@ -601,7 +602,9 @@ const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'diens
   geh(s, 'südwesten');
   s.tu('öffne klappe mit hakenstange');
   pruefe(HG.api.eig('bodenklappe', 'offen'), 'Bodenklappe mit der Hakenstange geöffnet');
-  pruefe(/noch nicht gebaut/.test(s.tu('geh hoch')), 'Dachboden ist noch gesperrt (nächster Schritt)');
+  s.tu('geh hoch');
+  pruefe(Z().raum === 'speicher', 'Durch die Bodenklappe auf den Speicher');
+  s.tu('geh runter');
 
   // Bad: „Das schwarze Wasser“ – Kopf-Weg mit der Hakenstange
   geh(s, 'norden');
@@ -686,7 +689,7 @@ const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'diens
 
 {
   console.log('\n15. Gefahren, Kämpfe, Nacht, Seelen');
-  const s = imHaus({ gefahren: true }); const HG = s.HG; const Z = () => HG.zustand.z;
+  const s = imHaus({ gefahren: true, licht: true }); const HG = s.HG; const Z = () => HG.zustand.z;
   HG.gefahren.zug = () => {};   // zufällige Raum-Gefahren, Seelen und Wanderer hier gezielt auslösen
   const nachtUm = (min) => { Z().zeit.minute = min; };
   // Witwe auf der Treppe: Auswahl, vorsichtig gehen
@@ -773,7 +776,7 @@ const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'diens
 
   // Puppenhaus zeigt nachts die Gefahren
   Z().gefahren.wanderer = { raum: 'bibliothek', nacht: HG.nacht.nummer(), zuletzt: HG.zeit.jetzt() };
-  HG.zustand.setze('handy', 'brennt', true); HG.zustand.setze('handy', 'vorrat', 80);
+  HG.zustand.setze('handy', 'brennt', true); HG.zustand.setze('handy', 'vorratStand', 80);
   pruefe(/Bibliothek/.test(s.tu('schau ins puppenhaus')), 'Puppenhaus: nachts Figuren, wo etwas lauert');
 
   // Verstecken vor dem Wanderer
@@ -813,7 +816,7 @@ const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'diens
   pruefe(Z().raum === 'galerie' && HG.gefahren.gebannt('brinkhoff'), 'Mit Bernwards Plan: richtiger Raum, Baumeister gebannt');
 
   // Akku
-  HG.zustand.setze('handy', 'brennt', true); HG.zustand.setze('handy', 'vorrat', 1);
+  HG.zustand.setze('handy', 'brennt', true); HG.zustand.setze('handy', 'vorratStand', 1);
   s.tu('warte');
   pruefe(!HG.api.eig('handy', 'brennt') && HG.licht.leer('handy'), 'Akku leer: Taschenlampe aus');
   pruefe(/leer/.test(s.tu('schalte taschenlampe ein')), 'Leerer Akku: Lampe lässt sich nicht einschalten');
@@ -824,6 +827,104 @@ const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'diens
   Z().raum = 'halle'; Z().zeit.minute = 2 * 60 + 58; Z().flags.klappe_ankleidezimmer = false;
   HG.api.zeitVergeht(5);
   pruefe(Z().flags.klappe_ankleidezimmer, '3 Uhr: Höhepunkt (Klingel „Ankleidezimmer“)');
+}
+
+
+{
+  console.log('\n16. Dachboden: Klappe → Kalender → Kiste → Hallmann bekehren');
+  const s = imHaus({ licht: true }); const HG = s.HG; const Z = () => HG.zustand.z;
+  const DACH = ['speicher', 'maedchenkammer', 'waescheboden', 'turmerker'];
+  DACH.forEach(r => {
+    const ev = Object.keys(HG.daten.spuk).map(k => HG.daten.spuk[k]).filter(d => (d.orte || []).includes(r));
+    pruefe(ev.some(d => !d.zeiten || d.zeiten.some(z => z === 'morgen' || z === 'mittag')) && ev.some(d => !d.zeiten || d.zeiten.includes('nacht')), r + ': Spuk bei Tag und bei Nacht vorhanden');
+    const aus = HG.daten.raeume[r].ausgaenge || {};
+    pruefe(!Object.keys(aus).some(k => { const a = aus[k]; const z = typeof a === 'string' ? a : a.ziel; return z && !HG.daten.raeume[z]; }), r + ': alle Ausgänge führen zu Räumen');
+    pruefe(!!HG.plan.finde(HG.daten.plaene.haus, r), r + ': steht im Bauplan');
+  });
+  // Klappe mit der Hakenstange, hinauf auf den Speicher
+  geh(s, 'hoch', 'nordosten'); s.tu('nimm hakenstange'); geh(s, 'südwesten');
+  s.tu('öffne klappe mit hakenstange');
+  geh(s, 'hoch');
+  pruefe(Z().raum === 'speicher', 'Über die Bodenklappe auf den Speicher');
+  pruefeMenues(s, 'Speicher');
+  geh(s, 'süden'); pruefeMenues(s, 'Mädchenkammer');
+  s.tu('lies ritzung');
+  pruefe(Z().hinweise.includes('zwei_gesichter'), 'Ritzung „L. W. 1928“ gelesen');
+  geh(s, 'norden', 'nordosten'); pruefeMenues(s, 'Wäscheboden');
+  geh(s, 'südwesten', 'südosten');
+  pruefe(Z().flags.kraehen_nacht === HG.nacht.nummer(), 'Turmerker bei Tag: Krähen aufgescheucht (die Wandernde kommt früher)');
+  pruefe(HG.wert(HG.daten.spiel.wanderer.phasen, HG.api).includes('daemmerung'), 'Wanderer: in dieser Nacht schon in der Dämmerung');
+  pruefeMenues(s, 'Turmerker');
+  s.tu('nimm silberlöffel');
+  pruefe(HG.welt.getragen('silberloeffel'), 'Silberlöffel „E. G.“ aus dem Krähennest');
+  geh(s, 'nordwesten');
+  // Kalender im Mantel → Code 0258
+  s.tu('durchsuche mantel');
+  s.tu('nimm taschenkalender');
+  pruefe(Z().handy.fotos.some(f => f.id === 'taschenkalender'), 'Taschenkalender aus dem Mantel fotografiert');
+  s.tu('drehe rädchen auf 1111');
+  pruefe(!HG.api.eig('hallmann_kiste', 'offen'), 'Falscher Code: Kiste bleibt zu');
+  s.tu('drehe rädchen auf 0258');
+  pruefe(HG.api.eig('hallmann_kiste', 'offen'), 'Hallmanns Kiste mit 0258 geöffnet');
+  s.tu('nimm taschenuhr'); s.tu('nimm protokolle'); s.tu('nimm bügelsäge');
+  pruefe(HG.welt.getragen('taschenuhr') && HG.welt.getragen('buegelsaege'), 'Taschenuhr und Bügelsäge genommen');
+  pruefe(Z().hinweise.includes('hallmann_protokolle'), 'Messprotokolle: „Wie man die MACHT schwächt“');
+  // Die Kisten der Vorbesitzer
+  ['ostermann-kiste', 'albers-kiste', 'teubner-schachtel', 'brzezinski-kiste', 'brinkhoff-kiste'].forEach(k => s.tu('öffne ' + k));
+  pruefe(['kiste_ostermann', 'kiste_albers', 'kiste_teubner', 'kiste_brzezinski', 'kiste_brinkhoff'].every(h => Z().hinweise.includes(h)), 'Alle fünf Kisten: Wissen über die Diener');
+  Z().hinweise.push('dreizehn_kreuze');
+  pruefe(['heinrich', 'margarete', 'albers', 'wilhelmine', 'josef'].every(id => HG.gefahren.weiss(id)), 'Mit Grundbuch: Geschichte der Diener bekannt');
+  Z().hinweise.push('architekt_brinkhoff');
+  pruefe(HG.gefahren.weiss('brinkhoff'), 'Brinkhoff: Bauakte + Kiste genügen (statt der Pläne)');
+  // Grubenlampe mit Karbid
+  s.tu('nimm grubenlampe'); s.tu('nimm karbid');
+  pruefe(/leer|Karbid/.test(s.tu('zünde grubenlampe an')), 'Grubenlampe ohne Karbid brennt nicht');
+  s.tu('fülle karbid in grubenlampe');
+  pruefe(HG.licht.prozent('grubenlampe') === 100, 'Karbid eingefüllt');
+  HG.api.bewege('streichhoelzer', 'spieler');
+  s.tu('zünde grubenlampe an');
+  pruefe(HG.api.eig('grubenlampe', 'brennt'), 'Grubenlampe brennt');
+  HG.zufall = () => 0.05;
+  HG.api.kampf('die_wandernde', {});
+  s.tu('halte die grubenlampe auf sie');
+  pruefe(Z().kampf && Z().kampf.halt === 6, 'Grubenlampe im Kampf: HALT −4');
+  Z().kampf = null;
+  HG.api.zeitVergeht(130);
+  pruefe(!HG.api.eig('grubenlampe', 'brennt'), 'Nach gut zwei Stunden ist das Karbid verbraucht');
+  // Kellerkette mit der Bügelsäge
+  geh(s, 'runter', 'runter', 'norden');
+  s.tu('säge kette mit bügelsäge');
+  pruefe(Z().flags.kellerkette_offen, 'Kellerkette durchgesägt');
+  pruefe(/noch gebaut/.test(s.tu('geh runter')), 'Keller: „wird noch gebaut“');
+  // Hallmann bekehren
+  Z().hinweise.push('hallmann_brand');
+  pruefe(HG.gefahren.weiss('hallmann'), 'Hallmanns Geschichte: Bauakte + Messprotokolle');
+  Z().raum = 'speicher'; Z().zeit.minute = 60;
+  HG.zustand.setze('handy', 'vorratStand', 100); HG.zustand.setze('handy', 'brennt', true);
+  HG.gefahren.erscheine('hallmann');
+  s.tu('sprich mit hallmann');
+  const satz = HG.spiel.vorschlaege().find(v => /nicht Irmgard am Telefon/.test(v));
+  pruefe(!!satz, 'Hallmann: Wahrheit zur Auswahl');
+  s.tu(satz);
+  pruefe(HG.gefahren.istBekehrt('hallmann'), 'Wolfgang Hallmann bekehrt (sein Nagel ist lose)');
+  const vorher = s.bloecke.length;
+  HG.handy.anruf('anruf_carsten');
+  pruefe(s.bloecke.slice(vorher).some(b => /Nicht rangehen/.test(b.html || '')), 'Hallmanns Hilfe: Warnung bei gefälschtem Anruf');
+
+  // Andere Wege zur Kiste: Handwerk und Gewalt
+  const g = imHaus(); const H2 = g.HG;
+  H2.zustand.setze('bodenklappe', 'offen', true);
+  geh(g, 'hoch', 'hoch');
+  H2.api.bewege('feinwerkzeug', 'spieler');
+  H2.zufall = () => 0.05;
+  g.tu('knacke hallmanns kiste mit werkzeug');
+  pruefe(H2.api.eig('hallmann_kiste', 'offen'), 'Hallmanns Kiste mit Handwerk geöffnet');
+  const g2 = imHaus(); const H3 = g2.HG;
+  H3.zustand.setze('bodenklappe', 'offen', true);
+  geh(g2, 'hoch', 'hoch');
+  H3.zufall = () => 0.05;
+  g2.tu('brich hallmanns kiste auf');
+  pruefe(H3.api.eig('hallmann_kiste', 'offen'), 'Hallmanns Kiste aufgebrochen (laut)');
 }
 
 console.log('\n' + (tests - fehler) + ' von ' + tests + ' Prüfungen bestanden.' + (fehler ? ' ' + fehler + ' FEHLGESCHLAGEN.' : ''));

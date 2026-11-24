@@ -52,14 +52,14 @@
   });
   HG.seele('irmgard', {
     name: 'Irmgard Hallmann', jahr: 1972, art: 'diener', gefahr: 'naeherin', anrede: 'Irmgard',
-    wissen: ['hallmann_brand', 'kiste_hallmann'],
+    wissen: ['hallmann_brand', 'hallmann_protokolle'],
     wahrheit: 'Irmgard, das Kind, das sie dir versprochen hat, gibt es nicht.',
     falsch: ['Irmgard, Wolfgang wartet auf dich.', 'Irmgard, das Kleid ist fertig.'],
     gebanntText: 'Die Fäden erschlaffen. Irgendwo verstummt das Rattern einer Nähmaschine, mitten im Saum.'
   });
   HG.seele('brinkhoff', {
     name: 'Hans-Joachim Brinkhoff', jahr: 1986, art: 'diener', gefahr: 'baumeister', anrede: 'Herr Brinkhoff',
-    wissen: ['architekt_brinkhoff', 'brinkhoff_plaene'],
+    wissen: ['architekt_brinkhoff', ['brinkhoff_plaene', 'kiste_brinkhoff']],
     wahrheit: 'Herr Brinkhoff, das ist nicht Ihr Haus. Es ist Bernwards – und Sie sind tot.',
     falsch: ['Herr Brinkhoff, Ihr zweites Spiegelzimmer ist fertig.', 'Herr Brinkhoff, das Haus braucht Sie noch.'],
     gebanntText: 'Die Wände rücken zurück, wo sie hingehören. Irgendwo raschelt Papier, als rolle jemand einen Plan zusammen.'
@@ -419,7 +419,9 @@
   // =====================================================================
   HG.spielDaten({
     wanderer: {
-      manifestation: 'die_wandernde', start: 'galerie', phasen: ['tief'], schauplatz: 'haus', alle: 20, zielstrebig: 0.5,
+      manifestation: 'die_wandernde', start: 'galerie',
+      // Hat man bei Tag die Krähen im Turm aufgescheucht, kommt sie in dieser Nacht schon in der Dämmerung (dachboden.js)
+      phasen: function (api) { return api.flag('kraehen_nacht') === HG.nacht.nummer() ? ['daemmerung', 'tief'] : ['tief']; }, schauplatz: 'haus', alle: 20, zielstrebig: 0.5,
       bedingung: function (api) { return api.machtStufe() !== 'schwach'; },
       warnText: 'Schritte. Nackte Füße auf Holz, ganz in der Nähe. Sie kommen näher. <span class="nebenbei">(Verstecken? Fliehen? Licht?)</span>',
       vorbeiText: 'Etwas kommt herein. Lavendel, so dicht, dass du ihn schmecken kannst. Es bleibt stehen, eine Handbreit von deinem Versteck. Dann geht es weiter, und die Schritte entfernen sich.'
