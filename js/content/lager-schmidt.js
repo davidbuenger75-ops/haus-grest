@@ -756,17 +756,17 @@
           text: 'Jemand geht nachts die Treppe hinauf. Jede Nacht, die gleichen schweren Schritte, dann das Quietschen der Tapetentür. Ich habe mir in der Nordstadt eine Pistole besorgt, ohne Papiere, ich weiß. Gestern habe ich mit der Waffe in der Hand oben gestanden. Die Schritte sind durch mich hindurchgegangen. Die Waffe bleibt hier im Lager. Im Haus traue ich mir selbst nicht mehr, wenn ich sie bei mir habe.' },
         { titel: '19. Juni 2026', hinweis: 'tb_angst',   // Ende Abschnitt 2
           text: 'Ich verstehe es nicht, und ich werde es nicht verstehen. Also muss es brennen. Drei Kanister, sechzig Liter. Das reicht für die Halle und die Treppe. Und das Zimmer.' },
-        { titel: '14. August 2026', gesperrt: SPAET,
+        { titel: '14. August 2026', gesperrt: SPAET, papier: 'spaet',
           text: 'Ich habe es versucht. Die Kanister standen in der Halle, das Benzin war verteilt. Dann klingelte mein Handy: Peter Gerdes, weinend, er sei in der Nähe, ob er vorbeikommen dürfe. Er wolle nur noch einmal Bettinas Zimmer sehen. Ich habe gewartet, vier Stunden lang. Peter Gerdes lebt seit Januar in Portugal. Als ich die Streichhölzer nehmen wollte, waren sie nass. Alle. In einer verschlossenen Packung.<br>Ich habe den ganzen Abend den Boden geschrubbt, bis man nichts mehr gerochen hat. Dabei habe ich gesummt. Ich weiß nicht, woher ich das Lied kenne.<br>Die Kanister bringe ich morgen ins Lager. Ich will nicht, dass sie im Haus stehen. Es soll nicht denken, dass ich ihm etwas Böses will.' },
-        { titel: '2. September 2026', gesperrt: SPAET,
+        { titel: '2. September 2026', gesperrt: SPAET, papier: 'spaet',
           text: 'Seit ich die Kanister weggebracht habe, ist es still. Keine Schritte mehr. Kein Lavendel um drei Uhr. Stattdessen steht morgens Kaffee auf dem Tisch. Ich trinke keinen Kaffee, aber ich habe ihn getrunken. Er schmeckte wie früher bei Mutter.<br>Ich glaube, ich habe sie die ganze Zeit falsch verstanden. Sie war nie böse. Sie war nur allein. Hundert Jahre allein in diesem Zimmer.' },
-        { titel: '19. September 2026', gesperrt: SPAET,
+        { titel: '19. September 2026', gesperrt: SPAET, papier: 'spaet',
           text: 'Ich habe die Laken von den Spiegeln genommen. Alle. Die Romanow hatte keine Ahnung. Man darf sie nicht verhängen, man muss sie ansehen, dann zeigt sie sich. Heute Nacht hat sie hinter mir gestanden, ganz nah, und mir die Hand auf die Schulter gelegt. Sie war warm.<br>Ich gehe kaum noch raus. Wozu auch.' },
-        { titel: '28. September 2026', gesperrt: SPAET,
+        { titel: '28. September 2026', gesperrt: SPAET, papier: 'spaet',
           text: 'Testament gemacht. Sie hat mich darum gebeten. Sie sagt, ein Haus braucht Familie, und wenn ich einmal „hinübergehe“, soll jemand nachkommen, der zu mir gehört.<br>Es gibt nur noch {g:einen|eine|eine(n)}. Wir haben uns einmal gesehen, auf Tante Gerdas Siebzigstem; du warst vielleicht acht. Du erinnerst dich bestimmt nicht an mich. Sie sagt, das macht nichts. Sie wird dich kennenlernen.<br>Das Lager behalte ich trotzdem. Nur für den Fall. Ich weiß nicht mehr, für welchen Fall.' },
-        { titel: '7. Oktober 2026', gesperrt: SPAET, hinweis: 'tb_wandlung',   // Ende Abschnitt 3
+        { titel: '7. Oktober 2026', gesperrt: SPAET, papier: 'spaet', hinweis: 'tb_wandlung',   // Ende Abschnitt 3
           text: '<i>(Die Schrift ist kaum lesbar, als wäre sie mit links geschrieben.)</i><br>Sie mag mich jetzt. Sie will, dass ich bei ihr bleibe. Nicht nur in diesem Haus – bei IHR. Drüben.<br>Heute Morgen lag ein Geschenk auf dem Waschbecken. Ein Rasiermesser mit Perlmuttgriff, auf der Klinge eingraviert: 1906. Es ist so schön. Niemand hat es gekauft. Es ist von DRÜBEN, sie hat es mir herübergereicht.<br>Sie sagt, es tut nicht weh. Sie sagt, sie wartet im Zimmer auf mich.<br>Ich habe keine Angst mehr.' },
-        { titel: 'Letzte Seite', schrift: 'druck',
+        { titel: 'Letzte Seite', schrift: 'druck', papier: 'spaet',
           // erscheint erst, wenn die Spielfigur das Haus mindestens einmal betreten hat
           bedingung: function () { return !!HG.zustand.z.besucht.halle; },
           text: '<i>(Danach sind die Seiten leer. Auf der allerletzten Seite steht eine einzige Zeile in sauberer, altmodischer Handschrift, die nicht Carsten gehört.)</i><br><br><span style="font-family:\'Segoe Script\',cursive;font-size:1.3em">Willkommen zu Hause.</span>',

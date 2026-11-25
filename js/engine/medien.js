@@ -10,7 +10,7 @@
 //   Abend/Nacht: raum-<raumId>-abend, raum-<raumId>-nacht – eigene Bilder (sonst wird das Tagbild per CSS getönt)
 //   Schauplatz:  ort-<schauplatz>          Ersatz für alle Räume des Schauplatzes ohne eigenes Bild
 //   Fundstück:   ding-<dingId>             wird beim Untersuchen/Lesen groß angezeigt (Ding mit fundstueck: true)
-//   Buchseite:   ding-<dingId>-<seite>     z. B. ding-tagebuch-3.webp
+//   Buchpapier:  ding-<dingId>-seite[-<papier>]  z. B. ding-tagebuch-seite-spaet.webp (Hintergrund der Lese-Ansicht)
 //   Inhalte können abweichende Namen setzen: Raum/Ding "bildDatei: 'name'", Raum "bildVariante: fn(api)".
 //   Ohne Bilddatei zeigt das Spiel die gezeichnete SVG-Szene.
 //

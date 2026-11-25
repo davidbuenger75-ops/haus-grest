@@ -111,7 +111,7 @@ function leseMedienliste() {
     const textRe = /\s*–\s*Text im Bild:\s*(.+)$/;
     const textImBild = (textRe.exec(roh) || [])[1];
     const motiv = roh.replace(schriftRe, '').replace(textRe, '');
-    const fund = abschnitt === '2';
+    const fund = abschnitt === '2' || abschnitt === '3';   // Tagebuch-Papier: Foto-Stil wie Fundstücke
     let stil = fund ? stile.fund + ', kein Text' : stile.raum;
     if (mitSchrift) stil = stil.replace(/,\s*kein Text\s*$/, '') + ', ' + stile.schrift;
     else if (textImBild) stil = stil.replace(/,\s*kein Text\s*$/, '') + ', ' + textImBild + ', sonst kein Text im Bild';

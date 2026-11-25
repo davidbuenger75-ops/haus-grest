@@ -1,6 +1,36 @@
 // Automatisch erzeugt von tools/bilder.js – nicht von Hand bearbeiten.
 window.KANDIDATEN = [
   {
+    "name": "ding-archivkopien",
+    "titel": "Archivkopien Bauantrag 1899",
+    "prompt": "Fotokopien alter Dokumente: Bauantrag in Kurrentschrift und Todesanzeige mit Trauerrand von 1905 – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-archivkopien-1.jpg"
+    ],
+    "gewaehlt": "ding-archivkopien.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-artikel_2025",
+    "titel": "Ausdruck Online-Artikel",
+    "prompt": "Computerausdruck eines Online-Artikels mit Kommentarspalte, ein Kommentar rot umkringelt – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-artikel_2025-1.jpg"
+    ],
+    "gewaehlt": "ding-artikel_2025.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-bauakte",
+    "titel": "Bauakte Ulmenweg 12",
+    "prompt": "Dünner grauer Aktenordner auf einem Behördentresen, aufgeschlagen, darin ein vergilbter Durchschlag eines Feuerwehrberichts von 1974 und ein Bauantrag mit Stempel, daneben eine Tischklingel – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-bauakte-1.jpg"
+    ],
+    "gewaehlt": "ding-bauakte.jpg",
+    "vorlage": null
+  },
+  {
     "name": "ding-bauplan-dach",
     "titel": "Bauplan Dachgeschoss",
     "prompt": "realistisches Foto eines echten Architekten-Bauplans von 1899, Tusche auf vergilbtem Zeichenkarton, leichte Aquarell-Lavierung, Stockflecken, Knicke, Reißzwecklöcher in den Ecken, Layout und Linien exakt beibehalten, kein neuer Text",
@@ -45,6 +75,26 @@ window.KANDIDATEN = [
     "vorlage": null
   },
   {
+    "name": "ding-brief",
+    "titel": "Bernwards Brief",
+    "prompt": "Vergilbter Briefbogen von 1900, eng beschrieben in schräger Handschrift, getrockneter Lavendelzweig daneben – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-brief-1.jpg"
+    ],
+    "gewaehlt": "ding-brief.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-brief_1905",
+    "titel": "Bernwards letzter Brief (1905)",
+    "prompt": "Gefalteter vergilbter Briefbogen von 1905 in schräger Tintenhandschrift auf rotem verblichenem Samt – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-brief_1905-1.jpg"
+    ],
+    "gewaehlt": "ding-brief_1905.jpg",
+    "vorlage": null
+  },
+  {
     "name": "ding-brinkhoff_plaene",
     "titel": "Brinkhoffs Pläne",
     "prompt": "Entrollte Rolle Transparentpapier mit einem Architekten-Grundriss der Achtzigerjahre in Bleistift und Tusche, ein Raum ist rundum schraffiert wie mit Spiegeln ausgekleidet, Architektenstempel, quer darüber ein zittriger Bleistiftstrich – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
@@ -65,6 +115,16 @@ window.KANDIDATEN = [
     "vorlage": null
   },
   {
+    "name": "ding-ehering",
+    "titel": "Elisabeths Ehering",
+    "prompt": "Schmaler, abgegriffener goldener Ehering auf verblichenem rotem Samt, innen eine feine Gravur angedeutet – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, kein Text",
+    "kandidaten": [
+      "ding-ehering-1.jpg"
+    ],
+    "gewaehlt": "ding-ehering.jpg",
+    "vorlage": null
+  },
+  {
     "name": "ding-elisabeths_tagebuch",
     "titel": "Elisabeths Tagebuch",
     "prompt": "Schmales Tagebuch in rotem Leder mit geprägtem „E.“, aufgeschlagen auf einem Nussbaum-Lesepult, die Seiten zeigen eine braune, leicht verblasste Handschrift, die aussieht wie mit Wärme hervorgeholt, eine Ecke leicht angesengt, daneben eine Kerze – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
@@ -82,6 +142,26 @@ window.KANDIDATEN = [
       "ding-ermittlungsakte-1.jpg"
     ],
     "gewaehlt": "ding-ermittlungsakte.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-expose",
+    "titel": "Makler-Exposé",
+    "prompt": "Hochglanz-Immobilienexposé aufgeschlagen, Foto eines Zimmers voller Spiegel, in einem hinteren Spiegel winzig und gestochen scharf eine Frau in hellem Kleid, Kugelschreibernotiz am Rand – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-expose-1.jpg"
+    ],
+    "gewaehlt": "ding-expose.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-fingerhut",
+    "titel": "Irmgards Fingerhut",
+    "prompt": "Silberner Fingerhut mit blank gewetzten Grübchen auf dem Holz einer alten Nähmaschine, daneben ein Faden, innen eine winzige Gravur – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-fingerhut-1.jpg"
+    ],
+    "gewaehlt": "ding-fingerhut.jpg",
     "vorlage": null
   },
   {
@@ -117,6 +197,46 @@ window.KANDIDATEN = [
     "vorlage": null
   },
   {
+    "name": "ding-freigabe",
+    "titel": "Polizeiliche Freigabe",
+    "prompt": "Modernes amtliches Schreiben einer deutschen Polizeibehörde, mit Laserdrucker auf weißem Papier gedruckt, Briefkopf mit Landeswappen, wenige Absätze Text, Aktenzeichen oben rechts, unten ein Dienststempel, am Rand eine kurze Notiz in Kugelschreiber – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-freigabe-1.jpg"
+    ],
+    "gewaehlt": "ding-freigabe.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-gebetbuch",
+    "titel": "Gebetbuch der Pflegerin",
+    "prompt": "Kleines abgegriffenes Gebetbuch mit schwarzem Einband, aufgeschlagen, die gedruckten Gebete sorgfältig durchgestrichen, dazwischen winzige spiegelverkehrte Handschrift, daneben eine schwarze Krähenfeder – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-gebetbuch-1.jpg"
+    ],
+    "gewaehlt": "ding-gebetbuch.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-grubenlampe",
+    "titel": "Grubenlampe",
+    "prompt": "Alte Karbid-Grubenlampe aus Messing auf einer Holzkiste: unten der Karbidbehälter, oben der Wassertank, vorn ein runder Reflektor, Grünspan, in den Boden eingeritzte Initialen – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, eingeritzt „J. B.“, sonst kein Text im Bild",
+    "kandidaten": [
+      "ding-grubenlampe-1.jpg"
+    ],
+    "gewaehlt": "ding-grubenlampe.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-grundbuchauszug",
+    "titel": "Grundbuchauszug",
+    "prompt": "Kopie eines Grundbuchauszugs mit langer Namensliste, daneben viele Kugelschreiberkreuze, bei einem Block in der Mitte Fragezeichen und eine eingerahmte Randnotiz, das letzte Kreuz sauber mit Tinte gezogen, am Rand eine doppelt unterstrichene Zahl, alle Namen und Wörter als unleserliche graue Zeilen – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-grundbuchauszug-1.jpg"
+    ],
+    "gewaehlt": "ding-grundbuchauszug.jpg",
+    "vorlage": null
+  },
+  {
     "name": "ding-haarspange",
     "titel": "Bettinas Haarspange",
     "prompt": "Blaue Haarspange mit kleinen Glitzersteinchen auf der Handfläche, daneben ein winziges Puppenbett mit einer Decke aus Stoffresten – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, kein Text",
@@ -124,6 +244,16 @@ window.KANDIDATEN = [
       "ding-haarspange-1.jpg"
     ],
     "gewaehlt": "ding-haarspange.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-hallmann_kiste",
+    "titel": "Hallmanns Kiste",
+    "prompt": "Schwere Holzkiste mit Eisenbändern auf staubigen Dachbodendielen, ein Zahlenschloss mit vier Rädchen am Deckel, Licht durch eine Dachluke – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, in akkuraten Druckbuchstaben aufgemalt „W. HALLMANN“, sonst kein Text im Bild",
+    "kandidaten": [
+      "ding-hallmann_kiste-1.jpg"
+    ],
+    "gewaehlt": "ding-hallmann_kiste.jpg",
     "vorlage": null
   },
   {
@@ -148,6 +278,16 @@ window.KANDIDATEN = [
     "vorlage": null
   },
   {
+    "name": "ding-koffer",
+    "titel": "Vermessungskoffer",
+    "prompt": "Silberner Alukoffer mit abgestoßenen Ecken auf einem Gästebett, ein Zahlenschloss mit vier kleinen Rädchen am Griff, ein Firmenaufkleber – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, auf dem Aufkleber steht „Häuser Vermessung“, sonst kein Text im Bild",
+    "kandidaten": [
+      "ding-koffer-1.jpg"
+    ],
+    "gewaehlt": "ding-koffer.jpg",
+    "vorlage": null
+  },
+  {
     "name": "ding-kraeuterbuch",
     "titel": "Kräuterbuch der Pflegerin",
     "prompt": "Dünnes Buch in schwarzem Leinen ohne Titel, aufgeschlagen, gepresste Pflanzen zwischen den Seiten (Lavendel, Wermut, Mohn), enge spitze Handschrift mit Rezepten – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
@@ -155,6 +295,16 @@ window.KANDIDATEN = [
       "ding-kraeuterbuch-1.jpg"
     ],
     "gewaehlt": "ding-kraeuterbuch.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-kuehlschrankzettel",
+    "titel": "Zettel am Kühlschrank",
+    "prompt": "Gelber Notizzettel unter einem Magneten an einer Kühlschranktür, hastige Kugelschreiberschrift, mehrfach unterstrichen – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-kuehlschrankzettel-1.jpg"
+    ],
+    "gewaehlt": "ding-kuehlschrankzettel.jpg",
     "vorlage": null
   },
   {
@@ -188,6 +338,76 @@ window.KANDIDATEN = [
     "vorlage": null
   },
   {
+    "name": "ding-nachlass_karton",
+    "titel": "Carstens Nachlass-Karton",
+    "prompt": "Brauner Umzugskarton auf einem grauen Resopaltisch, offener Deckel, darin ein Schlüsselbund, eine abgewetzte braune Geldbörse, ein Brillenetui und eine Armbanduhr, Neonlicht – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, mit Filzstift auf dem Karton „HÄUSER, C. – NACHLASS“, sonst kein Text im Bild",
+    "kandidaten": [
+      "ding-nachlass_karton-1.jpg"
+    ],
+    "gewaehlt": "ding-nachlass_karton.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-notarbrief",
+    "titel": "Brief des Notars",
+    "prompt": "Briefbogen eines Notariats auf Holztisch, Briefkopf, schwungvolle Unterschrift, daneben Umschlag und zwei Schlüssel – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-notarbrief-1.jpg"
+    ],
+    "gewaehlt": "ding-notarbrief.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-notenheft",
+    "titel": "Notenheft Renate Vogt",
+    "prompt": "Alte Klavierschule mit Eselsohren auf einem Notenpult, aufgeschlagen auf eine Buntstift-Kinderzeichnung: eine Frau am Klavier, ein kleines Mädchen und oben am Fenster eines Hauses eine Frau im hellen Kleid mit offenem Mund – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-notenheft-1.jpg"
+    ],
+    "gewaehlt": "ding-notenheft.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-oelkanne",
+    "titel": "Ölkännchen „I. Hallmann“",
+    "prompt": "Kleines grünes Blechkännchen mit langer dünner Tülle auf einem Regalbrett einer Speisekammer, verblasstes Etikett, halb voll, auf den Boden gekippt sieht man eine Filzstift-Beschriftung – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, auf dem Boden steht in Handschrift „I. Hallmann“, sonst kein Text im Bild",
+    "kandidaten": [
+      "ding-oelkanne-1.jpg"
+    ],
+    "gewaehlt": "ding-oelkanne.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-ohrring",
+    "titel": "Ohrstecker mit Stern",
+    "prompt": "Kleiner silberner Ohrstecker in Form eines Sterns, billiger Modeschmuck, zwischen Zweigen und grauen Federn eines Krähennests, kaltes Licht – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, kein Text",
+    "kandidaten": [
+      "ding-ohrring-1.jpg"
+    ],
+    "gewaehlt": "ding-ohrring.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-pistole",
+    "titel": "Pistole Walther P99",
+    "prompt": "Schwarze Pistole mit zwei Magazinen auf kariertem Geschirrtuch in einem Schuhkarton, nüchtern, kein Glanz – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, kein Text",
+    "kandidaten": [
+      "ding-pistole-1.jpg"
+    ],
+    "gewaehlt": "ding-pistole.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-portraet",
+    "titel": "Porträt Bernward Grest",
+    "prompt": "Ölporträt eines ernsten Mannes um 1900 mit gepflegtem Bart, dunklem Gehrock und Zirkel in der Hand, Messingschild am Goldrahmen, Augen folgen dem Betrachter – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, kein Text",
+    "kandidaten": [
+      "ding-portraet-1.jpg"
+    ],
+    "gewaehlt": "ding-portraet.jpg",
+    "vorlage": null
+  },
+  {
     "name": "ding-puppenhaus",
     "titel": "Puppenhaus",
     "prompt": "Großes, sehr detailliertes Puppenhaus um 1900, Modell einer dunklen Jugendstilvilla mit Walmdach, spitzen Giebeln und achteckigem Erkertürmchen, Blick durch die winzigen Fenster in winzige möblierte Zimmer, ein Zimmer innen mit glitzernden Spiegelscherben ausgekleidet, Holzsockel mit eingeschnitzter Widmung – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
@@ -198,6 +418,16 @@ window.KANDIDATEN = [
     "vorlage": null
   },
   {
+    "name": "ding-rasiermesser",
+    "titel": "Rasiermesser von 1906",
+    "prompt": "Aufgeklapptes antikes Rasiermesser mit Perlmuttgriff auf grünem Leder, eingravierte Jahreszahl auf der Klinge angedeutet, kaltes Mondlicht – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, kein Text",
+    "kandidaten": [
+      "ding-rasiermesser-1.jpg"
+    ],
+    "gewaehlt": "ding-rasiermesser.jpg",
+    "vorlage": null
+  },
+  {
     "name": "ding-ritzung",
     "titel": "Ritzung in der Mädchenkammer",
     "prompt": "Kindliche, mühsam ins dunkle Holz einer Wandverkleidung geritzte Buchstaben und eine Jahreszahl, daneben ein rostiger Nagel, Streiflicht – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, geritzt steht dort „L. W. 1928“, sonst kein Text im Bild",
@@ -205,6 +435,16 @@ window.KANDIDATEN = [
       "ding-ritzung-1.jpg"
     ],
     "gewaehlt": "ding-ritzung.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-silberloeffel",
+    "titel": "Silberlöffel „E. G.“",
+    "prompt": "Angelaufener silberner Teelöffel in einem Nest aus Zweigen, Draht und Wolle, Kronkorken und Stanniol daneben, auf dem Stiel ein verschlungenes Monogramm, in der Wölbung spiegelt sich verzerrt ein Fenster – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Monogramm „E. G.“, sonst kein Text im Bild",
+    "kandidaten": [
+      "ding-silberloeffel-1.jpg"
+    ],
+    "gewaehlt": "ding-silberloeffel.jpg",
     "vorlage": null
   },
   {
@@ -228,6 +468,26 @@ window.KANDIDATEN = [
     "vorlage": null
   },
   {
+    "name": "ding-tagebuch-seite",
+    "titel": "frühe Einträge",
+    "prompt": "Draufsicht auf eine einzelne leere Seite aus einem Notizbuch mit kariertem Papier, das Papier füllt das ganze Bild bis an den Rand, leicht vergilbt, ordentlich und glatt, oben rechts ein blasser runder Kaffeerand, am linken Rand die Spur der Bindung, gleichmäßiges weiches Licht, keine Schrift – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, kein Text",
+    "kandidaten": [
+      "ding-tagebuch-seite-1.jpg"
+    ],
+    "gewaehlt": "ding-tagebuch-seite.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-tagebuch-seite-spaet",
+    "titel": "späte Einträge, letzte Seite",
+    "prompt": "Draufsicht auf eine einzelne leere Seite aus einem Notizbuch mit kariertem Papier, das Papier füllt das ganze Bild bis an den Rand, zerknittert und wieder glattgestrichen, gewellt von Wasserflecken, mehrere Tintenkleckse und verschmierte Tintenspritzer, ein Eselsohr, eine Ecke eingerissen, gleichmäßiges Licht, keine Schrift – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, kein Text",
+    "kandidaten": [
+      "ding-tagebuch-seite-spaet-1.jpg"
+    ],
+    "gewaehlt": "ding-tagebuch-seite-spaet.jpg",
+    "vorlage": null
+  },
+  {
     "name": "ding-taschenkalender",
     "titel": "Hallmanns Taschenkalender",
     "prompt": "Kleiner abgegriffener Taschenkalender von 1974 aus Kunstleder, aufgeschlagen auf der ersten Novemberwoche, der Montag mit blauer Tinte dick eingekreist, daneben ein paar Wörter in einer zarten, steilen, fremden Handschrift, auf den übrigen Tagen kleine Uhrzeit-Notizen, im Hintergrund ein grauer Lodenmantel – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, oben „November 1974“, die Tage „Mo 4“, „Di 5“, „Mi 6“, eingekreist ist „Mo 4“; die Handschrift daneben bleibt unleserlich, sonst kein Text im Bild",
@@ -235,6 +495,16 @@ window.KANDIDATEN = [
       "ding-taschenkalender-1.jpg"
     ],
     "gewaehlt": "ding-taschenkalender.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-taschenspiegel",
+    "titel": "Taschenspiegel",
+    "prompt": "Kleiner runder Taschenspiegel mit angelaufenem Silberrand in einem aufgewickelten Handtuch mit Klebebandresten, im Glas ein fremdes blasses Frauengesicht mit offenem Haar – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, kein Text",
+    "kandidaten": [
+      "ding-taschenspiegel-1.jpg"
+    ],
+    "gewaehlt": "ding-taschenspiegel.jpg",
     "vorlage": null
   },
   {
@@ -248,6 +518,36 @@ window.KANDIDATEN = [
     "vorlage": null
   },
   {
+    "name": "ding-testament",
+    "titel": "Testament (Abschrift)",
+    "prompt": "Fotokopie eines handschriftlichen Testaments von heute auf weißem Kopierpapier, mit Kugelschreiber in moderner lateinischer Handschrift geschrieben, die Schrift wird zum Ende hin unruhig und größer, darunter eine zittrige Unterschrift, oben ein Stempel „Abschrift“ eines Notariats – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-testament-1.jpg"
+    ],
+    "gewaehlt": "ding-testament.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-tinktur",
+    "titel": "Tinktur der Pflegerin",
+    "prompt": "Kleines braunes Apothekerfläschchen um 1910 mit Glasstopfen, dunkle ölige Flüssigkeit, vergilbtes Etikett mit spitzer Handschrift, auf einer verblichenen Wolldecke – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-tinktur-1.jpg"
+    ],
+    "gewaehlt": "ding-tinktur.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-trauerkarte",
+    "titel": "Trauerkarte Bettina",
+    "prompt": "Trauerkarte mit Foto eines lachenden siebzehnjährigen Mädchens mit Zahnspange, ein Wort mit Kugelschreiber eingekreist – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-trauerkarte-1.jpg"
+    ],
+    "gewaehlt": "ding-trauerkarte.jpg",
+    "vorlage": null
+  },
+  {
     "name": "ding-uebergabeprotokoll",
     "titel": "Übergabeprotokoll",
     "prompt": "Weißes amtliches Formular auf einem grauen Resopaltisch, Behördenstempel oben, darunter eine Liste mit genau sieben nummerierten Zeilen, die siebte und letzte Zeile mit Kugelschreiber durchgestrichen und daneben ein kurzer handschriftlicher Vermerk, darunter eine leere Unterschriftslinie, ein Kugelschreiber an einer Kugelkette – alle Schrift nur angedeutet und unleserlich, nur die Ziffern 1 bis 7 erkennbar – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, kein Text",
@@ -255,6 +555,56 @@ window.KANDIDATEN = [
       "ding-uebergabeprotokoll-1.jpg"
     ],
     "gewaehlt": "ding-uebergabeprotokoll.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-vogelkiste",
+    "titel": "Zigarrenkiste mit Vogelschädeln",
+    "prompt": "Alte geöffnete Zigarrenkiste zwischen Dielenbalken, darin in Reihen auf schwarzen Federn winzige Vogelschädel, auf der Innenseite des Deckels Striche in Blöcken – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, kein Text",
+    "kandidaten": [
+      "ding-vogelkiste-1.jpg"
+    ],
+    "gewaehlt": "ding-vogelkiste.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-zeitung_1930",
+    "titel": "Zeitungsnotiz 1930",
+    "prompt": "Kopie einer Zeitungsseite von 1930 in Frakturschrift, Familiennachrichten mit Trauerrand – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-zeitung_1930-1.jpg"
+    ],
+    "gewaehlt": "ding-zeitung_1930.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-zeitung_2022",
+    "titel": "Zeitungsausschnitt 2022",
+    "prompt": "Ausgeschnittene kurze Lokalmeldung aus einer Tageszeitung, Foto eines Wohnhauses mit Absperrband – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-zeitung_2022-1.jpg"
+    ],
+    "gewaehlt": "ding-zeitung_2022.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-zettel_unna",
+    "titel": "Zettel mit Adresse",
+    "prompt": "Abgerissener karierter Notizzettel mit drei kurzen Zeilen in hastiger Kugelschreiber-Handschrift, ein Wort darin in Großbuchstaben unterstrichen, keine Ausrufezeichen – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-zettel_unna-1.jpg"
+    ],
+    "gewaehlt": "ding-zettel_unna.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-zirkel",
+    "titel": "Messingzirkel",
+    "prompt": "Kleiner alter Zeichenzirkel aus Messing mit stumpf geschliffenen Spitzen, zwei eingeschlagene Initialen auf dem Griff, auf vergilbten Fotokopien – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, kein Text",
+    "kandidaten": [
+      "ding-zirkel-1.jpg"
+    ],
+    "gewaehlt": "ding-zirkel.jpg",
     "vorlage": null
   },
   {
@@ -349,6 +699,16 @@ window.KANDIDATEN = [
     ],
     "gewaehlt": "raum-bad-spuk.jpg",
     "vorlage": "raum-bad.jpg"
+  },
+  {
+    "name": "raum-bauamt",
+    "titel": "Bauamt",
+    "prompt": "Amtsflur eines Bauamts mit Linoleumboden und nummerierten Türen, Tresen aus hellem Holzimitat mit Klingel und Formularständer, dahinter Aktenregale, eine Sachbearbeiterin um die sechzig mit grauem Haar und Lesebrille im Haar sortiert ruhig Akten, Neonlicht, Topfpflanze – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-bauamt-1.jpg"
+    ],
+    "gewaehlt": "raum-bauamt.jpg",
+    "vorlage": null
   },
   {
     "name": "raum-bibliothek",
@@ -1032,5 +1392,15 @@ window.KANDIDATEN = [
     ],
     "gewaehlt": "raum-wohnung.jpg",
     "vorlage": null
+  },
+  {
+    "name": "raum-wohnung-nacht",
+    "titel": "Deine Wohnung – nacht",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, nachts, nur Mondlicht bzw. Notbeleuchtung und der Lichtkegel einer Taschenlampe. Perspektive, Bildaufbau, Gegenstände und Malstil exakt beibehalten, nur Licht und Stimmung ändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-wohnung-nacht-1.jpg"
+    ],
+    "gewaehlt": "raum-wohnung-nacht.jpg",
+    "vorlage": "raum-wohnung.jpg"
   }
 ];

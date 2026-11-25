@@ -18,9 +18,10 @@
     'elisabeths_tagebuch', 'kraeuterbuch', 'brinkhoff_plaene', 'puppenhaus', 'haarspange', 'kinderbuch',   // Obergeschoss
     'stimmgabel', 'spachtel', 'laser', 'messnotizen',
     'ritzung', 'taschenuhr', 'messprotokolle', 'taschenkalender',                        // Dachboden
-    'ermittlungsakte', 'uebergabeprotokoll', 'foto_familienfeier', 'carstens_schluessel'   // Polizeiwache
+    'ermittlungsakte', 'uebergabeprotokoll', 'foto_familienfeier', 'carstens_schluessel', 'nachlass_karton',   // Polizeiwache
+    'oelkanne', 'fingerhut', 'koffer', 'grubenlampe', 'hallmann_kiste', 'silberloeffel', 'ohrring'                 // weitere Dinge mit Bild
   ].forEach(function (id) { if (HG.daten.dinge[id]) HG.daten.dinge[id].fundstueck = true; });
-  // Tagebuchseiten: assets/bilder/ding-tagebuch-<seite>.webp erscheint in der Lese-Ansicht
+  // Tagebuch: Papier-Hintergrund ding-tagebuch-seite (ordentlich) bzw. ding-tagebuch-seite-spaet (Seiten mit papier: 'spaet')
 
   // Geräusche an Dingen: assets/sound/effekt-<name>.ogg|mp3
   var GERAEUSCH = {

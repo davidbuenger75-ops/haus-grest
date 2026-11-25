@@ -514,11 +514,13 @@
       var txt = $('buch-text');
       txt.className = 'buch-text stil-' + (x.s.schrift || d.buch.schrift || 'hand');
       txt.innerHTML = HG.text.fuelle(HG.buch.text(id, x));
-      var seitenBild = $('buch-bild'), nr = x.i + 1;
-      seitenBild.innerHTML = ''; seitenBild.hidden = true;
-      HG.medien.erstesBild([HG.medien.dingName(id) + '-' + nr], function (url) {
+      // Papier als Hintergrund: ding-<id>-seite bzw. ding-<id>-seite-<papier> (Seite mit "papier: 'spaet'"); Text liegt darüber
+      var blatt = document.querySelector('#buch .buch-seite'), basis = HG.medien.dingName(id) + '-seite';
+      blatt.style.backgroundImage = ''; blatt.classList.remove('mit-papier');
+      $('buch-bild').innerHTML = ''; $('buch-bild').hidden = true;
+      HG.medien.erstesBild((x.s.papier ? [basis + '-' + x.s.papier] : []).concat([basis]), function (url) {
         if (!url || $('buch-seitentitel').textContent !== x.s.titel.replace(/<[^>]+>/g, '')) return;
-        seitenBild.innerHTML = '<img src="' + url + '" alt="' + T.esc(x.s.titel) + '">'; seitenBild.hidden = false;
+        blatt.style.backgroundImage = 'url("' + url + '")'; blatt.classList.add('mit-papier');
       });
       $('buch-zurueck').disabled = pos === 0;
       $('buch-weiter').disabled = pos >= liste.length - 1;
