@@ -17,7 +17,8 @@
     'gebetbuch', 'vogelkiste', 'kuehlschrankzettel', 'notenheft', 'tinktur',           // Erdgeschoss Nord und Ost
     'elisabeths_tagebuch', 'kraeuterbuch', 'brinkhoff_plaene', 'puppenhaus', 'haarspange', 'kinderbuch',   // Obergeschoss
     'stimmgabel', 'spachtel', 'laser', 'messnotizen',
-    'ritzung', 'taschenuhr', 'messprotokolle', 'taschenkalender'                         // Dachboden
+    'ritzung', 'taschenuhr', 'messprotokolle', 'taschenkalender',                        // Dachboden
+    'ermittlungsakte', 'uebergabeprotokoll', 'foto_familienfeier', 'carstens_schluessel'   // Polizeiwache
   ].forEach(function (id) { if (HG.daten.dinge[id]) HG.daten.dinge[id].fundstueck = true; });
   // Tagebuchseiten: assets/bilder/ding-tagebuch-<seite>.webp erscheint in der Lese-Ansicht
 

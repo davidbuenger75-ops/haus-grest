@@ -76,6 +76,41 @@
       return e;
     },
 
+    /**
+     * Vergleichsprobe (Delta Green „opposed roll“): Spielfigur gegen eine andere Figur.
+     *   api.vergleich('schleichen', { wert: 50, name: 'Frau Jansen', fertigkeit: 'Wahrnehmung' }, { versteckt: true, mod, grund })
+     * Beide würfeln W100. Nur einer schafft seinen Wert → der gewinnt. Beide schaffen ihn → kritisch schlägt normal,
+     * sonst gewinnt der höhere Wurf (bei Gleichstand der höhere Wert). Beide scheitern → Patt: Es bleibt, wie es war.
+     * versteckt: true → kein Würfelblock, die Spielfigur merkt nichts vom Wurf (der Inhalt erzählt nur die Folgen).
+     * Rückgabe: { gewonnen, verloren, patt, spieler: {wurf, ziel, erfolg, kritisch}, gegner: {…} }
+     */
+    vergleich: function (wer, gegen, opt) {
+      opt = opt || {};
+      if (typeof gegen === 'number') gegen = { wert: gegen };
+      var sp = P.probe(wer, { mod: opt.mod, modGrund: opt.modGrund, beruf: opt.beruf, still: true });
+      var gz = Math.max(1, Math.min(99, (gegen.wert || 50) + (gegen.mod || 0)));
+      var gw = P.w100(), gpasch = gw < 100 && gw % 11 === 0;
+      var ge = { wurf: gw, ziel: gz, erfolg: gw <= gz };
+      ge.kritisch = ge.erfolg && (gw === 1 || gpasch);
+      var s = 0;   // 1 = Spielfigur gewinnt, −1 = Gegner gewinnt, 0 = Patt
+      if (sp.erfolg && !ge.erfolg) s = 1;
+      else if (!sp.erfolg && ge.erfolg) s = -1;
+      else if (sp.erfolg && ge.erfolg) {
+        if (sp.kritisch !== ge.kritisch) s = sp.kritisch ? 1 : -1;
+        else if (sp.wurf !== ge.wurf) s = sp.wurf > ge.wurf ? 1 : -1;
+        else s = sp.ziel >= ge.ziel ? 1 : -1;
+      }
+      var e = { gewonnen: s === 1, verloren: s === -1, patt: s === 0, spieler: sp, gegner: ge };
+      if (!opt.versteckt) {
+        var gname = T.esc(gegen.name || 'Gegenseite') + (gegen.fertigkeit ? ' (' + T.esc(gegen.fertigkeit) + ')' : '');
+        HG.ausgabe.schreibe('wurf', '<b>Vergleichsprobe</b>' + (opt.grund ? ' (' + T.esc(opt.grund) + ')' : '') + ': ' +
+          'du ' + (sp.auto ? 'ohne Wurf' : 'W100 → <b>' + sp.wurf + '</b> gegen ' + sp.ziel) + ' · ' + gname + ' W100 → <b>' + gw + '</b> gegen ' + gz +
+          ' – ' + (s === 1 ? 'du gewinnst' : s === -1 ? 'du verlierst' : 'beide scheitern, es bleibt, wie es war') + '.', { probe: sp });
+        HG.medien.effekt('wuerfel');
+      }
+      return e;
+    },
+
     /** Würfel-Block ausgeben (Text für Protokoll/Screenreader, Daten für die Animation). */
     zeige: function (e) {
       var ziel = e.ziel + (e.mod ? ' <small>(' + e.basis + ' ' + (e.mod < 0 ? '−' : '+') + ' ' + Math.abs(e.mod) + (e.modGrund ? ' ' + T.esc(e.modGrund) : '') + ')</small>' : '');

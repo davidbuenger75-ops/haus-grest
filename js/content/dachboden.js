@@ -373,10 +373,22 @@
     if (api.istNacht()) laerm(api, 'Das Kreischen hat das ganze Haus geweckt. Am Ende des Flurs, im großen Spiegel, bewegt sich etwas.');
     return true;
   }
+  // Der saubere Weg: Carstens Schlüsselbund aus seinem Nachlass (Polizeiwache, polizeiwache.js)
+  function aufschliessen(api) {
+    if (api.flag('kellerkette_offen')) { api.sage('Die Kette ist schon ab.'); return true; }
+    if (!api.traegt('carstens_schluessel')) { api.sage('Keiner deiner Schlüssel passt in das Vorhängeschloss. Es ist neu, aus Messing – der passende Schlüssel muss irgendwo bei Carstens Sachen sein.'); return true; }
+    api.setzeFlag('kellerkette_offen'); api.setzeFlag('kellerkette_aufgeschlossen');
+    api.sound('vorhaengeschloss');
+    api.sage('Du steckst den kleinen Messingschlüssel mit dem „K“ ins Vorhängeschloss. Er dreht sich leicht, als wäre er gerade erst geölt worden. Das Schloss springt auf. Du ziehst die Kette durch die Ösen; sie rasselt zu Boden, das Pappschild mit „NICHT RUNTER.“ landet auf deinen Schuhen.');
+    return true;
+  }
   kellertuer.bei = Object.assign({}, kellertuer.bei, {
     saegen: function (api) { return saege(api); },
+    aufschliessen: function (api) { return aufschliessen(api); },
+    oeffnen: function (api) { if (api.flag('kellerkette_offen')) return false; if (api.traegt('carstens_schluessel')) return aufschliessen(api); return false; },
     benutzen: function (api, ctx) {
       var a = ctx.obj === KETTE ? ctx.obj2 : ctx.obj;
+      if (a === 'carstens_schluessel') return aufschliessen(api);
       if (a && HG.daten.dinge[a].saege) return saege(api);
       return false;
     },
@@ -392,16 +404,16 @@
     }
   });
   var altTextKette = kellertuer.text;
-  kellertuer.beschreibung = function (api) { return api.flag('kellerkette_offen') ? 'Eine niedrige Brettertür. Die Kette liegt durchtrennt auf dem Boden, daneben das Pappschild: <b>NICHT RUNTER.</b> Durch die Ritzen kommt kalte Luft.' : HG.wert(altTextKette, api); };
+  kellertuer.beschreibung = function (api) { return api.flag('kellerkette_offen') ? 'Eine niedrige Brettertür. Die Kette liegt ' + (api.flag('kellerkette_aufgeschlossen') ? 'aufgeschlossen' : 'durchtrennt') + ' auf dem Boden, daneben das Pappschild: <b>NICHT RUNTER.</b> Durch die Ritzen kommt kalte Luft.' : HG.wert(altTextKette, api); };
   var flur = HG.daten.raeume.flur;
   flur.ausgaenge.runter = { sperre: function (api) {
-    if (!api.flag('kellerkette_offen')) return 'Die Kellertür ist mit einer schweren Kette und einem Vorhängeschloss gesichert. Ohne Schlüssel – oder eine Säge – kommst du nicht hinunter.';
+    if (!api.flag('kellerkette_offen')) return 'Die Kellertür ist mit einer schweren Kette und einem Vorhängeschloss gesichert. Ohne den passenden Schlüssel – oder eine Säge – kommst du nicht hinunter.';
     return 'Du ziehst die Kellertür auf. Eine steile Steintreppe führt in die Dunkelheit, kalte Luft steigt dir entgegen, und ganz unten riecht es nach Lavendel. <span class="nebenbei">(Der Keller wird noch gebaut.)</span>';
   } };
   var flurBeschreibung = flur.beschreibung;
   flur.beschreibung = function (api) {
     var t = flurBeschreibung(api);
-    return api.flag('kellerkette_offen') ? t.replace('Links eine niedrige Tür mit einer Kette davor – der Keller.', 'Links eine niedrige Tür, die Kette liegt durchtrennt davor – der Keller.') : t;
+    return api.flag('kellerkette_offen') ? t.replace('Links eine niedrige Tür mit einer Kette davor – der Keller.', 'Links eine niedrige Tür, die Kette liegt ' + (api.flag('kellerkette_aufgeschlossen') ? 'abgenommen' : 'durchtrennt') + ' davor – der Keller.') : t;
   };
 
   // ===================================================================

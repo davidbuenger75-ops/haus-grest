@@ -92,6 +92,9 @@
     /** Prozentprobe (W100 ≤ Zielwert): api.probe('st') (Eigenschaft × 5), api.probe('handwerk', { mod: -20, beruf: { handwerk: 0 } }),
      *  api.probe('nerven'), api.probe(60, { titel: 'Glück' }). Liefert { erfolg, kritisch, patzer, wurf, ziel, auto }. */
     probe: function (wer, opt) { return HG.proben.probe(wer, opt); },
+    /** Vergleichsprobe gegen eine andere Figur (auch verdeckt): api.vergleich('schleichen', { wert: 50, name: 'Frau Jansen' }, { versteckt: true })
+     *  Liefert { gewonnen, verloren, patt, spieler, gegner } – siehe proben.js. */
+    vergleich: function (wer, gegen, opt) { return HG.proben.vergleich(wer, gegen, opt); },
     // --- Charakter (js/engine/charakter.js) ---
     /** Verletzung: api.verletze('1W4', { grund: 'Glasscherben' }) – zieht LP ab, merkt die Wunde für Erste Hilfe. */
     verletze: function (spec, opt) { return HG.charakter.verletze(spec, opt); },

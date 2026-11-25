@@ -927,5 +927,143 @@ const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'diens
   pruefe(H3.api.eig('hallmann_kiste', 'offen'), 'Hallmanns Kiste aufgebrochen (laut)');
 }
 
+// --- 17. Polizeiwache: Nachlass, Kellerschlüssel, Akte, Pistole -------------
+{
+  console.log('\n17. Polizeiwache: Nachlass → Kellerschlüssel → Akte, Pistole (abgeben, verschwiegen, entdeckt)');
+  /** Neues Spiel, morgens um 10 an der Wache. folge: feste Würfelfolge (sonst 0.05 = alles gelingt) */
+  function zurWache(opt) {
+    const s = imHaus(); const HG = s.HG, Z = () => HG.zustand.z;
+    HG.reisen.schalteFrei('polizei');
+    s.tu('geh nach süden');
+    Z().zeit.minute = (opt && opt.uhr || 10) * 60;
+    if (opt && opt.pistole) { HG.api.bewege('pistole', 'spieler'); HG.zustand.setze('pistole', 'geladen', true); }
+    if (!(opt && opt.polizei)) Z().beruf = 'journalismus';   // die Testfigur ist sonst Polizistin (Akte ohne Probe)
+    HG.zufall = () => 0.05;
+    s.tu('fahre zur polizei');
+    return s;
+  }
+  // Vergleichsprobe (Engine)
+  {
+    const s = zurWache(); const HG = s.HG;
+    const folge = (...w) => { let i = 0; HG.zufall = () => w[Math.min(i++, w.length - 1)]; };
+    HG.zustand.z.fertigkeiten.schleichen = 40;
+    folge(0.29, 0.49); pruefe(HG.api.vergleich('schleichen', 60, { versteckt: true }).verloren, 'Vergleich: beide schaffen es (30 gegen 50) – der höhere Wurf gewinnt');
+    folge(0.39, 0.09); pruefe(HG.api.vergleich('schleichen', 60, { versteckt: true }).gewonnen, 'Vergleich: 40 schlägt 10');
+    folge(0.97, 0.97); pruefe(HG.api.vergleich('schleichen', 60, { versteckt: true }).patt, 'Vergleich: beide scheitern → Patt');
+    folge(0.97, 0.19); pruefe(HG.api.vergleich('schleichen', 60, { versteckt: true }).verloren, 'Vergleich: nur der Gegner schafft es');
+    folge(0.10, 0.49); pruefe(HG.api.vergleich('schleichen', 60, { versteckt: true }).gewonnen, 'Vergleich: kritischer Erfolg (11) schlägt normalen');
+    const vorher = s.bloecke.length;
+    folge(0.29, 0.49); HG.api.vergleich('schleichen', 60, { versteckt: true });
+    pruefe(s.bloecke.length === vorher, 'Verdeckter Vergleich: kein Würfelblock');
+  }
+  // Weg 1: ohne Pistole – Bildschirm, Unterschrift, Schlüssel, Akte per Überreden
+  const s = zurWache(); const HG = s.HG, Z = () => HG.zustand.z;
+  pruefe(Z().raum === 'polizei', 'Ankunft an der Polizeiwache');
+  pruefe(HG.welt.imUmfeld('jansen'), 'Bei Tag sitzt Frau Jansen am Tresen');
+  pruefeMenues(s, 'Polizeiwache');
+  pruefe(/Begleitung/.test(s.tu('geh nach osten')), 'Ohne Begleitung kein Zutritt nach hinten');
+  s.tu('frage jansen nach carstens sachen');
+  pruefe(Z().raum === 'polizei_buero' && Z().flags.jansen_weg, 'Jansen führt in den Besprechungsraum und holt den Karton');
+  pruefeMenues(s, 'Besprechungsraum (Jansen weg)');
+  s.tu('lies bildschirm');
+  pruefe(Z().hinweise.includes('polizeiakte_haeuser'), 'Bildschirm: Vorgang Häuser gelesen');
+  s.tu('warte');
+  pruefe(HG.welt.imUmfeld('nachlass_karton') && HG.welt.imUmfeld('jansen'), 'Jansen kommt mit dem Karton zurück');
+  pruefe(/unterschreiben/.test(s.tu('öffne karton')), 'Karton erst nach der Unterschrift');
+  pruefe(/Erst unterschreiben|Moment/.test(s.tu('geh nach westen')) && Z().raum === 'polizei_buero', 'Gehen erst nach der Unterschrift');
+  pruefe(/sieben/.test(s.tu('lies protokoll')), 'Übergabeprotokoll: Position 7 (Rasiermesser)');
+  s.tu('unterschreibe protokoll');
+  pruefe(Z().flags.nachlass_erhalten, 'Protokoll unterschrieben');
+  pruefeMenues(s, 'Besprechungsraum (Karton offen)');
+  s.tu('nimm schlüsselbund');
+  pruefe(HG.welt.getragen('carstens_schluessel'), 'Carstens Schlüsselbund mit dem Kellerschlüssel');
+  s.tu('öffne geldbörse'); s.tu('nimm foto');
+  pruefe(Z().handy.fotos.some(f => f.id === 'foto_familienfeier'), 'Foto von der Familienfeier fotografiert');
+  s.tu('geh nach westen');
+  pruefe(Z().raum === 'polizei' && HG.api.eig('nachlass_karton', 'ort') === 'tresen_wache', 'Zurück am Tresen, der Karton steht dort');
+  HG.zufall = () => 0.97;
+  s.tu('frage jansen nach der akte');
+  pruefe(!Z().flags.akte_gezeigt && Z().flags.akte_abgelehnt, 'Überreden misslungen: keine Akte');
+  const t2 = s.tu('frage jansen nach der akte');
+  pruefe(/Nein gesagt/.test(t2) && s.bloecke.some(b => b.typ === 'tipp'), 'Am selben Tag nicht noch einmal, mit gestaffeltem Hinweis');
+  Z().zeit.tag++; Z().zeit.minute = 10 * 60; HG.zufall = () => 0.05;
+  s.tu('frage jansen nach der akte');
+  pruefe(Z().flags.akte_gezeigt, 'Am nächsten Tag: Überreden gelungen');
+  s.tu('lies akte');
+  pruefe(Z().hinweise.includes('polizeiakte_romanow'), 'Akte Romanow gelesen');
+  pruefe(!HG.gefahren.weiss('natascha'), 'Natascha: ohne den Online-Artikel reicht die Akte allein nicht');
+  Z().hinweise.push('natascha_romanow');
+  pruefe(HG.gefahren.weiss('natascha'), 'Nataschas Geschichte: Online-Artikel + Polizeiakte');
+  Z().hinweise.push('tb_wandlung', 'testament');
+  pruefe(HG.gefahren.weiss('carsten'), 'Carstens Geschichte: Tagebuch + Testament + Polizeiakte');
+  // Kellerkette mit dem Schlüssel
+  s.tu('fahre zum haus'); s.tu('geh nach norden');
+  geh(s, 'norden');
+  pruefe(Z().raum === 'flur', 'Im Flur vor der Kellertür');
+  s.tu('schließe kette auf');
+  pruefe(Z().flags.kellerkette_offen && Z().flags.kellerkette_aufgeschlossen, 'Kellerkette mit Carstens Schlüssel aufgeschlossen');
+  pruefe(/aufgeschlossen/.test(s.tu('untersuche kellertür')), 'Kellertür: Kette aufgeschlossen, nicht durchtrennt');
+
+  // Weg 2: Pistole freiwillig abgeben → Akte ohne Probe
+  {
+    const g = zurWache({ pistole: true }); const H = g.HG, Z2 = () => H.zustand.z;
+    g.tu('frage jansen nach carstens sachen');
+    pruefe(H.spiel.offen && H.spiel.offen.art === 'auswahl', 'Mit Pistole: Auswahl vor der Sicherheitstür');
+    g.tu('1');
+    pruefe(Z2().flags.pistole_abgegeben && !H.welt.getragen('pistole'), 'Pistole abgegeben');
+    pruefe(Z2().raum === 'polizei_buero', 'Danach geht es nach hinten');
+    g.tu('warte'); g.tu('warte');
+    H.zufall = () => 0.97;   // Überreden würde misslingen
+    g.tu('frage jansen nach der akte');
+    pruefe(Z2().flags.akte_gezeigt, 'Vertrauen: Akte ohne Probe');
+  }
+  // Weg 3: Pistole verschwiegen – Patt im verdeckten Wurf, sie fällt nicht auf
+  {
+    const g = zurWache({ pistole: true }); const H = g.HG, Z2 = () => H.zustand.z;
+    g.tu('frage jansen nach carstens sachen'); g.tu('2');
+    g.tu('warte'); g.tu('warte');
+    H.zufall = () => 0.97;
+    const t = g.tu('unterschreibe protokoll');
+    pruefe(!Z2().flags.pistole_entdeckt && H.welt.getragen('pistole'), 'Pistole verschwiegen: nicht bemerkt (beide scheitern)');
+    pruefe(!/W100/.test(t), 'Der Wurf bleibt verdeckt');
+  }
+  // Weg 4: Pistole verschwiegen – Jansen gewinnt den Vergleich
+  {
+    const g = zurWache({ pistole: true }); const H = g.HG, Z2 = () => H.zustand.z;
+    g.tu('frage jansen nach carstens sachen'); g.tu('nichts sagen und mitgehen');
+    g.tu('warte'); g.tu('warte');
+    let i = 0; const w = [0.97, 0.30]; H.zufall = () => (i < w.length ? w[i++] : 0.5);
+    g.tu('unterschreibe protokoll');
+    pruefe(Z2().flags.pistole_entdeckt && !H.welt.getragen('pistole'), 'Pistole entdeckt und abgenommen');
+    pruefe(Z2().flags.nachlass_erhalten, 'Den Nachlass bekommt man trotzdem (keine Sackgasse)');
+    g.tu('nimm schlüsselbund');
+    pruefe(H.welt.getragen('carstens_schluessel'), 'Kellerschlüssel trotz entdeckter Pistole');
+    H.zufall = () => 0.05;
+    g.tu('frage jansen nach der akte');
+    pruefe(Z2().flags.akte_gezeigt, 'Akte nach entdeckter Pistole noch per Überreden (−20) erreichbar');
+  }
+  // Beruf Polizei: Akte ohne Probe
+  {
+    const g = zurWache({ polizei: true }); const H = g.HG;
+    H.zufall = () => 0.97;
+    g.tu('frage jansen nach der akte');
+    pruefe(H.zustand.z.flags.akte_gezeigt, 'Beruf Polizei: Akte ohne Probe');
+  }
+  // Weg 5: nachts – Wolters, Pistole bei ihm abgeben, am Morgen Akte bei Jansen
+  {
+    const g = zurWache({ pistole: true, uhr: 23 }); const H = g.HG, Z2 = () => H.zustand.z;
+    pruefe(H.welt.imUmfeld('wolters') && !H.welt.imUmfeld('jansen'), 'Nachts sitzt Wolters am Tresen');
+    pruefeMenues(g, 'Polizeiwache (Nacht)');
+    pruefe(/morgen/.test(g.tu('frage wolters nach carstens sachen')), 'Nachlass nachts: „Kommen Sie morgen“');
+    g.tu('gib die pistole ab');
+    pruefe(Z2().flags.pistole_abgegeben && Z2().flags.pistole_bei_wolters, '„gib die pistole ab“ bei Wolters');
+    Z2().zeit.tag++; Z2().zeit.minute = 9 * 60; g.tu('warte');
+    pruefe(H.welt.imUmfeld('jansen'), 'Am Morgen übernimmt Jansen');
+    H.zufall = () => 0.97;
+    g.tu('frage jansen nach der akte');
+    pruefe(Z2().flags.akte_gezeigt, 'Wolters’ Zettel: Akte ohne Probe');
+  }
+}
+
 console.log('\n' + (tests - fehler) + ' von ' + tests + ' Prüfungen bestanden.' + (fehler ? ' ' + fehler + ' FEHLGESCHLAGEN.' : ''));
 process.exit(fehler ? 1 : 0);

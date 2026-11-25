@@ -470,6 +470,7 @@
     var d = D(ctx.obj);
     if (!ctx.thema || !ctx.thema.length) { sag('Wonach willst du ' + der(ctx.obj) + ' fragen?'); return; }
     var t = themaText(d, ctx);
+    if (t === true) return;   // das Thema hat selbst erzählt (api.sage, api.auswahl …)
     if (t) { sag(t); return; }
     sag(HG.wert(d.themaSonst, HG.api, ctx) || (d.person ? Der(ctx.obj) + ' ' + vb(ctx.obj, 'weiß', 'wissen') + ' darauf nichts zu sagen.' : 'Keine Antwort.'));
   };
@@ -507,6 +508,7 @@
     sag(Der(ctx.obj) + ' ' + vb(ctx.obj, 'lässt', 'lassen') + ' sich nicht entladen.');
   };
 
+  A.unterschreiben = function (ctx) { sag(ctx.obj ? 'Unter ' + der(ctx.obj, 'akk') + ' gehört keine Unterschrift.' : 'Hier gibt es nichts zu unterschreiben.'); };
   A.saegen = function (ctx) { sag('Es gibt keinen Grund, ' + der(ctx.obj, 'akk') + ' zu zersägen.'); };
   A.fuellen = function (ctx) { sag(Der(ctx.obj) + ' ' + vb(ctx.obj, 'lässt', 'lassen') + ' sich nicht füllen.'); };
   A.erwaermen = function (ctx) { sag('Davon wird ' + der(ctx.obj) + ' nur ein bisschen warm. Es ändert sich nichts.'); };

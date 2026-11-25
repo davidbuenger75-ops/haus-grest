@@ -55,6 +55,16 @@ window.KANDIDATEN = [
     "vorlage": null
   },
   {
+    "name": "ding-carstens_schluessel",
+    "titel": "Carstens Schlüsselbund",
+    "prompt": "Schlüsselbund auf einem braunen Umzugskarton: Autoschlüssel, zwei Haustürschlüssel, ein Briefkastenschlüssel und ein kleiner neuer Messingschlüssel für ein Vorhängeschloss mit einem Streifen Kreppband, der Messing an einer Stelle blank gerieben – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, auf dem Kreppband steht in Handschrift „K“, sonst kein Text im Bild",
+    "kandidaten": [
+      "ding-carstens_schluessel-1.jpg"
+    ],
+    "gewaehlt": "ding-carstens_schluessel.jpg",
+    "vorlage": null
+  },
+  {
     "name": "ding-elisabeths_tagebuch",
     "titel": "Elisabeths Tagebuch",
     "prompt": "Schmales Tagebuch in rotem Leder mit geprägtem „E.“, aufgeschlagen auf einem Nussbaum-Lesepult, die Seiten zeigen eine braune, leicht verblasste Handschrift, die aussieht wie mit Wärme hervorgeholt, eine Ecke leicht angesengt, daneben eine Kerze – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
@@ -62,6 +72,16 @@ window.KANDIDATEN = [
       "ding-elisabeths_tagebuch-1.jpg"
     ],
     "gewaehlt": "ding-elisabeths_tagebuch.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-ermittlungsakte",
+    "titel": "Polizeiakte (zwei Hefter)",
+    "prompt": "Zwei graue Aktenhefter einer Polizeibehörde auf einem Resopaltisch, einer aufgeschlagen mit Formularseiten, Tatortfotos als kleine Abzüge angeheftet, darauf das Foto einer Holztreppe mit einem Kabel am Geländerpfosten, eine Randnotiz in Bleistift – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-ermittlungsakte-1.jpg"
+    ],
+    "gewaehlt": "ding-ermittlungsakte.jpg",
     "vorlage": null
   },
   {
@@ -84,6 +104,16 @@ window.KANDIDATEN = [
       "ding-foto_1912-rueckseite-2.jpg"
     ],
     "gewaehlt": "ding-foto_1912-rueckseite.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-foto_familienfeier",
+    "titel": "Foto von der Familienfeier",
+    "prompt": "Kleines abgegriffenes Farbfoto aus den Neunzigern mit weichen Ecken: Gartenfeier mit Lampions und Tapeziertisch mit Kuchen, ein junger Mann mit Schnurrbart hockt im Gras und zeigt einem etwa achtjährigen Kind etwas in seiner offenen Hand. Das Kind ist nur von hinten zu sehen, Gesicht nicht sichtbar, kurze Haare unter einer Schirmmütze, neutrales gelbes T-Shirt und Shorts – Junge oder Mädchen soll man nicht erkennen können. Verblasste Farben, leicht unscharf – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, kein Text",
+    "kandidaten": [
+      "ding-foto_familienfeier-1.jpg"
+    ],
+    "gewaehlt": "ding-foto_familienfeier.jpg",
     "vorlage": null
   },
   {
@@ -215,6 +245,16 @@ window.KANDIDATEN = [
       "ding-taschenuhr-1.jpg"
     ],
     "gewaehlt": "ding-taschenuhr.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-uebergabeprotokoll",
+    "titel": "Übergabeprotokoll",
+    "prompt": "Weißes amtliches Formular auf einem grauen Resopaltisch, Behördenstempel oben, darunter eine Liste mit genau sieben nummerierten Zeilen, die siebte und letzte Zeile mit Kugelschreiber durchgestrichen und daneben ein kurzer handschriftlicher Vermerk, darunter eine leere Unterschriftslinie, ein Kugelschreiber an einer Kugelkette – alle Schrift nur angedeutet und unleserlich, nur die Ziffern 1 bis 7 erkennbar – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, kein Text",
+    "kandidaten": [
+      "ding-uebergabeprotokoll-1.jpg"
+    ],
+    "gewaehlt": "ding-uebergabeprotokoll.jpg",
     "vorlage": null
   },
   {
@@ -721,6 +761,36 @@ window.KANDIDATEN = [
     ],
     "gewaehlt": "raum-maedchenkammer-spuk.jpg",
     "vorlage": "raum-maedchenkammer.jpg"
+  },
+  {
+    "name": "raum-polizei",
+    "titel": "Polizeiwache Hombruch",
+    "prompt": "Wartebereich einer kleinen deutschen Polizeiwache aus den Siebzigern bei Tag, orangefarbene festgeschraubte Plastikstühle, ein Ständer mit Faltblättern, ein grauer Tresen mit Klingel und angekettetem Kugelschreiber vor dickem Panzerglas mit Durchreiche, dahinter eine Polizeibeamtin Mitte vierzig mit kurzen grauen Haaren und Lesebrille an einer Kette am Bildschirm, daneben eine graue Stahltür ohne Klinke mit Kartenleser, kaltes Neonlicht – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-polizei-1.jpg"
+    ],
+    "gewaehlt": "raum-polizei.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-polizei-nacht",
+    "titel": "Polizeiwache Hombruch – nacht",
+    "prompt": "Bearbeite das beigefügte Bild: Ersetze die Frau hinter dem Panzerglas durch einen ganz anderen Menschen: einen müden, leicht übergewichtigen MANN um die sechzig mit dichtem grauem Schnauzbart, Glatze mit grauem Haarkranz, Lesebrille auf die Stirn geschoben, Uniformhemd mit hochgekrempelten Ärmeln, vor ihm ein Teebecher und ein Funkgerät. Keine Frau im Bild. Außerdem: nachts, hartes kaltes Neonlicht, schwarze Nacht hinter der Glastür, alle Stühle leer, keine Taschenlampe. Sonst gleicher Bildausschnitt. Perspektive, Bildaufbau, Gegenstände und Malstil exakt beibehalten, nur Licht und Stimmung ändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-polizei-nacht-1.jpg"
+    ],
+    "gewaehlt": "raum-polizei-nacht.jpg",
+    "vorlage": "raum-polizei.jpg"
+  },
+  {
+    "name": "raum-polizei_buero",
+    "titel": "Besprechungsraum",
+    "prompt": "Kleiner fensterloser Besprechungsraum einer Polizeiwache, grauer Resopaltisch mit Kaffeerändern, vier Stühle mit grauem Polster, auf dem Tisch ein Rechner mit großem Bildschirm, an der Wand ein Waschbecken mit kleinem fleckigem Spiegel und ein Wandkalender mit einem Streifenwagen, Neonlicht, keine Personen – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-polizei_buero-1.jpg"
+    ],
+    "gewaehlt": "raum-polizei_buero.jpg",
+    "vorlage": null
   },
   {
     "name": "raum-salon",

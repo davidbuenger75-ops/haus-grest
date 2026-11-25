@@ -183,6 +183,7 @@
     { a: 'sagen', w: L('sag sage sagen ruf rufe rufen fluester fluestere schrei schreie'), o: '?', text: true, p2: L('zu') },
     { a: 'zeigen', w: L('zeig zeige zeigen'), o: 1, p2: L('an'), doppel: true },
     { a: 'entladen', w: L('entlad entlade entladen'), o: 1 },                          // "entlade die Pistole"
+    { a: 'unterschreiben', w: L('unterschreib unterschreibe unterschreiben unterzeichne unterzeichnen signiere signieren'), o: '?' },   // "unterschreibe protokoll"
     { a: 'nennen', w: L('nenn nenne nennen'), o: '?' },
     { a: 'saegen', w: L('saeg saege saegen zersaeg zersaege zersaegen durchsaeg durchsaege durchsaegen'), o: 1, p2: L('mit') },   // "säge kette mit bügelsäge"
     { a: 'saegen', w: L('saeg saege'), p: 'durch', o: 1, p2: L('mit') },
@@ -190,6 +191,7 @@
     { a: 'erwaermen', w: L('erwaerm erwaerme erwaermen waerm waerme waermen halt halte halten'), o: 1, p2: L('ueber mit an vor') },   // "halte tagebuch über kerze"
     { a: 'schoepfen', w: L('schoepf schoepfe schoepfen'), o: '?', p2: L('mit aus') },          // "schöpfe wasser mit eimer"
     { a: 'verhaengen', w: L('verhaeng verhaenge verhaengen bedeck bedecke bedecken'), o: 1, p2: L('mit') },   // "verhänge spiegel (mit laken)"                                  // "nenne sie beim Namen" (Diener bannen)
+    { a: 'geben', w: L('gib gebe'), p: 'ab', o: 1 },                                     // "gib die pistole ab"
     { a: 'geben', w: L('gib gebe geben reich reiche ueberreiche biete'), o: 1, p2: L('an'), doppel: true },
 
     // Werkzeuge und Notizen
@@ -333,7 +335,7 @@
     'sprich mit …', 'frage … nach …', 'benutze …', 'kombiniere … mit …', 'drücke …', 'ziehe an …', 'drehe …', 'drehe … um', 'drehe … auf …', 'knacke …', 'öle …', 'brich … auf', 'versorge wunde', 'erste hilfe', 'entziffere …',
     'schiebe …', 'horche', 'lausche an …', 'rieche an …', 'taste …', 'taste umher', 'klopfe an …', 'zerbrich …',
     'reiße an …', 'klettere auf …', 'verstecke dich hinter …', 'warte', 'warte bis …', 'schlafe', 'fahre los',
-    'fahre zu …', 'ruf … an', 'fotografiere …', 'schreibe …', 'tippe …', 'winke', 'blättere weiter',
+    'fahre zu …', 'ruf … an', 'fotografiere …', 'schreibe …', 'tippe …', 'unterschreibe …', 'winke', 'blättere weiter',
     'inventar', 'notizbuch', 'karte', 'hilfe', 'speichern', 'laden', 'rückgängig', 'zeit', 'werte',
     'lies nachrichten', 'anrufliste', 'fotos'
   ];

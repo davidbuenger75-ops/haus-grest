@@ -214,7 +214,7 @@ HG.schluss('ring_ist_anker', {
   text: 'Bernward hat den Ring verwahrt, „bis unser Tag wiederkommt“. Elisabeth schreibt: „Wenn B. mir den Ring wiedergibt, bin ich frei.“ Du hast den Ring. Er gehört der guten Elisabeth.'
 });
 HG.schluss('tuer_unter_dem_haus', {
-  aus: ['kraehe_gebetbuch', 'carstens_plan', 'puppenhaus_modell'], mindestens: 2,
+  aus: ['kraehe_gebetbuch', 'carstens_plan', 'puppenhaus_modell', 'polizeiakte_romanow'], mindestens: 2,
   titel: 'Die Tür unter dem Haus',
   text: 'Die Pflegerin schreibt von einer „Tür unter dem Haus“. Carsten hat im Keller 2,40 Meter vermisst. Und im Puppenhaus ist die Tür zum Kohlenkeller zugemauert. Unter der Halle ist ein Raum, den es nicht mehr geben soll.'
 });

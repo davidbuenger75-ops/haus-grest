@@ -109,24 +109,7 @@
     return true;
   }
 
-  HG.ziel('polizei', {
-    name: 'Polizeiwache',
-    woerter: ['polizei', 'polizeiwache', 'wache', 'revier', 'kommissariat'],
-    ankunft: 'polizei', fahrzeit: 25
-  });
-  HG.raum('polizei', {
-    name: 'Polizeiwache', schauplatz: 'polizei', abfahrt: true, karte: { x: 0, y: 0 },
-    beschreibung: { tag: platzhalter('Ein Wartebereich mit Plastikstühlen, ein Tresen hinter Panzerglas. Hier wurden die Todesfälle im Ulmenweg 12 untersucht.'),
-      nacht: platzhalter('Die Wache ist auch nachts besetzt. Ein müder Beamter blickt hinter dem Panzerglas auf.') },
-    // Ablenkung des Hauses: der Anruf von „Hauptkommissar Brenner“ war gefälscht [Vorschlag]
-    beimBetreten: function (api) {
-      if (api.flag('ablenkung_polizei') && !api.flag('ablenkung_polizei_geklaert')) {
-        api.setzeFlag('ablenkung_polizei_geklaert');
-        api.sage('Du nennst am Tresen deinen Namen und fragst nach Hauptkommissar Brenner. Die Beamtin hinter dem Panzerglas sieht in ihren Rechner, dann telefoniert sie kurz. „Einen Brenner gibt es bei uns nicht. Und hinbestellt hat Sie auch keiner.“ Sie mustert dich. „Ulmenweg zwölf? … Da sind Sie nicht der Erste, der so einen Anruf bekommt.“');
-        api.hinweis('falscher_anruf_polizei');
-      }
-    }
-  });
+  // Polizeiwache: eigener Schauplatz in polizeiwache.js
 
   HG.ziel('friedhof', {
     name: 'Friedhof',
