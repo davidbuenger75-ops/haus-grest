@@ -178,7 +178,7 @@
       var r = W.raum(raumId);
       var richt = Object.keys(r.ausgaenge || {}).filter(function (k) {
         var a = r.ausgaenge[k];
-        return !(a && typeof a === 'object' && a.unsichtbar);
+        return !(a && typeof a === 'object' && HG.wert(a.unsichtbar, HG.api));
       });
       if (!richt.length) return '';
       return 'Ausgänge: ' + T.liste(richt.map(function (k) { return RICHTUNGEN[k] ? RICHTUNGEN[k].name : k; })) + '.';
@@ -232,8 +232,9 @@
           var a = r.ausgaenge[k];
           var ziel = typeof a === 'string' ? a : a && a.ziel;
           var zr = ziel && HG.daten.raeume[ziel];
+          if (a && typeof a === 'object' && HG.wert(a.unsichtbar, HG.api)) return;   // unsichtbar darf eine Funktion sein (Wand noch nicht durchbrochen)
           if (zr && zr.karte && zr.schauplatz === r.schauplatz) wege.push({ von: id, nach: ziel, bekannt: !!z.besucht[ziel], richtung: k });
-          else if (!a || !a.unsichtbar) wege.push({ von: id, nach: null, richtung: k });
+          else wege.push({ von: id, nach: null, richtung: k });
         });
       });
       return { raeume: raeume, wege: wege };

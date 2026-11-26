@@ -356,7 +356,7 @@
   });
 
   // ===================================================================
-  // Die Kellerkette lässt sich jetzt öffnen (der Keller folgt)
+  // Die Kellerkette lässt sich öffnen (der Keller selbst: keller.js)
   // ===================================================================
   var KETTE = 'flur_detail1';
   var kellertuer = HG.daten.dinge[KETTE];
@@ -405,11 +405,8 @@
   });
   var altTextKette = kellertuer.text;
   kellertuer.beschreibung = function (api) { return api.flag('kellerkette_offen') ? 'Eine niedrige Brettertür. Die Kette liegt ' + (api.flag('kellerkette_aufgeschlossen') ? 'aufgeschlossen' : 'durchtrennt') + ' auf dem Boden, daneben das Pappschild: <b>NICHT RUNTER.</b> Durch die Ritzen kommt kalte Luft.' : HG.wert(altTextKette, api); };
+  // Der Weg hinunter (Ausgang „runter“ im Flur) steht in keller.js.
   var flur = HG.daten.raeume.flur;
-  flur.ausgaenge.runter = { sperre: function (api) {
-    if (!api.flag('kellerkette_offen')) return 'Die Kellertür ist mit einer schweren Kette und einem Vorhängeschloss gesichert. Ohne den passenden Schlüssel – oder eine Säge – kommst du nicht hinunter.';
-    return 'Du ziehst die Kellertür auf. Eine steile Steintreppe führt in die Dunkelheit, kalte Luft steigt dir entgegen, und ganz unten riecht es nach Lavendel. <span class="nebenbei">(Der Keller wird noch gebaut.)</span>';
-  } };
   var flurBeschreibung = flur.beschreibung;
   flur.beschreibung = function (api) {
     var t = flurBeschreibung(api);

@@ -19,7 +19,8 @@
     'stimmgabel', 'spachtel', 'laser', 'messnotizen',
     'ritzung', 'taschenuhr', 'messprotokolle', 'taschenkalender',                        // Dachboden
     'ermittlungsakte', 'uebergabeprotokoll', 'foto_familienfeier', 'carstens_schluessel', 'nachlass_karton',   // Polizeiwache
-    'oelkanne', 'fingerhut', 'koffer', 'grubenlampe', 'hallmann_kiste', 'silberloeffel', 'ohrring'                 // weitere Dinge mit Bild
+    'oelkanne', 'fingerhut', 'koffer', 'grubenlampe', 'hallmann_kiste', 'silberloeffel', 'ohrring',                // weitere Dinge mit Bild
+    'kalender_kraehe', 'naegel', 'vorschlaghammer', 'salztopf', 'weinregale'                                         // Keller und Ritualraum
   ].forEach(function (id) { if (HG.daten.dinge[id]) HG.daten.dinge[id].fundstueck = true; });
   // Tagebuch: Papier-Hintergrund ding-tagebuch-seite (ordentlich) bzw. ding-tagebuch-seite-spaet (Seiten mit papier: 'spaet')
 
@@ -49,4 +50,9 @@
   if (arbeitszimmer) arbeitszimmer.bildVariante = function (api) { return api.eig('rasiermesser', 'ort') === 'schreibtisch' ? 'rasiermesser' : null; };
   var hinterdiele = HG.daten.raeume.hinterdiele;
   if (hinterdiele) hinterdiele.bildVariante = function (api) { return api.eig('kraehentuer', 'verschlossen') ? null : 'tuer-offen'; };
+  // Keller: das Loch in der Westwand, der zerstörte Kreis (keller.js)
+  var heizungskeller = HG.daten.raeume.heizungskeller;
+  if (heizungskeller) heizungskeller.bildVariante = function (api) { return api.flag('wand_durch') ? 'durch' : null; };
+  var ritualraum = HG.daten.raeume.ritualraum;
+  if (ritualraum) ritualraum.bildVariante = function (api) { return api.flag('kreis_gebrochen') ? 'gebrochen' : null; };
 })();

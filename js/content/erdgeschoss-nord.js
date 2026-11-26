@@ -218,6 +218,8 @@
     'Neumond. Wieder ein Vogel. Er hört schon.<br><br>' +
     'Die Herrin schläft, und was in ihr krank ist, schläft mit ihr. Solange ich wache.<br><br>' +
     'Noch zehn Winter. Jeden Monat ein Leben. Dann ist die Tür unter dem Haus weit genug, und Er kommt hindurch.<br><br>' +
+    // Reihenfolge des Kreises im Ritualraum (keller.js): Osten, Süden, Westen, Norden – geschlossen wird rückwärts
+    'Kohle, wo Er aufgeht. Knochen, wo Er am höchsten steht. Blut, wo Er versinkt. Und zuletzt Sein Name, wo Er niemals ist.<br><br>' +
     'Sie wird Ihm gehören. Oder keinem.';
   // Ist dieses Ding ein Spiegel, vor den man das Buch halten kann? (Taschenspiegel, Flurspiegel, nachts das Fenster …)
   function istSpiegel(api, id) {

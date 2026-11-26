@@ -6,6 +6,8 @@
 //   'daemmerung' (Beginn der Nacht – 0 Uhr) · 'tief' (0–3 Uhr) · 'abebben' (3–6 Uhr) · null bei Tag.
 //   Um 3 Uhr ruft die Engine HG.daten.spiel.hoehepunkt(api) auf (wenn man im Haus ist).
 //   HG.nacht.nummer() = Nummer der Nacht (die Nacht nach Tag 1 ist Nacht 1).
+//   HG.nacht.bisNeumond() / istNeumond(n) – aus HG.daten.spiel.neumond = { ersteNacht, alle } (allgemein.js).
+//   HG.gefahren.schuetze(raum) – Salzlinie: der Wanderer betritt den Raum in dieser Nacht nicht.
 //
 // --- Lichtvorrat ----------------------------------------------------------------------------
 //   Ding: vorrat: { start: 100, proMinute: 0.5, einheit: '%', warnung: [20, 5], warnText, leerText,
@@ -75,10 +77,17 @@
    *  (Standard 3) – ist es aufgebraucht, liegt es wieder an seinem Startort (z. B. Wäschekammer). */
   HG.tuchVerbrauchen = function (tuch, spiegel) {
     HG.zustand.setze(spiegel, 'verhaengt', true);
-    var d = D(tuch), n = eig(tuch, 'anzahl'); if (n === undefined || n === null) n = d.vorratTuch || 3;
+    HG.stueckVerbrauchen(tuch);
+  };
+  /** Ein Stück von einem Vorrat verbrauchen (Laken, Salz …): "vorratStueck" Stück (sonst vorratTuch, Standard 3).
+   *  Ist der Vorrat aufgebraucht, liegt das Ding wieder voll an seinem Startort. true = jetzt aufgebraucht. */
+  HG.stueckVerbrauchen = function (id) {
+    var d = D(id), voll = d.vorratStueck || d.vorratTuch || 3, n = eig(id, 'anzahl');
+    if (n === undefined || n === null) n = voll;
     n--;
-    if (n <= 0) { HG.zustand.setze(tuch, 'anzahl', d.vorratTuch || 3); HG.zustand.setze(tuch, 'ort', d.ort); HG.zustand.setze(tuch, 'rel', d.rel || null); }
-    else HG.zustand.setze(tuch, 'anzahl', n);
+    if (n <= 0) { HG.zustand.setze(id, 'anzahl', voll); HG.zustand.setze(id, 'ort', d.ort); HG.zustand.setze(id, 'rel', d.rel || null); return true; }
+    HG.zustand.setze(id, 'anzahl', n);
+    return false;
   };
 
   HG.daten.manifestationen = HG.daten.manifestationen || {};
@@ -107,6 +116,7 @@
   function st() {
     var z = Z();
     if (!z.gefahren) z.gefahren = { nacht: {}, gebannt: {}, seelen: {}, wanderer: null, da: null, aktiv: null };
+    if (!z.gefahren.schutz) z.gefahren.schutz = {};   // Salzlinien: raumId -> Nummer der Nacht
     return z.gefahren;
   }
 
@@ -125,7 +135,19 @@
       return null;
     },
     /** Nummer der Nacht: Abend von Tag n und Morgen von Tag n+1 gehören zu Nacht n. */
-    nummer: function () { var z = Z(); return z.zeit.minute < (HG.zeit.beginn ? HG.zeit.beginn('morgen') : 360) ? z.zeit.tag - 1 : z.zeit.tag; }
+    nummer: function () { var z = Z(); return z.zeit.minute < (HG.zeit.beginn ? HG.zeit.beginn('morgen') : 360) ? z.zeit.tag - 1 : z.zeit.tag; },
+    /** Neumond: HG.daten.spiel.neumond = { ersteNacht: 3, alle: 29.5 } – Nacht n ist eine Neumondnacht,
+     *  wenn n = round(ersteNacht + k · alle) für ein k ≥ 0. Bei Tag zählt die kommende Nacht. */
+    istNeumond: function (n) { return N.bisNeumond(n) === 0; },
+    /** Wie viele Nächte bis zur nächsten Neumondnacht (0 = diese Nacht)? */
+    bisNeumond: function (n) {
+      var c = HG.daten.spiel.neumond || { ersteNacht: 3, alle: 29.5 };
+      if (n === undefined) n = N.nummer();
+      if (n <= c.ersteNacht) return c.ersteNacht - n;
+      var k = Math.max(0, Math.floor((n - c.ersteNacht) / c.alle) - 1), nacht;
+      do { nacht = Math.round(c.ersteNacht + k * c.alle); k++; } while (nacht < n);
+      return nacht - n;
+    }
   };
 
   // ============================================================== Lichtvorrat
@@ -168,6 +190,9 @@
     st: st,
 
     gebannt: function (seeleId) { return !!seeleId && st().gebannt[seeleId] === N.nummer(); },
+    /** Salzlinie: Diesen Raum betritt der Wanderer in dieser Nacht nicht. */
+    schuetze: function (raumId) { st().schutz[raumId] = N.nummer(); },
+    geschuetzt: function (raumId) { return st().schutz[raumId] === N.nummer(); },
     istBekehrt: function (seeleId) { return st().seelen[seeleId] === 'bekehrt'; },
 
     /** Darf die Gefahr jetzt ausgelöst werden? (Phase, Bann, einmal pro Nacht, Bedingung, Zufall) */
@@ -374,6 +399,11 @@
       var nach = G.nachbarn(s.wanderer.raum);
       if (!nach.length) return;
       var ziel = nach.indexOf(r.id) >= 0 && zufall() < (cfg.zielstrebig === undefined ? 0.5 : cfg.zielstrebig) ? r.id : nach[Math.floor(zufall() * nach.length)];
+      // Über eine Salzlinie geht sie nicht (G.schuetze)
+      if (G.geschuetzt(ziel)) {
+        if (ziel === r.id) HG.ausgabe.schreibe('spuk', wert(cfg.salzText) || 'Schritte, ganz nah. Sie bleiben an der Schwelle stehen. Lange. Dann entfernen sie sich.');
+        return;
+      }
       s.wanderer.raum = ziel;
       if (ziel === r.id) G.wandererKommt();
       else if (G.nachbarn(r.id).indexOf(ziel) >= 0) HG.ausgabe.schreibe('spuk', wert(cfg.warnText) || 'Schritte, ganz in der Nähe. Sie kommen näher.');
@@ -402,6 +432,7 @@
         if (!a.ziel || !HG.daten.raeume[a.ziel] || HG.daten.raeume[a.ziel].schauplatz !== r.schauplatz) return null;
         if (a.tuer && eig(a.tuer, 'verschlossen')) return null;
         if (a.sperre && typeof a.sperre === 'string') return null;
+        if (a.unsichtbar && HG.wert(a.unsichtbar, A())) return null;   // z. B. eine Wand, die noch nicht durchbrochen ist
         return a.ziel;
       }).filter(Boolean);
     },
@@ -592,6 +623,7 @@
         case 'stimmgabel':
           return 'illusion';
         case 'salz':
+          HG.stueckVerbrauchen(dingDabei('salz'));
           e = api.probe('okkultismus', { grund: 'Salzlinie' });
           if (e.erfolg) return 'gebannt';
           sag('Das Salz rieselt dir durch die Finger, die Linie hat Lücken.');

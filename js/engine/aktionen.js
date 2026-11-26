@@ -513,6 +513,18 @@
   A.fuellen = function (ctx) { sag(Der(ctx.obj) + ' ' + vb(ctx.obj, 'lässt', 'lassen') + ' sich nicht füllen.'); };
   A.erwaermen = function (ctx) { sag('Davon wird ' + der(ctx.obj) + ' nur ein bisschen warm. Es ändert sich nichts.'); };
   A.schoepfen = function () { sag('Hier gibt es nichts zu schöpfen.'); };
+  /** "miss raum (mit laser)": Räume übersteuern mit bei.messen (ctx.text = was gemessen wird, ctx.obj2 = womit). */
+  A.messen = function (ctx) {
+    var mit = ctx.obj2 || W.inventar().filter(function (id) { return D(id).messgeraet && !eig(id, 'kaputt'); })[0];
+    if (!mit) { sag('Womit? Mit bloßem Auge lässt sich hier nichts genau messen.'); return; }
+    sag(HG.wert(raum().messen, HG.api, ctx) || 'Du misst nach. Die Maße stimmen – hier fehlt nichts.');
+  };
+  /** "entferne …", "wische … weg": Dinge, die man mitnehmen kann, nimmt man; sonst übersteuern Inhalte mit bei.entfernen. */
+  A.entfernen = function (ctx) {
+    if (HG.spiel.nehmbar(ctx.obj)) return HG.spiel.handle(Object.assign({}, ctx, { aktion: 'nehmen' }));
+    sag(HG.wert(D(ctx.obj).entfernen, HG.api, ctx) || Der(ctx.obj) + ' ' + vb(ctx.obj, 'lässt', 'lassen') + ' sich nicht einfach entfernen.');
+  };
+  A.streuen = function (ctx) { sag(Der(ctx.obj) + ' ' + vb(ctx.obj, 'lässt', 'lassen') + ' sich nicht streuen.'); };
   /** Spiegel verhängen: mit einem Ding, das "tuch: true" hat (Laken). Verhängte Spiegel sind kein Portal (js/engine/macht.js). */
   A.verhaengen = function (ctx) {
     var M = HG.macht;

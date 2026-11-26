@@ -242,7 +242,8 @@
     oeffnen: 'öffnen', schliessen: 'schließen', druecken: 'drücken', ziehen: 'ziehen', drehen: 'drehen', umdrehen: 'umdrehen', einstellen: 'einstellen', knacken: 'knacken', schieben: 'schieben',
     anzuenden: 'anzünden', loeschen: 'löschen', zerbrechen: 'zerbrechen', reissen: 'zerreißen', sprechen: 'ansprechen',
     fragen: 'fragen', zeigen: 'zeigen', geben: 'geben', benutzen: 'benutzen', kombinieren: 'kombinieren',
-    hineinschauen: 'hineinschauen', unterschauen: 'darunter ansehen', hinterschauen: 'dahinter ansehen', oelen: 'ölen', spielen: 'spielen'
+    hineinschauen: 'hineinschauen', unterschauen: 'darunter ansehen', hinterschauen: 'dahinter ansehen', oelen: 'ölen', spielen: 'spielen',
+    entfernen: 'entfernen', streuen: 'streuen'
   };
 
   var S = HG.spiel = {
@@ -964,7 +965,7 @@
     /** Sichtbare Ausgänge des Raums: [{ id, richtung, befehl }] */
     ausgaenge: function () {
       var r = W.raum(), aus = r.ausgaenge || {};
-      return Object.keys(aus).filter(function (k) { return !(aus[k] && aus[k].unsichtbar); }).map(function (k) {
+      return Object.keys(aus).filter(function (k) { return !(aus[k] && HG.wert(aus[k].unsichtbar, api)); }).map(function (k) {
         return { id: k, richtung: !!W.RICHTUNGEN[k], befehl: W.RICHTUNGEN[k] ? 'geh ' + W.RICHTUNGEN[k].nach : k };
       });
     },

@@ -11,6 +11,9 @@ HG.spielDaten({
   startRaum: 'wohnung',          // Prolog: die Wohnung der Spielfigur (js/content/prolog.js)
   startDatum: '2026-11-16',      // [Vorschlag] Montag, 16. November 2026
   startUhrzeit: '08:10',
+  // Neumond (David, 26.11.2026): in der dritten Nacht nach Spielbeginn (18./19.11.), danach etwa alle 29,5 Tage.
+  // Nacht 1 = die Nacht nach dem ersten Tag. Der Kalender der Krähe im Ritualraum zählt die Nächte (keller.js).
+  neumond: { ersteNacht: 3, alle: 29.5 },
   startZiele: ['zuhause', 'krankenhaus'],   // weitere Ziele schaltet der Brief des Notars frei
 
   // --- Charaktererstellung ---------------------------------------------

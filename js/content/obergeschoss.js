@@ -187,7 +187,7 @@
         { titel: '1926', gesperrt: { frei: sichtbarSchrift, text: TB_LEER },
           text: function (api) { return api.flag('tagebuch_angesengt') ? '<i>(Die Seite ist halb verkohlt. Lesbar ist nur noch:)</i> … spricht nachts mit mir. Sie hat meine Stimme … weiß Dinge, die nur ich …' : 'Die andere spricht nachts mit mir. Sie hat meine Stimme, aber sie benutzt sie falsch, wie jemand, der ein Kleid trägt, das ihm nicht passt. Sie sagt, sie sei ich. Sie sagt, ohne sie wäre ich nichts als Schmerz.'; } },
         { titel: '1929, Neumond', gesperrt: { frei: sichtbarSchrift, text: TB_LEER },
-          text: 'Heute Nacht hat die Pflegerin mich in den Keller getragen. Kohle, Knochen, ein Kreis, und in der Mitte eine Scheibe, schwarz wie Wasser. Sie hat gesagt: Gib sie Ihm, und du bist für immer gesund. Ich habe gesagt: Lieber krank und mein eigen.' },
+          text: 'Heute Nacht hat die Pflegerin mich in den Keller getragen. Kohle, Knochen, ein Kreis, und in der Mitte eine Scheibe, schwarz wie Wasser. Sie hat gesagt: Gib sie Ihm, und du bist für immer gesund. Ich habe gesagt: Lieber krank und mein eigen.<br><br>Da hat sie gelacht. Was sie gelegt habe, sagte sie, nehme nur fort, wer es rückwärts nimmt – vom Letzten bis zum Ersten. Und wer würde das wagen, unter Seinen Augen?' },
         { titel: '1929, Herbst', gesperrt: { frei: sichtbarSchrift, text: TB_LEER },
           text: 'Ich habe ihre Kammer versiegelt, mit meinem eigenen Siegel. Sie ist seit drei Tagen fort. Die Krähe sitzt noch auf dem Fensterbrett. Die andere ist nicht fort. Sie ist lauter.' },
         { titel: '1930', gesperrt: { frei: sichtbarSchrift, text: TB_LEER }, hinweis: 'elisabeths_tagebuch',

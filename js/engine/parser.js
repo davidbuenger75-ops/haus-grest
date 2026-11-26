@@ -188,6 +188,13 @@
     { a: 'saegen', w: L('saeg saege saegen zersaeg zersaege zersaegen durchsaeg durchsaege durchsaegen'), o: 1, p2: L('mit') },   // "säge kette mit bügelsäge"
     { a: 'saegen', w: L('saeg saege'), p: 'durch', o: 1, p2: L('mit') },
     { a: 'fuellen', w: L('fuell fuelle fuellen nachfuellen'), o: 1, p2: L('in mit') },          // "fülle karbid in lampe"
+    { a: 'messen', w: L('miss misse messe messen vermesse vermessen ausmessen abmessen nachmessen'), o: '?', text: true, p2: L('mit') },   // "miss raum (mit laser)"
+    { a: 'messen', w: L('miss misse messe'), p: 'nach', o: '?', text: true, p2: L('mit') },
+    { a: 'messen', w: L('miss misse messe'), p: 'aus', o: '?', text: true, p2: L('mit') },
+    { a: 'entfernen', w: L('wisch wische kratz kratze kehr kehre feg fege tritt scharr scharre'), p: 'weg', o: 1, p2: L('mit') },   // "wische das blut weg"
+    { a: 'entfernen', w: L('kratz kratze'), p: 'aus', o: 1, p2: L('mit') },
+    { a: 'entfernen', w: L('entfern entferne entfernen beseitig beseitige beseitigen verwisch verwische wisch wische kratz kratze'), o: 1, p2: L('mit') },
+    { a: 'streuen', w: L('streu streue streuen'), o: 1, p2: L('vor auf in an um') },              // "streue salz (vor die tür)"
     { a: 'erwaermen', w: L('erwaerm erwaerme erwaermen waerm waerme waermen halt halte halten'), o: 1, p2: L('ueber mit an vor') },   // "halte tagebuch über kerze"
     { a: 'schoepfen', w: L('schoepf schoepfe schoepfen'), o: '?', p2: L('mit aus') },          // "schöpfe wasser mit eimer"
     { a: 'verhaengen', w: L('verhaeng verhaenge verhaengen bedeck bedecke bedecken'), o: 1, p2: L('mit') },   // "verhänge spiegel (mit laken)"                                  // "nenne sie beim Namen" (Diener bannen)
@@ -334,6 +341,7 @@
     'schließe … auf', 'schließe … ab', 'lege … ab', 'lege … in …', 'lege … auf …', 'gib … an …', 'zeige … …',
     'sprich mit …', 'frage … nach …', 'benutze …', 'kombiniere … mit …', 'drücke …', 'ziehe an …', 'drehe …', 'drehe … um', 'drehe … auf …', 'knacke …', 'öle …', 'brich … auf', 'versorge wunde', 'erste hilfe', 'entziffere …',
     'schiebe …', 'horche', 'lausche an …', 'rieche an …', 'taste …', 'taste umher', 'klopfe an …', 'zerbrich …',
+    'miss …', 'entferne …', 'streue …',
     'reiße an …', 'klettere auf …', 'verstecke dich hinter …', 'warte', 'warte bis …', 'schlafe', 'fahre los',
     'fahre zu …', 'ruf … an', 'fotografiere …', 'schreibe …', 'tippe …', 'unterschreibe …', 'winke', 'blättere weiter',
     'inventar', 'notizbuch', 'karte', 'hilfe', 'speichern', 'laden', 'rückgängig', 'zeit', 'werte',

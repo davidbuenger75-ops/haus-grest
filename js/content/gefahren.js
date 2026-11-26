@@ -205,11 +205,14 @@
   // =====================================================================
 
   // --- Die Witwe auf der Treppe (Margarete Ostermann) -------------------
+  // Am Ausgang einstellbar (Kellertreppe, keller.js): treppe: { unten: 'kellerflur', kabel: false, runter, hoch, sturz }
+  function treppe(ctx) { return (ctx.ausgang && ctx.ausgang.treppe) || {}; }
   function treppenProbe(api, ctx, vorsichtig) {
+    var tr = treppe(ctx), unten = tr.unten || 'halle', kabel = tr.kabel !== false && !api.bekehrt('natascha');
     var mod = -10, gruende = ['Nacht'];
     if (vorsichtig) { mod += 20; gruende.push('vorsichtig'); api.zeitVergeht(4); }
     if (api.hell()) { mod += 10; gruende.push('Licht'); }
-    if (!api.bekehrt('natascha')) { mod -= 10; gruende.push('Kabel'); }
+    if (kabel) { mod -= 10; gruende.push('Kabel'); }
     if (api.bekehrt('bettina')) { mod += 20; gruende.push('Bettina warnt dich'); }
     var e = api.probe('ge', { grund: 'Treppe', mod: mod, modGrund: gruende.join(', ') });
     if (e.erfolg) {
@@ -218,20 +221,20 @@
       return;
     }
     var patzer = e.patzer;
-    api.sage('Dein Fuß tritt ins Leere. Du stürzt, schlägst auf, rutschst die Stufen hinab' + (!api.bekehrt('natascha') ? ', und irgendwo dazwischen verfängt sich dein Knöchel in einem Kabel, das eben noch nicht da war' : '') + '. Unten in der Halle bleibst du liegen.');
+    api.sage('Dein Fuß tritt ins Leere. Du stürzt, schlägst auf, rutschst die Stufen hinab' + (kabel ? ', und irgendwo dazwischen verfängt sich dein Knöchel in einem Kabel, das eben noch nicht da war' : '') + '. ' + (tr.sturz || 'Unten in der Halle bleibst du liegen.'));
     api.verletze(patzer ? '2W6' : '1W6', { grund: 'Treppensturz' });
     if (HG.zustand.z.werte.lp > 0) api.nervenProbe('1/1W4', { grund: 'Treppensturz' });
-    if (HG.zustand.z.raum !== 'halle' && HG.zustand.z.werte.lp > 0) api.gehe('halle');
+    if (HG.zustand.z.raum !== unten && HG.zustand.z.werte.lp > 0) api.gehe(unten);
   }
   HG.gefahr('witwe', {
     name: 'Die Witwe auf der Treppe', seele: 'margarete', ausloeser: 'weg',
     phasen: ['daemmerung', 'tief', 'abebben'], chance: { daemmerung: 0.25, tief: 0.6, abebben: 0.25 },
     ablauf: function (api, ctx) {
-      var runter = ctx.richtung === 'runter';
+      var runter = ctx.richtung === 'runter', tr = treppe(ctx);
       if (ctx.vorsichtig) { treppenProbe(api, ctx, true); return false; }
       var bild = runter
-        ? 'Du siehst hinunter – und unten in der Halle steht jemand. Eine Frau in Schwarz, die Hände gefaltet, und sieht zu dir herauf. Die Treppe wirkt plötzlich kürzer, als sie sein dürfte, als fehle eine Stufe.'
-        : 'Auf halber Höhe wird die Treppe falsch. Die nächste Stufe ist zu nah, oder zu weit, du kannst es nicht sagen. Hinter dir, am Fuß der Treppe, raschelt schwarzer Stoff.';
+        ? (tr.runter || 'Du siehst hinunter – und unten in der Halle steht jemand. Eine Frau in Schwarz, die Hände gefaltet, und sieht zu dir herauf. Die Treppe wirkt plötzlich kürzer, als sie sein dürfte, als fehle eine Stufe.')
+        : (tr.hoch || 'Auf halber Höhe wird die Treppe falsch. Die nächste Stufe ist zu nah, oder zu weit, du kannst es nicht sagen. Hinter dir, am Fuß der Treppe, raschelt schwarzer Stoff.');
       if (!api.bekehrt('bettina') && HG.zufall() < 0.5) bild += ' Ganz nah an deinem Ohr flüstert eine Mädchenstimme: „Schnell! Lauf!“';
       var opt = [
         { text: 'Einfach weitergehen', tu: function () { treppenProbe(api, ctx, false); } },
@@ -275,22 +278,24 @@
     }
   });
 
-  // --- Das Gas (Dr. Karl Albers) – Küche ------------------------------
+  // --- Das Gas (Dr. Karl Albers) – Küche (und Weinkeller, keller.js) ----
+  // Texte je Raum: HG.daten.gefahren.gas.raeume[raumId]
+  function gasOrt() { var g = HG.daten.gefahren.gas.raeume; return g[HG.zustand.z.raum] || g.kueche; }
   function gasRunde(api) {
-    var s = G().st();
+    var s = G().st(), o = gasOrt();
     s.gas = (s.gas || 0);
     var e = api.probe('au', { grund: 'Gas', mod: -10 * Math.min(2, s.gas) });
     if (e.erfolg) { api.sage('Du hältst den Atem an, so gut es geht.'); }
     else {
       s.gas++;
       api.verletze('1', { grund: 'Gas' });
-      api.sage('Dir wird schwindlig. Die Küche dreht sich, langsam, wie ein Karussell.');
+      api.sage(o.schwindel);
       if (s.gas >= 3) {
         s.gas = 0;
         api.sage('Der Boden kommt dir entgegen.');
         var bis = HG.zeit.minutenBis(180);
         if (bis > 0 && bis < 12 * 60) api.zeitVergeht(bis);
-        api.abschnitt(43, 'Du wachst auf dem Küchenboden auf. Es ist drei Uhr. Kein Geruch mehr, kein Zischen. Der Gasherd ist kalt, die Knöpfe sind fest – seit 1946 verplombt.');
+        api.abschnitt(43, o.aufwachen);
         api.nervenProbe('1/1W8', { grund: 'Ohnmacht' });
         return;
       }
@@ -298,14 +303,15 @@
     gasAuswahl(api);
   }
   function gasAuswahl(api) {
+    var o = gasOrt();
     var opt = [
-      { text: 'Das Fenster aufreißen', tu: function () {
-        var e = api.probe('st', { grund: 'verzogenes Fenster' });
-        if (e.erfolg) { G().st().gas = 0; api.sage('Das Fenster gibt mit einem Ruck nach. Kalte Nachtluft strömt herein, und der Geruch ist fort, als hätte es ihn nie gegeben.'); }
-        else { api.sage('Der Rahmen ist verzogen und klemmt.'); api.zeitVergeht(1); gasRunde(api); }
+      { text: o.fenster, tu: function () {
+        var e = api.probe('st', { grund: o.fensterGrund });
+        if (e.erfolg) { G().st().gas = 0; api.sage(o.fensterAuf); }
+        else { api.sage(o.fensterKlemmt); api.zeitVergeht(1); gasRunde(api); }
       } },
-      { text: 'Raus aus der Küche', tu: function () { G().st().gas = 0; api.sage('Du stolperst hinaus, die Hand vor dem Mund.'); api.gehe('anrichte'); } },
-      { text: 'Luft anhalten und den Gasherd untersuchen', tu: function () { api.sage('Die Knöpfe des Gasherds sind verplombt, seit 1946. Und doch zischt es irgendwo darin.'); api.zeitVergeht(1); gasRunde(api); } }
+      { text: o.raus, tu: function () { G().st().gas = 0; api.sage('Du stolperst hinaus, die Hand vor dem Mund.'); api.gehe(o.rausNach); } },
+      { text: o.herd, tu: function () { api.sage(o.herdText); api.zeitVergeht(1); gasRunde(api); } }
     ];
     if (api.weiss('albers')) opt.push({ text: 'Ihn beim Namen nennen', tu: function () { HG.gefahren.nennen(function (ok) { if (ok) G().st().gas = 0; else gasRunde(api); }); } });
     api.auswahl('Was tust du?', opt);
@@ -313,9 +319,22 @@
   HG.gefahr('gas', {
     name: 'Das Gas', seele: 'albers', ausloeser: 'raum', orte: ['kueche'],
     phasen: ['daemmerung', 'tief'], chance: { daemmerung: 0.05, tief: 0.3 },
+    raeume: {
+      kueche: {
+        abschnitt: 44, start: 'Ein Zischen, leise, gleichmäßig. Dann der Geruch: süßlich, faulig, nach Gas. Er kommt vom alten weißen Herd, der seit 1946 stillgelegt ist.',
+        schwindel: 'Dir wird schwindlig. Die Küche dreht sich, langsam, wie ein Karussell.',
+        aufwachen: 'Du wachst auf dem Küchenboden auf. Es ist drei Uhr. Kein Geruch mehr, kein Zischen. Der Gasherd ist kalt, die Knöpfe sind fest – seit 1946 verplombt.',
+        fenster: 'Das Fenster aufreißen', fensterGrund: 'verzogenes Fenster',
+        fensterAuf: 'Das Fenster gibt mit einem Ruck nach. Kalte Nachtluft strömt herein, und der Geruch ist fort, als hätte es ihn nie gegeben.',
+        fensterKlemmt: 'Der Rahmen ist verzogen und klemmt.',
+        raus: 'Raus aus der Küche', rausNach: 'anrichte',
+        herd: 'Luft anhalten und den Gasherd untersuchen', herdText: 'Die Knöpfe des Gasherds sind verplombt, seit 1946. Und doch zischt es irgendwo darin.'
+      }
+    },
     ablauf: function (api) {
+      var o = gasOrt();
       G().st().gas = 0;
-      api.abschnitt(44, 'Ein Zischen, leise, gleichmäßig. Dann der Geruch: süßlich, faulig, nach Gas. Er kommt vom alten weißen Herd, der seit 1946 stillgelegt ist.');
+      api.abschnitt(o.abschnitt, o.start);
       gasAuswahl(api);
     }
   });
@@ -348,12 +367,15 @@
   });
   function W() { return HG.welt; }
 
-  // --- Der Zerschlagende (Josef Brzezinski) – Flurspiegel ---------------
+  // --- Der Zerschlagende (Josef Brzezinski) – Flurspiegel (und Waschküche, keller.js) ---
+  // spiegelIn: welcher Spiegel in welchem Raum
+  function zerschlagSpiegel() { return HG.daten.gefahren.zerschlagende.spiegelIn[HG.zustand.z.raum]; }
   HG.gefahr('zerschlagende', {
     name: 'Der Zerschlagende', seele: 'josef', ausloeser: 'raum', orte: ['flur'],
+    spiegelIn: { flur: 'spiegel' },
     phasen: ['tief'], chance: 0.15,
-    bedingung: function (api) { return HG.macht.istPortal('spiegel') && api.hell(); },
-    ablauf: function (api) { api.kampf('zerschlagende', { spiegel: 'spiegel' }); }
+    bedingung: function (api) { var sp = zerschlagSpiegel(); return !!sp && HG.macht.istPortal(sp) && api.hell(); },
+    ablauf: function (api) { api.kampf('zerschlagende', { spiegel: zerschlagSpiegel() }); }
   });
 
   // --- Die Näherin (Irmgard Hallmann) – Wäschekammer --------------------

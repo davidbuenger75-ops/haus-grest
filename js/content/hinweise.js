@@ -86,8 +86,8 @@ HG.hinweis('elisabeths_siegel', {
 });
 HG.hinweis('kraehe_gebetbuch', {
   titel: 'Das Gebetbuch der Pflegerin', strang: 'C',
-  text: 'Im Dienstbotenzimmer ein Gebetbuch, die Gebete durchgestrichen. Dazwischen, in Spiegelschrift: Jeden Neumond „ein Vogel“, damit „Er“ hört. „Die Herrin schläft, und was in ihr krank ist, schläft mit ihr.“ Nach zehn Wintern soll „die Tür unter dem Haus“ weit genug sein.',
-  stichworte: ['gebetbuch', 'spiegelschrift', 'pflegerin', 'neumond']
+  text: 'Im Dienstbotenzimmer ein Gebetbuch, die Gebete durchgestrichen. Dazwischen, in Spiegelschrift: Jeden Neumond „ein Vogel“, damit „Er“ hört. „Die Herrin schläft, und was in ihr krank ist, schläft mit ihr.“ Nach zehn Wintern soll „die Tür unter dem Haus“ weit genug sein. Und: „Kohle, wo Er aufgeht. Knochen, wo Er am höchsten steht. Blut, wo Er versinkt. Und zuletzt Sein Name, wo Er niemals ist.“',
+  stichworte: ['gebetbuch', 'spiegelschrift', 'pflegerin', 'neumond', 'kohle', 'knochen', 'blut']
 });
 HG.hinweis('vogelschaedel', {
   titel: 'Die Zigarrenkiste unter der Diele', strang: 'C',

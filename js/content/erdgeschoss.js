@@ -437,7 +437,7 @@ HG.raum('flur', {
   riechen: 'Feuchter Putz. Und ganz schwach: Lavendel.',
   ausgaenge: {
     sueden: 'halle', westen: 'hinterdiele', osten: 'anrichte',
-    runter: { sperre: 'Die Kellertür ist mit einer schweren Kette und einem Vorhängeschloss gesichert. <span class="nebenbei">(Der Keller wird noch gebaut.)</span>' }
+    runter: { sperre: 'Die Kellertür ist mit einer schweren Kette und einem Vorhängeschloss gesichert.' }   // wird in keller.js ersetzt
   },
   vorschlaege: function (api) { return api.hell() ? ['untersuche spiegel', 'schau in den spiegel'] : ['geh nach süden']; },
   details: [

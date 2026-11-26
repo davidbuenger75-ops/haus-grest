@@ -6,6 +6,7 @@
 // Lädt Engine und Inhalt wie index.html (ohne Oberfläche) in eine Node-Sandbox und spielt:
 // Prolog → Lager Schmidt → Kästchen auf allen drei Wegen (Code, Werkzeug, Gewalt) → Brief nehmen und lesen
 // (auch über die Menüs) → Zirkel über „nimm etwas hartes“ und andere naheliegende Befehle → Carstens Bauplan.
+// (…) → Haus, Obergeschoss, Dachboden, Polizeiwache → Keller und Ritualraum (Abschnitt 18)
 // Außerdem: Jeder Befehl, den ein Menü (Wort-Menü, Verb-Leiste) oder die Vorschlagsleiste anbietet, muss funktionieren.
 'use strict';
 const fs = require('fs');
@@ -895,7 +896,9 @@ const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'diens
   geh(s, 'runter', 'runter', 'norden');
   s.tu('säge kette mit bügelsäge');
   pruefe(Z().flags.kellerkette_offen, 'Kellerkette durchgesägt');
-  pruefe(/noch gebaut/.test(s.tu('geh runter')), 'Keller: „wird noch gebaut“');
+  s.tu('geh runter');
+  pruefe(Z().raum === 'kellerflur', 'Durch die Kellertür hinunter in den Kellerflur');
+  geh(s, 'hoch');
   // Hallmann bekehren
   Z().hinweise.push('hallmann_brand');
   pruefe(HG.gefahren.weiss('hallmann'), 'Hallmanns Geschichte: Bauakte + Messprotokolle');
@@ -1062,6 +1065,170 @@ const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'diens
     H.zufall = () => 0.97;
     g.tu('frage jansen nach der akte');
     pruefe(Z2().flags.akte_gezeigt, 'Wolters’ Zettel: Akte ohne Probe');
+  }
+}
+
+// --- 18. Keller und Ritualraum ------------------------------------------------
+{
+  console.log('\n18. Keller: Räume → fehlende Wand (Laser, Zollstock, Klopfen, blind, Natascha) → Durchbruch → Kreis brechen → Gefahren, Salz, Neumond');
+  const KELLER = ['kellerflur', 'vorratskeller', 'weinkeller', 'waschkueche', 'heizungskeller', 'ritualraum'];
+  /** Neues Spiel, Kellerkette offen, mit Licht im Flur vor der Kellertür */
+  function imKeller(opt) {
+    const s = imHaus(opt); const HG = s.HG;
+    HG.zustand.z.flags.kellerkette_offen = true;
+    geh(s, 'norden');
+    return s;
+  }
+  const s = imKeller(); const HG = s.HG; const Z = () => HG.zustand.z;
+  KELLER.forEach(r => {
+    const ev = Object.keys(HG.daten.spuk).map(k => HG.daten.spuk[k]).filter(d => (d.orte || []).includes(r));
+    pruefe(ev.some(d => !d.zeiten || d.zeiten.some(z => z === 'morgen' || z === 'mittag')) && ev.some(d => !d.zeiten || d.zeiten.includes('nacht')), r + ': Spuk bei Tag und bei Nacht vorhanden');
+    const aus = HG.daten.raeume[r].ausgaenge || {};
+    pruefe(!Object.keys(aus).some(k => { const a = aus[k]; const z = typeof a === 'string' ? a : a.ziel; return z && !HG.daten.raeume[z]; }), r + ': alle Ausgänge führen zu Räumen');
+    pruefe(!!HG.plan.finde(HG.daten.plaene.haus, r), r + ': steht im Bauplan');
+  });
+  // Neumond: dritte Nacht, danach etwa alle 29,5 Tage
+  pruefe(HG.nacht.bisNeumond(1) === 2 && HG.nacht.istNeumond(3) && HG.nacht.bisNeumond(4) === 29 && HG.nacht.istNeumond(33) && HG.nacht.bisNeumond(34) === 28, 'Neumond: Nacht 3, dann Nacht 33, 62 …');
+
+  s.tu('geh runter');
+  pruefe(Z().raum === 'kellerflur', 'Die Kellertreppe hinunter in den Kellerflur');
+  pruefeMenues(s, 'Kellerflur');
+  pruefe(/silbrig/.test(s.tu('schalte hauptschalter ein')), 'Sicherungskasten: Licht von oben (Stimmung)');
+  pruefe(/Heizung/.test(s.tu('klopfe an vermauerte tür')), 'Vermauerte Tür: dahinter die Heizung');
+  geh(s, 'westen'); pruefeMenues(s, 'Vorratskeller');
+  pruefe(/Für Heinrich/.test(s.tu('untersuche einmachgläser')), 'Einmachgläser von Margarete Ostermann');
+  geh(s, 'süden'); pruefeMenues(s, 'Weinkeller');
+  pruefe(/Hier nicht/.test(s.tu('versteck dich')), 'Weinkeller: hier versteckt man sich nicht');
+  geh(s, 'norden', 'osten', 'osten'); pruefeMenues(s, 'Waschküche');
+  s.tu('nimm salz');
+  pruefe(HG.welt.getragen('salz') && HG.api.eig('salz', 'anzahl') === 3, 'Salz für drei Linien eingesteckt');
+  geh(s, 'süden');
+  pruefe(Z().raum === 'heizungskeller' && !HG.spiel.ausgaenge().some(a => a.id === 'westen'), 'Heizungskeller: kein Weg nach Westen (noch)');
+  pruefeMenues(s, 'Heizungskeller');
+  s.tu('geh nach westen');
+  pruefe(Z().raum === 'heizungskeller', 'Die Westwand ist zu');
+  // Weg 1 (Kopf): Laser + Plan
+  HG.api.bewege('laser', 'spieler');
+  s.tu('miss raum mit laser');
+  pruefe(!Z().flags.wand_gefunden && Z().flags.wand_gemessen, 'Ohne den Bauplan: 10,60 m, aber kein Vergleich');
+  Z().hinweise.push('carstens_plan');
+  pruefe(/2,40/.test(s.tu('benutze laser')), '„benutze laser“ mit Plan: es fehlen 2,40 m');
+  pruefe(Z().flags.wand_gefunden && Z().hinweise.includes('fehlende_wand'), 'Westwand markiert, Hinweis „Die Wand im Heizungskeller“');
+  // Durchbrechen bei Nacht: nach dem zweiten Schlag kommt die Wandernde
+  HG.zufall = () => 0.05;
+  Z().zeit.minute = 22 * 60;
+  s.tu('zerschlage wand mit vorschlaghammer');
+  pruefe(HG.api.eig('kellerwand', 'treffer') === 1 && HG.welt.getragen('vorschlaghammer'), 'Erster Treffer (Hammer von der Werkbank)');
+  s.tu('zerschlage wand mit vorschlaghammer');
+  pruefe(Z().kampf && Z().kampf.id === 'die_wandernde', 'Nachts: Lärm lockt die Wandernde');
+  Z().kampf = null;
+  s.tu('schlag die wand ein');
+  pruefe(Z().flags.wand_durch && HG.spiel.ausgaenge().some(a => a.id === 'westen'), 'Dritter Treffer: Durchbruch, Weg nach Westen offen');
+  geh(s, 'westen');
+  pruefe(Z().raum === 'ritualraum', 'Im Ritualraum');
+  pruefeMenues(s, 'Ritualraum');
+  let t = s.tu('lies kalender');
+  pruefe(Z().hinweise.includes('kalender_kraehe') && /1929/.test(t) && /Striche|heute/.test(t), 'Kalender der Krähe: Zwölferblöcke, Skizze, Countdown');
+  s.tu('untersuche nägel');
+  pruefe(Z().hinweise.includes('dreizehn_naegel'), 'Dreizehn Nägel (Hinweis)');
+  // Falsche Ordnung → Die Tür
+  s.tu('nimm die kohle');
+  pruefe(Z().kampf && Z().kampf.id === 'die_tuer' && !HG.api.eig('kreis_kohle', 'entfernt'), 'Falsche Ordnung: „Die Tür“ greift heraus, der Kreis ist wieder ganz');
+  Z().kampf = null;
+  s.tu('entferne den namen'); s.tu('entferne das blut');
+  pruefe(HG.api.eig('kreis_blut', 'entfernt') && !Z().kampf, 'Name und Blut in der richtigen Ordnung');
+  s.tu('entferne die knochen');
+  const machtVorher = HG.macht.wert();
+  s.tu('wische die kohle weg');
+  pruefe(Z().flags.kreis_gebrochen && Z().hinweise.includes('kreis_gebrochen'), 'Den Kreis rückwärts gebrochen');
+  pruefe(HG.macht.wert() < machtVorher - 15 && !HG.macht.groesse('schwarze_scheibe'), 'MACHT sinkt deutlich, die Scheibe spiegelt nicht mehr');
+  Z().hinweise.push('kraehe_gebetbuch');
+  HG.spiel.kombiniereHinweise('kalender_kraehe', 'kraehe_gebetbuch');
+  pruefe(Z().schluesse.includes('kreis_rueckwaerts'), 'Schlussfolgerung „Den Kreis rückwärts brechen“');
+  Z().hinweise.push('vogelschaedel');
+  HG.spiel.kombiniereHinweise('kalender_kraehe', 'vogelschaedel');
+  pruefe(Z().schluesse.includes('nacht_der_tuer'), 'Schlussfolgerung „Die Nacht der Tür“');
+  pruefe(/winzigen Loch/.test(HG.wert(HG.daten.dinge.puppenhaus.beschreibung, HG.api)), 'Puppenhaus: der Streifen hinter der Wand hat ein Loch');
+
+  // Weg 2: Zollstock von Hand (erst verzählt, dann richtig)
+  {
+    const g = imKeller(); const H = g.HG; const Z2 = () => H.zustand.z;
+    Z2().raum = 'heizungskeller'; Z2().hinweise.push('carstens_plan');
+    H.zufall = () => 0.97;
+    pruefe(/verzählst/.test(g.tu('miss raum')) && !Z2().flags.wand_gefunden, 'Zollstock: verzählt');
+    H.zufall = () => 0.05;
+    g.tu('miss raum');
+    pruefe(Z2().flags.wand_gefunden && H.welt.getragen('zollstock'), 'Zollstock: Westwand gefunden');
+  }
+  // Weg 3: Wände abklopfen (Wahrnehmung −20)
+  {
+    const g = imKeller(); const H = g.HG; const Z2 = () => H.zustand.z;
+    Z2().raum = 'heizungskeller'; Z2().fertigkeiten.wahrnehmung = 60;
+    H.zufall = () => 0.05;
+    g.tu('klopfe an westwand');
+    pruefe(Z2().flags.wand_gefunden, 'Abklopfen: hohl an der Westwand');
+  }
+  // Weg 4: blind schlagen – teuer, aber keine Sackgasse
+  {
+    const g = imKeller(); const H = g.HG; const Z2 = () => H.zustand.z;
+    Z2().raum = 'heizungskeller';
+    const lp = Z2().werte.lp;
+    g.tu('zerschlage wand');
+    pruefe(!Z2().flags.wand_gefunden && Z2().werte.lp < lp, 'Blind geschlagen: Nordwand, Rückschlag');
+    g.tu('zerschlage wand');
+    pruefe(Z2().flags.wand_gefunden, 'Zweiter Versuch: die Westwand klingt hohl');
+    // Bei Tag ist die Wand härter; die Treffer heilen um drei Uhr
+    H.zufall = () => 0.05; g.tu('zerschlage wand');
+    pruefe(H.api.eig('kellerwand', 'treffer') === 1, 'Treffer bei Tag');
+    Z2().zeit.minute = 2 * 60 + 58; H.api.zeitVergeht(5);
+    pruefe(H.api.eig('kellerwand', 'treffer') === 0 && /wie am ersten Tag/.test(g.tu('untersuche westwand')), 'Um drei Uhr ist die Wand wieder heil');
+  }
+  // Weg 5: Natascha (bekehrt) zeigt die Stelle
+  {
+    const g = imKeller(); const H = g.HG; const Z2 = () => H.zustand.z;
+    H.gefahren.st().seelen.natascha = 'bekehrt';
+    Z2().raum = 'waschkueche'; geh(g, 'süden');
+    pruefe(Z2().flags.wand_gefunden, 'Natascha zeigt die Stelle an der Westwand');
+  }
+  // Okkultismus erkennt die Ordnung; Scheibe zerschlagen stärkt das Haus
+  {
+    const g = imKeller(); const H = g.HG; const Z2 = () => H.zustand.z;
+    Z2().flags.wand_durch = true; Z2().raum = 'ritualraum'; Z2().fertigkeiten.okkultismus = 90;
+    H.zufall = () => 0.05;
+    pruefe(/zuerst der Name/.test(g.tu('untersuche kreis')) && Z2().flags.kreis_ordnung, 'Okkultismus: die Ordnung erkannt');
+    H.api.bewege('vorschlaghammer', 'spieler'); H.macht.setze(50);
+    g.tu('zerschlage die scheibe');
+    pruefe(H.api.eig('schwarze_scheibe', 'zerbrochen') && H.macht.wert() > 60, 'Scheibe zerschlagen: das Haus wird stärker');
+    Z2().zeit.tag++; Z2().zeit.minute = 2 * 60 + 58; H.api.zeitVergeht(5); g.tu('warte');
+    pruefe(!H.api.eig('schwarze_scheibe', 'zerbrochen'), 'Um drei Uhr ist die Scheibe wieder heil');
+  }
+  // Gefahren im Keller: Witwe auf der Kellertreppe, Gas im Weinkeller, Zerschlagender in der Waschküche, Salz
+  {
+    const g = imKeller(); const H = g.HG; const Z2 = () => H.zustand.z;
+    Z2().zeit.minute = 60;
+    H.zufall = () => 0.97;
+    H.gefahren.loese('witwe', { ausgang: H.daten.raeume.flur.ausgaenge.runter, richtung: 'runter' });
+    pruefe(/Kellertreppe/.test(g.bloecke.slice(-6).map(b => b.html || '').join(' ')), 'Witwe: eigenes Bild auf der Kellertreppe');
+    g.tu('Einfach weitergehen');
+    pruefe(Z2().raum === 'kellerflur', 'Sturz auf der Kellertreppe: unten im Kellerflur');
+    Z2().raum = 'weinkeller'; Z2().gefahren.nacht = {};
+    H.gefahren.loese('gas');
+    g.tu('Raus in den Vorratskeller');
+    pruefe(Z2().raum === 'vorratskeller', 'Das Gas im Weinkeller: in den Vorratskeller geflohen');
+    Z2().raum = 'waschkueche';
+    pruefe(H.daten.gefahren.zerschlagende.bedingung(H.api), 'Der Zerschlagende: der Spiegel der Waschküche reicht');
+    H.gefahren.loese('zerschlagende');
+    pruefe(Z2().kampf && Z2().kampf.spiegel === 'waschkueche_spiegel', 'Der Zerschlagende greift aus dem Spiegel der Waschküche');
+    Z2().kampf = null;
+    // Salzlinie: die Wandernde kommt nicht herein
+    Z2().raum = 'vorratskeller'; H.api.bewege('salz', 'spieler');
+    g.tu('streue salz');
+    pruefe(H.gefahren.geschuetzt('vorratskeller') && H.api.eig('salz', 'anzahl') === 2, 'Salzlinie im Vorratskeller');
+    Z2().raum = 'vorratskeller';   // (falls ein Schock die Figur weggetrieben hat)
+    H.gefahren.st().wanderer = { raum: 'kellerflur', nacht: H.nacht.nummer(), zuletzt: -9999 };
+    H.zufall = () => 0.05;
+    H.gefahren.wandererZug();
+    pruefe(!Z2().kampf && H.gefahren.st().wanderer.raum === 'kellerflur', 'Die Wandernde bleibt vor der Salzlinie stehen');
   }
 }
 
