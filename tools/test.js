@@ -1094,8 +1094,8 @@ const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'diens
     pruefe(!Object.keys(aus).some(k => { const a = aus[k]; const z = typeof a === 'string' ? a : a.ziel; return z && !HG.daten.raeume[z]; }), r + ': alle Ausgänge führen zu Räumen');
     pruefe(!!HG.plan.finde(HG.daten.plaene.haus, r), r + ': steht im Bauplan');
   });
-  // Neumond: dritte Nacht, danach etwa alle 29,5 Tage
-  pruefe(HG.nacht.bisNeumond(1) === 2 && HG.nacht.istNeumond(3) && HG.nacht.bisNeumond(4) === 29 && HG.nacht.istNeumond(33) && HG.nacht.bisNeumond(34) === 28, 'Neumond: Nacht 3, dann Nacht 33, 62 …');
+  // Neumond: Nacht 7, danach alle 14 Nächte (David, 27.11.2026)
+  pruefe(HG.nacht.bisNeumond(1) === 6 && HG.nacht.istNeumond(7) && HG.nacht.bisNeumond(8) === 13 && HG.nacht.istNeumond(21) && HG.nacht.istNeumond(35) && HG.nacht.bisNeumond(22) === 13 && !HG.nacht.istNeumond(3), 'Neumond: Nacht 7, dann Nacht 21, 35 …');
 
   s.tu('geh runter');
   pruefe(Z().raum === 'kellerflur', 'Die Kellertreppe hinunter in den Kellerflur');
@@ -1667,6 +1667,72 @@ const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'diens
     h.tu('gieße benzin aus'); h.tu('zünde benzin an');
     pruefe(Zh().vorbei && h.bloecke.some(b => /originalgetreu/.test(b.html || b.text || '')), 'Hallmann legt auf: Ende „Feuer“ – und der Wiederaufbau');
   }
+}
+
+// --- 26. Allgemeine Kulisse: Wand, Boden, Decke, Raum in jedem Raum ---------------------------
+{
+  console.log('\n26. Kulisse: wand/wände/boden/decke/zimmer/raum × untersuche/taste/klopfe/durchsuche in jedem Raum');
+  const s = imHaus(); const HG = s.HG, Z = () => HG.zustand.z;
+  const sicher = JSON.stringify(Z());
+  const kaputt = [];
+  Object.keys(HG.daten.raeume).forEach(raum => {
+    ['wand', 'wände', 'boden', 'decke', 'zimmer', 'raum'].forEach(wort => {
+      ['untersuche', 'taste', 'klopfe an', 'durchsuche'].forEach(verb => {
+        HG.zustand.z = JSON.parse(sicher); Z().raum = raum; Z().zeit.minute = 12 * 60;
+        const t = s.tu(verb + ' ' + (verb === 'klopfe an' ? 'die ' : '') + wort);
+        if (/nichts dergleichen|kenne ich nicht|Was meinst du|Welche[ns]? meinst du/.test(t) || !t.trim()) kaputt.push(raum + ': ' + verb + ' ' + wort + ' → ' + t.split('\n')[0]);
+      });
+    });
+  });
+  pruefe(!kaputt.length, 'Kulisse in allen ' + Object.keys(HG.daten.raeume).length + ' Räumen' + (kaputt.length ? '\n      ' + kaputt.slice(0, 15).join('\n      ') + (kaputt.length > 15 ? '\n      … ' + kaputt.length + ' insgesamt' : '') : ''));
+  HG.zustand.z = JSON.parse(sicher); Z().raum = 'heizungskeller';
+  pruefe(HG.parser.aufloesen(['wand']).ids[0] !== 'kulisse_wand', 'Heizungskeller: „wand“ meint die eigene Wand, nicht die Kulisse');
+  HG.zustand.z = JSON.parse(sicher); Z().raum = 'friedhof_alt';
+  pruefe(/Himmel/.test(s.tu('untersuche decke')), 'Draußen: Über dir ist nur der Himmel');
+}
+
+// --- 27. Protokoll für Tester ---------------------------------------------------------------
+{
+  console.log('\n27. Protokoll: Eingaben, Würfe, Uhrzeit, Spielstand-Kurzinfo');
+  const s = imHaus(); const HG = s.HG;
+  s.tu('nimm kerze'); s.tu('geh nach westen');
+  HG.api.probe('st', { grund: 'Protokolltest' });
+  s.tu('protokoll');
+  const t = HG.protokoll.text();
+  pruefe(/> nimm kerze/.test(t) && /\[T1 \d\d:\d\d\] > geh nach westen/.test(t), 'Eingaben mit Spieltag und Uhrzeit');
+  pruefe(/🎲 .*Protokolltest/.test(t), 'Würfe stehen im Protokoll');
+  pruefe(/--- Spielstand ---/.test(t) && /NERVEN \d+/.test(t) && /Ort: Eingangshalle/.test(t) && /MACHT/.test(t), 'Spielstand-Kurzinfo (Ort, Werte, MACHT)');
+  pruefe(/===== Neues Spiel =====/.test(t), 'Marke beim neuen Spiel');
+}
+
+// --- 28. Sound: Untertitel, lauter Schreck einmal pro Nacht, Abspann ----------------------------
+{
+  console.log('\n28. Sound: Untertitel, ein lauter Schreck pro Nacht, Sound-Verzeichnis, Abspann');
+  const s = imHaus(); const HG = s.HG, Z = () => HG.zustand.z;
+  s.tu('geh hoch'); s.tu('klopfe an die tapetentür');
+  pruefe(s.bloecke.some(b => b.typ === 'ton' && /klopft dreimal/.test(b.html)), 'Untertitel: [Es klopft dreimal zurück]');
+  Z().zeit.minute = 3 * 60; Z().zeit.tag++;
+  HG.medien.effekt('uhr', { mal: 3, laut: true });
+  pruefe(Z().flags._lauterSchreck === HG.nacht.nummer(), 'Lauter Schreck: für diese Nacht vermerkt (ein zweiter bleibt stumm, nur Untertitel)');
+  const fehlend = ['ort-haus-nacht', 'effekt-spuk-schritte_oben', 'effekt-klopfen-dreimal', 'effekt-kinderlachen', 'effekt-uhr', 'effekt-herzschlag'].filter(n => !HG.daten.klaenge[n] || !HG.daten.klaenge[n].prompt);
+  pruefe(!fehlend.length, 'Sound-Verzeichnis: die fünf Probe-Sounds und der Herzschlag' + (fehlend.length ? ' – fehlt: ' + fehlend.join(', ') : ''));
+  pruefe(Object.values(HG.daten.klaenge).every(k => k.sek > 0 && k.sek <= 30 && /^(schleife|effekt)$/.test(k.art)), 'Alle Sounds: Art und Länge 0–30 s');
+  // Stundenschlag: 19 Uhr sieben Schläge, Mitternacht zwölf, 1 Uhr eins, 3 Uhr nur der Höhepunkt
+  {
+    const u = imHaus(); const UH = u.HG, UZ = () => UH.zustand.z;
+    const tonNach = n => u.bloecke.slice(n).filter(b => b.typ === 'ton').map(b => b.html).join(' | ');
+    let n = u.bloecke.length; UZ().zeit.minute = 18 * 60 + 59; u.tu('warte');
+    pruefe(/schlägt sieben/.test(tonNach(n)) && UZ().flags.uhr_gehoert, 'Stundenschlag: 19 Uhr, sieben Schläge');
+    n = u.bloecke.length; UZ().zeit.minute = 23 * 60 + 59; u.tu('warte');
+    pruefe(/schlägt zwölf/.test(tonNach(n)), 'Mitternacht: zwölf Schläge');
+    n = u.bloecke.length; UZ().zeit.minute = 24 * 60 + 59; u.tu('warte');
+    pruefe(/schlägt eins/.test(tonNach(n)), '1 Uhr: ein Schlag');
+    n = u.bloecke.length; UZ().zeit.minute = 26 * 60 + 59; u.tu('warte');
+    pruefe(tonNach(n) === '[Eine Uhr schlägt drei]', '3 Uhr: nur der Höhepunkt schlägt (einmal) – ' + tonNach(n));
+    UZ().zeit.minute = 14 * 60 + 59; n = u.bloecke.length; u.tu('warte');
+    pruefe(!tonNach(n), 'Bei Tag schlägt keine Uhr');
+  }
+  pruefe(/ElevenLabs \(elevenlabs\.io\)/.test(HG.wert(HG.daten.spiel.abspann, HG.api)), 'Abspann nennt ElevenLabs');
 }
 
 console.log('\n' + (tests - fehler) + ' von ' + tests + ' Prüfungen bestanden.' + (fehler ? ' ' + fehler + ' FEHLGESCHLAGEN.' : ''));

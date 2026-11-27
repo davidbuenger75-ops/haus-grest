@@ -153,6 +153,8 @@
           A.befehl(c);
         });
       });
+      if ($('protokoll-knopf')) $('protokoll-knopf').addEventListener('click', function () { A.protokollKopieren(); });
+      if ($('protokoll-zu')) $('protokoll-zu').addEventListener('click', function () { $('protokoll-dialog').close(); A.fokus(); });
       $('karte-zu').addEventListener('click', function () { $('karte').close(); A.fokus(); });
       // Nahansicht: Bereiche lösen Befehle aus, Ringe drehen sich erst lokal und rasten per Knopf ein
       $('nah-zu').addEventListener('click', function () { $('nah').close(); A.fokus(); });
@@ -196,8 +198,10 @@
         document.addEventListener(ev, function () { HG.medien.entsperre(); }, { once: true, capture: true });
       });
       $('ton-stumm').addEventListener('click', function () { HG.medien.entsperre(); HG.medien.setzeStumm(!HG.medien.einst.stumm); A.ton(); });
-      $('ton-regler').addEventListener('input', function () { HG.medien.entsperre(); HG.medien.setzeLautstaerke(this.value / 100); });
-      $('ton-regler').addEventListener('change', function () { HG.medien.effekt('wuerfel'); });
+      $('ton-regler').addEventListener('input', function () { HG.medien.entsperre(); HG.medien.setzeLautstaerke(this.value / 100, 'hintergrund'); });
+      $('ton-effekte').addEventListener('input', function () { HG.medien.entsperre(); HG.medien.setzeLautstaerke(this.value / 100, 'effekte'); });
+      $('ton-effekte').addEventListener('change', function () { HG.medien.effekt('wuerfel'); });
+      $('ton-untertitel').addEventListener('change', function () { HG.medien.setzeUntertitel(this.checked); });
 
       // Lese-Ansicht für Bücher: Blättern läuft über normale (leise) Befehle
       $('buch-weiter').addEventListener('click', function () { HG.spiel.eingabe('blättere weiter', { leise: true }); });
@@ -432,7 +436,7 @@
         case 'kampf': el = document.createElement('div'); el.className = 'kampf'; el.innerHTML = b.html; break;
         case 'ziel': el = document.createElement('p'); el.className = 'hinweis'; el.innerHTML = '➜ ' + b.html; break;
         default:
-          el = document.createElement('p'); el.className = b.typ === 'text' ? '' : b.typ === 'andeutung' ? 'system' : b.typ;
+          el = document.createElement('p'); el.className = b.typ === 'text' ? '' : b.typ === 'andeutung' ? 'system' : b.typ === 'ton' ? 'untertitel' : b.typ;
           if (b.typ === 'wert') el.className = 'wertmeldung' + (b.delta < 0 ? ' minus' : ' plus');
           el.innerHTML = (b.typ === 'hinweis' ? '✎ ' : '') + b.html;
       }
@@ -536,6 +540,7 @@
     auffrischen: function () {
       A.bild(); A.werte(); A.inventar(); A.notizbuch(); A.handy(); A.vorschlaege(); A.leiste(); A.tageszeit(); A.ton();
       HG.medien.atmo();
+      HG.medien.herz();
       if ($('karte').open) A.zeigeKarte();
     },
 
@@ -597,14 +602,40 @@
       if ($('grossbild').showModal) $('grossbild').showModal(); else $('grossbild').setAttribute('open', '');
     },
 
+    /** Spielprotokoll in die Zwischenablage (für Tester). Klappt das nicht, öffnet sich ein Fenster zum Selbstkopieren. */
+    protokollKopieren: function () {
+      if (!HG.protokoll) return;
+      var text = HG.protokoll.text(), n = HG.protokoll.anzahl();
+      var ok = function () { HG.ausgabe.system('Protokoll kopiert (' + n + ' Einträge, ' + Math.round(text.length / 1024) + ' KB). Du kannst es jetzt in eine E-Mail oder Nachricht einfügen (Strg+V).'); };
+      var notfall = function () {
+        var ta = document.createElement('textarea');
+        ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        var geklappt = false;
+        try { geklappt = document.execCommand('copy'); } catch (e) { geklappt = false; }
+        document.body.removeChild(ta);
+        if (geklappt) { ok(); return; }
+        $('protokoll-text').value = text;
+        if ($('protokoll-dialog').showModal) $('protokoll-dialog').showModal(); else $('protokoll-dialog').setAttribute('open', '');
+        $('protokoll-text').focus(); $('protokoll-text').select();
+      };
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok, notfall);
+        else notfall();
+      } catch (e) { notfall(); }
+    },
+
     /** Lautstärke und Stummschalter in der Seitenleiste. */
     ton: function () {
       var e = HG.medien.einst;
       $('ton-stumm').textContent = e.stumm ? '🔇' : '🔊';
       $('ton-stumm').setAttribute('aria-pressed', e.stumm);
       $('ton-stumm').title = e.stumm ? 'Ton einschalten' : 'Ton ausschalten';
-      $('ton-regler').value = Math.round(e.lautstaerke * 100);
+      $('ton-regler').value = Math.round(e.hintergrund * 100);
       $('ton-regler').disabled = e.stumm;
+      $('ton-effekte').value = Math.round(e.effekte * 100);
+      $('ton-effekte').disabled = e.stumm;
+      $('ton-untertitel').checked = e.untertitel !== false;
     },
 
     // Charakterbogen in der Seitenleiste (auf dem Handy der Reiter „Werte“). Das Gerüst wird nur neu gebaut,

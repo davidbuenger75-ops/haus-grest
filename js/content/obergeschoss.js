@@ -70,6 +70,7 @@
     bei: {
       klopfen: function (api) {
         api.sage('Du klopfst. Einmal, zweimal. Stille. Dann klopft es von drinnen zurück – dreimal, langsam, genau an der Stelle, an der deine Knöchel das Holz berührt haben.');
+        api.sound('klopfen-dreimal');
         api.nervenProbe('0/1W3', { grund: 'Klopfen', gewoehnung: 'tapetentuer_klopfen' });
         return true;
       }
@@ -754,6 +755,8 @@
     text: 'In einer der Glastüren steht jemand hinter dir und liest über deine Schulter mit. Als du dich umdrehst, ist da nur das Regal. Im Glas blättert die Gestalt eine Seite um.', nerven: '1/1W6', grund: 'Gestalt im Glas' });
   HG.spuk('kinderzimmer_klicken', { art: 'geraeusch', orte: ['kinderzimmer'], zeiten: TAG, chance: 0.1, max: 1,
     text: 'Im Puppenhaus klickt eine winzige Tür. Als du hinsiehst, steht sie offen – die Tür zum winzigen Bad.', nerven: '0/1W2', grund: 'Puppenhaus' });
+  HG.spuk('kinderzimmer_lachen', { art: 'geraeusch', orte: ['kinderzimmer', 'galerie'], zeiten: TAG, chance: 0.08, max: 1, sound: 'kinderlachen',
+    text: 'Irgendwo im Haus lacht ein Mädchen, hell und kurz. Dann ist es still, und du könntest nicht sagen, aus welcher Richtung es kam.', nerven: '0/1W2', grund: 'Kinderlachen' });
   HG.spuk('kinderzimmer_fluestern', { art: 'geraeusch', orte: ['kinderzimmer'], zeiten: NACHT, chance: 0.25, max: 2, bild: true,
     text: function (api) { return api.bekehrt('bettina') ? 'Eine Mädchenstimme, ganz nah: „Sie ist auf der Galerie. Bleib hier, bis sie weg ist.“ Diesmal glaubst du ihr.' : 'Eine Mädchenstimme, ganz nah an deinem Ohr: „Geh runter. Schnell. Unten ist es sicher.“ Sie kichert.'; },
     nerven: '0/1W4', grund: 'Flüstern' });

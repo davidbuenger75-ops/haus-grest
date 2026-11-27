@@ -164,7 +164,7 @@
     anruf: function (id) { return HG.handy.anruf(id); },
     handyDabei: function () { return HG.handy.dabei(); },
     /** Kurzen Soundeffekt abspielen: assets/sound/effekt-<name>.ogg|mp3 (fehlt er, passiert nichts). */
-    sound: function (name) { HG.medien.effekt(name); },
+    sound: function (name, opt) { HG.medien.effekt(name, opt); },
     /** Zeigt kurz (bis Ende des nächsten Zugs) eine Bildvariante des aktuellen Raums, z. B. 'spuk' → raum-<id>-spuk. */
     /** Kampf mit einer Manifestation beginnen (js/engine/gefahr.js). */
     kampf: function (id, opt) { return HG.kampf.starte(id, opt); },
@@ -264,6 +264,7 @@
     },
 
     neuesSpiel: function () {
+      if (HG.protokoll) HG.protokoll.marke('Neues Spiel');
       HG.zustand.neu();
       S.offen = null;
       var sp = HG.daten.spiel;
@@ -845,6 +846,10 @@
       switch (b.aktion) {
         case 'hilfe': if (z.kampf && !z.vorbei) { HG.kampf.erklaere(); HG.kampf.frage(); break; }
           HG.ausgabe.system(HILFE + (HG.daten.spiel.hilfeZusatz ? '<br><br>' + HG.wert(HG.daten.spiel.hilfeZusatz) : '')); break;
+        case 'protokoll':
+          if (HG.anzeige && HG.anzeige.protokollKopieren) HG.anzeige.protokollKopieren();
+          else HG.ausgabe.system('Das Protokoll hat ' + (HG.protokoll ? HG.protokoll.anzahl() : 0) + ' Einträge. Kopieren kannst du es mit dem Knopf „Protokoll kopieren“.');
+          break;
         case 'inventar': S.zeigeInventar(); break;
         case 'werte':
           HG.ausgabe.system(S.charakterbogen());
@@ -863,7 +868,7 @@
         case 'laden': {
           var pl = text || '1';
           var lr = HG.zustand.laden(pl);
-          if (lr.ok) { S.offen = null; S._verwerfeVerlauf = true; HG.ausgabe.system('Spielstand „' + T.esc(pl) + '“ geladen.'); W.beschreibeRaum(true); }
+          if (lr.ok) { if (HG.protokoll) HG.protokoll.marke('Spielstand „' + pl + '“ geladen'); S.offen = null; S._verwerfeVerlauf = true; HG.ausgabe.system('Spielstand „' + T.esc(pl) + '“ geladen.'); W.beschreibeRaum(true); }
           else if (lr.fehler === 'leer') HG.ausgabe.system('Auf Platz „' + T.esc(pl) + '“ ist nichts gespeichert.' + S.platzListe());
           else if (lr.fehler === 'version') HG.ausgabe.system('Dieser Spielstand stammt aus einer älteren Version des Spiels und passt nicht mehr.');
           else HG.ausgabe.system('Laden ist fehlgeschlagen (' + T.esc(lr.fehler) + ').');
@@ -1147,7 +1152,7 @@
     '<b>Reisen:</b> fahre los (zeigt alle bekannten Ziele) · fahre zum Lager · fahre nach Hause – nur dort, wo dein Auto steht. Neue Ziele ergeben sich aus Hinweisen.',
     '<b>Zeit:</b> warte bis zum Abend / bis morgen · schlafe (nur mit Bett) · zeit. Nachts hat das Haus mehr Macht.',
     '<b>Handy:</b> lies nachrichten · anrufliste · fotos · fotografiere … · mach ein Selfie · ruf … an · geh ran / ignoriere · schalte die taschenlampe ein/aus',
-    '<b>Spiel:</b> inventar (i) · notizbuch · karte · werte · speichern [Name] · laden [Name] · rückgängig · neustart',
+    '<b>Spiel:</b> inventar (i) · notizbuch · karte · werte · speichern [Name] · laden [Name] · rückgängig · neustart · protokoll (kopiert den Spielverlauf für eine Fehlermeldung – auch per Knopf „Protokoll kopieren“)',
     'Unter der Eingabezeile stehen Vorschläge zum Anklicken. Das Spiel speichert nach jedem Zug automatisch.'
   ].join('<br>');
 })(window.HG);

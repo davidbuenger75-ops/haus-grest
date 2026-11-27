@@ -9,3 +9,7 @@ docs/
 assets/bilder/_kandidaten/
 assets/bilder/_stiltest/
 assets/bilder/_vorlagen/
+
+# Sound-Entwürfe
+assets/sound/_kandidaten/
+tools/sound-kandidaten.js

@@ -127,7 +127,13 @@
         // Dinge, die man auch im Dunkeln findet (z. B. eine Lampenschnur): imDunkeln: true
         liste = liste.concat(W.sammle(raumId).filter(function (id) { return D(id).imDunkeln; }));
       }
+      liste = liste.concat(W.kulisseDinge());   // Wand, Boden, Decke, Raum: überall, auch im Dunkeln
       return liste.filter(function (v, i, a) { return a.indexOf(v) === i; });
+    },
+    /** Allgemeine Kulisse (Ding mit kulisse: true): in jedem Raum vorhanden. Ein eigenes Ding des Raums mit
+     *  demselben Wort hat Vorrang (parser.js). Raumeigene Texte: r.kulisse = { wand: { klopfen: '…' } } oder r.bei. */
+    kulisseDinge: function () {
+      return Object.keys(HG.daten.dinge).filter(function (id) { return D(id).kulisse; });
     },
     imUmfeld: function (id, blind) { return W.umfeld(blind).indexOf(id) >= 0; },
 

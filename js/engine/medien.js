@@ -19,7 +19,16 @@
 //   Effekte:     effekt-<name>             api.sound('name'); Spuk-Ereignisse spielen effekt-spuk-<id>
 //                (oder "sound: 'name'" am Ereignis); Dinge: "geraeusch: { oeffnen: 'tuer-knarren' }"
 //   Engine-Effekte: effekt-wuerfel, effekt-schock, effekt-handy-vibriert, effekt-handy-klingelt, effekt-seite
-// Lautstärke und Stummschaltung merkt sich der Browser (localStorage, nicht im Spielstand).
+// Lautstärke (getrennt: Hintergrund / Effekte), Stummschaltung und Untertitel merkt sich der Browser
+// (localStorage, nicht im Spielstand).
+//
+// SOUND-VERZEICHNIS (js/content/klang.js): HG.klang('effekt-name', { art, sek, untertitel, laut, prompt })
+//   untertitel – erscheint bei jedem Abspielen als [Untertitel] im Text, auch ohne Ton (barrierearm, Handy stumm)
+//   laut       – lauter Schreck: höchstens einer pro Nacht, danach nur noch der Untertitel
+//   wiederholen – { mal: 3, abstand: 2.5 }: die Datei mehrmals abspielen, jeder Einsatz abstand Sekunden nach dem
+//                 vorigen (überlappt den Nachhall – z. B. eine Uhr, die dreimal schlägt, aus einem einzelnen Gong)
+//   Herzschlag: effekt-herzschlag läuft als Schleife, sobald die NERVEN unter HERZ.ab fallen – je tiefer, desto
+//   lauter und schneller (M.herz(), nach jedem Zug).
 (function (HG) {
   'use strict';
 
@@ -28,6 +37,11 @@
   var hatAudio = typeof window.Audio !== 'undefined';
   var cache = {};          // URL -> true (vorhanden) / false (fehlt)
   var EINST_KEY = 'hausgrest:einstellungen';
+  var HERZ = { ab: 30, schnell: 10 };   // NERVEN: darunter Herzschlag; unter 'schnell' deutlich schneller
+
+  HG.daten.klaenge = HG.daten.klaenge || {};
+  /** Sound-Verzeichnis (js/content/klang.js). */
+  HG.klang = function (name, def) { def.name = name; HG.daten.klaenge[name] = def; return def; };
 
   function Z() { return HG.zustand.z; }
   function ruhig() { return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
@@ -72,7 +86,7 @@
     ordnerBilder: 'assets/bilder/',
     ordnerTon: 'assets/sound/',
     spukVariante: null,      // { raum, bisZug, variante } – kurz nach einem Spuk (bild: true) oder api.zeigeBild zeigt der Raum diese Variante
-    einst: { lautstaerke: 0.6, stumm: false },
+    einst: { hintergrund: 0.6, effekte: 0.8, stumm: false, untertitel: true },
     entsperrt: false,        // Browser erlauben Ton erst nach der ersten Eingabe
 
     erstesBild: erstesBild,
@@ -106,23 +120,62 @@
     ladeEinstellungen: function () {
       try {
         var s = JSON.parse(window.localStorage.getItem(EINST_KEY) || 'null');
-        if (s) { if (typeof s.lautstaerke === 'number') M.einst.lautstaerke = s.lautstaerke; M.einst.stumm = !!s.stumm; }
+        if (s) {
+          if (typeof s.lautstaerke === 'number') { M.einst.hintergrund = s.lautstaerke; M.einst.effekte = s.lautstaerke; }   // alte Einstellung
+          if (typeof s.hintergrund === 'number') M.einst.hintergrund = s.hintergrund;
+          if (typeof s.effekte === 'number') M.einst.effekte = s.effekte;
+          if (typeof s.untertitel === 'boolean') M.einst.untertitel = s.untertitel;
+          M.einst.stumm = !!s.stumm;
+        }
       } catch (e) { /* kein Speicher */ }
     },
     speichereEinstellungen: function () {
       try { window.localStorage.setItem(EINST_KEY, JSON.stringify(M.einst)); } catch (e) { /* kein Speicher */ }
     },
-    pegel: function (anteil) { return M.einst.stumm ? 0 : Math.max(0, Math.min(1, M.einst.lautstaerke * (anteil === undefined ? 1 : anteil))); },
-    setzeLautstaerke: function (wert) { M.einst.lautstaerke = wert; M.speichereEinstellungen(); M.atmoPegel(); },
-    setzeStumm: function (stumm) { M.einst.stumm = stumm; M.speichereEinstellungen(); M.atmoPegel(); if (!stumm) M.atmo(); },
+    /** Lautstärke für 'hintergrund' oder 'effekte' (Standard), mal Anteil. */
+    pegel: function (anteil, art) {
+      if (M.einst.stumm) return 0;
+      var basis = art === 'hintergrund' ? M.einst.hintergrund : M.einst.effekte;
+      return Math.max(0, Math.min(1, basis * (anteil === undefined ? 1 : anteil)));
+    },
+    setzeLautstaerke: function (wert, art) {
+      if (art === 'hintergrund') M.einst.hintergrund = wert; else M.einst.effekte = wert;
+      M.speichereEinstellungen(); M.atmoPegel(); M.herz();
+    },
+    setzeUntertitel: function (an) { M.einst.untertitel = !!an; M.speichereEinstellungen(); },
+    setzeStumm: function (stumm) { M.einst.stumm = stumm; M.speichereEinstellungen(); M.atmoPegel(); M.herz(); if (!stumm) M.atmo(); },
 
-    /** Kurzer Effekt: assets/sound/effekt-<name>.ogg|mp3 */
-    effekt: function (name) {
-      if (!hatAudio || !name || !M.entsperrt || M.einst.stumm) return;
+    /** Kurzer Effekt: assets/sound/effekt-<name>.ogg|mp3 – mit Untertitel (klang.js), laute nur einmal pro Nacht.
+     *  opt: { mal: 7 (so oft abspielen), untertitel: '…' (statt des Eintrags), laut: true|false } */
+    effekt: function (name, opt) {
+      if (!name) return;
+      opt = opt || {};
+      var def = Object.assign({}, HG.daten.klaenge['effekt-' + name] || {}, opt.untertitel !== undefined ? { untertitel: opt.untertitel } : {},
+        opt.laut !== undefined ? { laut: opt.laut } : {});
+      if (opt.mal) def.wiederholen = Object.assign({}, def.wiederholen || {}, { mal: opt.mal });
+      var z = Z();
+      var stumm = false;
+      if (def && def.laut && z && HG.nacht) {
+        var nacht = HG.nacht.nummer();
+        if (z.flags._lauterSchreck === nacht) stumm = true;      // heute Nacht schon einen lauten Schreck gehabt
+        else z.flags._lauterSchreck = nacht;
+      }
+      if (def && def.untertitel && M.einst.untertitel !== false) HG.ausgabe.schreibe('ton', '[' + def.untertitel + ']');
+      if (stumm || !hatAudio || !M.entsperrt || M.einst.stumm) return;
       ersterTon(['effekt-' + name], function (a) {
         if (!a) return;
         a.volume = M.pegel(1);
         var p = a.play(); if (p && p.catch) p.catch(function () { /* blockiert */ });
+        var w = def && def.wiederholen;
+        if (w && w.mal > 1) {
+          for (var i = 1; i < w.mal; i++) {
+            setTimeout(function () {
+              if (M.einst.stumm) return;
+              var b = a.cloneNode(); b.volume = M.pegel(1);
+              var q = b.play(); if (q && q.catch) q.catch(function () { /* blockiert */ });
+            }, i * (w.abstand || 2) * 1000);
+          }
+        }
       });
     },
 
@@ -151,11 +204,33 @@
         if (a) {
           a.loop = true; a.volume = 0;
           var p = a.play(); if (p && p.catch) p.catch(function () { /* blockiert */ });
-          M.blende(a, 0, M.pegel(M._atmoAnteil));
+          M.blende(a, 0, M.pegel(M._atmoAnteil, 'hintergrund'));
         }
       });
     },
-    atmoPegel: function () { if (M._atmo) M._atmo.volume = M.pegel(M._atmoAnteil); },
+    atmoPegel: function () { if (M._atmo) M._atmo.volume = M.pegel(M._atmoAnteil, 'hintergrund'); },
+
+    /** Herzschlag bei niedrigen NERVEN (nach jedem Zug aufrufen). */
+    _herz: null, _herzLaedt: false,
+    herz: function () {
+      var z = Z();
+      var n = z && z.werte ? z.werte.nerven : 100;
+      var an = !!(hatAudio && M.entsperrt && !M.einst.stumm && z && !z.vorbei && n < HERZ.ab);
+      if (!an) { if (M._herz) { var h = M._herz; M._herz = null; M.blende(h, h.volume, 0, function () { h.pause(); }); } return; }
+      var staerke = Math.min(1, (HERZ.ab - n) / HERZ.ab + 0.3);           // je tiefer, desto lauter
+      var tempo = n < HERZ.schnell ? 1.45 : 1 + (HERZ.ab - n) / HERZ.ab * 0.35;
+      if (M._herz) { M._herz.volume = M.pegel(staerke); try { M._herz.playbackRate = tempo; } catch (e) { /* egal */ } return; }
+      if (M._herzLaedt) return;
+      M._herzLaedt = true;
+      ersterTon(['effekt-herzschlag'], function (a) {
+        M._herzLaedt = false;
+        if (!a) return;
+        M._herz = a; a.loop = true; a.volume = 0;
+        try { a.playbackRate = tempo; } catch (e) { /* egal */ }
+        var p = a.play(); if (p && p.catch) p.catch(function () { /* blockiert */ });
+        M.blende(a, 0, M.pegel(staerke));
+      });
+    },
     /** Lautstärke weich ändern (2 Sekunden, ohne Animation sofort). */
     blende: function (a, von, bis, fertig) {
       if (ruhig()) { a.volume = bis; if (fertig) fertig(); return; }
@@ -171,6 +246,7 @@
       if (M.entsperrt) return;
       M.entsperrt = true;
       M.atmo();
+      M.herz();
     }
   };
   M.ladeEinstellungen();

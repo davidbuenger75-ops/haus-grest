@@ -5,6 +5,7 @@
 // --- Nachtphasen (HG.nacht.phase()) ------------------------------------------------------------
 //   'daemmerung' (Beginn der Nacht – 0 Uhr) · 'tief' (0–3 Uhr) · 'abebben' (3–6 Uhr) · null bei Tag.
 //   Um 3 Uhr ruft die Engine HG.daten.spiel.hoehepunkt(api) auf (wenn man im Haus ist).
+//   Zu jeder vollen Stunde ruft sie HG.daten.spiel.stunde(api, stunde) auf (0–23; bei langem Warten nur die letzte).
 //   HG.nacht.nummer() = Nummer der Nacht (die Nacht nach Tag 1 ist Nacht 1).
 //   HG.nacht.bisNeumond() / istNeumond(n) – aus HG.daten.spiel.neumond = { ersteNacht, alle } (allgemein.js).
 //   HG.gefahren.schuetze(raum) – Salzlinie: der Wanderer betritt den Raum in dieser Nacht nicht.
@@ -286,6 +287,9 @@
       if (punkt <= jetzt && W.raum() && W.raum().schauplatz === (HG.daten.spiel.hausSchauplatz || 'haus') && HG.daten.spiel.hoehepunkt) {
         HG.daten.spiel.hoehepunkt(A());
       }
+      // volle Stunde in (vorher, jetzt]? Dann die letzte davon melden
+      var volle = Math.floor(jetzt / 60) * 60;
+      if (volle > vorherAbs && HG.daten.spiel.stunde && !Z().vorbei) HG.daten.spiel.stunde(A(), Math.floor(volle / 60) % 24);
     },
 
     // ---------------------------------------------------------- Seelen erscheinen

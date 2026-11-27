@@ -448,8 +448,22 @@
       warnText: 'Schritte. Nackte Füße auf Holz, ganz in der Nähe. Sie kommen näher. <span class="nebenbei">(Verstecken? Fliehen? Licht?)</span>',
       vorbeiText: 'Etwas kommt herein. Lavendel, so dicht, dass du ihn schmecken kannst. Es bleibt stehen, eine Handbreit von deinem Versteck. Dann geht es weiter, und die Schritte entfernen sich.'
     },
+    // Stundenschlag (David, 27.11.2026): nachts im Haus schlägt jede volle Stunde eine Uhr, die es nicht gibt –
+    // 19 Uhr sieben Schläge … Mitternacht zwölf, 1 Uhr einer … 5 Uhr fünf. Um 3 Uhr übernimmt der Höhepunkt.
+    stunde: function (api, h) {
+      var r = HG.welt.raum();
+      if (!r || r.schauplatz !== 'haus' || !(h >= 19 || h <= 5) || h === 3) return;
+      var n = h % 12 || 12;
+      var wort = ['', 'eins', 'zwei', 'drei', 'vier', 'fünf', 'sechs', 'sieben', 'acht', 'neun', 'zehn', 'elf', 'zwölf'][n];
+      if (!api.flag('uhr_gehoert')) {
+        api.setzeFlag('uhr_gehoert');
+        HG.ausgabe.schreibe('spuk', 'Irgendwo im Haus schlägt eine Uhr. Tief, langsam, ' + (n === 1 ? 'ein einziger Schlag' : n + ' Schläge') + '. Du zählst mit, ohne es zu wollen. Erst danach fällt dir ein, dass du im ganzen Haus keine Uhr gesehen hast.');
+      }
+      api.sound('uhr', { mal: n, untertitel: n === 1 ? 'Eine Uhr schlägt eins' : 'Eine Uhr schlägt ' + wort });
+    },
     hoehepunkt: function (api) {
       var stufe = api.machtStufe();
+      api.sound('uhr', { mal: 3, laut: true, untertitel: 'Eine Uhr schlägt drei' });
       api.setzeFlag('klappe_ankleidezimmer');
       HG.ausgabe.schreibe('spuk', {
         stark: 'Drei Uhr. Irgendwo im Haus schlägt eine Uhr, obwohl es im ganzen Haus keine Uhr gibt. Unten in der Küche schrillt die Klingel, einmal, lang. Lavendel liegt in der Luft, schwer wie ein Tuch. Und überall gleichzeitig ein feines Knistern – wie Eis, das zufriert. Die Spiegel heilen.',

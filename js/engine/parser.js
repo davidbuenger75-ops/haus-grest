@@ -39,6 +39,7 @@
     { a: 'speichern', w: L('speichern speichere speicher sichern sichere save'), o: '?', text: true, meta: true },
     { a: 'laden', w: L('laden lade lad load'), o: '?', text: true, meta: true },
     { a: 'rueckgaengig', w: L('rueckgaengig undo zurueck'), o: 0, meta: true },
+    { a: 'protokoll', w: L('protokoll log logbuch mitschrift'), o: '?', text: true, meta: true },   // Protokoll kopieren (für Tester)
     { a: 'neustart', w: L('neustart neubeginn restart'), o: '?', text: true, meta: true },
     { a: 'nochmal', w: L('nochmal g wiederhole wiederholen'), o: 0, meta: true },
     { a: 'zeit', w: L('zeit uhrzeit uhr tageszeit spaet'), o: 0, meta: true },
@@ -602,6 +603,11 @@
           var irgendwo = Object.keys(HG.daten.dinge).some(function (id) { return passt(id, g); });
           if (irgendwo && !HG.welt.hell()) return { fehler: 'Es ist zu dunkel, um das zu finden.' };
           return { fehler: 'Du siehst hier nichts dergleichen.' };
+        }
+        // Allgemeine Kulisse (Wand, Boden …) nur, wenn der Raum selbst nichts Passendes hat
+        if (treffer.length > 1) {
+          var eigen = treffer.filter(function (id) { return !D(id).kulisse; });
+          if (eigen.length) treffer = eigen;
         }
         if (treffer.length > 1 && opt.bevorzuge) {
           var besser = treffer.filter(opt.bevorzuge);

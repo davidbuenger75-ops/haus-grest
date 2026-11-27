@@ -38,6 +38,7 @@ body {
 #log p { margin: 0 0 10px; }
 #log .eingabe { color: var(--tinte-hell); font-style: italic; margin-top: 16px; }
 #log .raumtitel { font-size: 1.15em; font-weight: normal; letter-spacing: 1.5px; margin: 6px 0 6px; font-variant: small-caps; }
+#log .untertitel { font-family: 'Trebuchet MS', Verdana, sans-serif; font-size: .8em; font-style: italic; color: var(--tinte-hell); letter-spacing: .02em; }
 #log .system { font-family: 'Trebuchet MS', Verdana, sans-serif; font-size: .82em; color: var(--tinte-hell); border-left: 3px solid #2a1d1233; padding-left: 10px; }
 #log .hinweis { color: var(--gruen); font-style: italic; }
 #log .frage { font-style: italic; }
@@ -246,6 +247,9 @@ body[data-zeit=nacht] #bild.art-auto::after { content: ''; position: absolute; i
 #grossbild { background: #0e0c0b; border: none; padding: 10px; max-width: 96vw; max-height: 96vh; cursor: zoom-out; color: #e9dcc0; text-align: center; }
 #grossbild::backdrop { background: #000d; }
 #grossbild img { max-width: 92vw; max-height: 84vh; display: block; margin: 0 auto; }
+#protokoll-dialog { background: #f3ead6; color: #2a2118; border: 1px solid #6b5a44; max-width: 720px; width: 92vw; }
+#protokoll-dialog::backdrop { background: #000a; }
+#protokoll-dialog textarea { width: 100%; box-sizing: border-box; font: 12px/1.4 monospace; }
 #grossbild p { margin: 6px 0 0; }
 #buch .buch-seite.mit-papier { background-size: cover; background-position: center top; background-attachment: local; }
 #buch .buch-seite.mit-papier .buch-text, #buch .buch-seite.mit-papier h3 { text-shadow: 0 0 3px #f3ead6, 0 0 6px #f3ead6cc; }
@@ -510,3 +514,7 @@ ol.berufe li { margin-bottom: 4px; }
 #log .tipp, .nah-text .nah-tipp { font-style: italic; color: #5a4a2e; border-left: 2px dotted #b98a3e; padding-left: 8px; margin-left: 2px; }
 .tipp-zeichen { color: #b98a3e; font-style: normal; }
 .akku { margin: 0 0 6px; font-size: .9em; color: var(--tinte-hell); } .akku.knapp { color: var(--blut, #7a1a12); font-weight: bold; }
+
+/* Ton: zwei Regler und Untertitel-Schalter */
+.ton-regler { display: grid; grid-template-columns: auto 1fr; gap: 2px 8px; align-items: center; flex: 1; }
+.ton-regler .ton-ut { grid-column: 1 / -1; font-size: .85em; }

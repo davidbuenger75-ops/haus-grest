@@ -11,9 +11,10 @@ HG.spielDaten({
   startRaum: 'wohnung',          // Prolog: die Wohnung der Spielfigur (js/content/prolog.js)
   startDatum: '2026-11-16',      // [Vorschlag] Montag, 16. November 2026
   startUhrzeit: '08:10',
-  // Neumond (David, 26.11.2026): in der dritten Nacht nach Spielbeginn (18./19.11.), danach etwa alle 29,5 Tage.
-  // Nacht 1 = die Nacht nach dem ersten Tag. Der Kalender der Krähe im Ritualraum zählt die Nächte (keller.js).
-  neumond: { ersteNacht: 3, alle: 29.5 },
+  // Neumond (David, 27.11.2026, vor dem Alpha-Test): zuerst in Nacht 7, danach alle 14 Nächte – kein echter
+  // Mondzyklus, damit niemand einen Monat warten muss. Nacht 1 = die Nacht nach dem ersten Tag.
+  // Der Kalender der Krähe im Ritualraum zählt die Nächte (keller.js).
+  neumond: { ersteNacht: 7, alle: 14 },
   startZiele: ['zuhause', 'krankenhaus'],   // weitere Ziele schaltet der Brief des Notars frei
 
   // --- Charaktererstellung ---------------------------------------------
@@ -189,5 +190,6 @@ HG.spielDaten({
     'Chat und Mail: telefonseelsorge.de. In akuter Gefahr: Notruf <b>112</b>.',
   abspann: '<b>Danke fürs Spielen.</b> „Haus Grest“ ist erfunden. Was manche Figuren durchmachen, erleben echte Menschen wirklich. ' +
     'Wenn dich etwas davon bewegt oder es dir nicht gut geht, sprich mit jemandem: Telefonseelsorge <b>0800 111 0 111</b> oder 0800 111 0 222 ' +
-    '(kostenlos, anonym, rund um die Uhr, telefonseelsorge.de). In akuter Gefahr: Notruf <b>112</b>.'
+    '(kostenlos, anonym, rund um die Uhr, telefonseelsorge.de). In akuter Gefahr: Notruf <b>112</b>.' +
+    '<br><br><span class="nebenbei">Sounds: ElevenLabs (elevenlabs.io)</span>'
 });

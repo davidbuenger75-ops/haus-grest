@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Haus Grest – Sound-Auswahl</title>
+<style>
+  body { font-family: Georgia, serif; background: #1a1612; color: #e9dcc0; margin: 0; padding: 20px 28px 60px; }
+  h1 { font-weight: normal; letter-spacing: .04em; margin: 0 0 4px; }
+  .hilfe { color: #b8a888; font-size: .9em; margin: 0 0 18px; }
+  .filter { margin-bottom: 18px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .filter button { background: #2a231c; color: #e9dcc0; border: 1px solid #5a4a38; border-radius: 14px; padding: 4px 12px; cursor: pointer; }
+  .filter button.an { background: #6b5a44; }
+  .sound { background: #241e18; border: 1px solid #3b3127; border-radius: 6px; padding: 12px 16px; margin-bottom: 14px; }
+  .sound.fertig { border-color: #4d6b3a; }
+  .kopf { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .name { font-family: monospace; font-size: 1.05em; }
+  .meta { color: #b8a888; font-size: .85em; }
+  .untertitel { font-style: italic; color: #d8c8a8; margin: 4px 0; }
+  details { font-size: .82em; color: #a89878; margin: 4px 0 10px; }
+  .kandidaten { display: flex; gap: 14px; flex-wrap: wrap; }
+  .kand { background: #1a1612; border: 1px solid #3b3127; border-radius: 6px; padding: 10px; min-width: 300px; flex: 1; }
+  .kand.gewaehlt { border-color: #7fae5f; box-shadow: 0 0 0 1px #7fae5f inset; }
+  .kand audio { width: 100%; margin: 6px 0; }
+  .kand .zeile { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .kand button { background: #6b5a44; color: #fff; border: none; border-radius: 4px; padding: 6px 12px; cursor: pointer; }
+  .kand button:disabled { background: #3b3127; color: #8a7a60; cursor: default; }
+  .schleife { font-size: .8em; color: #b8a888; }
+  .meldung { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: #4d6b3a; color: #fff; padding: 8px 18px; border-radius: 18px; display: none; }
+</style>
+</head>
+<body>
+<h1>Sound-Auswahl</h1>
+<p class="hilfe">Kandidaten nebeneinander anhören, den passenden übernehmen (kopiert ihn nach <code>assets/sound/</code>). Schleifen laufen hier auf Wunsch in Dauerschleife, damit du die Nahtstelle hörst. Neue Kandidaten: <code>node tools/sounds.js --neu &lt;name&gt;</code>.</p>
+<div class="filter">
+  <button type="button" data-f="alle" class="an">Alle</button>
+  <button type="button" data-f="offen">Noch nicht gewählt</button>
+  <button type="button" data-f="schleife">Schleifen</button>
+  <button type="button" data-f="effekt">Effekte</button>
+</div>
+<div id="liste"></div>
+<div class="meldung" id="meldung"></div>
+<script src="sound-kandidaten.js"></script>
+<script>
+(function () {
+  var filter = 'alle';
+  function esc(s) { return String(s || '').replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function zeige() {
+    var html = (window.SOUNDS || []).filter(function (s) {
+      if (filter === 'offen') return !s.gewaehlt;
+      if (filter === 'schleife' || filter === 'effekt') return s.art === filter;
+      return true;
+    }).map(function (s) {
+      var k = s.kandidaten.map(function (datei) {
+        var nr = datei.match(/-(\d+)\.mp3$/)[1];
+        var gew = s.gewaehlt && s.gewaehlt === s.name + '.mp3' && s._gewNr === nr;
+        return '<div class="kand' + (gew ? ' gewaehlt' : '') + '">' +
+          '<div class="zeile"><b>Kandidat ' + nr + '</b>' +
+          (s.art === 'schleife' ? '<label class="schleife"><input type="checkbox" class="loop"> Dauerschleife</label>' : '') + '</div>' +
+          '<audio controls preload="none" src="/assets/sound/_kandidaten/' + encodeURIComponent(datei) + '"></audio>' +
+          '<div class="zeile"><span class="meta">' + esc(datei) + '</span>' +
+          '<button type="button" data-name="' + esc(s.name) + '" data-nr="' + nr + '">Übernehmen</button></div></div>';
+      }).join('');
+      return '<div class="sound' + (s.gewaehlt ? ' fertig' : '') + '">' +
+        '<div class="kopf"><span class="name">' + esc(s.name) + '</span><span class="meta">' + (s.art === 'schleife' ? 'Schleife' : 'Effekt') + ' · ' + s.sek + ' s' +
+        (s.gewaehlt ? ' · im Spiel: ' + esc(s.gewaehlt) : ' · noch nicht gewählt') + '</span></div>' +
+        (s.untertitel ? '<div class="untertitel">[' + esc(s.untertitel) + ']</div>' : '') +
+        '<details><summary>Prompt</summary>' + esc(s.prompt) + '</details>' +
+        '<div class="kandidaten">' + k + '</div></div>';
+    }).join('');
+    document.getElementById('liste').innerHTML = html || '<p class="hilfe">Keine Kandidaten. Erst erzeugen: <code>node tools/sounds.js</code></p>';
+  }
+  // Nur einer spielt gleichzeitig – so lassen sich die Kandidaten direkt vergleichen
+  document.addEventListener('play', function (e) {
+    document.querySelectorAll('audio').forEach(function (a) { if (a !== e.target) a.pause(); });
+  }, true);
+  document.addEventListener('change', function (e) {
+    if (!e.target.classList.contains('loop')) return;
+    var a = e.target.closest('.kand').querySelector('audio'); a.loop = e.target.checked;
+  });
+  document.addEventListener('click', function (e) {
+    var f = e.target.closest('[data-f]');
+    if (f) {
+      filter = f.getAttribute('data-f');
+      document.querySelectorAll('[data-f]').forEach(function (b) { b.classList.toggle('an', b === f); });
+      zeige(); return;
+    }
+    var b = e.target.closest('button[data-name]'); if (!b) return;
+    b.disabled = true;
+    fetch('/uebernehmen', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: b.getAttribute('data-name'), nummer: b.getAttribute('data-nr') }) })
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        var m = document.getElementById('meldung');
+        m.textContent = j.ok ? 'Übernommen: ' + j.ziel : 'Fehler: ' + j.fehler;
+        m.style.display = 'block'; setTimeout(function () { m.style.display = 'none'; }, 2500);
+        (window.SOUNDS || []).forEach(function (s) { if (s.name === b.getAttribute('data-name') && j.ok) { s.gewaehlt = s.name + '.mp3'; s._gewNr = b.getAttribute('data-nr'); } });
+        zeige();
+      });
+  });
+  zeige();
+})();
+</script>
+</body>
+</html>
