@@ -1,12 +1,9 @@
-// Haus Grest – Inhalt: Schauplätze außerhalb des Hauses (Platzhalter)
-// Jeder Schauplatz hat vorerst nur einen Raum. Lager Schmidt steht in lager-schmidt.js.
+// Haus Grest – Inhalt: Schauplätze außerhalb des Hauses: Bauamt, Krankenhaus, Fahrziele Friedhof und Stadtarchiv.
+// Eigene Dateien: lager-schmidt.js, polizeiwache.js, gerdes.js, altenheim.js, kolbe.js, stadtarchiv.js, friedhof.js.
 // Fahrzeiten in Minuten (innerhalb Dortmunds 20–40, Unna ca. 35), Öffnungszeiten [Vorschlag].
 // Freigeschaltet werden die Ziele über Hinweise (siehe hinweise.js und lager-schmidt.js).
 (function () {
 
-  function platzhalter(text) {
-    return text + ' <span class="nebenbei">(Platzhalter – dieser Schauplatz wird noch ausgebaut.)</span>';
-  }
   var AMT = { von: '08:00', bis: '16:00', tage: 'werktags' };
 
   HG.ziel('bauamt', {
@@ -117,11 +114,7 @@
     ankunft: 'friedhof', fahrzeit: 30, geoeffnet: { von: '07:00', bis: '20:00' },
     geschlossen: 'Nachts ist das Friedhofstor verschlossen (geöffnet 7–20 Uhr).'
   });
-  HG.raum('friedhof', {
-    name: 'Friedhof', schauplatz: 'friedhof', abfahrt: true, karte: { x: 0, y: 0 },
-    beschreibung: { tag: platzhalter('Alte Linden, schiefe Grabsteine, Moos auf den Wegen. Im älteren Teil liegen die Gräber aus der Zeit um 1900 – irgendwo hier die Grabstelle Grest.'),
-      abend: platzhalter('Im Abendlicht werfen die Grabsteine lange Schatten. Der Friedhofswärter klappert schon mit den Schlüsseln.') }
-  });
+  // Friedhof: Räume in friedhof.js
 
   // Altenheim: eigener Schauplatz in altenheim.js
 
@@ -131,10 +124,7 @@
     ankunft: 'stadtarchiv', fahrzeit: 20, geoeffnet: AMT,
     geschlossen: 'Das Stadtarchiv hat jetzt geschlossen. Geöffnet ist werktags von 8 bis 16 Uhr.'
   });
-  HG.raum('stadtarchiv', {
-    name: 'Stadtarchiv', schauplatz: 'stadtarchiv', abfahrt: true, karte: { x: 0, y: 0 },
-    beschreibung: platzhalter('Ein Lesesaal unter einer Glaskuppel. Grüne Leselampen, Karteikästen, das Rascheln von Papier. Ein Archivar mustert dich über seine Brille hinweg.')
-  });
+  // Stadtarchiv: Lesesaal in stadtarchiv.js
 
   // Wohnung Gerdes: eigener Schauplatz in gerdes.js
 

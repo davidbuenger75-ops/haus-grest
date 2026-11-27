@@ -1381,5 +1381,293 @@ const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'diens
   }
 }
 
+// --- 21. Frau Kolbe: Nachbarhaus, drei Wege zum Vertrauen, Renate und Hallmann --------------
+{
+  console.log('\n21. Frau Kolbe: Weg von der Einfahrt → verschlossen → Kommentar/Notenheft/Taschenuhr/Überreden → Renate, Hallmann');
+  function zuKolbe(opt) {
+    const s = imHaus(); const HG = s.HG, Z = () => HG.zustand.z;
+    s.tu('geh nach süden');
+    Z().zeit.minute = (opt && opt.uhr || 11) * 60;
+    (opt && opt.hinweise || []).forEach(h => Z().hinweise.push(h));
+    if (opt && opt.uhrDabei) HG.api.bewege('taschenuhr', 'spieler');
+    HG.zufall = () => (opt && opt.wurf) || 0.05;
+    s.tu('geh nach westen');
+    return s;
+  }
+  // Kopf: der Kommentar unter Nataschas Artikel
+  {
+    const s = zuKolbe({ hinweise: ['natascha_romanow'] }); const HG = s.HG, Z = () => HG.zustand.z;
+    pruefe(Z().raum === 'kolbe', 'Von der Einfahrt zu Fuß nach Westen: vor dem Haus Kolbe');
+    pruefeMenues(s, 'Vor dem Haus Kolbe');
+    s.tu('geh hinein');
+    pruefe(Z().raum === 'kolbe_kueche', 'Tagsüber lässt sie einen in die Küche');
+    pruefeMenues(s, 'Küche Kolbe');
+    s.tu('frage frau kolbe nach renate');
+    pruefe(!Z().hinweise.includes('kolbe_renate') && s.HG.spiel.offen && s.HG.spiel.offen.art === 'auswahl', 'Beim Thema Haus wird sie verschlossen: Auswahl');
+    s.tu('2');
+    pruefe(Z().flags.kolbe_vertraut, 'Kopf: Ihr eigener Kommentar überzeugt sie');
+    s.tu('frage frau kolbe nach renate');
+    pruefe(Z().hinweise.includes('kolbe_renate'), 'Renate: 2. Quelle im Notizbuch');
+    Z().hinweise.push('renate_vogt');
+    pruefe(HG.gefahren.weiss('renate'), 'Renates Geschichte: Notenheft + Frau Kolbe');
+    s.tu('frage frau kolbe nach hallmann');
+    pruefe(Z().hinweise.includes('kolbe_hallmann') && Z().ziele.stadtarchiv, 'Hallmann: Irmgards Stimme am Telefon, Stadtarchiv frei');
+    Z().hinweise.push('hallmann_brand');
+    pruefe(HG.gefahren.weiss('hallmann'), 'Hallmanns Geschichte: Bauakte + Frau Kolbe');
+    ['carsten', 'natascha', 'bettina', 'spiegel', 'brzezinski', 'brinkhoff', 'knie'].forEach(t => {
+      const a = s.tu('frage frau kolbe nach ' + t);
+      pruefe(!/^true$/m.test(a) && a.length > 40, 'Frau Kolbe antwortet zu „' + t + '“');
+    });
+    pruefe(!/lieber nicht/.test(s.tu('trink kaffee')) && !/lieber nicht/.test(s.tu('iss gebäck')), 'Kaffee und Gebäck: iss / trink');
+    s.tu('geh hinaus'); s.tu('geh nach osten');
+    pruefe(Z().raum === 'einfahrt', 'Zurück zur Einfahrt');
+  }
+  // Kopf: Renates Notenheft · Anker: die Taschenuhr
+  {
+    const s = zuKolbe({ hinweise: ['renate_vogt'] }); const Z = () => s.HG.zustand.z;
+    s.tu('geh hinein'); s.tu('frage frau kolbe nach dem haus'); s.tu('2');
+    pruefe(Z().flags.kolbe_vertraut, 'Kopf: Renates Satz aus dem Notenheft überzeugt sie');
+    const u = zuKolbe({ uhrDabei: true }); const Zu = () => u.HG.zustand.z;
+    u.tu('geh hinein'); u.tu('zeige frau kolbe die taschenuhr');
+    pruefe(Zu().flags.kolbe_vertraut && u.HG.welt.getragen('taschenuhr'), 'Anker: Hallmanns Taschenuhr – sie erkennt sie, die Uhr bleibt bei dir');
+  }
+  // Fertigkeit: Überreden misslingt → heute nicht mehr, Tipps → nächster Tag gelingt
+  {
+    const s = zuKolbe({ wurf: 0.97 }); const HG = s.HG, Z = () => HG.zustand.z;
+    s.tu('geh hinein'); s.tu('frage frau kolbe nach dem haus'); s.tu('2');
+    pruefe(!Z().flags.kolbe_vertraut && Z().flags.kolbe_abgewiesen === Z().zeit.tag, 'Überreden misslungen');
+    s.tu('frage frau kolbe nach dem haus'); s.tu('1');
+    pruefe(s.bloecke.some(b => b.typ === 'tipp'), 'Gestaffelter Hinweis bei Frau Kolbe');
+    Z().zeit.tag++; Z().zeit.minute = 10 * 60; HG.zufall = () => 0.05;
+    s.tu('frage frau kolbe nach dem haus'); s.tu('2');
+    pruefe(Z().flags.kolbe_vertraut, 'Am nächsten Tag: Überreden gelungen');
+  }
+  // Abends öffnet sie nicht
+  {
+    const s = zuKolbe({ uhr: 21 }); const Z = () => s.HG.zustand.z;
+    s.tu('geh hinein');
+    pruefe(Z().raum === 'kolbe', 'Abends bleibt die Tür zu');
+  }
+}
+
+// --- 22. Stadtarchiv: Frau Wessels, Grest-Unterlagen, Mikrofilm (Datum, Recherche, Journalist) --------
+{
+  console.log('\n22. Stadtarchiv: Grest → Kirchenbuch/Kopien/1930 → Hallmann 1974 (Datum, Lesegerät) → Brzezinski 1963 (Recherche, Journalist)');
+  function insArchiv(opt) {
+    const s = imHaus(); const HG = s.HG, Z = () => HG.zustand.z;
+    HG.reisen.schalteFrei('stadtarchiv');
+    s.tu('geh nach süden');
+    Z().zeit.minute = 9 * 60;
+    Z().beruf = (opt && opt.beruf) || 'polizei';
+    (opt && opt.hinweise || []).forEach(h => Z().hinweise.push(h));
+    HG.zufall = () => (opt && opt.wurf) || 0.05;
+    s.tu('fahre zum stadtarchiv');
+    return s;
+  }
+  {
+    const s = insArchiv({ hinweise: ['hallmann_brand', 'kiste_brzezinski', 'dreizehn_kreuze'] }); const HG = s.HG, Z = () => HG.zustand.z;
+    pruefe(Z().raum === 'stadtarchiv', 'Ankunft im Lesesaal');
+    pruefeMenues(s, 'Lesesaal');
+    s.tu('frage frau wessels nach grest');
+    pruefe(['kirchenbuch', 'archivkopien', 'zeitung_1930'].every(id => HG.welt.imUmfeld(id)), 'Frau Wessels bringt Kirchenbuch, Kopien und Zeitungsnotiz 1930');
+    s.tu('lies kirchenbuch'); s.tu('lies archivkopien'); s.tu('lies zeitungsnotiz');
+    pruefe(['hochzeitstag', 'bauantrag_1899', 'pflegerin_vermisst'].every(h => Z().hinweise.includes(h)), 'Hochzeit 12.5.1898, Bernwards Unfall 1905, Elisabeths Tod 1930 im Notizbuch');
+    s.tu('frage frau wessels nach hallmann');
+    pruefe(HG.welt.imUmfeld('zeitung_1974'), 'Kopf: Mit dem Datum aus der Bauakte findet sie die Zeitung 1974 selbst');
+    s.tu('lies zeitung von 1974');
+    pruefe(Z().hinweise.includes('zeitung_1974') && HG.gefahren.weiss('hallmann'), 'Hallmann: Bauakte + Zeitung 1974');
+    s.tu('frage frau wessels nach brzezinski');
+    pruefe(Z().flags.rolle_1963, 'Brzezinski: ohne Datum gibt es die Filmrolle');
+    s.tu('benutze lesegerät');
+    pruefe(HG.welt.imUmfeld('zeitung_1963'), 'Fertigkeit: Recherche am Lesegerät findet die Meldung 1963');
+    s.tu('lies zeitung von 1963');
+    pruefe(Z().hinweise.includes('zeitung_1963') && Z().flags.foto_1963_gesehen, 'Die heilen Spiegel, die Frau auf dem Foto');
+    HG.spiel.kombiniereHinweise('kiste_brzezinski', 'zeitung_1963');
+    pruefe(Z().schluesse.includes('spiegel_heilen'), 'Schlussfolgerung „Die Spiegel heilen“ (Kiste + Zeitung 1963)');
+    s.tu('frage frau wessels nach dem friedhof');
+    pruefe(Z().ziele.friedhof, 'Frau Wessels nennt den Friedhof');
+    ['pflegerin', 'carsten', 'rathausbrand', 'renate'].forEach(t => {
+      const a = s.tu('frage frau wessels nach ' + t);
+      pruefe(!/^true$/m.test(a) && a.length > 40, 'Frau Wessels antwortet zu „' + t + '“');
+    });
+  }
+  // Ohne Datum: Hallmann 1974 am Lesegerät – Misserfolg, Tipps, dann gelungen; Journalist ohne Probe
+  {
+    const s = insArchiv({ wurf: 0.97 }); const HG = s.HG, Z = () => HG.zustand.z;
+    s.tu('frage frau wessels nach hallmann');
+    pruefe(Z().flags.rolle_1974 && !HG.welt.imUmfeld('zeitung_1974'), 'Ohne Datum: die Filmrolle 1974');
+    s.tu('benutze lesegerät'); s.tu('benutze lesegerät');
+    pruefe(!HG.welt.imUmfeld('zeitung_1974') && s.bloecke.some(b => b.typ === 'tipp'), 'Recherche misslungen: gestaffelte Hinweise');
+    HG.zufall = () => 0.05; s.tu('benutze lesegerät');
+    pruefe(HG.welt.imUmfeld('zeitung_1974'), 'Neuer Versuch gelingt');
+    const j = insArchiv({ beruf: 'journalismus', wurf: 0.97 });
+    j.tu('frage frau wessels nach brzezinski'); j.tu('benutze lesegerät');
+    pruefe(j.HG.welt.imUmfeld('zeitung_1963'), 'Journalist(in): findet die Meldung ohne Probe');
+  }
+}
+
+// --- 23. Friedhof: Grab Grest, Inschrift auf drei Wegen, Ring ist Anker -------------------
+{
+  console.log('\n23. Friedhof: Grabstein (zwei Hände) → Inschrift (Moos, Wahrnehmung, Gärtner) → „Der Ring ist der Anker“');
+  function zumFriedhof(opt) {
+    const s = imHaus(); const HG = s.HG, Z = () => HG.zustand.z;
+    HG.reisen.schalteFrei('friedhof');
+    s.tu('geh nach süden');
+    Z().zeit.minute = (opt && opt.uhr || 11) * 60;
+    HG.zufall = () => (opt && opt.wurf) || 0.05;
+    s.tu('fahre zum friedhof');
+    return s;
+  }
+  {
+    const s = zumFriedhof({ wurf: 0.97 }); const HG = s.HG, Z = () => HG.zustand.z;
+    pruefe(Z().raum === 'friedhof', 'Ankunft am Friedhofstor');
+    pruefeMenues(s, 'Friedhof Tor');
+    s.tu('untersuche gräber');
+    pruefe(Z().flags.carstens_grab, 'Carstens Grab mit Lavendel im Senfglas');
+    s.tu('geh nach norden');
+    pruefe(Z().raum === 'friedhof_alt', 'Der alte Teil hinter der Kirche');
+    pruefeMenues(s, 'Alter Friedhof');
+    const b = s.tu('untersuche grabstein');
+    pruefe(/zwei Hände/.test(b) && /Ring/.test(b), 'Grabstein: zwei Hände, nur eine mit Ring');
+    s.tu('lies inschrift'); s.tu('lies inschrift');
+    pruefe(!Z().hinweise.includes('grabstein_grest') && s.bloecke.some(b => b.typ === 'tipp'), 'Wahrnehmung misslungen: gestaffelte Hinweise');
+    s.tu('entferne moos');
+    pruefe(Z().flags.moos_weg && Z().hinweise.includes('grabstein_grest'), 'Kopf: Moos entfernt, Inschrift gelesen');
+    Z().hinweise.push('elisabeths_ring');
+    HG.spiel.kombiniereHinweise('grabstein_grest', 'elisabeths_ring');
+    pruefe(Z().schluesse.includes('ring_ist_anker'), 'Grabstein + Ring: „Der Ring ist der Anker“');
+  }
+  {
+    const s = zumFriedhof(); const Z = () => s.HG.zustand.z;
+    s.tu('geh nach norden'); s.tu('lies inschrift');
+    pruefe(Z().hinweise.includes('grabstein_grest') && !Z().flags.moos_weg, 'Fertigkeit: Wahrnehmung liest die Inschrift durchs Moos');
+    const g = zumFriedhof(); const Zg = () => g.HG.zustand.z;
+    g.tu('frage gärtner nach der inschrift');
+    pruefe(Zg().hinweise.includes('grabstein_grest'), 'Figur: Herr Kowalski kennt die Inschrift auswendig');
+    ['grest', 'lavendel', 'pflegerin', 'carsten', 'bernward', 'ostermann'].forEach(t => {
+      const a = g.tu('frage gärtner nach ' + t);
+      pruefe(!/^true$/m.test(a) && a.length > 40, 'Herr Kowalski antwortet zu „' + t + '“');
+    });
+  }
+  {
+    const s = zumFriedhof({ uhr: 18 }); const Z = () => s.HG.zustand.z;
+    s.tu('geh nach norden');
+    pruefe(Z().flags['friedhof_abend_' + Z().zeit.tag], 'Abends: die Krähe auf der Hand ohne Ring');
+    const n = imHaus(); n.HG.reisen.schalteFrei('friedhof'); n.tu('geh nach süden'); n.HG.zustand.z.zeit.minute = 22 * 60;
+    n.tu('fahre zum friedhof');
+    pruefe(n.HG.zustand.z.raum !== 'friedhof', 'Nachts ist das Tor zu');
+  }
+}
+
+// --- 24. Schlafen zu Hause: +1W4 LP, +1W8 NERVEN, WP voll ----------------------------------
+{
+  console.log('\n24. Schlafen zu Hause: LP +1W4, NERVEN +1W8, WP voll');
+  const s = prolog(); const HG = s.HG, Z = () => HG.zustand.z;
+  Z().werte.lp = 3; Z().werte.nerven = 40; Z().werte.wp = 2;
+  Z().zeit.minute = 22 * 60; HG.zufall = () => 0.99;
+  s.tu('schlafe');
+  pruefe(Z().werte.lp === Math.min(Z().max.lp, 7) && Z().werte.nerven === 48 && Z().werte.wp === Z().max.wp, 'Nacht zu Hause: LP +4, NERVEN +8 (Höchstwürfe), WP voll');
+}
+
+// --- 25. Finale: Spiegelzimmer, Wahl der Hand, Enden, Feuer -----------------------------------
+{
+  console.log('\n25. Finale: Spalt lockt → Neumond ohne Kreis → Kampf → Wahl der Hand → Erlösung / Willkommen · Feuer');
+  /** Auf der Galerie, zur gewünschten Uhrzeit; opt.neumond = die Tapetentür ist offen (3-Uhr-Höhepunkt erlebt). */
+  function aufGalerie(opt) {
+    opt = opt || {};
+    const s = imHaus(); const HG = s.HG, Z = () => HG.zustand.z;
+    s.tu('geh hoch');
+    Z().zeit.minute = (opt.uhr === undefined ? 22 : opt.uhr) * 60 + 30;
+    if (opt.uhr !== undefined && opt.uhr < 6) Z().zeit.tag++;
+    if (opt.neumond) Z().flags.spiegelzimmer_offen = HG.nacht.nummer();
+    if (opt.kreis) Z().flags.kreis_gebrochen = true;
+    if (opt.ring) { HG.api.bewege('ehering', 'spieler'); }
+    (opt.bekehrt || []).forEach(id => { HG.gefahren.istBekehrt(id) || (Z().gefahren = Z().gefahren || { nacht: {}, gebannt: {}, seelen: {}, wanderer: null, da: null, aktiv: null, schutz: {} }, Z().gefahren.seelen[id] = 'bekehrt'); });
+    if (opt.zwei) Z().schluesse.push('zwei_elisabeths');
+    HG.zufall = () => opt.wurf || 0.05;
+    return s;
+  }
+  const wahlIndex = (s, muster) => s.HG.spiel.offen.optionen.findIndex(o => muster.test(o.text)) + 1;
+  // Bei Tag bleibt die Tür zu
+  {
+    const s = aufGalerie({ uhr: 12 }); const Z = () => s.HG.zustand.z;
+    pruefe(Z().raum === 'galerie', 'Auf der Galerie');
+    s.tu('geh hinein');
+    pruefe(Z().raum === 'galerie', 'Bei Tag: Die Tapetentür gibt nicht nach');
+  }
+  // Eine gewöhnliche Nacht: Der Spalt lockt – Manifestation, Flucht
+  {
+    const s = aufGalerie({ uhr: 22 }); const HG = s.HG, Z = () => HG.zustand.z;
+    s.tu('öffne tapetentür');
+    pruefe(Z().kampf && Z().kampf.id === 'alle_spiegel', 'Nachts lockt der Spalt: extreme Manifestation im Spiegelzimmer');
+    s.tu('flieh');
+    pruefe(!Z().kampf && Z().raum === 'galerie' && !Z().vorbei, 'Flucht zurück auf die Galerie');
+  }
+  // Neumondnacht nach 3 Uhr, Kreis nicht gebrochen: zurückziehen; eine bekehrte Seele zeigt nach unten
+  {
+    const s = aufGalerie({ uhr: 3, neumond: true, bekehrt: ['natascha'] }); const Z = () => s.HG.zustand.z;
+    const t = s.tu('geh hinein');
+    pruefe(Z().raum === 'galerie' && !Z().vorbei && /zu stark/.test(t) && /Natascha/.test(t), 'Kreis nicht gebrochen: Rückzug, Natascha zeigt nach unten');
+  }
+  // Das Finale: Kreis gebrochen, Ring, zwei bekehrte Seelen → Kampf → richtige Hand → Erlösung
+  {
+    const s = aufGalerie({ uhr: 3, neumond: true, kreis: true, ring: true, bekehrt: ['bettina', 'renate'], zwei: true }); const HG = s.HG, Z = () => HG.zustand.z;
+    HG.api.bewege('tinktur', 'spieler');
+    s.tu('geh hinein');
+    pruefe(Z().raum === 'spiegelzimmer' && s.HG.spiel.offen && s.HG.spiel.offen.art === 'auswahl', 'Finale: Sie bittet um den Ring (Auswahl)');
+    pruefe(HG.finale.stufe(HG.api) === 'schwach' && !HG.welt.getragen('tinktur'), 'Zwei bekehrte Seelen: MACHT schwach; die Tinktur wird verbraucht');
+    s.tu(String(wahlIndex(s, /andere/)));
+    pruefe(Z().kampf && Z().kampf.id === 'die_andere', 'Die andere Elisabeth: Kampf');
+    pruefe(!/flieh/.test(HG.kampf.moeglich().map(a => a.id).join(' ')), 'Kein Zurück: Fliehen ist nicht möglich');
+    Z().kampf.halt = 1;
+    s.tu('halte das licht auf sie');
+    pruefe(!Z().kampf && s.HG.spiel.offen && s.HG.spiel.offen.art === 'auswahl', 'Besiegt: Wahl der Hand');
+    s.tu(String(wahlIndex(s, /zittert/)));
+    pruefe(Z().vorbei && s.bloecke.some(b => /Erlösung/.test(b.html || b.text || '')), 'Richtige Hand mit Ring: Ende „Erlösung“');
+  }
+  // Falsche Hand → Willkommen zu Hause
+  {
+    const s = aufGalerie({ uhr: 3, neumond: true, kreis: true, ring: true, zwei: true }); const HG = s.HG, Z = () => HG.zustand.z;
+    s.tu('geh hinein'); s.tu(String(wahlIndex(s, /andere/)));
+    pruefe(HG.finale.stufe(HG.api) !== 'schwach' && HG.daten.manifestationen.die_andere.halt >= 18, 'Ohne bekehrte Seelen: ein harter Kampf (HALT ' + HG.daten.manifestationen.die_andere.halt + ')');
+    Z().kampf.halt = 1; s.tu('halte das licht auf sie');
+    s.tu(String(wahlIndex(s, /ruhig wartet/)));
+    pruefe(Z().vorbei && s.bloecke.some(b => /Willkommen zu Hause/.test(b.html || b.text || '')), 'Falsche Hand: „Willkommen zu Hause“');
+  }
+  // Ihr den Ring geben → Willkommen zu Hause · im Griff ins Glas gezogen → Willkommen zu Hause
+  {
+    const s = aufGalerie({ uhr: 3, neumond: true, kreis: true, ring: true }); const Z = () => s.HG.zustand.z;
+    s.tu('geh hinein'); s.tu(String(wahlIndex(s, /Ring geben/)));
+    pruefe(Z().vorbei, 'Ihr den Ring gegeben: verloren');
+    const g = aufGalerie({ uhr: 3, neumond: true, kreis: true, ring: true, zwei: true }); const Zg = () => g.HG.zustand.z;
+    g.tu('geh hinein'); g.tu(String(wahlIndex(g, /andere/)));
+    Zg().kampf.griff = true; Zg().kampf.griffRunden = 2; Zg().kampf.halt = 50;
+    g.tu('halte das licht auf sie');
+    pruefe(Zg().vorbei && g.bloecke.some(b => /Willkommen zu Hause/.test(b.html || b.text || '')), 'Im Griff ins Glas gezogen: „Willkommen zu Hause“');
+  }
+  // Um drei Uhr in einer Neumondnacht geht die Tür auf
+  {
+    const s = aufGalerie({ uhr: 22 }); const HG = s.HG, Z = () => HG.zustand.z;
+    HG.nacht.istNeumond = () => true;
+    HG.daten.spiel.hoehepunkt(HG.api);
+    pruefe(Z().flags.spiegelzimmer_offen === HG.nacht.nummer(), 'Höhepunkt in der Neumondnacht: Die Tapetentür öffnet sich');
+  }
+  // Feuer: Das Haus ruft die Feuerwehr (gelöscht, es geht weiter) · Hallmann verhindert es (Ende „Feuer“)
+  {
+    const s = aufGalerie({ uhr: 12 }); const HG = s.HG, Z = () => HG.zustand.z;
+    s.tu('geh runter');
+    HG.api.bewege('benzinkanister', 'spieler'); HG.api.bewege('sturmstreichhoelzer', 'spieler');
+    s.tu('gieße benzin aus');
+    pruefe(HG.welt.imUmfeld('benzinlache') && !HG.welt.getragen('benzinkanister'), 'Benzin in der Halle ausgegossen');
+    s.tu('zünde benzin an');
+    pruefe(Z().flags.feuer_geloescht && Z().raum === 'einfahrt' && !Z().vorbei, 'Das Haus ruft die Feuerwehr: gelöscht, das Spiel geht weiter');
+    const h = aufGalerie({ uhr: 12 }); const Zh = () => h.HG.zustand.z;
+    h.tu('geh runter'); Zh().flags.hallmann_hilft = true;
+    h.HG.api.bewege('benzinkanister', 'spieler'); h.HG.api.bewege('sturmstreichhoelzer', 'spieler');
+    h.tu('gieße benzin aus'); h.tu('zünde benzin an');
+    pruefe(Zh().vorbei && h.bloecke.some(b => /originalgetreu/.test(b.html || b.text || '')), 'Hallmann legt auf: Ende „Feuer“ – und der Wiederaufbau');
+  }
+}
+
 console.log('\n' + (tests - fehler) + ' von ' + tests + ' Prüfungen bestanden.' + (fehler ? ' ' + fehler + ' FEHLGESCHLAGEN.' : ''));
 process.exit(fehler ? 1 : 0);

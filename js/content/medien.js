@@ -14,6 +14,8 @@
     'archivkopien', 'zeitung_1930', 'foto_1912',                                       // Karton GREST
     'taschenspiegel', 'pistole',                                     // Küche, Schuhkarton
     'bauakte',                                                                         // Stadtverwaltung
+    'kirchenbuch', 'zeitung_1974', 'zeitung_1963', 'lesegeraet',                      // Stadtarchiv
+    'grabstein_grest',                                                                 // Friedhof
     'kaestchen', 'zirkel', 'brief_1905', 'ehering',                                    // Bernwards Kästchen
     'gebetbuch', 'vogelkiste', 'kuehlschrankzettel', 'notenheft', 'tinktur',           // Erdgeschoss Nord und Ost
     'elisabeths_tagebuch', 'kraeuterbuch', 'brinkhoff_plaene', 'puppenhaus', 'haarspange', 'kinderbuch',   // Obergeschoss

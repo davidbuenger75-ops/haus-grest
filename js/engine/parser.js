@@ -109,6 +109,10 @@
     { a: 'drehen', w: L('dreh drehe drehen kurbel kurble'), o: 1 },
     { a: 'knacken', w: L('knack knacke knacken'), o: 1, p2: L('mit') },
     { a: 'spielen', w: L('spiel spiele spielen klimper klimpere'), vor: L('auf an'), o: 1 },   // "spiele flügel", "spiel auf dem klavier"
+    { a: 'giessen', w: L('giess giesse giessen schuett schuette schuetten verschuett verschuette verschuetten vergiess vergiesse'), p: 'aus', o: 1, p2: L('auf ueber in') },   // "gieße benzin aus"
+    { a: 'giessen', w: L('giess giesse giessen schuett schuette schuetten verschuett verschuette verschuetten vergiess vergiesse'), o: 1, p2: L('auf ueber in') },
+    { a: 'essen', w: L('iss esse essen'), o: 1 },                        // "iss ein plätzchen" (bei.essen / texte.essen)
+    { a: 'trinken', w: L('trink trinke trinken'), vor: L('aus von'), o: 1 },   // "trink den kaffee"
     { a: 'oelen', w: L('oel oele oelen schmier schmiere schmieren fette fetten'), o: 1, p2: L('mit') },   // "öle den Riegel"
     { a: 'nahansicht', w: L('nahansicht'), o: 1 },
     { a: 'entziffern', w: L('entziffer entziffere entziffern'), o: '?', text: true },   // gesperrte Buchseiten

@@ -228,7 +228,7 @@
     HG.ausgabe.text(typeof platz === 'string' ? platz : 'Du legst dich hin und schläfst ein.');
     ZT.vergeht(ZT.minutenBis(ZIELZEIT.morgen));
     HG.ausgabe.text('<span class="nebenbei">Du wachst um ' + ZT.uhr() + ' Uhr auf.</span>');
-    // Erholung: { lp: 1, nerven: 1, wp: 'voll' }; Werte aus erholungNurAusserhalb nur nach einer Nacht außerhalb des Hauses
+    // Erholung: { lp: '1W4', nerven: '1W8', wp: 'voll' } (Zahl, Würfel oder 'voll'); Werte aus erholungNurAusserhalb nur nach einer Nacht außerhalb des Hauses
     var sp = HG.daten.spiel, er = sp.erholungBeimSchlaf || { nerven: 1 };
     var nurAussen = sp.erholungNurAusserhalb || ['nerven'];
     var z = HG.zustand.z;
@@ -237,7 +237,8 @@
       if (!er[k] || z.werte[k] === undefined) return;
       if (nurAussen.indexOf(k) >= 0 && (imHaus || !nacht)) return;
       var grenze = k === 'nerven' ? z.start.nerven : z.max[k];         // NERVEN höchstens bis zum Startwert
-      var delta = Math.max(0, er[k] === 'voll' ? grenze - z.werte[k] : Math.min(er[k], grenze - z.werte[k]));
+      var menge = er[k] === 'voll' ? grenze - z.werte[k] : HG.wuerfel(er[k]);
+      var delta = Math.max(0, Math.min(menge, grenze - z.werte[k]));
       if (delta) HG.api.aendere(k, delta, 'Schlaf');
     });
   };

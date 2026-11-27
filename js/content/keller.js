@@ -594,7 +594,6 @@
     HG.macht.verbrauche(25);
     api.nervenProbe('1/1W6', { grund: 'der Kreis bricht' });
     api.hinweis('kreis_gebrochen');
-    api.sage('<span class="nebenbei">(Das Finale – die Neumondnacht im Spiegelzimmer – wird noch gebaut.)</span>');
   }
   function teil(id, def) {
     HG.ding(id, Object.assign({

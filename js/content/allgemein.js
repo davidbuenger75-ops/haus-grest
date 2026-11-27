@@ -88,8 +88,8 @@ HG.spielDaten({
     { art: 'fallen', text: 'Deine Hände zittern so sehr, dass dir %DING% entgleitet und zu Boden fällt.' },
     { art: 'flucht', text: 'Du denkst nicht nach. Deine Beine tragen dich einfach fort, nur weg von hier.' }
   ],
-  // Schlaf: +1 LP und +1 NERVEN pro Nacht außerhalb des Hauses (NERVEN höchstens bis zum Startwert), WP wieder voll
-  erholungBeimSchlaf: { lp: 1, nerven: 1, wp: 'voll' },
+  // Schlaf: pro Nacht außerhalb des Hauses +1W4 LP und +1W8 NERVEN (NERVEN höchstens bis zum Startwert), WP wieder voll (David, 27.11.2026)
+  erholungBeimSchlaf: { lp: '1W4', nerven: '1W8', wp: 'voll' },
   erholungNurAusserhalb: ['lp', 'nerven', 'wp'],
   tragkraft: 12,
 

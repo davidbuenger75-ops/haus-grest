@@ -242,7 +242,7 @@
     oeffnen: 'öffnen', schliessen: 'schließen', druecken: 'drücken', ziehen: 'ziehen', drehen: 'drehen', umdrehen: 'umdrehen', einstellen: 'einstellen', knacken: 'knacken', schieben: 'schieben',
     anzuenden: 'anzünden', loeschen: 'löschen', zerbrechen: 'zerbrechen', reissen: 'zerreißen', sprechen: 'ansprechen',
     fragen: 'fragen', zeigen: 'zeigen', geben: 'geben', benutzen: 'benutzen', kombinieren: 'kombinieren',
-    hineinschauen: 'hineinschauen', unterschauen: 'darunter ansehen', hinterschauen: 'dahinter ansehen', oelen: 'ölen', spielen: 'spielen',
+    hineinschauen: 'hineinschauen', unterschauen: 'darunter ansehen', hinterschauen: 'dahinter ansehen', oelen: 'ölen', spielen: 'spielen', essen: 'essen', trinken: 'trinken', giessen: 'ausgießen',
     entfernen: 'entfernen', streuen: 'streuen'
   };
 

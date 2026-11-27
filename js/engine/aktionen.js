@@ -629,6 +629,9 @@
     sag(txt(ctx.obj, 'oelen', ctx) || 'Du träufelst ein wenig Öl auf ' + der(ctx.obj) + '. ' + Pron(ctx.obj) + ' ' + vb(ctx.obj, 'glänzt', 'glänzen') + ' jetzt. Sonst ändert sich nichts.');
   };
   A.spielen = function (ctx) { sag(HG.wert(D(ctx.obj).spielen, HG.api, ctx) || 'Auf ' + der(ctx.obj, 'dat') + ' kannst du nicht spielen.'); };
+  A.giessen = function (ctx) { sag(txt(ctx.obj, 'giessen', ctx) || 'Aus ' + der(ctx.obj, 'dat') + ' lässt sich nichts gießen.'); };
+  A.essen = function (ctx) { sag(txt(ctx.obj, 'essen', ctx) || 'Das willst du lieber nicht essen.'); };
+  A.trinken = function (ctx) { sag(txt(ctx.obj, 'trinken', ctx) || 'Das willst du lieber nicht trinken.'); };
   A.knacken = function (ctx) { sag('An ' + der(ctx.obj, 'dat') + ' gibt es nichts, was du knacken könntest.'); };
   A.winken = function () { sag(HG.wert(raum().winken, HG.api) || 'Du fuchtelst mit den Armen. Niemand sieht es – hoffentlich.'); };
 

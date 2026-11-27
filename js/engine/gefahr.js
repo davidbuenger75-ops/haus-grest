@@ -25,7 +25,10 @@
 //     angriffe: [{ text, lp: '1W4', nerven: '0/1W3', griff: true }, …],   // reihum, oder angriff: function (api, k)
 //     griffFolge: { runden: 3, text, nerven: '1W3/1W10', lp: '1W4' },      // nach n Runden im Griff
 //     texte: { aufgeloest, abgeschnitten, gebannt, geflohen, illusion, ausgewichen },
-//     nachher: function (api, art) {}
+//     nachher: function (api, art) {},
+//     flucht: false,                        // kein Entkommen (Finale); fluchtMod: +20 erleichtert die Flucht
+//     salzHalt: '1W4',                      // Salz bannt nicht, sondern kostet HALT
+//     warum: { verhaengen: '…' }            // eigene Texte, warum eine Aktion hier nicht geht
 //   });
 //   Start: api.kampf('die_hand', { spiegel: 'wc_spiegel' }). Während eines Kampfs versteht die Eingabe nur
 //   Kampf-Aktionen (Spielbibel 8.9.1: ausweichen, losreißen, Licht, Spiegel verhängen/zerschlagen, beim Namen
@@ -433,6 +436,7 @@
         if (a.tuer && eig(a.tuer, 'verschlossen')) return null;
         if (a.sperre && typeof a.sperre === 'string') return null;
         if (a.unsichtbar && HG.wert(a.unsichtbar, A())) return null;   // z. B. eine Wand, die noch nicht durchbrochen ist
+        if (a.nurSpieler) return null;   // nur bewusst betretbar (Spiegelzimmer): kein Weg für Wanderer oder Flucht
         return a.ziel;
       }).filter(Boolean);
     },
@@ -492,7 +496,7 @@
           case 'stimmgabel': return !!(d.illusion && dingDabei('stimmgabel'));
           case 'salz': return !!dingDabei('salz');
           case 'schiessen': return W.getragen('pistole') && !!eig('pistole', 'geladen');
-          case 'fliehen': return G.nachbarn(Z().raum).length > 0 || d.fliehenNach;
+          case 'fliehen': return d.flucht !== false && (G.nachbarn(Z().raum).length > 0 || !!d.fliehenNach);
         case 'nahkampf': return !!d.koerper;
         }
         return false;
@@ -548,6 +552,8 @@
     },
     warumNicht: function (aktion) {
       var d = K.def(), k = Z().kampf;
+      if (d.warum && d.warum[aktion]) return wert(d.warum[aktion]);
+      if (aktion === 'fliehen' && d.flucht === false) return 'Es gibt kein Zurück. Die Tür hinter dir ist verschwunden.';
       switch (aktion) {
         case 'licht': return 'Du hast kein Licht, das brennt.';
         case 'verhaengen': return d.ausSpiegel ? 'Du hast nichts dabei, womit du den Spiegel verhängen könntest – ein Laken, ein Tuch.' : 'Hier ist kein Spiegel, den du verhängen könntest.';
@@ -625,6 +631,7 @@
         case 'salz':
           HG.stueckVerbrauchen(dingDabei('salz'));
           e = api.probe('okkultismus', { grund: 'Salzlinie' });
+          if (e.erfolg && d.salzHalt) { var sw = HG.wuerfel(d.salzHalt); k.halt -= sw; sag((wert(tx.salz) || 'Die Salzlinie schneidet durch sie hindurch. Sie zischt.') + ' <span class="nebenbei">(HALT −' + sw + ')</span>'); return null; }
           if (e.erfolg) return 'gebannt';
           sag('Das Salz rieselt dir durch die Finger, die Linie hat Lücken.');
           return null;
@@ -634,7 +641,7 @@
           api.aendere('nerven', 1, 'die Waffe in der Hand');
           return null;
         case 'fliehen':
-          e = api.probe(HG.charakter && api.eigenschaft('ge') >= api.eigenschaft('st') ? 'ge' : 'st', { grund: 'Flucht' });
+          e = api.probe(HG.charakter && api.eigenschaft('ge') >= api.eigenschaft('st') ? 'ge' : 'st', { grund: 'Flucht', mod: d.fluchtMod || 0 });
           if (e.erfolg) return 'geflohen';
           sag('Du kommst nicht weg.');
           return null;
