@@ -204,12 +204,12 @@ HG.hinweis('geheimschrift', {
   stichworte: ['geheimschrift', 'zitrone', 'kinderbuch', 'kerze']
 });
 HG.schluss('zwei_elisabeths', {
-  aus: ['kraehe_gebetbuch', 'elisabeths_siegel', 'elisabeths_tagebuch', 'zwei_gesichter'], mindestens: 2,
+  aus: ['kraehe_gebetbuch', 'elisabeths_siegel', 'elisabeths_tagebuch', 'zwei_gesichter', 'lotte_zwei_gesichter'], mindestens: 2,
   titel: 'Es gibt zwei Elisabeths',
   text: 'Was in Elisabeth krank war, hat eine eigene Stimme bekommen – die Pflegerin hat es in die Spiegel gebannt. Die echte Elisabeth hat sich gewehrt: Sie hat abgelehnt und die Kammer versiegelt. Die Frau im Spiegel ist nicht sie. Sie ist „die andere“.'
 });
 HG.schluss('ring_ist_anker', {
-  aus: ['bernwards_letzter_brief', 'elisabeths_ring', 'elisabeths_tagebuch'], mindestens: 2,
+  aus: ['bernwards_letzter_brief', 'elisabeths_ring', 'elisabeths_tagebuch', 'lotte_ring'], mindestens: 2,
   titel: 'Der Ring ist der Anker',
   text: 'Bernward hat den Ring verwahrt, „bis unser Tag wiederkommt“. Elisabeth schreibt: „Wenn B. mir den Ring wiedergibt, bin ich frei.“ Du hast den Ring. Er gehört der guten Elisabeth.'
 });

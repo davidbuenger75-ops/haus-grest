@@ -330,6 +330,26 @@
     return HG.welt.umfeld(true).some(function (id) { return passt(id, woerter) === 2; });
   }
 
+  /** Wortfolge in zwei Dinge teilen, von denen genau eins eine Person ist ("brigitte die haarspange").
+   *  Passt die ganze Folge schon auf ein Ding, bleibt sie ein Objekt. Rückgabe { person, ding } oder null. */
+  function zweiDinge(r) {
+    if (!HG.zustand.z || r.length < 2) return null;
+    var um = HG.welt.umfeld(true);
+    function treffer(ws) {
+      ws = ws.filter(function (t) { return ARTIKEL.indexOf(t) < 0; });
+      return ws.length ? um.filter(function (id) { return passt(id, ws) === 2; }) : [];
+    }
+    function person(ids) { return ids.some(function (id) { return HG.daten.dinge[id] && HG.daten.dinge[id].person; }); }
+    if (treffer(r).length) return null;
+    for (var k = 1; k < r.length; k++) {
+      var a = r.slice(0, k), b = r.slice(k), ta = treffer(a), tb = treffer(b);
+      if (!ta.length || !tb.length) continue;
+      if (person(ta) && !person(tb)) return { person: a, ding: b };
+      if (person(tb) && !person(ta)) return { person: b, ding: a };
+    }
+    return null;
+  }
+
   // -----------------------------------------------------------------
   // Zerlegen in Befehle
   // -----------------------------------------------------------------
@@ -494,6 +514,10 @@
             var a = np1.slice(art[0], art[1]), b = np1.slice(art[1]);
             var bDat = ['dem', 'einem'].indexOf(b[0]) >= 0;
             befehl.np1 = bDat ? a : b; befehl.np2 = bDat ? b : a; befehl.prep2 = 'an';
+          } else {
+            // "zeige brigitte die haarspange", "gib jansen pistole": zwei Dinge ohne zwei Artikel – die Person bekommt
+            var tr = zweiDinge(np1);
+            if (tr) { befehl.np1 = tr.ding; befehl.np2 = tr.person; befehl.prep2 = 'an'; }
           }
         }
         return befehl;

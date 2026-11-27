@@ -1232,5 +1232,147 @@ const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'diens
   }
 }
 
+// --- 19. Wohnung Gerdes: drei Wege durch die Tür, Brigittes Geschichte, Bettinas Referat --------
+{
+  console.log('\n19. Wohnung Gerdes: Tür (Nummern, Haarspange, Überreden) → Brigittes Geschichte → Referat');
+  /** Neues Spiel (im Haus gewesen), mittags in Unna vor der Tür. */
+  function zuGerdes(opt) {
+    const s = imHaus(); const HG = s.HG, Z = () => HG.zustand.z;
+    HG.reisen.schalteFrei('gerdes');
+    s.tu('geh nach süden');
+    Z().zeit.minute = 12 * 60;
+    if (opt && opt.nummern) Z().hinweise.push('fremde_nummern');
+    if (opt && opt.spange) { HG.api.bewege('haarspange', 'spieler'); HG.zustand.setze('haarspange', 'versteckt', false); }
+    HG.zufall = () => (opt && opt.wurf) || 0.05;
+    s.tu('fahre nach unna');
+    return s;
+  }
+  // Weg 1: Kopf – „Schreibt es Ihnen auch?“
+  {
+    const s = zuGerdes({ nummern: true }); const HG = s.HG, Z = () => HG.zustand.z;
+    pruefe(Z().raum === 'gerdes', 'Ankunft vor der Wohnung Gerdes');
+    pruefeMenues(s, 'Treppenhaus Gerdes');
+    pruefe(/Kette/.test(s.tu('geh hinein')) && Z().raum === 'gerdes', 'Ohne Brigittes Vertrauen bleibt die Kette vor');
+    s.tu('sprich mit brigitte');
+    pruefe(s.HG.spiel.offen && s.HG.spiel.offen.art === 'auswahl', 'Brigitte: Auswahl an der Tür');
+    s.tu('2');
+    pruefe(Z().raum === 'gerdes_wohnung' && Z().flags.gerdes_herein, 'Kopf: Die Frage nach den fremden Nummern öffnet die Tür');
+    pruefeMenues(s, 'Wohnzimmer Gerdes');
+    s.tu('frage brigitte nach bettina');
+    pruefe(Z().hinweise.includes('gespraech_brigitte'), 'Brigittes Geschichte im Notizbuch');
+    pruefe(!HG.gefahren.weiss('bettina'), 'Bettina: Brigitte allein reicht nicht (Zeitungsausschnitt fehlt)');
+    Z().hinweise.push('bettina_gerdes');
+    pruefe(HG.gefahren.weiss('bettina'), 'Bettinas Geschichte: Zeitungsausschnitt + Brigitte');
+    s.tu('frage brigitte nach dem altenheim');
+    pruefe(HG.welt.imUmfeld('referat_bettina'), 'Brigitte legt Bettinas Referat auf den Tisch');
+    s.tu('lies referat'); s.tu('nimm referat');
+    pruefe(Z().hinweise.includes('bettinas_referat') && Z().ziele.altenheim, 'Referat gelesen: Lotte W. im Lindenhof, Altenheim frei');
+    pruefe(Z().handy.fotos.some(f => f.id === 'referat_bettina'), 'Das Referat landet als Foto in der Galerie');
+    s.tu('frage brigitte nach dem handy'); s.tu('warte'); s.tu('warte');
+    pruefe(Z().flags.bettina_sms, 'Eine Nachricht von Bettinas Nummer');
+    s.tu('lies trauerkarte');
+    pruefe(!/kenne ich nicht|siehst hier nichts/.test(s.tu('untersuche foto')), 'Bettinas Foto mit der Haarspange');
+    s.tu('geh hinaus');
+    pruefe(Z().raum === 'gerdes' && /angelehnt/.test(s.tu('schau')), 'Draußen ist die Tür angelehnt');
+    s.tu('geh hinein');
+    pruefe(Z().raum === 'gerdes_wohnung', 'Beim zweiten Mal geht es direkt hinein');
+  }
+  // Weg 2: Anker – Bettinas Haarspange
+  {
+    const s = zuGerdes({ spange: true }); const HG = s.HG, Z = () => HG.zustand.z;
+    s.tu('zeige brigitte die haarspange');
+    pruefe(Z().raum === 'gerdes_wohnung' && HG.welt.getragen('haarspange'), 'Anker: Die Haarspange öffnet die Tür, die Spange bleibt bei dir');
+  }
+  // Weg 3: Fertigkeit – Überreden; misslungen: heute nicht mehr, mit Hinweisen; Altenheim trotzdem frei
+  {
+    const s = zuGerdes({ wurf: 0.97 }); const HG = s.HG, Z = () => HG.zustand.z;
+    s.tu('sprich mit brigitte'); s.tu('2');
+    pruefe(Z().raum === 'gerdes' && Z().flags.brigitte_abgewiesen, 'Überreden misslungen: die Tür bleibt zu');
+    pruefe(Z().hinweise.includes('brigitte_altenheim'), 'Trotzdem schickt Brigitte einen ins Altenheim (keine Sackgasse)');
+    s.tu('sprich mit brigitte');
+    pruefe(s.bloecke.some(b => b.typ === 'tipp'), 'Gestaffelter Hinweis an der Tür');
+    Z().zeit.tag++; Z().zeit.minute = 10 * 60; HG.zufall = () => 0.05;
+    s.tu('sprich mit brigitte'); s.tu('2');
+    pruefe(Z().raum === 'gerdes_wohnung', 'Am nächsten Tag: Überreden gelungen');
+    const t = s.tu('sprich mit brigitte');
+    pruefe(!/^true$/m.test(t), 'Kein „true“ in der Ausgabe');
+  }
+  // Nachts öffnet niemand
+  {
+    const s = imHaus(); const HG = s.HG, Z = () => HG.zustand.z;
+    HG.reisen.schalteFrei('gerdes'); s.tu('geh nach süden');
+    Z().zeit.minute = 22 * 60;
+    pruefe(/morgen ab acht/.test(s.tu('fahre nach unna')) && Z().raum !== 'gerdes', 'Nachts fährt man nicht zu Brigitte');
+  }
+}
+
+// --- 20. Altenheim: Lotte Wiegand ------------------------------------------------------------
+{
+  console.log('\n20. Altenheim: Lavendel → Lotte (vormittags, Kopf, Erste Hilfe, Pflegekraft) → zwei Gesichter, Ring');
+  function zumLindenhof(opt) {
+    const s = opt && opt.nieImHaus ? prolog() : imHaus(); const HG = s.HG, Z = () => HG.zustand.z;
+    HG.reisen.schalteFrei('altenheim');
+    if (!(opt && opt.nieImHaus)) s.tu('geh nach süden');
+    else { s.tu('öffne umschlag'); s.tu('lies notarbrief'); }
+    Z().zeit.minute = (opt && opt.uhr || 14) * 60;
+    if (opt && opt.beruf) Z().beruf = opt.beruf; else Z().beruf = 'journalismus';
+    HG.zufall = () => (opt && opt.wurf) || 0.05;
+    s.tu('fahre zum altenheim');
+    return s;
+  }
+  // Wer im Haus war, den erkennt Lotte am Lavendel
+  {
+    const s = zumLindenhof(); const HG = s.HG, Z = () => HG.zustand.z;
+    pruefe(Z().raum === 'altenheim', 'Ankunft am Empfang im Lindenhof');
+    pruefeMenues(s, 'Empfang Lindenhof');
+    s.tu('frage pflegerin nach dem ulmenweg');
+    pruefe(Z().flags.arslan_lotte, 'Frau Arslan nennt Lotte Wiegand');
+    s.tu('geh nach norden');
+    pruefe(Z().flags.lotte_lavendel && Z().flags.lotte_klar === Z().zeit.tag, '„Sie werden’s merken“: Lotte erkennt den Lavendel');
+    pruefeMenues(s, 'Aufenthaltsraum');
+    s.tu('frage lotte nach der gnädigen frau');
+    pruefe(Z().hinweise.includes('lotte_zwei_gesichter'), 'Lotte: zwei Gesichter');
+    s.tu('frage lotte nach dem ring');
+    pruefe(Z().hinweise.includes('lotte_ring'), 'Lotte: der Ring');
+    Z().hinweise.push('elisabeths_siegel', 'elisabeths_ring');
+    const sl = Object.values(HG.daten.schluesse);
+    pruefe(sl.find(x => x.id === 'zwei_elisabeths').aus.includes('lotte_zwei_gesichter') && sl.find(x => x.id === 'ring_ist_anker').aus.includes('lotte_ring'), 'Lottes Aussagen zählen für „Zwei Elisabeths“ und „Der Ring ist der Anker“');
+  }
+  // Nachmittags, nie im Haus gewesen: verwirrt → Hinweise → Erste Hilfe misslingt (döst) → gelingt
+  {
+    const s = zumLindenhof({ nieImHaus: true, wurf: 0.97 }); const HG = s.HG, Z = () => HG.zustand.z;
+    s.tu('geh nach norden');
+    pruefe(!Z().flags.lotte_klar, 'Nie im Haus gewesen: Lotte erkennt einen nicht');
+    s.tu('frage lotte nach dem ring'); s.tu('frage lotte nach dem ring');
+    pruefe(!Z().hinweise.includes('lotte_ring') && s.bloecke.some(b => b.typ === 'tipp'), 'Verwirrt: kein Hinweis, aber gestaffelte Tipps');
+    s.tu('sprich mit lotte'); s.tu('1');
+    pruefe(Z().flags.lotte_doest, 'Erste Hilfe misslungen: Lotte nickt ein');
+    s.tu('warte 30 minuten'); HG.zufall = () => 0.05;
+    s.tu('sprich mit lotte'); s.tu('1');
+    pruefe(Z().flags.lotte_klar === Z().zeit.tag, 'Erste Hilfe gelungen: Lotte ist wieder da');
+    s.tu('frage lotte nach dem ring');
+    pruefe(Z().hinweise.includes('lotte_ring'), 'Danach erzählt sie vom Ring');
+  }
+  // Kopf: nach der Kammer fragen (Ritzung bekannt) · Zeit: vormittags · Beruf: Pflegekraft
+  {
+    const s = zumLindenhof({ nieImHaus: true }); const HG = s.HG, Z = () => HG.zustand.z;
+    Z().hinweise.push('zwei_gesichter');
+    s.tu('geh nach norden'); s.tu('frage lotte nach der kammer');
+    pruefe(Z().flags.lotte_klar === Z().zeit.tag, 'Kopf: Die Frage nach ihrer Kammer holt Lotte zurück');
+    const v = zumLindenhof({ nieImHaus: true, uhr: 10 });
+    v.tu('geh nach norden'); v.tu('frage lotte nach der gnädigen frau');
+    pruefe(v.HG.zustand.z.hinweise.includes('lotte_zwei_gesichter'), 'Zeit: Vormittags ist Lotte klar');
+    const p = zumLindenhof({ nieImHaus: true, beruf: 'pflege' });
+    p.tu('geh nach norden'); p.tu('frage lotte nach der gnädigen frau');
+    pruefe(p.HG.zustand.z.hinweise.includes('lotte_zwei_gesichter'), 'Beruf Pflegekraft: Lotte ist klar');
+  }
+  // Abends spiegelt die Scheibe
+  {
+    const s = zumLindenhof({ uhr: 18 }); const HG = s.HG, Z = () => HG.zustand.z;
+    s.tu('geh nach norden');
+    pruefe(Z().flags.spiegel_lindenhof === Z().zeit.tag, 'Abends: die Frau in der Scheibe (NERVEN-Probe)');
+  }
+}
+
 console.log('\n' + (tests - fehler) + ' von ' + tests + ' Prüfungen bestanden.' + (fehler ? ' ' + fehler + ' FEHLGESCHLAGEN.' : ''));
 process.exit(fehler ? 1 : 0);

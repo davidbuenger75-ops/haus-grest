@@ -521,14 +521,7 @@
     hinweis: 'bettina_gerdes', hinweisBei: 'lesen'
   });
 
-  HG.ding('trauerkarte', {
-    dokument: true,   // wird fotografiert (Handy-Galerie + Notizbuch), nicht eingesteckt
-    nomen: 'Trauerkarte', genus: 'f',
-    woerter: ['trauerkarte', 'karte', 'sterbebild', 'bettina', 'maedchen'],
-    ort: null,   // [vorgemerkt] kommt in die Wohnung Gerdes (Unna) – Spielbibel 5b
-    beschreibung: 'Eine Trauerkarte für Bettina Gerdes. Das Foto zeigt ein lachendes Mädchen mit Zahnspange. Darunter: <i>„Du bist nur in ein anderes Zimmer gegangen.“</i> Carsten hat das Wort „Zimmer“ eingekreist.',
-    lesbar: '<i>Bettina Gerdes · 2005 – 2022</i><br><br>„Du bist nur in ein anderes Zimmer gegangen.“<br><br><span class="rot">Zimmer</span> <i>(von Carsten eingekreist)</i>'
-  });
+  // Die Trauerkarte für Bettina liegt jetzt in der Wohnung Gerdes (gerdes.js, Spielbibel 5b).
 
 
   HG.ding('zettel_unna', {

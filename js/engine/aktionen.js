@@ -463,8 +463,10 @@
   A.sprechen = function (ctx) {
     var d = D(ctx.obj);
     if (ctx.thema && ctx.thema.length) { A.fragen(ctx); return; }
-    if (d.person) sag(HG.wert(d.gespraech, HG.api, ctx) || Der(ctx.obj) + ' ' + vb(ctx.obj, 'antwortet', 'antworten') + ' nicht.');
-    else sag(HG.wert(d.gespraech, HG.api, ctx) || 'Du sprichst ' + der(ctx.obj) + ' an. Keine Antwort.');
+    var g = HG.wert(d.gespraech, HG.api, ctx);
+    if (g === true) return;   // das Gespräch hat selbst erzählt (api.sage, api.auswahl …)
+    if (d.person) sag(g || Der(ctx.obj) + ' ' + vb(ctx.obj, 'antwortet', 'antworten') + ' nicht.');
+    else sag(g || 'Du sprichst ' + der(ctx.obj) + ' an. Keine Antwort.');
   };
   A.fragen = function (ctx) {
     var d = D(ctx.obj);
@@ -472,7 +474,9 @@
     var t = themaText(d, ctx);
     if (t === true) return;   // das Thema hat selbst erzählt (api.sage, api.auswahl …)
     if (t) { sag(t); return; }
-    sag(HG.wert(d.themaSonst, HG.api, ctx) || (d.person ? Der(ctx.obj) + ' ' + vb(ctx.obj, 'weiß', 'wissen') + ' darauf nichts zu sagen.' : 'Keine Antwort.'));
+    var sonst = HG.wert(d.themaSonst, HG.api, ctx);
+    if (sonst === true) return;   // hat selbst erzählt
+    sag(sonst || (d.person ? Der(ctx.obj) + ' ' + vb(ctx.obj, 'weiß', 'wissen') + ' darauf nichts zu sagen.' : 'Keine Antwort.'));
   };
   A.sagen = function (ctx) {
     if (!ctx.text) { sag('Was willst du sagen?'); return; }

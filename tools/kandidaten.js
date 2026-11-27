@@ -448,6 +448,16 @@ window.KANDIDATEN = [
     "vorlage": null
   },
   {
+    "name": "ding-referat_bettina",
+    "titel": "Bettinas Referat",
+    "prompt": "Aufgeschlagene blaue Schnellhefter-Mappe eines Schulreferats auf einem Kieferncouchtisch, ein getipptes Deckblatt mit Etikett, dahinter karierte Blätter mit runder Jugend-Handschrift, Ausrufezeichen und Unterstreichungen, ganz unten auf einer Seite eine kleinere, schiefe Zeile mit anderem Stift – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-referat_bettina-1.jpg"
+    ],
+    "gewaehlt": "ding-referat_bettina.jpg",
+    "vorlage": null
+  },
+  {
     "name": "ding-ritzung",
     "titel": "Ritzung in der Mädchenkammer",
     "prompt": "Kindliche, mühsam ins dunkle Holz einer Wandverkleidung geritzte Buchstaben und eine Jahreszahl, daneben ein rostiger Nagel, Streiflicht – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, geritzt steht dort „L. W. 1928“, sonst kein Text im Bild",
@@ -656,6 +666,36 @@ window.KANDIDATEN = [
     ],
     "gewaehlt": "ding-zirkel.jpg",
     "vorlage": null
+  },
+  {
+    "name": "raum-altenheim",
+    "titel": "Empfang im Lindenhof",
+    "prompt": "Heller Eingangsbereich eines Seniorenheims in einem flachen Klinkerbau, Linoleumboden, Empfangstresen mit einem Topf weißer Orchideen, dahinter eine müde Pflegerin um die vierzig in hellblauer Dienstkleidung, Pinnwand mit Speiseplan und Fotos vom Sommerfest, ein Rollator im Flur – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-altenheim-1.jpg"
+    ],
+    "gewaehlt": "raum-altenheim.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-altenheim_aufenthalt",
+    "titel": "Aufenthaltsraum",
+    "prompt": "Heller Aufenthaltsraum eines Altenheims mit großen Fenstern zum Garten, alte Menschen dösen in Sesseln vor einem Fernseher, Teetassen, ein halbfertiges Puzzle mit einem Leuchtturm, am Fenster eine winzige uralte Frau im Rollstuhl mit Wolldecke, die den Kopf zum Betrachter dreht, draußen auf einer Vogeltränke eine Krähe – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-altenheim_aufenthalt-1.jpg"
+    ],
+    "gewaehlt": "raum-altenheim_aufenthalt.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-altenheim_aufenthalt-abend",
+    "titel": "Aufenthaltsraum – abend",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, am Abend, draußen fast dunkel, Deckenlicht an, die großen Fensterscheiben spiegeln den Raum; in der Spiegelung steht hinter einem leeren Stuhl eine Frau in einem hellen, altmodischen Kleid, im Raum selbst ist sie nicht da. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-altenheim_aufenthalt-abend-1.jpg"
+    ],
+    "gewaehlt": "raum-altenheim_aufenthalt-abend.jpg",
+    "vorlage": "raum-altenheim_aufenthalt.jpg"
   },
   {
     "name": "raum-anrichte",
@@ -941,6 +981,36 @@ window.KANDIDATEN = [
     ],
     "gewaehlt": "raum-garderobe-spuk.jpg",
     "vorlage": "raum-garderobe.jpg"
+  },
+  {
+    "name": "raum-gerdes",
+    "titel": "Vor der Wohnung Gerdes",
+    "prompt": "Treppenhaus eines Mehrfamilienhauses aus den Siebzigern, Wohnungstür einen Spalt offen mit vorgelegter Kette, dahinter das halbe Gesicht einer erschöpften Frau um die fünfzig – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-gerdes-1.jpg"
+    ],
+    "gewaehlt": "raum-gerdes.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-gerdes_wohnung",
+    "titel": "Wohnzimmer Gerdes",
+    "prompt": "Kahles Wohnzimmer einer Mietwohnung aus den Siebzigern, graues Sofa mit Wolldecke, niedriger Kieferncouchtisch mit Teetasse und einem umgedrehten Handy, an der Wand ungeöffnete Umzugskartons, ein Flachbildfernseher ist mit einem hellblauen Badetuch verhängt, auf einem Buchen-Sideboard ein gerahmtes Foto eines lachenden Mädchens und ein Stapel Trauerkarten, durch eine offene Tür ein Bad mit Dübellöchern über dem Waschbecken, nirgends ein Spiegel – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-gerdes_wohnung-1.jpg"
+    ],
+    "gewaehlt": "raum-gerdes_wohnung.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-gerdes_wohnung-abend",
+    "titel": "Wohnzimmer Gerdes – abend",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, am Abend: die Vorhänge sind zugezogen und in der Mitte mit einer Wäscheklammer zusammengesteckt, nur eine Stehlampe brennt, warmes, schwaches Licht. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-gerdes_wohnung-abend-1.jpg"
+    ],
+    "gewaehlt": "raum-gerdes_wohnung-abend.jpg",
+    "vorlage": "raum-gerdes_wohnung.jpg"
   },
   {
     "name": "raum-halle",

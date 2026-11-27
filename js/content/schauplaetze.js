@@ -123,16 +123,7 @@
       abend: platzhalter('Im Abendlicht werfen die Grabsteine lange Schatten. Der Friedhofswärter klappert schon mit den Schlüsseln.') }
   });
 
-  HG.ziel('altenheim', {
-    name: 'Altenheim',
-    woerter: ['altenheim', 'seniorenheim', 'pflegeheim', 'altersheim'],
-    ankunft: 'altenheim', fahrzeit: 30, geoeffnet: { von: '09:00', bis: '19:00' },
-    geschlossen: 'Die Besuchszeit ist vorbei (9–19 Uhr).'
-  });
-  HG.raum('altenheim', {
-    name: 'Altenheim', schauplatz: 'altenheim', abfahrt: true, karte: { x: 0, y: 0 },
-    beschreibung: platzhalter('Ein heller Aufenthaltsraum, es riecht nach Kamillentee und Desinfektionsmittel. In den Sesseln dösen alte Menschen vor einem leisen Fernseher.')
-  });
+  // Altenheim: eigener Schauplatz in altenheim.js
 
   HG.ziel('stadtarchiv', {
     name: 'Stadtarchiv',
@@ -145,41 +136,6 @@
     beschreibung: platzhalter('Ein Lesesaal unter einer Glaskuppel. Grüne Leselampen, Karteikästen, das Rascheln von Papier. Ein Archivar mustert dich über seine Brille hinweg.')
   });
 
-  // [Vorschlag] neuer Schauplatz aus Carstens Karton „GERDES“
-  HG.ziel('gerdes', {
-    name: 'Wohnung Gerdes (Unna)',
-    woerter: ['gerdes', 'unna', 'brigitte'],
-    ankunft: 'gerdes', fahrzeit: 35
-  });
-  HG.raum('gerdes', {
-    name: 'Vor der Wohnung Gerdes', schauplatz: 'gerdes', abfahrt: true, karte: { x: 0, y: 0 },
-    beschreibung: platzhalter('Ein Mehrfamilienhaus aus den Siebzigern in Unna, Waschbeton und Geranienkästen. Im Erdgeschoss steht eine Wohnungstür einen Spalt offen, die Kette vorgelegt. Dahinter: Brigitte Gerdes.'),
-    beimBetreten: function (api, info) {
-      if (info.erstesMal) api.sage('Du hast kaum geklingelt, da geht die Tür einen Spalt auf. Eine Frau um die fünfzig, die Kette vorgelegt. „Sie kommen wegen dem Haus“, sagt sie. Es ist keine Frage. <span class="nebenbei">(„sprich mit brigitte“)</span>');
-    },
-    vorschlaege: ['sprich mit brigitte', 'frage brigitte nach bettina', 'frage brigitte nach dem haus']
-  });
-
-  // [Vorschlag] Brigitte Gerdes – vorerst nur ein kurzer Auftritt, der zum Altenheim führt
-  // (David: „Das Altenheim schaltet Brigitte Gerdes frei“).
-  function brigitteAltenheim(api) {
-    api.hinweis('brigitte_altenheim');
-    return 'Brigitte sieht an dir vorbei ins Treppenhaus. „Ich rede nicht über das Haus. Peter auch nicht, der ist weg, Portugal.“ Eine lange Pause. ' +
-      '„Aber wenn Sie wirklich wissen wollen, was da los ist – fahren Sie ins Altenheim. Ich sag Ihnen nicht, zu wem. Sie werden’s merken.“ Dann schließt sie die Tür.';
-  }
-  HG.ding('brigitte', {
-    nomen: 'Brigitte Gerdes', genus: 'f', eigenname: true,
-    woerter: ['brigitte', 'gerdes', 'frau', 'mutter'],
-    ort: 'gerdes', person: true, szenerie: true,
-    beschreibung: 'Brigitte Gerdes, um die fünfzig, graues Haar, das sie lange nicht geschnitten hat. Sie hält die Tür mit einer Hand fest, als könnte jemand hereinwollen, den sie nicht sieht.',
-    gespraech: brigitteAltenheim,
-    themen: {
-      'bettina,tochter,maedchen': function (api) {
-        return '„Nicht.“ Ihre Stimme bricht nicht, sie wird nur sehr leise. „Nicht Bettinas Namen. Nicht hier.“ ' + brigitteAltenheim(api);
-      },
-      'haus,ulmenweg,spiegel,spiegelzimmer,carsten,altenheim': brigitteAltenheim
-    },
-    themaSonst: brigitteAltenheim
-  });
+  // Wohnung Gerdes: eigener Schauplatz in gerdes.js
 
 })();
