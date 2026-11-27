@@ -151,6 +151,35 @@ HG.spielDaten({
   },
   endeAusdauer: '<b>Dein Abenteuer endet hier.</b><br>Deine Kräfte verlassen dich. Das Haus behält dich.',
 
+  // Kampf-Erklärung (David, 27.11.2026): erscheint beim ersten Kampf und mit „hilfe“ während eines Kampfs.
+  // ctx: { kampf (Zustand, HALT), def (Manifestation), moeglich ([{ id, vorschlag }]) }
+  kampfErklaerung: function (api, ctx) {
+    var WAS = {
+      ausweichen: 'weichst du ihrem nächsten Angriff aus (Probe Ausweichen). Gelingt es, trifft sie dich in dieser Runde nicht.',
+      losreissen: 'befreist du dich aus ihrem Griff (Probe ST). Solange sie dich festhält, kannst du nicht ausweichen.',
+      licht: 'senkst du ihren HALT, ganz ohne Würfelprobe. Licht ist ihre Schwäche. Das kostet aber Akku, Kerze oder Karbid.',
+      verhaengen: 'schneidest du sie von dem Spiegel ab, aus dem sie kommt (Probe GE). Dann ist der Kampf sofort vorbei.',
+      zerschlagen: 'schneidest du sie ebenfalls ab (Probe ST), aber die Splitter verletzen dich.',
+      nennen: 'bannst du sie, wenn du ihre Geschichte kennst und den richtigen Namen wählst.',
+      schneiden: 'senkst du ihren HALT und befreist dich aus einem Griff (Probe Nahkampf +20).',
+      stimmgabel: 'zerreißt du eine Täuschung.',
+      salz: 'ziehst du eine Linie, die sie nicht überschreiten kann (Probe Okkultismus).',
+      schiessen: 'drückst du ab. Ob eine Kugel gegen so etwas hilft?',
+      fliehen: 'entkommst du, wenn die Probe gelingt. Sie ist dann aber nicht besiegt.',
+      nahkampf: 'senkst du ihren HALT, wenn du triffst (Probe Nahkampf).'
+    };
+    var liste = ctx.moeglich.map(function (a) {
+      return '· <i>' + a.vorschlag + '</i>: Damit ' + (WAS[a.id] || 'versuchst du dein Glück.');
+    }).join('<br>');
+    return '<b>Ein Kampf mit der Erscheinung bricht aus.</b> Ab jetzt ist jede Eingabe eine Runde: Erst handelst du, dann sie. ' +
+      'Ihre Angriffe kosten dich LP oder NERVEN.<br>' +
+      '<b>HALT</b> zeigt, wie fest sie sich an diese Welt klammert. Gerade sind es ' + ctx.kampf.halt + '. ' +
+      'Fällt HALT auf 0, löst sie sich auf, und du hast gewonnen.<br>' +
+      '<b>Was du tun kannst</b> (Vorschlag antippen oder eintippen):<br>' + liste + '<br>' +
+      'Was du nicht dabeihast, fehlt in der Liste. Licht, ein Tuch für Spiegel, Salz und Wissen über die Toten machen spätere Kämpfe leichter. ' +
+      '„hilfe“ zeigt diese Erklärung noch einmal.';
+  },
+
   // Verantwortung (Spielbibel 8.6.6, David 24.11.2026): Inhaltshinweis beim Start, Hilfe-Adresse unter „hilfe“ und im Abspann
   inhaltshinweis: '<b>Inhaltshinweis:</b> „Haus Grest“ ist eine Horrorgeschichte für Erwachsene. Sie handelt unter anderem von Tod, Suizid, ' +
     'psychischen Krisen, Gewalt und einer Schusswaffe – erzählt in Andeutungen, nicht in Einzelheiten. ' +

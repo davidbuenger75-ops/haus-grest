@@ -493,13 +493,6 @@
           case 'salz': return !!dingDabei('salz');
           case 'schiessen': return W.getragen('pistole') && !!eig('pistole', 'geladen');
           case 'fliehen': return G.nachbarn(Z().raum).length > 0 || d.fliehenNach;
-          case 'schneiden': {
-          var klinge = dingDabei('klinge');
-          e = api.probe('nahkampf', { grund: 'mit ' + T.der(klinge, 'dat'), mod: 20, modGrund: 'scharf' });
-          if (e.erfolg) { var w2 = HG.wuerfel('1W4'); k.halt -= w2; if (k.griff) { k.griff = false; k.griffRunden = 0; } sag('Du schneidest. Stoff reißt, Fäden springen auseinander wie Saiten.' + ' <span class="nebenbei">(HALT −' + w2 + ')</span>'); }
-          else sag('Die Klinge rutscht ab.');
-          return null;
-        }
         case 'nahkampf': return !!d.koerper;
         }
         return false;
@@ -520,8 +513,15 @@
       HG.ausgabe.schreibe('kampf', '<b>' + T.esc(d.name) + '</b> · HALT ' + d.halt + (wert(d.start) ? '<br>' + wert(d.start) : ''));
       if (d.sound) HG.medien.effekt(d.sound);
       if (d.nerven) A().nervenProbe(d.nerven, { grund: d.name, gewoehnung: d.gewoehnung });
+      if (Z().vorbei || !Z().kampf) return true;
+      if (!Z().flags.kampf_erklaert) { Z().flags.kampf_erklaert = true; K.erklaere(); }
       K.frage();
       return true;
+    },
+    /** Kampf-Erklärung (Text aus HG.daten.spiel.kampfErklaerung): beim ersten Kampf und mit „hilfe“ im Kampf. */
+    erklaere: function () {
+      var t = Z().kampf && HG.daten.spiel.kampfErklaerung;
+      if (t) HG.ausgabe.schreibe('tipp', wert(t, { kampf: Z().kampf, def: K.def(), moeglich: K.moeglich() }));
     },
     frage: function () {
       if (!Z().kampf || Z().vorbei) return;

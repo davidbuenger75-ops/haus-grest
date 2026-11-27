@@ -732,8 +732,13 @@ const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'diens
   geh(s, 'nordosten'); s.tu('nimm laken'); s.tu('nimm schere'); s.tu('öffne schublade'); s.tu('nimm schere');
   geh(s, 'südwesten', 'norden');
   HG.zufall = () => 0.05;
+  delete Z().flags.kampf_erklaert;
+  const vorKampf = s.bloecke.length;
   HG.api.kampf('die_hand', { spiegel: 'badspiegel' });
   pruefe(!!Z().kampf, 'Kampf „Die Hand“ beginnt');
+  const erkl = s.bloecke.slice(vorKampf).filter(b => b.typ === 'tipp').map(b => b.html).join(' ');
+  pruefe(/HALT/.test(erkl) && /verhänge/.test(erkl) && /weiche aus/.test(erkl), 'Erster Kampf: Erklärung mit HALT und den möglichen Aktionen');
+  pruefe(/HALT zeigt/.test(s.tu('hilfe')) && !!Z().kampf && Z().kampf.runde === 0, 'Im Kampf: „hilfe“ erklärt den Kampf, kostet keine Runde');
   pruefe(HG.spiel.vorschlaege().some(v => /verhänge/.test(v)), 'Kampf-Vorschläge: Spiegel verhängen');
   pruefe(/keine Zeit/.test(s.tu('öffne die schublade')), 'Im Kampf: andere Befehle zählen nicht');
   s.tu('weiche aus');
@@ -743,7 +748,9 @@ const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'diens
   pruefe(!HG.macht.istPortal('badspiegel'), 'Verhängter Spiegel ist kein Portal mehr');
   // Kampf: Die Näherin – Schere
   geh(s, 'süden', 'nordosten');
+  const vorKampf2 = s.bloecke.length;
   HG.api.kampf('naeherin', {});
+  pruefe(!s.bloecke.slice(vorKampf2).some(b => b.typ === 'tipp' && /HALT zeigt/.test(b.html)), 'Zweiter Kampf: keine Erklärung mehr');
   let n = 0; while (Z().kampf && n++ < 10) s.tu('schneide dich frei');
   pruefe(!Z().kampf, 'Die Näherin: mit der Schere freigeschnitten');
   // Kampf: Licht und Flucht

@@ -540,7 +540,7 @@ window.KANDIDATEN = [
   {
     "name": "ding-taschenspiegel",
     "titel": "Taschenspiegel",
-    "prompt": "Kleiner runder Taschenspiegel mit angelaufenem Silberrand in einem aufgewickelten Handtuch mit Klebebandresten, im Glas ein fremdes blasses Frauengesicht mit offenem Haar – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, kein Text",
+    "prompt": "Kleiner runder Taschenspiegel mit angelaufenem Silberrand in einem aufgewickelten Handtuch mit Klebebandresten, das Glas ist leer: nur ein matter, angelaufener Silberschimmer, keine Spiegelung, kein Gesicht, keine Person – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, kein Text",
     "kandidaten": [
       "ding-taschenspiegel-1.jpg"
     ],

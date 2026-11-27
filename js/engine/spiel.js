@@ -843,7 +843,8 @@
     meta: function (b) {
       var z = Z(), text = P.freierText(b.np1 || []).trim();
       switch (b.aktion) {
-        case 'hilfe': HG.ausgabe.system(HILFE + (HG.daten.spiel.hilfeZusatz ? '<br><br>' + HG.wert(HG.daten.spiel.hilfeZusatz) : '')); break;
+        case 'hilfe': if (z.kampf && !z.vorbei) { HG.kampf.erklaere(); HG.kampf.frage(); break; }
+          HG.ausgabe.system(HILFE + (HG.daten.spiel.hilfeZusatz ? '<br><br>' + HG.wert(HG.daten.spiel.hilfeZusatz) : '')); break;
         case 'inventar': S.zeigeInventar(); break;
         case 'werte':
           HG.ausgabe.system(S.charakterbogen());
