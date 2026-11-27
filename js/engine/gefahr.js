@@ -519,7 +519,8 @@
       Z().kampf = { id: id, halt: d.halt, runde: 0, griff: false, griffRunden: 0, spiegel: opt.spiegel || null, gefahr: opt.gefahr || null, raum: Z().raum };
       Z().versteckt = null;
       HG.ausgabe.schreibe('kampf', '<b>' + T.esc(d.name) + '</b> · HALT ' + d.halt + (wert(d.start) ? '<br>' + wert(d.start) : ''));
-      if (d.sound) HG.medien.effekt(d.sound);
+      var snd = d.sound || (HG.daten.klaenge && HG.daten.klaenge['effekt-kampf-' + id] ? 'kampf-' + id : null);   // Standard: effekt-kampf-<id>
+      if (snd) HG.medien.effekt(snd);
       if (d.nerven) A().nervenProbe(d.nerven, { grund: d.name, gewoehnung: d.gewoehnung });
       if (Z().vorbei || !Z().kampf) return true;
       if (!Z().flags.kampf_erklaert) { Z().flags.kampf_erklaert = true; K.erklaere(); }

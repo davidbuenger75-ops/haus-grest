@@ -9,7 +9,7 @@
  *   node tools/sounds.js ort-haus-nacht uhr-drei   nur diese (voller Name oder ohne „effekt-“)
  *   node tools/sounds.js --liste               nur anzeigen, was erzeugt würde (kostet nichts)
  *   node tools/sounds.js --neu uhr-drei        neu erzeugen, auch wenn es schon Kandidaten gibt (alte → _alt/)
- *   node tools/sounds.js --varianten=3 …       Kandidaten pro Sound (Standard 2)
+ *   node tools/sounds.js --varianten=1 …       Kandidaten pro Sound (Standard 2; bei 1 wird er gleich übernommen)
  *   node tools/sounds.js auswahl               Auswahl-Seite im Browser (Abspielen, Übernehmen per Klick)
  *   node tools/sounds.js nimm uhr-drei 2       Kandidat 2 als assets/sound/effekt-uhr-drei.mp3 übernehmen
  *   node tools/sounds.js credits               nur den Credit-Stand des Kontos anzeigen
@@ -142,6 +142,7 @@ async function erzeugeKandidaten(def) {
       const datei = path.join(KANDIDATEN, def.name + '-' + nr + '.mp3');
       fs.writeFileSync(datei, daten);
       console.log('  Kandidat ' + nr + ' gespeichert: ' + path.relative(WURZEL, datei) + ' (' + Math.round(daten.length / 1024) + ' KB)');
+      if (VARIANTEN === 1) console.log('  Übernommen: ' + uebernimm(def.name, nr));   // nur ein Kandidat: gleich ins Spiel
     } catch (e) {
       fehler++;
       console.log('  Fehler bei Kandidat ' + nr + ': ' + e.message);
