@@ -530,8 +530,8 @@
         t += 'In der Mitte des Bodens ist eine runde Scheibe eingelassen, grau und matt wie Schiefer. Der Kreis um sie ist zerstört: verstreute Kohle, umgestürzte Knochen, eine leere Schale, ein ausgekratztes Wort. Die dreizehn Nägel ringsum stecken noch im Boden.';
       } else {
         t += 'Auf dem Boden, von Wand zu Wand, liegt ein Kreis aus Kohlestücken und winzigen weißen Vogelschädeln. In seiner Mitte ist eine runde Scheibe in den Boden eingelassen, schwarz und glatt wie Wasser, in der sich dein Licht spiegelt. ' +
-          'An vier Stellen ist der Kreis anders: Im <b>Osten</b>, zum Durchbruch hin, liegt ' + (api.eig('kreis_kohle', 'entfernt') ? 'verstreute Kohle' : 'ein Haufen Kohle') + '. Im <b>Süden</b> ' + (api.eig('kreis_knochen', 'entfernt') ? 'liegen umgestürzte Vogelschädel' : 'sind Vogelschädel zu einer kleinen Pyramide geschichtet') + '. Im <b>Westen</b> steht ' + (api.eig('kreis_blut', 'entfernt') ? 'eine umgekippte Tonschale' : 'eine Tonschale mit etwas Schwarzem, Eingetrocknetem') + '. Im <b>Norden</b> ' + (api.eig('kreis_name', 'entfernt') ? 'ist ein Wort aus dem Boden gekratzt' : 'ist ein Wort in den Boden geritzt') + '. ' +
-          'Rund um den Kreis stecken dreizehn Nägel im Boden.';
+          'An vier Stellen ist der Kreis anders: Im <b>Osten</b>, zum Durchbruch hin, liegt ' + (api.eig('kreis_kohle', 'entfernt') ? 'verstreute Kohle' : 'ein Haufen Kohle') + '. Im <b>Süden</b> ' + (api.eig('kreis_knochen', 'entfernt') ? 'liegen umgestürzte Vogelschädel' : 'sind Vogelschädel zu einer kleinen Pyramide geschichtet') + '. Im <b>Westen</b> steht ' + (api.eig('kreis_blut', 'entfernt') ? 'eine leere Tonschale' : 'eine Tonschale mit etwas Schwarzem, Eingetrocknetem') + '. Im <b>Norden</b> ' + (api.eig('kreis_name', 'entfernt') ? 'ist ein Wort aus dem Boden gekratzt' : 'ist ein Wort in den Boden geritzt') + '. ' +
+          'Rund um den Kreis stecken dreizehn Nägel im Boden – jeder so lang wie ein Unterarm, eher Pflöcke als Nägel.';
       }
       return t + ' An der Wand über dem Kreis: Kreidestriche, Reihe um Reihe.';
     },
@@ -558,7 +558,7 @@
   function kreisSchritt(api) { return ORDNUNG.filter(function (id) { return api.eig(id, 'entfernt'); }).length; }
   var WEG_TEXT = {
     kreis_name: 'Du kratzt mit dem Fingernagel über die Rillen, immer wieder, bis die Haut aufreißt. Es ist, als kratze jemand von der anderen Seite zurück. Dann ist das Wort nur noch ein Kratzer im Stein, und das Summen in deinen Ohren bricht ab, mitten im Ton.',
-    kreis_blut: 'Du stößt die Tonschale um. Was darin eingetrocknet war, ist nicht mehr trocken: Es läuft schwarz über den Boden, auf den Kreis zu – und versickert im Kohlenstaub, eine Handbreit vor der Linie.',
+    kreis_blut: 'Du kippst die Tonschale aus. Was darin eingetrocknet war, ist nicht mehr trocken: Es läuft schwarz über den Boden, auf den Kreis zu – und versickert im Kohlenstaub, eine Handbreit vor der Linie.',
     kreis_knochen: 'Du fegst die Vogelschädel mit dem Ärmel aus dem Kreis. Sie klappern über den Stein wie lose Zähne. Einer rollt zurück, bis an deinen Schuh. Du stößt ihn weg.'
   };
   function teilWeg(api, id, ctx) {
@@ -618,7 +618,7 @@
   });
   teil('kreis_blut', {
     nomen: 'Tonschale', genus: 'f', woerter: ['tonschale', 'schale', 'blut', 'blutschale', 'westen', 'westseite'],
-    beschreibung: function (api) { return gebrochen(api) || api.eig('kreis_blut', 'entfernt') ? 'Eine umgekippte Tonschale, leer.' : 'Im Westen des Kreises: eine flache Tonschale, darin eine schwarze, rissige Kruste. Blut, sehr alt. Aber der Rand ist feucht.'; },
+    beschreibung: function (api) { return gebrochen(api) || api.eig('kreis_blut', 'entfernt') ? 'Eine flache Tonschale, leer bis auf einen dunklen Rand.' : 'Im Westen des Kreises: eine flache Tonschale, darin eine schwarze, rissige Kruste. Blut, sehr alt. Aber der Rand ist feucht.'; },
     riechen: 'Eisen. Und Lavendel.'
   });
   teil('kreis_name', {
@@ -744,13 +744,13 @@
     ort: 'ritualraum', fest: 'Die Nägel stecken tief im Stein.', szenerie: true,
     beschreibung: function (api) {
       var l = lose(), fest = NAEGEL.filter(function (n) { return l.indexOf(n) < 0; });
-      var t = 'Dreizehn Schmiedenägel, rund um den Kreis in den Boden geschlagen, in gleichen Abständen wie die Ziffern einer Uhr, die eine Stunde zu viel hat. Dreizehn Tote. Dreizehn Gebundene. ';
+      var t = 'Dreizehn Schmiedenägel, jeder so lang wie ein Unterarm und dick wie ein Daumen – mehr Pflöcke als Nägel –, rund um den Kreis in den Stein getrieben, in gleichen Abständen wie die Ziffern einer Uhr, die eine Stunde zu viel hat. Dreizehn Tote. Dreizehn Gebundene. ';
       t += (l.length ? 'An den übrigen hängt' : 'An jedem hängt') + ' etwas: ' + HG.text.liste(fest.map(function (n) { return n[1]; }), 'und') + '.';
       if (!l.length) return t + ' Alle Nägel sitzen fest, als wären sie in den Stein gewachsen.';
       return (l.length === 1 ? 'Ein Nagel sitzt locker, und an ihm hängt nichts mehr – du weißt, wessen er war: ' : HG.text.gross(ZAHLWORT[l.length] || String(l.length)) + ' Nägel sitzen locker, und an ihnen hängt nichts mehr – du weißt, wessen sie waren: ') +
         HG.text.liste(l.map(function (n) { return HG.daten.seelen[n[0]].name; }), 'und') + '. Wer frei ist, den hält hier nichts mehr.<br><br>' + t;
     },
-    tasten: 'Kaltes Eisen. Einige Nägel sind warm, als hätte sie eben jemand angefasst.',
+    tasten: 'Kaltes, grob geschmiedetes Eisen, schwer wie ein Zaunpfahl. Einige Nägel sind warm, als hätte sie eben jemand angefasst.',
     hinweis: 'dreizehn_naegel',
     bei: {
       ziehen: function (api) { api.sage(lose().length ? 'Die lockeren Nägel lassen sich bewegen – aber herausziehen willst du sie nicht. Sie gehören jetzt niemandem mehr.' : 'Du ziehst an einem Nagel. Er sitzt fest wie eingewachsen. Und irgendwo im Haus, weit oben, schreit jemand leise auf.'); return true; },
@@ -793,7 +793,7 @@
   });
   HG.hinweis('dreizehn_naegel', {
     titel: 'Dreizehn Nägel', strang: 'D',
-    text: 'Hinter der Wand im Keller, rund um den Kreis der Pflegerin: dreizehn Nägel, an jedem ein Haar oder ein Faden. Dreizehn Tote, hier unten gebunden. Wer bekehrt ist, dessen Nagel sitzt locker.',
+    text: 'Hinter der Wand im Keller, rund um den Kreis der Pflegerin: dreizehn Nägel, lang wie Pflöcke, an jedem ein Haar oder ein Faden. Dreizehn Tote, hier unten gebunden. Wer bekehrt ist, dessen Nagel sitzt locker.',
     stichworte: ['naegel', 'nagel', 'dreizehn', 'tote', 'kreis']
   });
   HG.hinweis('kalender_kraehe', {

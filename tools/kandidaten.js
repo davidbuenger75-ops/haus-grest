@@ -268,6 +268,16 @@ window.KANDIDATEN = [
     "vorlage": null
   },
   {
+    "name": "ding-kalender_kraehe",
+    "titel": "Kalender der Krähe",
+    "prompt": "Kreidestriche auf einer rußigen, schwarzen Gewölbewand: Reihen von Strichen in Blöcken, daneben eine Kreideskizze eines Kreises mit vier kleinen Sonnenzeichen und Ziffern, darunter eine frischere, weißere Reihe einzelner Striche und ein ausgemalter Kreis, Taschenlampenlicht von der Seite – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-kalender_kraehe-1.jpg"
+    ],
+    "gewaehlt": "ding-kalender_kraehe.jpg",
+    "vorlage": null
+  },
+  {
     "name": "ding-kinderbuch",
     "titel": "Kinderbuch „Geheimschriften“",
     "prompt": "Altes Kinderbuch von 1898 mit Goldschnitt, aufgeschlagen auf einer Seite mit einem Kupferstich: Kinder halten ein Blatt über eine Kerzenflamme, auf dem braune Schrift erscheint, ein Eselsohr, am Rand eine zarte Bleistiftnotiz – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
@@ -345,6 +355,16 @@ window.KANDIDATEN = [
       "ding-nachlass_karton-1.jpg"
     ],
     "gewaehlt": "ding-nachlass_karton.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-naegel",
+    "titel": "Dreizehn Nägel",
+    "prompt": "Nahaufnahme von drei, vier großen, grob geschmiedeten Eisenpflöcken (unterarmlang, daumendick, mit breitem Schmiedekopf) in einem Steinboden voller Kohlenstaub, um jeden ein einzelnes Haar oder ein Faden gewickelt (ein langes helles Haar, schwarzer Trauerflor, ein hellblauer Nähfaden, ein geblümter Stofffetzen), Taschenlampenlicht von der Seite – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, kein Text",
+    "kandidaten": [
+      "ding-naegel-1.jpg"
+    ],
+    "gewaehlt": "ding-naegel.jpg",
     "vorlage": null
   },
   {
@@ -435,6 +455,16 @@ window.KANDIDATEN = [
       "ding-ritzung-1.jpg"
     ],
     "gewaehlt": "ding-ritzung.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-salztopf",
+    "titel": "Salztopf",
+    "prompt": "Großer grauer Steinguttopf mit blauer Salzglasur auf einem Holzbord in einer alten Waschküche, randvoll mit grobem grauem Salz, daneben eine zerknitterte Papiertüte – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, in Blau auf dem Topf „SALZ“, sonst kein Text im Bild",
+    "kandidaten": [
+      "ding-salztopf-1.jpg"
+    ],
+    "gewaehlt": "ding-salztopf.jpg",
     "vorlage": null
   },
   {
@@ -565,6 +595,26 @@ window.KANDIDATEN = [
       "ding-vogelkiste-1.jpg"
     ],
     "gewaehlt": "ding-vogelkiste.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-vorschlaghammer",
+    "titel": "Vorschlaghammer",
+    "prompt": "Schwerer Vorschlaghammer mit dunklem Eschenstiel auf einer alten Werkbank, grauer Putzstaub am Kopf, daneben ein Stück Schneiderkreide – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, auf dem Stiel mit Kugelschreiber „H.-J. B.“, sonst kein Text im Bild",
+    "kandidaten": [
+      "ding-vorschlaghammer-1.jpg"
+    ],
+    "gewaehlt": "ding-vorschlaghammer.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-weinregale",
+    "titel": "Flasche „Für den Tag, an dem sie geht“",
+    "prompt": "Verstaubte Weinflasche quer vor anderen in einem Holzweinregal, um den Hals an einer Schnur ein kleines Pappschild mit schräger Handschrift, Kellerstaub – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-weinregale-1.jpg"
+    ],
+    "gewaehlt": "ding-weinregale.jpg",
     "vorlage": null
   },
   {
@@ -937,6 +987,36 @@ window.KANDIDATEN = [
     "vorlage": "raum-halle.jpg"
   },
   {
+    "name": "raum-heizungskeller",
+    "titel": "Heizungskeller",
+    "prompt": "Langer, niedriger Heizungskeller: ein orangefarbener Ölheizkessel aus den Siebzigern, ein mannshoher gelber Kunststoff-Öltank, quer über den Estrich eine gerade Fuge, an der Seite eine Werkbank mit Schraubstock, Lochwand und einem Vorschlaghammer, die Wand hinter dem Tank auffallend glatt und frisch hell verputzt, Lichtkegel einer Taschenlampe als einzige Lichtquelle – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-heizungskeller-1.jpg"
+    ],
+    "gewaehlt": "raum-heizungskeller.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-heizungskeller-durch",
+    "titel": "Heizungskeller – durch",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, in der verputzten Wand klafft ein Loch, gut einen Meter breit, mit zersplitterten Ziegeln am Rand, dahinter Schwärze, auf dem Boden Ziegelbrocken und Putzstaub, neben dem Loch ein Kreidekreuz. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-heizungskeller-durch-1.jpg"
+    ],
+    "gewaehlt": "raum-heizungskeller-durch.jpg",
+    "vorlage": "raum-heizungskeller.jpg"
+  },
+  {
+    "name": "raum-heizungskeller-spuk",
+    "titel": "Heizungskeller – spuk",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, im frischen Putz der Wand hinter dem Tank ein langer, frischer Kratzer, feiner Putzstaub rieselt, als kratze jemand von der anderen Seite. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-heizungskeller-spuk-1.jpg"
+    ],
+    "gewaehlt": "raum-heizungskeller-spuk.jpg",
+    "vorlage": "raum-heizungskeller.jpg"
+  },
+  {
     "name": "raum-hinterdiele",
     "titel": "Hinterdiele",
     "prompt": "Schmale Hinterdiele einer Jugendstilvilla, schwarz-weiße Steinfliesen wie ein Schachbrett, leere Garderobenhaken bis auf einen langen schwarzen altmodischen Damenmantel, im Hintergrund eine Hintertür mit kleinem Fenster, quer mit drei rohen Brettern vernagelt, links eine schmale Holztür mit schwerem rostigem Eisenriegel, über dem Türspalt rotes Siegelwachs – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
@@ -965,6 +1045,26 @@ window.KANDIDATEN = [
     ],
     "gewaehlt": "raum-hinterdiele-tuer-offen.jpg",
     "vorlage": "raum-hinterdiele.jpg"
+  },
+  {
+    "name": "raum-kellerflur",
+    "titel": "Kellerflur",
+    "prompt": "Niedriger, gewölbter Kellergang aus feuchtem Bruchstein, die Wände glänzen vor Nässe, eine steile schmale Steintreppe ohne Geländer führt hinauf zu einer niedrigen Brettertür, daneben ein grauer Sicherungskasten aus den Siebzigern mit sauber abgeschnittenen Kabeln, in der Seitenwand ein vermauerter Türbogen aus helleren Ziegeln, Lichtkegel einer Taschenlampe als einzige Lichtquelle – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-kellerflur-1.jpg"
+    ],
+    "gewaehlt": "raum-kellerflur.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-kellerflur-spuk",
+    "titel": "Kellerflur – spuk",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, auf der vorletzten Stufe der Kellertreppe stehen zwei nackte, sehr blasse Frauenfüße, der Rest der Gestalt verschwindet im Dunkel. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-kellerflur-spuk-1.jpg"
+    ],
+    "gewaehlt": "raum-kellerflur-spuk.jpg",
+    "vorlage": "raum-kellerflur.jpg"
   },
   {
     "name": "raum-kinderzimmer",
@@ -1153,6 +1253,36 @@ window.KANDIDATEN = [
     "vorlage": null
   },
   {
+    "name": "raum-ritualraum",
+    "titel": "Gewölbe hinter der Wand (Ritualraum)",
+    "prompt": "Schmaler, sehr niedriger Gewölberaum ohne Fenster, schwarz von altem Kohlenstaub, auf dem Boden von Wand zu Wand ein Kreis aus Kohlestücken und winzigen weißen Vogelschädeln, in der Mitte eine runde, spiegelnd schwarze Scheibe im Boden, an vier Stellen des Kreises ein Kohlehaufen, eine kleine Pyramide aus Vogelschädeln, eine flache Tonschale und ein in den Stein geritztes fremdes Zeichen, rund um den Kreis dreizehn Schmiedenägel mit Haaren und Fäden, an der Wand Kreidestriche in Blöcken, Licht fällt nur durch ein Mauerloch mit zersplitterten Ziegeln – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-ritualraum-1.jpg"
+    ],
+    "gewaehlt": "raum-ritualraum.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-ritualraum-gebrochen",
+    "titel": "Gewölbe hinter der Wand (Ritualraum) – gebrochen",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, der Kreis ist zerstört: verstreute Kohle, umgestürzte Vogelschädel, eine umgekippte leere Schale, das Zeichen ausgekratzt, die Scheibe in der Mitte matt und grau wie Schiefer. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-ritualraum-gebrochen-1.jpg"
+    ],
+    "gewaehlt": "raum-ritualraum-gebrochen.jpg",
+    "vorlage": "raum-ritualraum.jpg"
+  },
+  {
+    "name": "raum-ritualraum-spuk",
+    "titel": "Gewölbe hinter der Wand (Ritualraum) – spuk",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, die schwarze Scheibe zeigt einen tiefen, sternlosen Nachthimmel, tief unten darin steigt etwas Helles herauf. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-ritualraum-spuk-1.jpg"
+    ],
+    "gewaehlt": "raum-ritualraum-spuk.jpg",
+    "vorlage": "raum-ritualraum.jpg"
+  },
+  {
     "name": "raum-salon",
     "titel": "Salon",
     "prompt": "Salon einer Jugendstilvilla, hohe Fenster mit schweren Samtvorhängen, Kamin aus grünem Marmor mit geschnitztem Eichensims und kleiner Messingplatte, zwei Sessel mit verblichenem Rosenmuster, mitten im Raum ein schwarzer Flügel halb unter einem Tuch mit aufgeschlagenem Notenheft, runder Turmerker mit Fensterbank und Kissen – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
@@ -1303,6 +1433,26 @@ window.KANDIDATEN = [
     "vorlage": "raum-turmerker.jpg"
   },
   {
+    "name": "raum-vorratskeller",
+    "titel": "Vorratskeller",
+    "prompt": "Gewölbter Vorratskeller, Holzregale bis unter die Decke voller alter Einmachgläser mit vergilbten handgeschriebenen Etiketten, eine leere Lattenkiste mit langen bleichen Kartoffelkeimen, oben ein kleines vergittertes Kellerfenster zu einem Lichtschacht voller nasser Blätter, Lichtkegel einer Taschenlampe als einzige Lichtquelle – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-vorratskeller-1.jpg"
+    ],
+    "gewaehlt": "raum-vorratskeller.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-vorratskeller-spuk",
+    "titel": "Vorratskeller – spuk",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, alle Etiketten der Einmachgläser tragen dieselbe frische, dunkle Handschrift, ein Glas ohne Etikett mit etwas Dunklem, Gefiedertem darin steht vorn im Licht. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-vorratskeller-spuk-1.jpg"
+    ],
+    "gewaehlt": "raum-vorratskeller-spuk.jpg",
+    "vorlage": "raum-vorratskeller.jpg"
+  },
+  {
     "name": "raum-waescheboden",
     "titel": "Wäscheboden",
     "prompt": "Trockenboden unter dem Dach, Wäscheleinen kreuz und quer unter die Sparren gespannt, daran alte graue, steife Laken, die sich leicht bauschen, in einer Ecke ein Weidenkorb mit Holzklammern, staubiges graues Licht – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
@@ -1361,6 +1511,46 @@ window.KANDIDATEN = [
     ],
     "gewaehlt": "raum-waeschekammer-spuk.jpg",
     "vorlage": "raum-waeschekammer.jpg"
+  },
+  {
+    "name": "raum-waschkueche",
+    "titel": "Waschküche",
+    "prompt": "Alte Waschküche um 1900 im Keller: eingemauerter Kupferwaschkessel auf einem Ziegelsockel mit Feuerloch, gusseiserne Wäschemangel mit Holzwalzen und Kurbel, verbeulte Zinkwannen und Waschbretter an Haken, ein steinerner Ausguss, darüber ein kleiner, trüber, schwarz angelaufener Spiegel, auf einem Bord ein großer grauer Steinguttopf mit blauer Glasur, Lichtkegel einer Taschenlampe als einzige Lichtquelle – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-waschkueche-1.jpg"
+    ],
+    "gewaehlt": "raum-waschkueche.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-waschkueche-spuk",
+    "titel": "Waschküche – spuk",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, im trüben Spiegel über dem Ausguss presst sich von innen eine Männerhand mit aufgeschlagenen Knöcheln, schwarz von Kohlenstaub, gegen das Glas. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-waschkueche-spuk-1.jpg"
+    ],
+    "gewaehlt": "raum-waschkueche-spuk.jpg",
+    "vorlage": "raum-waschkueche.jpg"
+  },
+  {
+    "name": "raum-weinkeller",
+    "titel": "Weinkeller",
+    "prompt": "Langes Tonnengewölbe aus Backstein, an beiden Seiten Weinregale aus Holz, die meisten Fächer leer, wenige Flaschen unter dicker Staubschicht, unter dem Gewölbescheitel ein altes gelb gestrichenes Eisenrohr mit Rostblüten, zwei schmale vergitterte, blinde Kellerfenster, Lichtkegel einer Taschenlampe als einzige Lichtquelle, der Fluchtpunkt verschwindet im Dunkel – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-weinkeller-1.jpg"
+    ],
+    "gewaehlt": "raum-weinkeller.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-weinkeller-spuk",
+    "titel": "Weinkeller – spuk",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, unter dem Gewölbe steht schemenhaft ein Mann im weißen Arztkittel mit runder Brille, eine Hand höflich erhoben, um das Rohr ein grünlicher Schimmer. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-weinkeller-spuk-1.jpg"
+    ],
+    "gewaehlt": "raum-weinkeller-spuk.jpg",
+    "vorlage": "raum-weinkeller.jpg"
   },
   {
     "name": "raum-wintergarten",
