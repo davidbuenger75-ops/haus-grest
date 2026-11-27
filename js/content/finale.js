@@ -99,6 +99,7 @@
   });
   function locken(api) {
     if (!api.flag('spiegelzimmer_gelockt')) api.abschnitt(60, 'Du trittst ein. Hinter dir, auf der Galerie, ist es dunkel; hier drinnen ist es grau und hell zugleich, wie das Licht unter Wasser. Von überall her siehst du dich selbst. Und neben dir, in jedem Spiegel, eine Frau im hellen Kleid, die dir die Hand auf die Schulter legt.<br><br>Die Schulter in deinem Spiegelbild. Nicht deine. Noch nicht.');
+    api.zeigeBild('spuk');   // raum-spiegelzimmer-spuk: die Frau in jedem Spiegel, Hände aus den Rahmen
     api.kampf('alle_spiegel');
   }
 
@@ -161,6 +162,7 @@
   function finale(api) {
     if (api.flag('finale_begonnen') === nacht()) return;
     api.setzeFlag('finale_begonnen', nacht());
+    api.zeigeBild('spuk');
     var st = stufe(api);
     api.abschnitt(62, 'Die Tür schließt sich hinter dir, und als du dich umdrehst, ist sie nicht mehr da. Nur Spiegel.<br><br>' +
       'Diesmal ist es still. Kein Lachen, kein Flüstern. Unter dem Haus atmet nichts mehr herauf – der Kreis ist gebrochen, und was sie getragen hat, ist fort. Sie ist allein.<br><br>' +

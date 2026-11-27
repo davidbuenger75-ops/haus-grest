@@ -217,6 +217,16 @@ window.KANDIDATEN = [
     "vorlage": null
   },
   {
+    "name": "ding-grabstein_grest",
+    "titel": "Grabstein Grest",
+    "prompt": "Nahaufnahme eines verwitterten dunklen Sandstein-Grabsteins um 1905: oben im gemeißelten Efeukranz zwei einander haltende Hände, rechts eine Männerhand mit Manschette, links eine schmale Frauenhand mit sehr dünnen Fingern und einem gemeißelten Ring, der blank gerieben und heller als der Stein ist; darunter zwei Namenszeilen, im Sockel eine Zeile voller Moos – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-grabstein_grest-1.jpg"
+    ],
+    "gewaehlt": "ding-grabstein_grest.jpg",
+    "vorlage": null
+  },
+  {
     "name": "ding-grubenlampe",
     "titel": "Grubenlampe",
     "prompt": "Alte Karbid-Grubenlampe aus Messing auf einer Holzkiste: unten der Karbidbehälter, oben der Wassertank, vorn ein runder Reflektor, Grünspan, in den Boden eingeritzte Initialen – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, eingeritzt „J. B.“, sonst kein Text im Bild",
@@ -288,6 +298,16 @@ window.KANDIDATEN = [
     "vorlage": null
   },
   {
+    "name": "ding-kirchenbuch",
+    "titel": "Kirchenbuch (Trauregister)",
+    "prompt": "Aufgeschlagenes, in graues Leinen gebundenes Trauregister um 1898 mit handschriftlichen Einträgen in Kurrent, in einer Spalte ein Papierlesezeichen, am Rand eine spätere Notiz in spitzer steiler Tinte – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-kirchenbuch-1.jpg"
+    ],
+    "gewaehlt": "ding-kirchenbuch.jpg",
+    "vorlage": null
+  },
+  {
     "name": "ding-koffer",
     "titel": "Vermessungskoffer",
     "prompt": "Silberner Alukoffer mit abgestoßenen Ecken auf einem Gästebett, ein Zahlenschloss mit vier kleinen Rädchen am Griff, ein Firmenaufkleber – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, auf dem Aufkleber steht „Häuser Vermessung“, sonst kein Text im Bild",
@@ -325,6 +345,16 @@ window.KANDIDATEN = [
       "ding-laser-1.jpg"
     ],
     "gewaehlt": "ding-laser.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-lesegeraet",
+    "titel": "Mikrofilm-Lesegerät",
+    "prompt": "Großes graues Mikrofilm-Lesegerät der Achtziger in einer Archivnische, Kurbel und Filmrolle, auf dem Bildschirm eine Zeitungsseite als helles Negativ, im dunklen Rand des Bildschirms spiegelt sich undeutlich der Raum – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-lesegeraet-1.jpg"
+    ],
+    "gewaehlt": "ding-lesegeraet.jpg",
     "vorlage": null
   },
   {
@@ -638,6 +668,26 @@ window.KANDIDATEN = [
     "vorlage": null
   },
   {
+    "name": "ding-zeitung_1963",
+    "titel": "Zeitung 1963 (Mikrofilm-Ausdruck)",
+    "prompt": "Grauer, körniger Ausdruck einer kurzen Zeitungsmeldung von 1963 vom Mikrofilm mit einem kleinen Schwarzweißfoto einer großen dreigeschossigen Jugendstilvilla aus dunklem Stein mit spitzen Giebeln und achteckigem Erkertürmchen im Winter, kahle Bäume, alle Fenster dunkel, nur im ersten Stock an der Seite hinter einer Scheibe scharf eine Frau im hellen Kleid; Überschrift und Spalten verschwommen, keine erkennbaren Wörter – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-zeitung_1963-1.jpg"
+    ],
+    "gewaehlt": "ding-zeitung_1963.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "ding-zeitung_1974",
+    "titel": "Zeitung 1974 (Mikrofilm-Ausdruck)",
+    "prompt": "Grauer, körniger Ausdruck einer Zeitungsseite von 1974 vom Mikrofilm, Lokalteil mit einem großen Schwarzweißfoto einer ausgebrannten dreigeschossigen Jugendstilvilla aus dunklem Stein mit achteckigem Erkertürmchen an der Ecke, Fassade über Eingang und Treppenhaus rußgeschwärzt, Fensterhöhlen schwarz, nur ein einziges Fenster im ersten Stock hell, Feuerwehrschläuche im Vordergrund; alle Überschriften und Spalten verschwommen, grau und völlig unleserlich, keine erkennbaren Wörter – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
+    "kandidaten": [
+      "ding-zeitung_1974-1.jpg"
+    ],
+    "gewaehlt": "ding-zeitung_1974.jpg",
+    "vorlage": null
+  },
+  {
     "name": "ding-zeitung_2022",
     "titel": "Zeitungsausschnitt 2022",
     "prompt": "Ausgeschnittene kurze Lokalmeldung aus einer Tageszeitung, Foto eines Wohnhauses mit Absperrband – realistisches Foto eines echten Dokuments bzw. alten Fotos, Gebrauchsspuren, natürliches Licht, Schrift nur angedeutet und unleserlich",
@@ -903,6 +953,46 @@ window.KANDIDATEN = [
     "vorlage": "raum-flur.jpg"
   },
   {
+    "name": "raum-friedhof",
+    "titel": "Friedhof Kirchhörde",
+    "prompt": "Eingang eines alten Dorffriedhofs, schmiedeeisernes Tor in einer Bruchsteinmauer, Kiesweg zwischen alten Linden voller still sitzender Krähen, rechts gepflegte neuere Gräber mit roten Grablichtern, darunter ein ganz frisches Grab mit schlichtem Holzkreuz, neben dem Tor ein Backstein-Gärtnerhäuschen mit Schubkarre und Gießkannen, im Hintergrund eine kleine alte Dorfkirche, keine Personen – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-friedhof-1.jpg"
+    ],
+    "gewaehlt": "raum-friedhof.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-friedhof-abend",
+    "titel": "Friedhof Kirchhörde – abend",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, am Abend, warmes, tief stehendes Dämmerlicht, die Schatten werden lang. Perspektive, Bildaufbau, Gegenstände und Malstil exakt beibehalten, nur Licht und Stimmung ändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-friedhof-abend-1.jpg"
+    ],
+    "gewaehlt": "raum-friedhof-abend.jpg",
+    "vorlage": "raum-friedhof.jpg"
+  },
+  {
+    "name": "raum-friedhof_alt",
+    "titel": "Alter Friedhof",
+    "prompt": "Alter Teil eines Dorffriedhofs hinter einer Bruchsteinkirche, schiefe verwitterte Grabsteine, Efeu, rostige Eisenkreuze, Engel ohne Nasen, an der Kirchenmauer unter einer dunklen Eibe ein hoher, oben abgerundeter Grabstein aus dunklem Sandstein mit rostiger Eiseneinfassung, oben gemeißelt zwei einander haltende Hände, auf dem Grab ein üppig blühender violetter Lavendelstrauch mitten im welken Novemberlaub, Krähen in einer Reihe auf dem Mauersims – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-friedhof_alt-1.jpg"
+    ],
+    "gewaehlt": "raum-friedhof_alt.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-friedhof_alt-abend",
+    "titel": "Alter Friedhof – abend",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt, am Abend, warmes, tief stehendes Dämmerlicht, die Schatten werden lang. Perspektive, Bildaufbau, Gegenstände und Malstil exakt beibehalten, nur Licht und Stimmung ändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-friedhof_alt-abend-1.jpg"
+    ],
+    "gewaehlt": "raum-friedhof_alt-abend.jpg",
+    "vorlage": "raum-friedhof_alt.jpg"
+  },
+  {
     "name": "raum-gaestezimmer",
     "titel": "Gästezimmer",
     "prompt": "Gästezimmer einer Jugendstilvilla, ein ungemachtes Doppelbett mit zwei eingedrückten Kissen, auf dem Nachttisch zwei Kaffeetassen mit braunem Rand, in einer Ecke ein Stapel ordentlich gefalteter weißer Laken, über einer Kommode ein ovaler Wandspiegel im Goldrahmen mit einem gelben Klebezettel am Rahmen, vor dem Bett ein silberner Alukoffer mit Zahlenschloss, graues Licht – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
@@ -1165,6 +1255,26 @@ window.KANDIDATEN = [
     ],
     "gewaehlt": "raum-kinderzimmer-spuk.jpg",
     "vorlage": "raum-kinderzimmer.jpg"
+  },
+  {
+    "name": "raum-kolbe",
+    "titel": "Vor dem Haus Kolbe",
+    "prompt": "Kleines, sauberes, frisch weiß gestrichenes Siedlungshaus aus den Fünfzigern, sehr gepflegt, mit leuchtend roten Geranienkästen, akkurat geschnittenem Rasen und geharkten Beeten im Vorgarten, geputzte Fenster mit Gardinen, über der Haustür ein rostiges Hufeisen mit der Öffnung nach oben, auf der rechten Hausseite alle Rollläden ganz heruntergelassen, rechts eine hohe Ligusterhecke, deren Blätter zur anderen Seite hin grau werden, dahinter angeschnitten die dunkle Steinfassade einer Villa, bedeckter Tag – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-kolbe-1.jpg"
+    ],
+    "gewaehlt": "raum-kolbe.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-kolbe_kueche",
+    "titel": "Küche bei Frau Kolbe",
+    "prompt": "Unveränderte Wohnküche der Siebziger, orangefarbene Schranktüren, Eckbank mit karierten Kissen, Wachstuchdecke mit Kirschmuster, Kanne Filterkaffee und Teller Spritzgebäck, Holzkruzifix mit vertrocknetem Buchsbaumzweig, auf der Fensterbank eine Untertasse mit grobem Salz, das Fenster mit heruntergelassenem Rollladen und Malerkrepp in den Ritzen, summende Neonröhre, graues Wählscheibentelefon an der Wand, dicker grauer Kater auf der Bank, keine Personen – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-kolbe_kueche-1.jpg"
+    ],
+    "gewaehlt": "raum-kolbe_kueche.jpg",
+    "vorlage": null
   },
   {
     "name": "raum-kueche",
@@ -1471,6 +1581,36 @@ window.KANDIDATEN = [
     ],
     "gewaehlt": "raum-speisezimmer-nacht.jpg",
     "vorlage": "raum-speisezimmer.jpg"
+  },
+  {
+    "name": "raum-spiegelzimmer",
+    "titel": "Spiegelzimmer",
+    "prompt": "Kleiner Raum einer Jugendstilvilla, dessen Wände, Decke und Boden vollständig aus alten fleckigen Spiegeln in vergoldeten Rahmen bestehen, Kante an Kante, die Spiegelungen bilden einen endlosen grauen Gang, ein zugemauertes und ebenfalls verspiegeltes Fenster, gedämpftes graues Licht wie unter Wasser, keine Personen – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-spiegelzimmer-1.jpg"
+    ],
+    "gewaehlt": "raum-spiegelzimmer.jpg",
+    "vorlage": null
+  },
+  {
+    "name": "raum-spiegelzimmer-spuk",
+    "titel": "Spiegelzimmer – spuk",
+    "prompt": "Bearbeite das beigefügte Bild: Gleiche Szene, gleicher Bildausschnitt: in jedem einzelnen Spiegel steht dieselbe Frau im hellen Kleid mit offenem Haar und wendet sich gleichzeitig dem Betrachter zu, aus einigen Rahmen greifen schmale weiße Hände in den Raum. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-spiegelzimmer-spuk-1.jpg"
+    ],
+    "gewaehlt": "raum-spiegelzimmer-spuk.jpg",
+    "vorlage": "raum-spiegelzimmer.jpg"
+  },
+  {
+    "name": "raum-stadtarchiv",
+    "titel": "Lesesaal",
+    "prompt": "Stiller Lesesaal eines städtischen Archivs unter einer milchigen Glaskuppel aus den Zwanzigern, lange Eichentische mit grünen Leselampen, Wände voller Karteikästen mit Messinggriffen, ein langer Ausgabetresen mit Klemmbrett und Glasschale, in einer Nische ein großes graues Mikrofilm-Lesegerät der Achtziger mit leuchtendem Bildschirm, auf einem Tisch ein aufgeschlagenes in Leinen gebundenes Kirchenbuch, keine Personen, auf einem Rahmen der Kuppel sitzt draußen eine Krähe – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-stadtarchiv-1.jpg"
+    ],
+    "gewaehlt": "raum-stadtarchiv.jpg",
+    "vorlage": null
   },
   {
     "name": "raum-turmerker",
