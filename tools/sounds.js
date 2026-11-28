@@ -189,7 +189,8 @@ function starteAuswahl() {
       req.on('end', () => {
         try {
           const { name, nummer } = JSON.parse(body);
-          if (!/^[a-z][\w-]*$/.test(name) ||   // auch Raum-Sounds wie klavier-gedaempft (Spieltest 3) !/^\d+$/.test(String(nummer))) throw new Error('Ungültige Angabe.');
+          // auch Raum-Sounds wie klavier-gedaempft (Spieltest 3)
+          if (!/^[a-z][\w-]*$/.test(name) || !/^\d+$/.test(String(nummer))) throw new Error('Ungültige Angabe.');
           const ziel = uebernimm(name, nummer);
           console.log('Übernommen: ' + ziel);
           schreibeKandidatenJs();

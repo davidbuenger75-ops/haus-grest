@@ -12,10 +12,10 @@
 // (node tools/test.js prüft das).
 'use strict';
 
-var VERSION = 'haus-grest-34';
+var VERSION = 'haus-grest-35';
 // Bilder und Sounds liegen in einem eigenen Speicher, der Code-Veröffentlichungen überdauert (sonst lädt das Handy nach
 // jeder neuen Version alles noch einmal). MEDIEN nur hochzählen, wenn sich Bilder oder Sounds geändert haben.
-var MEDIEN = 'haus-grest-medien-2';
+var MEDIEN = 'haus-grest-medien-3';
 var GRUNDDATEIEN = ['./', './index.html', './manifest.webmanifest', './assets/icons/icon.svg',
   './assets/icons/icon-192.png', './assets/icons/icon-512.png'];
 // Beim Start nur die ersten Bilder (Prolog: die eigene Wohnung, Notarbrief, Testament) – alle anderen Bilder und
