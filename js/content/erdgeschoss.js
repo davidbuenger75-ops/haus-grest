@@ -59,7 +59,7 @@ HG.raum('einfahrt', {
   },
   kurz: 'Vor Haus Grest. Nach Norden geht es zur Haustür, dein Auto steht am Gartentor.',
   horchen: function (api) {
-    if (klavierSpielt(api)) return 'Kein Wind, kein Tier. Nur aus dem Haus, gedämpft durch die schwere Tür: Klavier. Ein langsames Wiegenlied, immer wieder dieselben vier Takte, als übe jemand – oder als könne er nicht aufhören.';
+    if (klavierSpielt(api)) return 'Kein Wind, kein Tier. Nur aus dem Haus, gedämpft durch die schwere Tür: Klavier. Eine langsame, sehr schöne Melodie, gespielt von jemandem, der es kann – wie eine Klavierlehrerin, die abends nur noch für sich spielt.';
     return api.istTag() ? 'Krähen in den alten Bäumen. Sonst nichts.' : 'Kein Wind, kein Tier. Die Stille um das Haus ist vollkommen.';
   },
   riechen: 'Feuchte Erde, nasses Laub.',
