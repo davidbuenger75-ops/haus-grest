@@ -2,6 +2,9 @@
 // Namensraum, Register für Inhalte, Textwerkzeuge, deutsche Grammatik, Würfel.
 // Enthält keine Story-Texte.
 window.HG = window.HG || {};
+// Spielversion: bei jeder Veröffentlichung hochzählen – zusammen mit VERSION in sw.js (der Test prüft, dass beide passen).
+// Steht im Protokollkopf, damit man sieht, welcher Stand gespielt wurde.
+window.HG.SPIELVERSION = 30;
 
 (function (HG) {
   'use strict';
@@ -90,7 +93,9 @@ window.HG = window.HG || {};
    */
   T.fuelle = function (s) {
     var sp = HG.zustand && HG.zustand.z && HG.zustand.z.spieler;
-    if (!s || typeof s !== 'string' || s.indexOf('{') < 0 || !sp || !sp.name) return s;
+    if (!s || typeof s !== 'string' || s.indexOf('{') < 0) return s;
+    // Noch kein Name (Charaktererstellung)? Dann neutrale Wörter – ein Platzhalter darf nie sichtbar werden.
+    if (!sp || !sp.name) sp = { name: 'Unbekannt', geschlecht: sp && sp.geschlecht };
     var teile = sp.name.trim().split(/\s+/);
     var vor = T.esc(teile[0]), nach = T.esc(teile[teile.length - 1]), voll = T.esc(sp.name);
     var anrede = sp.geschlecht === 'm' ? 'Herr ' + nach : sp.geschlecht === 'w' ? 'Frau ' + nach : voll;

@@ -157,7 +157,7 @@
     3: function (api) {
       if (api.traegt('wg_schluessel')) return 'Du hast den Schlüssel mit dem Anhänger „WG“. <span class="nebenbei">(„schließe glastür auf“)</span>';
       if (api.hatHinweis('carstens_wg_zettel')) return '„Da, wo ich nicht mehr hinsehe.“ Carsten hat Spiegel verhängt. Im Gäste-WC an der Anrichte hängt einer unter einem Handtuch. <span class="nebenbei">(„schau hinter spiegel“)</span>';
-      return 'Carsten hat eine Nachricht hinterlassen: In der Küche hängt ein Zettel am Kühlschrank. Oder du nimmst Werkzeug („knacke glastür mit …“) – oder du schlägst das Glas ein.';
+      return 'Carsten hat im Haus Nachrichten für sich hinterlassen – sieh dir in der Küche den Kühlschrank an. Oder du nimmst Werkzeug („knacke glastür mit …“) – oder du schlägst das Glas ein.';
     }
   };
   function wgTuer(id, raum, raumName) {

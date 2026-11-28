@@ -89,7 +89,7 @@
         var stange = ctx.obj2 === 'hakenstange' || api.traegt('hakenstange');
         if (!stange) {
           api.sage('Du streckst dich, springst. Deine Finger streifen den Ring nicht einmal.');
-          api.fehlversuch('bodenklappe', { 2: 'Der Ring ist für eine Stange mit Haken gemacht. In einem Haus wie diesem lag so etwas meist in der Wäschekammer.', 3: 'Hol die Hakenstange aus der Kammer im Nordosten. <span class="nebenbei">(„öffne klappe mit hakenstange“)</span>' });
+          api.fehlversuch('bodenklappe', { 2: 'Der Ring ist für eine Stange mit Haken gemacht. In einem Haus wie diesem lag so etwas meist in einer Kammer für Wäsche und Gerät.', 3: function (a) { return a.kennt('hakenstange') ? 'Hol die Hakenstange aus der Wäschekammer. <span class="nebenbei">(„öffne klappe mit hakenstange“)</span>' : 'Sieh dich in der Kammer im Nordosten um – dort steht, was man für so einen Ring braucht.'; } });
           return true;
         }
         api.setze('bodenklappe', 'offen', true);
@@ -417,7 +417,7 @@
         var e = api.probe('ge', { grund: 'Haken mit den Fingern', mod: -20, modGrund: 'winzig und verbogen' });
         if (e.erfolg) { oeffnePuppenhaus(api, 'Mit dem Fingernagel hebelst du den verbogenen Haken aus der Öse. Die Vorderwand schwingt auf.'); return true; }
         api.sage('Der Haken ist verbogen und klemmt. Deine Finger sind zu groß dafür.');
-        api.fehlversuch('puppenhaus', { 2: 'Für so einen winzigen Haken bräuchte man eine Pinzette.', 3: 'In Carstens Feinmechaniker-Set aus dem Lager ist eine Pinzette. <span class="nebenbei">(„öffne puppenhaus mit werkzeug“)</span>' });
+        api.fehlversuch('puppenhaus', { 2: 'Für so einen winzigen Haken bräuchte man eine Pinzette.', 3: function (a) { return a.kennt('feinwerkzeug') ? 'In Carstens Feinmechaniker-Set ist eine Pinzette. <span class="nebenbei">(„öffne puppenhaus mit werkzeug“)</span>' : 'Feines Werkzeug – Carsten war Vermesser, er hatte sicher welches. Vielleicht unter seinen Sachen im Lager.'; } });
         return true;
       },
       knacken: function (api, ctx) { return HG.daten.dinge.puppenhaus.bei.oeffnen(api, ctx); },
@@ -451,7 +451,7 @@
         var e = api.probe('ge', { grund: 'Spange angeln', mod: -20, modGrund: 'mit dicken Fingern' });
         if (e.erfolg) return false;
         api.sage('Deine Finger stoßen gegen die winzigen Möbel. Die Spange rutscht noch weiter unter das Bett.');
-        api.fehlversuch('haarspange', { 2: 'Eine Pinzette wäre hier eine große Hilfe.', 3: 'Carstens Feinmechaniker-Set hat eine Pinzette. Mit ihm in der Hand geht es leicht.' });
+        api.fehlversuch('haarspange', { 2: 'Eine Pinzette wäre hier eine große Hilfe.', 3: function (a) { return a.kennt('feinwerkzeug') ? 'Carstens Feinmechaniker-Set hat eine Pinzette. Mit ihm in der Hand geht es leicht.' : 'Mit feinem Werkzeug ginge es leicht – vielleicht unter Carstens Sachen im Lager.'; } });
         return true;
       }
     }
@@ -544,7 +544,7 @@
           return true;
         }
         api.sage('Die Kette ist am Rand eingehakt, aber sie ist kürzer, als du dachtest: Um daran zu ziehen, müsstest du ins Wasser greifen.');
-        api.fehlversuch('wannenkette', { 2: 'Mit einer langen Stange könntest du die Kette angeln, ohne das Wasser zu berühren.', 3: 'In der Wäschekammer gibt es eine Hakenstange. <span class="nebenbei">(„zieh kette mit hakenstange“)</span> – oder du schöpfst mit einem Eimer.' });
+        api.fehlversuch('wannenkette', { 2: 'Mit einer langen Stange könntest du die Kette angeln, ohne das Wasser zu berühren.', 3: function (a) { return (a.kennt('hakenstange') ? 'In der Wäschekammer gibt es eine Hakenstange. <span class="nebenbei">(„zieh kette mit hakenstange“)</span>' : 'Sieh dich in der Wäschekammer nach etwas Langem um.') + ' – Oder du schöpfst mit einem Eimer.'; } });
         return true;
       },
       benutzen: function (api, ctx) { return HG.daten.dinge.wannenkette.bei.ziehen(api, ctx); }
@@ -674,7 +674,7 @@
     ort: 'gaestezimmer', fest: 'Der Spiegel hängt fest.', szenerie: true,
     spiegel: 'klein',
     beschreibung: 'Ein ovaler Spiegel im Goldrahmen über einer Kommode. Am Rahmen klebt ein gelber Zettel in Carstens Schrift.',
-    bei: { hineinschauen: function (api) { api.sage('Dein Gesicht – müde, blass. Hinter dir das Bett. Einen Atemzug lang sitzt jemand auf der Bettkante, ein Mann mit Carstens Schultern, und hebt grüßend eine Tasse.'); api.nervenProbe('0/1W3', { grund: 'Blick in den Spiegel', gewoehnung: 'gaeste_spiegel' }); return true; } }
+    bei: { hineinschauen: function (api) { api.setzeFlag('carsten_begegnet'); api.sage('Dein Gesicht – müde, blass. Hinter dir das Bett. Einen Atemzug lang sitzt jemand auf der Bettkante, ein Mann mit Carstens Schultern, und hebt grüßend eine Tasse.'); api.nervenProbe('0/1W3', { grund: 'Blick in den Spiegel', gewoehnung: 'gaeste_spiegel' }); return true; } }
   });
   HG.ding('klebezettel', {
     nomen: 'Klebezettel', genus: 'm', adj: ['gelb'], woerter: ['klebezettel', 'zettel', 'postit', 'notiz'],

@@ -40,6 +40,8 @@ function neueWelt() {
 }
 
 let fehler = 0, tests = 0;
+const PLATZHALTER_RE = /\{(name|vorname|nachname|anrede|briefanrede|g:)[^}]*\}?/;
+const UNERSETZT = [];
 function pruefe(bed, text) {
   tests++;
   if (bed) { if (LAUT) console.log('  ✓ ' + text); return; }
@@ -48,7 +50,11 @@ function pruefe(bed, text) {
 
 function spieler(ctx) {
   const HG = ctx.HG, log = [];
-  HG.ausgabe.ziel = b => log.push(b);
+  // Ein Platzhalter ({name}, {g:…}) darf nie unersetzt sichtbar werden – geprüft in jeder Ausgabe aller Tests
+  HG.ausgabe.ziel = b => {
+    log.push(b);
+    if (b.typ !== 'eingabe' && PLATZHALTER_RE.test(String(b.html || '')) && UNERSETZT.length < 20) UNERSETZT.push(String(b.html).slice(0, 120));
+  };
   // Würfel mit festem Startwert – jeder Lauf spielt gleich
   let saat = 12345;
   HG.zufall = () => { saat = (saat * 1103515245 + 12345) % 2147483648; return saat / 2147483648; };
@@ -250,17 +256,18 @@ function briefPruefen(s, weg) {
   s2.HG.zustand.z.raum = 'arbeitszimmer';
   s2.tu('schließe schublade mit messingschlüssel auf'); s2.tu('öffne schublade');
   pruefe(s2.HG.zustand.eig('schreibtischschublade', 'offen'), 'Schreibtischschublade offen (Vorbereitung)');
+  // Alpha-Test 27.11.2026: Dinge im Raum gehen vor Dingen in der Tasche – der Brief in der Schublade ist gemeint,
+  // der von 1905 im Gepäck bleibt über seinen Namen erreichbar
   ['lies brief', 'untersuche brief', 'riech an brief'].forEach(b => {
     const sicher = JSON.stringify(s2.HG.zustand.z);
     const t = s2.tu(b);
-    const frage = s2.HG.spiel.offen && s2.HG.spiel.offen.art === 'wahl';
-    pruefe(frage && /vergilbt/.test(t) && /1905/.test(t), '„' + b + '“ fragt nach: ' + t.split('\n').pop());
-    if (frage) {
-      const a = s2.tu('den von 1905');
-      pruefe(!KAPUTT.test(a) && !s2.HG.spiel.offen, '  Antwort „den von 1905“ wird verstanden');
-    }
+    pruefe(!s2.HG.spiel.offen && !KAPUTT.test(t), '„' + b + '“ meint den Brief im Raum: ' + t.split('\n')[0].slice(0, 60));
     s2.HG.spiel.offen = null; s2.HG.zustand.z = JSON.parse(sicher);
   });
+  {
+    const t = s2.tu('lies brief von 1905');
+    pruefe(!s2.HG.spiel.offen && !KAPUTT.test(t) && /1905/.test(t), '„lies brief von 1905“ erreicht den Brief im Gepäck');
+  }
 }
 
 // --- 6. Carstens Bauplan ----------------------------------------------------
@@ -459,13 +466,12 @@ const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'diens
   // Mit Kästchen (eigene Gravur) und Tagebuch („Heft“) im Gepäck – Davids Spieltest 24.11.2026
   HG.api.bewege('kaestchen', 'spieler'); HG.api.bewege('tagebuch', 'spieler');
   pruefe(!KAPUTT.test(s.tu('untersuche marmorkamin')), '„untersuche marmorkamin“ verstanden');
-  const frage = s.tu('lies gravur');
-  pruefe(/Messingplatte/.test(frage) && /Gravur/.test(frage), 'Rückfrage: Messingplatte oder Gravur (Kästchen)');
-  s.tu('messingplatte');
-  pruefe(HG.zustand.z.hinweise.includes('hochzeitstag'), 'Kaminsims: „Unser Tag“ (zweite Quelle für den Code)');
+  // Alpha-Test 27.11.2026: Dinge im Raum vor Dingen in der Tasche – „lies gravur“ meint die Messingplatte am Kamin
   s.tu('lies gravur');
-  const t2 = s.tu('gravur');
-  pruefe(!HG.spiel.offen && /erbaute/.test(t2), 'Antwort „gravur“ wählt die Gravur am Kästchen – keine Endlosschleife');
+  pruefe(!HG.spiel.offen && HG.zustand.z.hinweise.includes('hochzeitstag'), '„lies gravur“: Messingplatte am Kamin – „Unser Tag“ (zweite Quelle für den Code)');
+  const t2 = s.tu('lies gravur am kästchen');
+  pruefe(!HG.spiel.offen && /erbaute/.test(t2), '„lies gravur am kästchen“ erreicht die Gravur im Gepäck');
+  pruefe(/erbaute/.test(s.tu('lies die gravur des kästchens')), '„lies die gravur des kästchens“ ebenso');
   pruefe(/Notenheft/.test(s.tu('untersuche flügel')), 'Flügel nennt das Notenheft');
   pruefe(!/Umschlag/.test(s.tu('untersuche notenheft')), 'Notenheft erwähnt keinen Umschlag mehr');
   s.tu('nimm notenheft');
@@ -537,7 +543,14 @@ const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'diens
   pruefe(/0800 111 0 111/.test(p.tu('hilfe')), '„hilfe“ nennt die Telefonseelsorge');
   // +5 NERVEN beim Tragen, zurück beim Ablegen
   let s = imHaus(); let HG = s.HG; const Z = HG.zustand.z;
-  Z.werte.nerven = 50;
+  // Polizist(in): kein Bonus, stattdessen ein Satz (Alpha-Test 27.11.2026)
+  Z.beruf = 'polizei'; Z.werte.nerven = 50;
+  HG.api.bewege('pistole', 'spieler');
+  const tPol = s.tu('warte');
+  pruefe(Z.werte.nerven === 50 && /Es ist nicht deine/.test(tPol), 'Polizist(in) mit Pistole: kein NERVEN-Bonus, „Es ist nicht deine.“');
+  s.tu('lege pistole ab');
+  pruefe(Z.werte.nerven === 50, 'Polizist(in) legt die Pistole ab: nichts geht verloren');
+  Z.beruf = 'journalismus';
   HG.api.bewege('pistole', 'spieler'); s.tu('warte');
   pruefe(Z.werte.nerven === 55, 'Pistole tragen: +5 NERVEN (' + Z.werte.nerven + ')');
   s.tu('lege pistole ab');
@@ -1734,6 +1747,175 @@ const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'diens
   }
   pruefe(/ElevenLabs \(elevenlabs\.io\)/.test(HG.wert(HG.daten.spiel.abspann, HG.api)), 'Abspann nennt ElevenLabs');
 }
+
+// --- 29. Alpha-Test 27.11.2026 ------------------------------------------------------------------------------
+{
+  console.log('\n29. Alpha-Test: Neustart, Platzhalter, Version, Tagebuch in Stufen, Gerdes-Tür, Ziele, Jansen, Notizbuch-Paare');
+  // Neustart aus einem geladenen Spielstand: alles ersetzt, Protokollkopf mit Namen, Charakter nur einmal
+  {
+    const ctx = neueWelt(); const s = spieler(ctx); const H = s.HG;
+    H.spiel.start(); ['Anna Alt', 'Frau', 'würfeln', '1', 'öffne umschlag'].forEach(c => s.tu(c));
+    H.zustand.speichern('auto');
+    H.zustand.laden('auto');
+    const n = s.bloecke.length;
+    ['neustart ja', 'Bert Neu', 'Mann', 'würfeln', '2', 'öffne umschlag', 'lies notarbrief'].forEach(c => s.tu(c));
+    const neu = s.bloecke.slice(n).map(b => String(b.html || '')).join('\n');
+    pruefe(!PLATZHALTER_RE.test(neu) && /Neu/.test(neu), 'Neustart aus geladenem Spielstand: Platzhalter ersetzt');
+    pruefe(s.bloecke.slice(n).filter(b => /Wie heißt du/.test(b.html || '')).length === 1, 'Neustart: die Charaktererstellung läuft genau einmal');
+    pruefe(/Figur: Bert Neu \(männlich\)/.test(H.protokoll.kurzinfo()), 'Protokollkopf nennt die Figur: ' + H.protokoll.kurzinfo().split('\n')[0]);
+    pruefe(!PLATZHALTER_RE.test(H.protokoll.text()), 'Protokoll enthält keine unersetzten Platzhalter');
+    pruefe(/Spielversion \d+/.test(H.protokoll.text()), 'Protokoll nennt die Spielversion');
+    pruefe(H.text.fuelle('{name}, {g:a|b|c}') === 'Bert Neu, a', 'fuelle ersetzt Name und Geschlecht');
+  }
+  // Alle Texte aller Daten: nach dem Ersetzen bleibt kein Platzhalter stehen (auch nicht vor der Charaktererstellung)
+  {
+    const s = prolog(); const H = s.HG; const rest = [];
+    const pruefeText = (wo, t) => { if (typeof t === 'string' && PLATZHALTER_RE.test(H.text.fuelle(t))) rest.push(wo); };
+    const alle = (wo, o, tiefe) => {
+      if (tiefe > 4 || !o) return;
+      if (typeof o === 'string') return pruefeText(wo, o);
+      if (typeof o === 'function') { try { const r = o(H.api); if (typeof r === 'string') pruefeText(wo, r); } catch (e) { /* braucht Kontext */ } return; }
+      if (typeof o === 'object') Object.keys(o).forEach(k => alle(wo + '.' + k, o[k], tiefe + 1));
+    };
+    ['dinge', 'raeume', 'hinweise', 'schluesse', 'nachrichten', 'anrufe'].forEach(k => alle(k, H.daten[k], 0));
+    alle('spiel', H.daten.spiel, 0);
+    pruefe(!rest.length, 'Alle Texte: kein Platzhalter bleibt unersetzt' + (rest.length ? ' – ' + rest.slice(0, 5).join(', ') : ''));
+    const z = H.zustand.z.spieler; H.zustand.z.spieler = null;
+    pruefe(!PLATZHALTER_RE.test(H.text.fuelle('{name} {anrede} {g:x|y}')), 'Noch ohne Namen: neutrale Wörter statt Platzhalter');
+    H.zustand.z.spieler = z;
+  }
+  // Spielversion = Cache-Version des Service Workers
+  {
+    const ctx = neueWelt();
+    const sw = fs.readFileSync(path.join(WURZEL, 'sw.js'), 'utf8').match(/VERSION = 'haus-grest-(\d+)'/);
+    pruefe(sw && +sw[1] === ctx.HG.SPIELVERSION, 'sw.js VERSION passt zu HG.SPIELVERSION (' + (sw && sw[1]) + ' / ' + ctx.HG.SPIELVERSION + ')');
+  }
+  // Carstens Tagebuch in Stufen
+  const tbWelt = () => {
+    const s = imLager(); const H = s.HG;
+    H.spukwerk.zug = () => {}; H.gefahren.darf = () => false;
+    H.zustand.setze('tagebuch', 'ort', 'spieler'); H.zustand.setze('tagebuch', 'rel', 'in');
+    return s;
+  };
+  const seite = (H, titel) => H.daten.dinge.tagebuch.buch.seiten.find(x => x.titel === titel);
+  {
+    const s = tbWelt(); const H = s.HG, Z = () => H.zustand.z;
+    const t0 = s.tu('lies tagebuch');
+    pruefe(/6 beschriebene Seiten/.test(t0), 'Stufe 0: sechs beschriebene Seiten – ' + (t0.match(/\d+ beschriebene Seiten[^.]*/) || [''])[0]);
+    pruefe(!H.buch.erschienen(seite(H, '2. Oktober 2025')) && !H.buch.erschienen(seite(H, '19. Juni 2026')), 'Stufe 0: Gerdes-SMS und Brandplan noch leer');
+    const order = H.buch.beschrieben('tagebuch').map(x => x.s.titel);
+    pruefe(order.indexOf('14. Februar 2026') === order.indexOf('11. Februar 2026') + 1, 'Kästchen (14.2.2026) steht nach „Lager gemietet“ (11.2.2026)');
+    for (let i = 1; i <= 20; i++) s.tu('lies eintrag ' + i);
+    pruefe(Z().hinweise.includes('tb_zweifel') && !Z().hinweise.includes('fremde_nummern'), 'Stufe 0: „erste Monate“, aber noch nicht „Das Haus benutzt fremde Nummern“');
+    // Stufe 1: erste Nacht im Haus
+    Z().flags.nacht_im_haus = true;
+    const tf = s.tu('warte');
+    pruefe(/schwerer geworden/.test(tf), 'Stufe 1: „Das Tagebuch in deiner Tasche ist schwerer geworden.“');
+    const t1 = s.tu('lies tagebuch');
+    pruefe(/Die Tinte glänzt noch/.test(t1) && /2\. Oktober 2025|24\. Dezember 2025|3\. April 2026/.test(t1), 'Stufe 1: beim Öffnen „Die Tinte glänzt noch“, eine neue Seite');
+    for (let i = 1; i <= 20; i++) s.tu('lies eintrag ' + i);
+    pruefe(Z().hinweise.includes('fremde_nummern') && Z().hinweise.includes('tb_angst') && !Z().hinweise.includes('tb_brand'), 'Stufe 1: fremde Nummern und Angst – noch kein Brand');
+    // Stufe 2: Polizeiakte Häuser (oder Keller)
+    Z().hinweise.push('polizeiakte_haeuser'); s.tu('warte');
+    for (let i = 1; i <= 20; i++) s.tu('lies eintrag ' + i);
+    pruefe(Z().hinweise.includes('tb_brand') && !Z().hinweise.includes('tb_wandlung'), 'Stufe 2: Brandplan und Brandversuch („Carsten wollte das Haus anzünden“)');
+    pruefe(s.bloecke.some(b => /Ab hier wird Carstens Schrift fahrig/.test(b.html || '') && b.typ === 'text'), '14.8.: „fahrig“ steht als Erzähltext unter der Seite');
+    pruefe(!H.gefahren.weiss('carsten'), 'Vor Stufe 3 kann man Carsten nicht bekehren');
+    // Stufe 3: Carsten begegnet (Wandspiegel im Gästezimmer)
+    Z().raum = 'gaestezimmer'; Z().besucht.gaestezimmer = true;
+    s.tu('schau in den wandspiegel');
+    pruefe(Z().flags.carsten_begegnet, 'Begegnung mit Carsten im Wandspiegel des Gästezimmers');
+    s.tu('warte');
+    for (let i = 1; i <= 20; i++) s.tu('lies eintrag ' + i);
+    Z().hinweise.push('testament');
+    pruefe(Z().hinweise.includes('tb_wandlung') && H.gefahren.weiss('carsten'), 'Stufe 3: „Carsten verliebt sich“ – jetzt kennt man seine Geschichte');
+    pruefe(!H.buch.seiten('tagebuch').some(x => H.buch.erschienen(x.s) && /Willkommen|gehört mir|zwei Hände/.test(x.s.text)), 'Vor Stufe 4: kein Ende im Tagebuch');
+    // Stufe 4b: Neumondnacht, Carsten nicht bekehrt
+    const s2 = JSON.stringify(Z());
+    const nm = [7, 8, 9, 10].find(n => H.nacht.istNeumond(n));
+    Z().zeit.tag = nm; Z().zeit.minute = 19 * 60 + 59; s.tu('warte');
+    pruefe(Z().flags.tb_fremd, 'Neumondnacht ohne bekehrten Carsten: fremde Schrift (Nacht ' + nm + ')');
+    const nerven = Z().werte.nerven;
+    for (let i = 1; i <= 25; i++) s.tu('lies eintrag ' + i);
+    const fremd = H.buch.beschrieben('tagebuch').map(x => H.wert(x.s.text, H.api)).join(' ');
+    pruefe(/Er gehört mir/.test(fremd) && /Du gehörst auch zu mir/.test(fremd) && /Willkommen zu Hause/.test(fremd) && !/zwei Hände/.test(fremd), 'Stufe 4b: „Er gehört mir.“ – „Du gehörst auch zu mir.“ – „Willkommen zu Hause.“');
+    pruefe(s.bloecke.some(b => b.typ === 'wurf' || /NERVEN/.test(b.html || '')) && Z().werte.nerven <= nerven, 'Stufe 4b: NERVEN-Probe beim Lesen');
+    pruefe(!Z().hinweise.includes('carstens_letzte_seite'), 'Stufe 4b: nur Grusel, kein Hinweis');
+    // Stufe 4a: Carsten bekehrt
+    H.zustand.z = JSON.parse(s2);
+    Z().gefahren.seelen.carsten = 'bekehrt'; s.tu('warte');
+    for (let i = 1; i <= 25; i++) s.tu('lies eintrag ' + i);
+    const klar = H.buch.beschrieben('tagebuch').map(x => H.wert(x.s.text, H.api)).join(' ');
+    pruefe(/Nimm die andere – die dünne, die mit dem Abdruck vom Ring/.test(klar) && !/Er gehört mir/.test(klar), 'Stufe 4a: Carstens letzte Seite – die richtige Hand');
+    pruefe(Z().hinweise.includes('carstens_letzte_seite') && H.daten.schluesse.ring_ist_anker.aus.includes('carstens_letzte_seite'), 'Stufe 4a: Hinweis „Carstens letzte Seite“ (Quelle für „Der Ring ist der Anker“)');
+    // Finale: kämpft Carsten gegen dich, füllen sich die Seiten ebenfalls fremd
+    H.zustand.z = JSON.parse(s2);
+    const k = H.daten.manifestationen ? H.daten.manifestationen.die_andere : null;
+    if (k && k.angriff) { k.angriff(H.api, { runde: 3 }); pruefe(Z().flags.tb_fremd, 'Finale: Carsten hält dich fest → fremde Schrift im Tagebuch'); }
+  }
+  // Alte Spielstände: Brandversuch gelesen → neuer Hinweis, nichts geht verloren
+  {
+    const ctx = neueWelt(); const s = spieler(ctx); const H = s.HG;
+    H.spiel.start(); ['A B', 'Frau', 'verteilen', '12 12 12 12 12 12', '1'].forEach(c => s.tu(c));
+    H.zustand.speichern('9');
+    const p = JSON.parse(ctx.localStorage.getItem('hausgrest:9'));
+    p.version = 9; p.zustand.version = 9; delete p.zustand.buchSeiten;
+    p.zustand.hinweise.push('tb_wandlung', 'tb_angst');
+    p.zustand.buecher = { tagebuch: { seite: 6, gelesen: [0, 6, 7, 10, 15] } };
+    ctx.localStorage.setItem('hausgrest:9', JSON.stringify(p));
+    const r = H.zustand.laden('9');
+    pruefe(r.ok && H.zustand.z.hinweise.includes('tb_brand') && H.zustand.z.hinweise.includes('tb_wandlung'), 'Alter Spielstand: „Carsten wollte das Haus anzünden“ ergänzt, nichts verloren');
+    pruefe(H.zustand.z.buecher.tagebuch.gelesen.includes(7) && H.zustand.z.buecher.tagebuch.gelesen.includes(6) && !H.zustand.z.buecher.tagebuch.gelesen.includes(15), 'Alter Spielstand: gelesene Seiten umgerechnet');
+  }
+  // Gerdes: Tür zu nach dem Abweisen – Raumtext, Vorschläge, kein „geh hinein“
+  {
+    const s = prolog(); const H = s.HG, Z = () => H.zustand.z;
+    Z().zeit.minute = 10 * 60; H.reisen.schalteFrei('gerdes', true); H.spiel.betrete('gerdes');
+    s.tu('sprich mit brigitte'); s.tu('1');
+    pruefe(Z().flags.gerdes_tuer_zu, 'Gerdes: nach dem Abweisen ist die Tür zu');
+    pruefe(/ist zu/.test(s.tu('schau')) && !H.spiel.ausgaenge().some(a => a.id === 'hinein'), 'Gerdes: Raumtext „zu“, kein Ausgang hinein');
+    pruefe(H.spiel.vorschlaege().includes('klopfe an die tür') && !H.spiel.vorschlaege().includes('geh hinein'), 'Gerdes: Vorschlag „klopfe an die tür“');
+    const tk = s.tu('klopfe an die tür');
+    pruefe(!Z().flags.gerdes_tuer_zu && /Spalt/.test(tk), 'Gerdes: Klopfen – die Tür geht wieder einen Spalt auf');
+    s.tu('sprich mit brigitte'); s.tu('1'); s.tu('sprich mit brigitte'); s.tu('1');
+    const tipps = s.bloecke.filter(b => b.typ === 'tipp').map(b => b.html).join(' ');
+    pruefe(tipps && !/Haarspange|Puppenhaus/.test(tipps), 'Gerdes-Tipps nennen die Haarspange nicht, solange man sie nicht gefunden hat');
+  }
+  // Ziele: feste Nummern in der Reihenfolge der Freischaltung, der aktuelle Ort grau „(hier)“
+  {
+    const s = prolog(); const H = s.HG;
+    s.tu('öffne umschlag'); s.tu('lies notarbrief');
+    const vorher = H.reisen.bekannt().slice();
+    H.reisen.schalteFrei('friedhof', true); H.reisen.schalteFrei('gerdes', true);
+    const nachher = H.reisen.bekannt();
+    pruefe(JSON.stringify(nachher.slice(0, vorher.length)) === JSON.stringify(vorher) && nachher.slice(-2).join() === 'friedhof,gerdes', 'Ziele: neue hinten angehängt (' + nachher.join(', ') + ')');
+    const t = s.tu('fahre los');
+    pruefe(/\(hier\)/.test(s.bloecke.filter(b => b.typ === 'auswahl').pop().html), 'Zielauswahl: aktueller Ort mit „(hier)“');
+    H.spiel.offen = null;
+  }
+  // Polizeiwache: nach der Übergabe „Haben Sie alles? Noch Fragen?“
+  {
+    const s = prolog(); const H = s.HG, Z = () => H.zustand.z;
+    Z().zeit.minute = 10 * 60; H.reisen.schalteFrei('polizei', true); H.spiel.betrete('polizei');
+    Z().flags.nachlass_erhalten = true;
+    const t = s.tu('sprich mit jansen');
+    pruefe(/Haben Sie alles\?/.test(t) && /Noch Fragen\?/.test(t) && /akte/.test(t), 'Jansen nach der Übergabe: „Haben Sie alles? Noch Fragen?“ mit offenen Themen');
+  }
+  // Notizbuch: kombinierbare Paare markiert, nach einer Weile nennt die Erinnerung beide
+  {
+    const s = imHaus(); const H = s.HG, Z = () => H.zustand.z;
+    H.api.hinweis('hallmann_brand'); H.api.hinweis('tb_brand');
+    const p = H.spiel.paare();
+    pruefe(p.some(x => x.sid === 'das_haus_brennt_nicht'), 'Notizbuch: „Das Haus lässt sich nicht verbrennen“ ist ein offenes Paar');
+    for (let i = 0; i < 45; i++) s.tu('warte');
+    pruefe(s.bloecke.some(b => b.typ === 'andeutung' && /Hallmann|Brand/.test(b.html) && /anzünden/.test(b.html)), 'Notizbuch: Erinnerung nennt beide Notizen beim Namen');
+    H.spiel.kombiniereHinweise('hallmann_brand', 'tb_brand');
+    pruefe(Z().schluesse.includes('das_haus_brennt_nicht') && !H.spiel.paare().some(x => x.sid === 'das_haus_brennt_nicht'), 'Nach dem Kombinieren ist das Paar erledigt');
+  }
+  // Pistole im Schuhkarton antippbar: der Öffnen-Text nennt sie
+  pruefe(/Pistole/.test(prolog().HG.daten.dinge.schuhkarton.texte.oeffnen), 'Schuhkarton: der Öffnen-Text nennt die Pistole (antippbar)');
+}
+pruefe(!UNERSETZT.length, 'In keiner Ausgabe aller Tests steht ein unersetzter Platzhalter' + (UNERSETZT.length ? ': ' + UNERSETZT.slice(0, 3).join(' | ') : ''));
 
 console.log('\n' + (tests - fehler) + ' von ' + tests + ' Prüfungen bestanden.' + (fehler ? ' ' + fehler + ' FEHLGESCHLAGEN.' : ''));
 process.exit(fehler ? 1 : 0);

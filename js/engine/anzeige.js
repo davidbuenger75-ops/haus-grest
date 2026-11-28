@@ -514,22 +514,26 @@
       var pos = Math.min(st.seite, liste.length - 1), x = liste[pos];
       $('buch-titel').textContent = d.buch.titel;
       $('buch-zaehler').textContent = 'Seite ' + (pos + 1) + ' von ' + liste.length;
-      $('buch-seitentitel').innerHTML = HG.text.fuelle(x.s.titel);
+      var titel = HG.buch.titel(id, x);
+      $('buch-seitentitel').innerHTML = HG.text.fuelle(titel);
       var txt = $('buch-text');
       txt.className = 'buch-text stil-' + (x.s.schrift || d.buch.schrift || 'hand');
       txt.innerHTML = HG.text.fuelle(HG.buch.text(id, x));
+      // Erzähltext unter der Seite (nicht auf dem Papier), z. B. „Hier wird die Schrift fahrig …“
+      var unter = $('buch-unter'), nt = x.s.nachText && HG.buch.frei(id, x.s) ? HG.wert(x.s.nachText, HG.api) : '';
+      if (unter) { unter.innerHTML = HG.text.fuelle(nt || ''); unter.hidden = !nt; }
       // Papier als Hintergrund: ding-<id>-seite bzw. ding-<id>-seite-<papier> (Seite mit "papier: 'spaet'"); Text liegt darüber
       var blatt = document.querySelector('#buch .buch-seite'), basis = HG.medien.dingName(id) + '-seite';
       blatt.style.backgroundImage = ''; blatt.classList.remove('mit-papier');
       $('buch-bild').innerHTML = ''; $('buch-bild').hidden = true;
       HG.medien.erstesBild((x.s.papier ? [basis + '-' + x.s.papier] : []).concat([basis]), function (url) {
-        if (!url || $('buch-seitentitel').textContent !== x.s.titel.replace(/<[^>]+>/g, '')) return;
+        if (!url || $('buch-seitentitel').textContent !== titel.replace(/<[^>]+>/g, '')) return;
         blatt.style.backgroundImage = 'url("' + url + '")'; blatt.classList.add('mit-papier');
       });
       $('buch-zurueck').disabled = pos === 0;
       $('buch-weiter').disabled = pos >= liste.length - 1;
       $('buch-lesezeichen').innerHTML = liste.map(function (y, i) {
-        return '<option value="' + (i + 1) + '"' + (i === pos ? ' selected' : '') + '>' + (st.gelesen.indexOf(y.i) >= 0 ? '✓ ' : '· ') + T.esc(y.s.titel.replace(/<[^>]+>/g, '')) + '</option>';
+        return '<option value="' + (i + 1) + '"' + (i === pos ? ' selected' : '') + '>' + (st.gelesen.indexOf(y.i) >= 0 ? '✓ ' : '· ') + T.esc(HG.buch.titel(id, y).replace(/<[^>]+>/g, '')) + '</option>';
       }).join('');
       var seite = document.querySelector('#buch .buch-seite');
       seite.classList.remove('blaettern'); void seite.offsetWidth; seite.classList.add('blaettern');
@@ -598,7 +602,7 @@
     grossbild: function (url, titel, html, klasse) {
       $('grossbild-bild').innerHTML = html || '<img src="' + url + '" alt="' + titel + '">';
       $('grossbild-bild').className = klasse || '';
-      $('grossbild-titel').innerHTML = titel;
+      $('grossbild-titel').innerHTML = HG.text.fuelle(titel);
       if ($('grossbild').showModal) $('grossbild').showModal(); else $('grossbild').setAttribute('open', '');
     },
 
@@ -708,7 +712,7 @@
           html += '<button type="button" class="drin" data-befehl="untersuche ' + T.esc((D(k).kurzwort || T.name(k, 'akk', '')).toLowerCase()) + '">↳ ' + T.gross(T.name(k, 'nom', '')) + '</button>';
         });
       });
-      $('inventar').innerHTML = html;
+      $('inventar').innerHTML = HG.text.fuelle(html);
     },
 
     // Notizbuch: Schlussfolgerungen oben, darunter die Hinweise nach Ermittlungsstrang in aufklappbaren
@@ -723,8 +727,16 @@
         z.schluesse.forEach(function (id) { var s = HG.daten.schluesse[id]; html += '<li><b>' + s.titel + '</b><div>' + HG.text.fuelle(s.text) + '</div></li>'; });
         html += '</ul></section>';
       }
+      // Kombinierbare Paare: gleiches Zeichen in gleicher Farbe an beiden Einträgen (Alpha-Test 27.11.2026)
+      var ZEICHEN = ['◆', '●', '▲', '■', '✦', '✚', '★', '♦'], paarAn = {};
+      S.paare().forEach(function (p, i) {
+        p.ids.forEach(function (id, j) {
+          var anderer = HG.daten.hinweise[p.ids[1 - j]].titel;
+          (paarAn[id] = paarAn[id] || []).push('<span class="nb-paar p' + (i % 8) + '" title="passt zu „' + T.esc(anderer) + '“" aria-label="passt zu ' + T.esc(anderer) + '">' + ZEICHEN[i % 8] + '</span>');
+        });
+      });
       if (z.hinweise.length) {
-        if (z.hinweise.length >= 2) html += '<p class="nb-tipp">Hake zwei Hinweise an, um sie zu verbinden.</p>';
+        if (z.hinweise.length >= 2) html += '<p class="nb-tipp">Hake zwei Hinweise an, um sie zu verbinden.' + (Object.keys(paarAn).length ? ' Gleiche Zeichen <span class="nb-paar p0">◆</span> gehören zusammen.' : '') + '</p>';
         S.notizGruppen().forEach(function (g) {
           var neu = g.ids.filter(S.hinweisNeu).length;
           var offen = nbOffen.gruppe[g.schluessel] !== undefined ? nbOffen.gruppe[g.schluessel] : neu > 0;
@@ -736,7 +748,7 @@
             var vorschau = text.replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]+>/g, '');
             html += '<li><input type="checkbox" value="' + id + '" aria-label="' + T.esc(h.titel) + ' zum Verbinden wählen"' + (gewaehlt.indexOf(id) >= 0 ? ' checked' : '') + '>' +
               '<details class="nb-hinweis" data-id="' + id + '"' + (nbOffen.hinweis[id] ? ' open' : '') + '><summary>' +
-              (S.hinweisNeu(id) ? '<span class="nb-punkt" title="neu" aria-label="neu"></span>' : '') +
+              (S.hinweisNeu(id) ? '<span class="nb-punkt" title="neu" aria-label="neu"></span>' : '') + (paarAn[id] || []).join('') +
               '<b>' + h.titel + '</b>' + (/\//.test(h.strang || '') ? ' <span class="strang">' + T.esc(h.strang) + '</span>' : '') +
               '<span class="nb-vorschau">' + vorschau + '</span></summary><div class="nb-text">' + text + '</div></details></li>';
           });
@@ -753,7 +765,7 @@
         html += '</ul>';
       }
       var box = $('notizbuch'), scroll = box.scrollTop;
-      box.innerHTML = html;
+      box.innerHTML = HG.text.fuelle(html);
       box.scrollTop = scroll;
       A.notizZaehler();
     },
@@ -795,7 +807,7 @@
         html += '<div class="sms klein' + (m.gelesen ? '' : ' neu') + '"><span class="von">' + T.esc(HG.wert(d.von, HG.api)) + '</span> <span class="wann">' + m.zeit + '</span>' +
           (m.gelesen ? '<div>' + HG.wert(d.text, HG.api) + '</div>' : '<div><i>ungelesen</i></div>') + '</div>';
       });
-      $('handy').innerHTML = html;
+      $('handy').innerHTML = HG.text.fuelle(html);
       document.querySelectorAll('[data-tab=handy] .anzahl').forEach(function (t) { t.textContent = h.klingelt ? '(☎)' : neu ? '(' + neu + ')' : ''; });
     },
 
@@ -812,7 +824,7 @@
       HG.spiel.vorschlaege().forEach(function (v) {
         html += '<button type="button" data-befehl="' + T.esc(v) + '">' + T.esc(v) + '</button>';
       });
-      $('vorschlaege').innerHTML = html;
+      $('vorschlaege').innerHTML = HG.text.fuelle(html);
     },
 
     zeigeKarte: function () {
@@ -847,11 +859,20 @@
           if (w.richtung === 'hoch' || w.richtung === 'runter') linien += '<text class="treppe" x="' + (a.x + lx) + '" y="' + (a.y + ly) + '">' + (w.richtung === 'hoch' ? '↑' : '↓') + '</text>';
         }
       });
+      // Der Kasten passt sich dem Namen an: lange Namen brechen um (höchstens ~18 Zeichen je Zeile), Breite nach der längsten Zeile
+      function zeilen(name) {
+        var w = String(name).split(' '), z = [''];
+        w.forEach(function (x) { var l = z[z.length - 1]; if (l && (l + ' ' + x).length > 18) z.push(x); else z[z.length - 1] = l ? l + ' ' + x : x; });
+        return z;
+      }
       var kasten = '';
       k.raeume.forEach(function (r) {
-        var p = pos[r.id];
-        kasten += '<g class="raum' + (r.hier ? ' hier' : '') + '"><rect x="' + (p.x - B / 2) + '" y="' + (p.y - H / 2) + '" width="' + B + '" height="' + H + '" rx="4"/>' +
-          '<text x="' + p.x + '" y="' + (p.y + 6) + '">' + T.esc(r.name) + '</text>' + (r.hier ? '<text class="du" x="' + p.x + '" y="' + (p.y + 26) + '">(du bist hier)</text>' : '') + '</g>';
+        var p = pos[r.id], zl = zeilen(r.name), lang = Math.max.apply(null, zl.map(function (x) { return x.length; }));
+        var bw = Math.max(B, Math.min(GX - 14, Math.round(lang * 9.4 + 22))), bh = Math.max(H, zl.length * 20 + (r.hier ? 34 : 22));
+        var y0 = p.y - (zl.length - 1) * 10 - (r.hier ? 6 : 0) + 6;
+        kasten += '<g class="raum' + (r.hier ? ' hier' : '') + '"><rect x="' + (p.x - bw / 2) + '" y="' + (p.y - bh / 2) + '" width="' + bw + '" height="' + bh + '" rx="4"/>' +
+          zl.map(function (x, i) { return '<text x="' + p.x + '" y="' + (y0 + i * 20) + '"' + (x.length * 9.4 + 22 > GX - 14 ? ' textLength="' + (bw - 16) + '" lengthAdjust="spacingAndGlyphs"' : '') + '>' + T.esc(x) + '</text>'; }).join('') +
+          (r.hier ? '<text class="du" x="' + p.x + '" y="' + (y0 + (zl.length - 1) * 20 + 20) + '">(du bist hier)</text>' : '') + '</g>';
       });
       $('karte-bild').innerHTML = '<svg viewBox="' + vb + '" role="img" aria-label="Karte der bekannten Räume">' +
         '<g class="wege">' + linien + '</g>' + kasten + '</svg>';

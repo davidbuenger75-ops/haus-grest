@@ -84,7 +84,7 @@
     2: 'Der Riegel ist braun vor Rost. Mit Gewalt vielleicht – oder mit etwas, das den Rost löst.',
     3: function (api) {
       if (api.traegt('oelkanne')) return 'Du hast doch das Ölkännchen. <span class="nebenbei">(„öle riegel“, dann „schiebe riegel“)</span>';
-      return 'Öl würde helfen – in einer alten Speisekammer findet sich so etwas. Oder du versuchst es mit Werkzeug oder roher Kraft („reiß am riegel“). Und nachts … bewegt sich in diesem Haus manches leichter.';
+      return (api.kennt('oelkanne') ? 'Das Ölkännchen aus der Speisekammer würde den Rost lösen.' : 'Öl würde helfen – sieh dich in den Wirtschaftsräumen hier unten um.') + ' Oder du versuchst es mit Werkzeug oder roher Kraft („reiß am riegel“). Und nachts … bewegt sich in diesem Haus manches leichter.';
     }
   };
   function schiebeRiegel(api) {
@@ -271,7 +271,7 @@
           2: 'Spiegelschrift liest man am besten in einem Spiegel. Hier hing einmal einer – jetzt nicht mehr.',
           3: function (api2) {
             return api2.traegt('taschenspiegel') ? 'Halt den Taschenspiegel daneben. <span class="nebenbei">(„benutze taschenspiegel mit gebetbuch“)</span>'
-              : 'Nimm das Gebetbuch mit zu einem Spiegel – dem großen im Flur, dem kleinen im Gäste-WC – oder such einen Taschenspiegel. <span class="nebenbei">(„benutze spiegel mit gebetbuch“)</span>';
+              : 'Nimm das Gebetbuch mit zu einem Spiegel – dem großen im Flur, dem kleinen im Gäste-WC' + (api2.kennt('taschenspiegel') ? ' – oder hol den Taschenspiegel' : '') + '. <span class="nebenbei">(„benutze spiegel mit gebetbuch“)</span>';
           }
         });
         return true;

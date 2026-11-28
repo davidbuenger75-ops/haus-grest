@@ -123,6 +123,7 @@ HG.spielDaten({
   ],
   wartenLangeText: 'Du wartest. Die Minuten kriechen dahin.',
   keinSchlafText: 'Hier kannst du nicht schlafen. Du bräuchtest ein Bett – und das Gefühl, sicher zu sein.',
+  paarErinnerung: 40,   // Züge nach der Andeutung, bis die Erinnerung beide Notizen beim Namen nennt
   andeutungText: 'Zwei deiner Notizen scheinen zusammenzupassen. Verbinde sie im Notizbuch – oder tippe „kombiniere … mit …“.',
   // Gruppen im Notizbuch (Ermittlungsstränge der Spielbibel, Abschnitt 5); "strang" am Hinweis wählt die Gruppe
   straenge: [

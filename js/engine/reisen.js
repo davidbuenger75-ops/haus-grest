@@ -21,8 +21,14 @@
   var R = HG.reisen = {
     hier: function () { var r = W.raum(); return r && r.schauplatz; },
 
+    /** Freigeschaltete Ziele in der Reihenfolge der Freischaltung (z.ziele[id] = laufende Nummer; true = alter Spielstand,
+     *  dann zählt die Reihenfolge der Definition). Neue Ziele kommen hinten dazu – so behält jedes Ziel seine Nummer. */
     bekannt: function () {
-      return Object.keys(HG.daten.ziele).filter(function (id) { return Z().ziele[id]; });
+      var z = Z(), alle = Object.keys(HG.daten.ziele);
+      return alle.filter(function (id) { return z.ziele[id]; }).sort(function (a, b) {
+        var na = z.ziele[a] === true ? 0 : z.ziele[a], nb = z.ziele[b] === true ? 0 : z.ziele[b];
+        return na - nb || alle.indexOf(a) - alle.indexOf(b);
+      });
     },
     /** Freigeschaltete Ziele außer dem aktuellen Schauplatz. */
     liste: function () {
@@ -40,7 +46,9 @@
 
     schalteFrei: function (id, still) {
       if (!ZD(id) || Z().ziele[id]) return false;
-      Z().ziele[id] = true;
+      var z = Z(), n = 0;
+      Object.keys(z.ziele).forEach(function (k) { if (typeof z.ziele[k] === 'number') n = Math.max(n, z.ziele[k]); else if (z.ziele[k]) n = Math.max(n, 0); });
+      z.ziele[id] = n + 1;
       if (!still) HG.ausgabe.schreibe('ziel', 'Neues Ziel: <b>' + ZD(id).name + '</b> – du kannst jetzt dorthin fahren.');
       return true;
     },
@@ -60,13 +68,15 @@
 
     /** Spielbuch-Auswahl: nummerierte Liste der Ziele. */
     auswahl: function () {
-      var liste = R.liste();
-      if (!liste.length) {
+      // Feste Nummern: alle bekannten Ziele, der aktuelle Ort grau mit „(hier)“ statt zu fehlen (Alpha-Test 27.11.2026)
+      var liste = R.bekannt(), hier = R.hier();
+      if (!R.liste().length) {
         HG.ausgabe.text(HG.wert(HG.daten.spiel.keineZieleText, HG.api) || 'Du weißt nicht, wohin du fahren solltest.');
         return;
       }
       var html = '<b>Wohin fährst du?</b><ol>';
       liste.forEach(function (id) {
+        if (id === hier) { html += '<li class="hier">' + ZD(id).name + ' <span class="oeffnung">(hier)</span></li>'; return; }
         html += '<li>' + ZD(id).name + ' <span class="oeffnung">(' + (R.istOffen(id) ? R.oeffnungsText(id) : 'jetzt geschlossen – ' + R.oeffnungsText(id)) + ', ca. ' + R.fahrzeit(id) + ' Min. Fahrt' + ')</span></li>';
       });
       html += '</ol>Tippe die Nummer oder den Namen.';

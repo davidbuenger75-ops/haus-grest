@@ -230,7 +230,7 @@
     bei: { winken: function (api) { api.sage('Du winkst zur offenen Tür hinaus.'); bewegung(api); return true; } },
     vorschlaege: function (api) {
       var v = [];
-      if (!HG.zustand.z.buecher.tagebuch) v.push('lies das tagebuch');
+      if (!(HG.zustand.z.buecher.tagebuch && HG.zustand.z.buecher.tagebuch.gelesen.length)) v.push('lies das tagebuch');
       ['karton_gerdes', 'karton_romanow', 'karton_grest', 'karton_kueche'].forEach(function (k) {
         if (!api.eig(k, 'offen')) v.push('öffne ' + HG.daten.dinge[k].kurzwort);
       });
@@ -276,7 +276,7 @@
     ort: 'lager_c214', szenerie: true, fest: 'Du lässt den Schuhkarton lieber, wo er ist – er ist schwerer, als ein Schuhkarton sein sollte.',
     behaelter: true, oeffenbar: true, offen: false,
     beschreibung: 'Ein Schuhkarton, „Größe 44, schwarz“. Er ist schwerer, als er aussieht.',
-    texte: { oeffnen: 'Du hebst den Deckel. Darin liegt etwas, eingeschlagen in ein kariertes Geschirrtuch. Du schlägst das Tuch zurück.' }
+    texte: { oeffnen: 'Du hebst den Deckel. Darin liegt etwas, eingeschlagen in ein kariertes Geschirrtuch. Du schlägst das Tuch zurück: eine Pistole.' }
   });
   HG.ding('pistole', {
     nomen: 'Pistole', genus: 'f',
@@ -290,7 +290,10 @@
     zerbrechen: 'Mit bloßen Händen? Keine Chance.',
     geladen: true,
     // Spielbibel 8.6.6: trügerische Sicherheit, solange man sie trägt
-    beimTragen: { wert: 'nerven', menge: 5, an: 'die Pistole gibt dir Sicherheit', ab: 'ohne die Pistole fühlst du dich schutzlos' },
+    // Polizist(in): kein Bonus (Alpha-Test 27.11.2026) – wer Waffen kennt, weiß, dass diese hier nichts nützt
+    beimTragen: { wert: 'nerven', menge: function (api) { return api.beruf() === 'polizei' ? 0 : 5; },
+      an: 'die Pistole gibt dir Sicherheit', ab: 'ohne die Pistole fühlst du dich schutzlos',
+      ohne: 'Du kennst das Gewicht. Es beruhigt dich nicht. Es ist nicht deine.' },
     bei: {
       entladen: function (api) {
         if (!api.eig('pistole', 'geladen')) { api.sage('Die Pistole ist schon entladen.'); return true; }
@@ -701,71 +704,126 @@
   });
 
   // ===================================================================
-  // CARSTENS TAGEBUCH
+  // CARSTENS TAGEBUCH – in Stufen (David, 27.11.2026; Spielbibel 5b)
   // ===================================================================
-  // Ab dem 14.8.2026 wird Carstens Schrift fahrig, Seiten kleben aneinander (David, 22.11.2026). Lesbar nach der
-  // ersten Nacht im Haus (Flag nacht_im_haus, js/content/allgemein.js) oder per Probe: „entziffere tagebuch“.
-  var SPAET = {
-    frei: function (api) { return !!api.flag('nacht_im_haus'); },
-    text: '<i>(Hier wird die Schrift fahrig. Die Zeilen laufen ineinander, Buchstaben kippen nach links, als hätte Carsten mit der falschen Hand geschrieben. Einige Seiten kleben aneinander, als wäre etwas darüber verschüttet worden. Du kannst kaum ein Wort entziffern.)</i>'
-  };
+  // Seiten, die noch nicht „freigegeben“ sind, sind leer und füllen sich später von selbst (buch.js: erscheint).
+  //   Stufe 0 – sofort: Kauf, Lavendel, Spiegelzimmer, Stadtarchiv, Lager gemietet, Kästchen ins Lager (14.2.2026)
+  //   Stufe 1 – nach der ersten Nacht im Haus (Flag nacht_im_haus): Gerdes-SMS, Mutters Anruf, Pistole
+  //   Stufe 2 – Keller betreten ODER Polizeiakte Häuser gelesen: Brandplan, Brandversuch (fahrig)
+  //   Stufe 3 – Polizeiakte Häuser UND Carsten im Haus begegnet (Flag carsten_begegnet: er erscheint im Gästezimmer
+  //             oder im Wandspiegel dort): Kaffee, Laken, Testament, Rasiermesser – das Wissen zum Bekehren
+  //   Stufe 4a – Carsten bekehrt: eine neue letzte Seite in seiner ruhigen Schrift (die richtige Hand)
+  //   Stufe 4b – nicht bekehrt, in der Neumondnacht oder wenn Carsten im Finale gegen dich kämpft (Flag tb_fremd):
+  //             „Er gehört mir.“ – „Du gehörst auch zu mir.“ – „Willkommen zu Hause.“ (nur Grusel)
+  var KELLER = ['kellertreppe', 'kellerflur', 'vorratskeller', 'weinkeller', 'waschkueche', 'heizungskeller', 'ritualraum'];
+  function stufe(api) {
+    var z = HG.zustand.z, h = function (id) { return api.hatHinweis(id); };
+    if (h('tb_wandlung') || (h('polizeiakte_haeuser') && api.flag('carsten_begegnet'))) return 3;
+    if (h('tb_brand') || h('polizeiakte_haeuser') || KELLER.some(function (r) { return z.besucht[r]; })) return 2;
+    if (h('tb_angst') || api.flag('nacht_im_haus')) return 1;
+    return 0;
+  }
+  function ab(n) { return function (api) { return stufe(api) >= n; }; }
+  function variante(api) { return api.bekehrt('carsten') ? 'a' : api.flag('tb_fremd') ? 'b' : null; }
+  function fremd(t) { return '<span style="font-family:\'Segoe Script\',cursive;font-size:1.3em">' + t + '</span>'; }
+  function nurA(api) { return variante(api) !== 'b'; }
+  function nurB(api) { return variante(api) !== 'a'; }
+  function istB(api) { return variante(api) === 'b'; }
+
   HG.ding('tagebuch', {
     nomen: 'Tagebuch', genus: 'n', adj: ['schwarz'],
     woerter: ['tagebuch', 'notizbuch', 'buch', 'heft', 'gummiband', 'eintraege'],
     ort: 'campingtisch', rel: 'auf',
-    beschreibung: 'Ein schwarzes Notizbuch mit Gummiband, eng beschrieben. Anfangs ist die Schrift sauber, am Ende fahrig. Carstens Tagebuch. <span class="nebenbei">(„lies tagebuch“, „lies eintrag 3“)</span>',
+    beschreibung: 'Ein schwarzes Notizbuch mit Gummiband. Carstens Tagebuch. Die ersten Seiten sind eng beschrieben – aber dazwischen, und nach hinten hin immer mehr, sind Seiten leer, als hätte er Platz gelassen für etwas, das er noch schreiben wollte. <span class="nebenbei">(„lies tagebuch“, „lies eintrag 3“)</span>',
     foto: 'Das Tagebuch auf dem Campingtisch. Auf dem Foto ist es aufgeschlagen, obwohl du es zugeklappt hast.',
     buch: {
       titel: 'Carstens Tagebuch',
-      entziffern: {
-        wer: ['ve', 'geschichte'], mod: -20, modGrund: 'fahrige Schrift, verklebte Seiten', grund: 'Tagebuch entziffern', dauer: 30,
-        erfolg: 'Vorsichtig löst du die verklebten Seiten voneinander. Dann setzt du Carstens Buchstaben zusammen, Zeile für Zeile, bis sie Sinn ergeben.',
-        misserfolg: 'Die Seiten reißen fast, als du sie trennen willst, und die Buchstaben verschwimmen dir vor den Augen. Nicht jetzt.',
-        tipps: {
-          2: 'Vielleicht verstehst du Carstens fahrige Schrift besser, wenn du selbst erlebt hast, was er erlebt hat. Eine Nacht in dem Haus …',
-          3: 'Nach einer Nacht im Haus wirst du diese Seiten lesen können. Oder du versuchst es später noch einmal – ausgeruht.'
-        }
-      },
       dauerProSeite: 2,
       schrift: 'hand',
+      leerText: '<i>(Diese Seite ist leer. Das Papier ist glatt und sauber, als hätte nie jemand darauf geschrieben.)</i>',
+      // Der Moment, in dem sich Seiten füllen
+      gefuellt: function (api, info) {
+        if (!info.getragen && !info.hier) return;
+        var wo = info.getragen ? 'Das Tagebuch in deiner Tasche' : 'Carstens Tagebuch';
+        api.sage(istB(api)
+          ? wo + ' ist kalt geworden. So kalt, dass du es durch den Stoff spürst. <span class="nebenbei">(„lies tagebuch“)</span>'
+          : wo + ' ist schwerer geworden. Du weißt nicht, woher du das weißt – aber es ist so. <span class="nebenbei">(Es gibt Neues zu lesen: „lies tagebuch“)</span>');
+      },
+      neuBeimOeffnen: function (api) {
+        var v = variante(api);
+        if (v === 'b') return 'Seiten, die eben noch leer waren, sind beschrieben. Nicht von Carsten. Die Schrift ist altmodisch, sehr sauber, sehr ruhig.';
+        if (v === 'a') return 'Hinten im Tagebuch ist eine Seite beschrieben, die eben noch leer war. Carstens Schrift – aber ruhig und klar, wie auf den ersten Seiten.';
+        return 'Seiten, die eben noch leer waren, sind beschrieben. Carstens Schrift. Die Tinte glänzt noch.';
+      },
       seiten: [
+        // --- Stufe 0 ---
         { titel: '3. August 2025',
           text: 'Heute den Kaufvertrag unterschrieben. Ein Jugendstilhaus in Kirchhörde für ein Drittel des Werts. Der Makler hat beim Unterschreiben nicht einmal hochgesehen. Er hat nur gesagt, die Vorbesitzerin sei „verunglückt“ und das Haus sei „etwas eigen“. Ich bin achtundfünfzig und habe zum ersten Mal ein eigenes Haus. Mutter wäre stolz.' },
         { titel: '21. August 2025',
           text: 'Jede Nacht gegen drei: Lavendel. So intensiv, als stünde jemand mit einem Flakon neben dem Bett. Ich besitze nichts mit Lavendel. Tagsüber riecht das Haus nach Staub und Bohnerwachs.' },
         { titel: '9. September 2025',
           text: 'Hinter der Tapete im ersten Stock eine Tür gefunden. Dahinter ein Zimmer voller Spiegel, an allen vier Wänden und an der Decke. Jeder Spiegel ist mit einem Bettlaken verhängt, mit Reißzwecken festgemacht. Das war sicher die Romanow. Ich habe ein Laken abgenommen. Hinter mir war nichts. Ich habe es trotzdem wieder aufgehängt.' },
-        { titel: '2. Oktober 2025',
+        // --- Stufe 1 ---
+        { titel: '2. Oktober 2025', erscheint: ab(1),
           text: 'Die Nachbarin, Frau Kolbe, hat mir erzählt, dass vor der Romanow ein Mädchen in diesem Haus gestorben ist. Die Tochter der Gerdes. Im Zimmer „mit den Spiegeln“. Ich habe Peter Gerdes angerufen. Er hat aufgelegt, sobald ich den Straßennamen sagte. Eine Stunde später kam eine SMS von seiner Nummer: „Sie wohnen jetzt bei ihr. Grüßen Sie Bettina.“<br>Ich habe zurückgerufen. Er hat geschworen, dass er nichts geschrieben hat.' },
+        // --- Stufe 0 ---
         { titel: '18. November 2025',
           text: 'Stadtarchiv. Das Haus wurde 1900 von einem Architekten namens Bernward Grest gebaut, für seine Frau Elisabeth. Er stirbt 1905, sie 1930. Dazwischen und danach: Ich habe angefangen, Todesfälle zu zählen. Ich höre bei dreizehn auf, weil ich nicht weiterzählen will.' },
-        { titel: '24. Dezember 2025', hinweis: ['tb_zweifel', 'fremde_nummern'],   // Ende Abschnitt 1
+        // --- Stufe 1 ---
+        { titel: '24. Dezember 2025', erscheint: ab(1), hinweis: 'fremde_nummern',
           text: 'Heiligabend. Um 23:40 ruft Mutter an. Mutter ist seit 2011 tot. Sie hat gesagt, ich soll nicht so viel im ersten Stock sein, das Zimmer sei „nicht für mich gemacht“. Ihre Stimme, ihr Lachen am Ende. Die Nummer im Display: meine eigene Festnetznummer.' },
-        { titel: '12. Januar 2026',
-          text: 'Hinter der Täfelung im Arbeitszimmer: ein Kästchen aus Nussbaum mit Messingbeschlägen. Kein Schloss, keine Fuge, nichts. Es ist schwerer, als es sein dürfte, und wenn man es schüttelt, klappert etwas Kleines. Bernward hat es gebaut, das sieht man. Ich bekomme es nicht auf. Ich bringe es ins Lager. Sie soll es nicht haben.' },
+        // --- Stufe 0 ---
         { titel: '11. Februar 2026',
           text: 'Ich habe den Lagerraum bei Schmidt gemietet. Alles, was ich über das Haus herausfinde, kommt hierher. Im Haus habe ich das Gefühl, dass es mitliest. Gestern Nacht lag mein Notizbuch aufgeschlagen auf dem Küchentisch, an einer Stelle, an der ich nichts geschrieben hatte. In meiner Handschrift stand dort: „Bleib.“' },
-        { titel: '3. April 2026',
+        { titel: '14. Februar 2026', hinweis: 'tb_zweifel',
+          text: 'Heute habe ich das Kästchen ins Lager gebracht. Gefunden habe ich es schon im Januar, hinter der Täfelung im Arbeitszimmer: Nussbaum, Messingbeschläge, kein Schloss, keine Fuge, nichts. Es ist schwerer, als es sein dürfte, und wenn man es schüttelt, klappert etwas Kleines. Bernward hat es gebaut, das sieht man. Ich bekomme es nicht auf. Wochenlang lag es in meiner Schreibtischschublade, und jeden Morgen lag es ein Stück weiter vorn. Hier ist es sicherer. Sie soll es nicht haben.' },
+        // --- Stufe 1 ---
+        { titel: '3. April 2026', erscheint: ab(1), hinweis: 'tb_angst',
           text: 'Jemand geht nachts die Treppe hinauf. Jede Nacht, die gleichen schweren Schritte, dann das Quietschen der Tapetentür. Ich habe mir in der Nordstadt eine Pistole besorgt, ohne Papiere, ich weiß. Gestern habe ich mit der Waffe in der Hand oben gestanden. Die Schritte sind durch mich hindurchgegangen. Die Waffe bleibt hier im Lager. Im Haus traue ich mir selbst nicht mehr, wenn ich sie bei mir habe.' },
-        { titel: '19. Juni 2026', hinweis: 'tb_angst',   // Ende Abschnitt 2
+        // --- Stufe 2 ---
+        { titel: '19. Juni 2026', erscheint: ab(2),
           text: 'Ich verstehe es nicht, und ich werde es nicht verstehen. Also muss es brennen. Drei Kanister, sechzig Liter. Das reicht für die Halle und die Treppe. Und das Zimmer.' },
-        { titel: '14. August 2026', gesperrt: SPAET, papier: 'spaet',
+        { titel: '14. August 2026', erscheint: ab(2), papier: 'spaet', hinweis: 'tb_brand',
+          nachText: '<i>Ab hier wird Carstens Schrift fahrig. Die Zeilen laufen ineinander, Buchstaben kippen nach links, als hätte er mit der falschen Hand geschrieben. Einige Seiten kleben aneinander, als wäre etwas darüber verschüttet worden.</i>',
           text: 'Ich habe es versucht. Die Kanister standen in der Halle, das Benzin war verteilt. Dann klingelte mein Handy: Peter Gerdes, weinend, er sei in der Nähe, ob er vorbeikommen dürfe. Er wolle nur noch einmal Bettinas Zimmer sehen. Ich habe gewartet, vier Stunden lang. Peter Gerdes lebt seit Januar in Portugal. Als ich die Streichhölzer nehmen wollte, waren sie nass. Alle. In einer verschlossenen Packung.<br>Ich habe den ganzen Abend den Boden geschrubbt, bis man nichts mehr gerochen hat. Dabei habe ich gesummt. Ich weiß nicht, woher ich das Lied kenne.<br>Die Kanister bringe ich morgen ins Lager. Ich will nicht, dass sie im Haus stehen. Es soll nicht denken, dass ich ihm etwas Böses will.' },
-        { titel: '2. September 2026', gesperrt: SPAET, papier: 'spaet',
+        // --- Stufe 3 ---
+        { titel: '2. September 2026', erscheint: ab(3), papier: 'spaet',
           text: 'Seit ich die Kanister weggebracht habe, ist es still. Keine Schritte mehr. Kein Lavendel um drei Uhr. Stattdessen steht morgens Kaffee auf dem Tisch. Ich trinke keinen Kaffee, aber ich habe ihn getrunken. Er schmeckte wie früher bei Mutter.<br>Ich glaube, ich habe sie die ganze Zeit falsch verstanden. Sie war nie böse. Sie war nur allein. Hundert Jahre allein in diesem Zimmer.' },
-        { titel: '19. September 2026', gesperrt: SPAET, papier: 'spaet',
+        { titel: '19. September 2026', erscheint: ab(3), papier: 'spaet',
           text: 'Ich habe die Laken von den Spiegeln genommen. Alle. Die Romanow hatte keine Ahnung. Man darf sie nicht verhängen, man muss sie ansehen, dann zeigt sie sich. Heute Nacht hat sie hinter mir gestanden, ganz nah, und mir die Hand auf die Schulter gelegt. Sie war warm.<br>Ich gehe kaum noch raus. Wozu auch.' },
-        { titel: '28. September 2026', gesperrt: SPAET, papier: 'spaet',
+        { titel: '28. September 2026', erscheint: ab(3), papier: 'spaet',
           text: 'Testament gemacht. Sie hat mich darum gebeten. Sie sagt, ein Haus braucht Familie, und wenn ich einmal „hinübergehe“, soll jemand nachkommen, der zu mir gehört.<br>Es gibt nur noch {g:einen|eine|eine(n)}. Wir haben uns einmal gesehen, auf Tante Gerdas Siebzigstem; du warst vielleicht acht. Du erinnerst dich bestimmt nicht an mich. Sie sagt, das macht nichts. Sie wird dich kennenlernen.<br>Das Lager behalte ich trotzdem. Nur für den Fall. Ich weiß nicht mehr, für welchen Fall.' },
-        { titel: '7. Oktober 2026', gesperrt: SPAET, papier: 'spaet', hinweis: 'tb_wandlung',   // Ende Abschnitt 3
+        { titel: '7. Oktober 2026', erscheint: ab(3), papier: 'spaet', hinweis: 'tb_wandlung',
           text: '<i>(Die Schrift ist kaum lesbar, als wäre sie mit links geschrieben.)</i><br>Sie mag mich jetzt. Sie will, dass ich bei ihr bleibe. Nicht nur in diesem Haus – bei IHR. Drüben.<br>Heute Morgen lag ein Geschenk auf dem Waschbecken. Ein Rasiermesser mit Perlmuttgriff, auf der Klinge eingraviert: 1906. Es ist so schön. Niemand hat es gekauft. Es ist von DRÜBEN, sie hat es mir herübergereicht.<br>Sie sagt, es tut nicht weh. Sie sagt, sie wartet im Zimmer auf mich.<br>Ich habe keine Angst mehr.' },
-        { titel: 'Letzte Seite', schrift: 'druck', papier: 'spaet',
-          // erscheint erst, wenn die Spielfigur das Haus mindestens einmal betreten hat
-          bedingung: function () { return !!HG.zustand.z.besucht.halle; },
-          text: '<i>(Danach sind die Seiten leer. Auf der allerletzten Seite steht eine einzige Zeile in sauberer, altmodischer Handschrift, die nicht Carsten gehört.)</i><br><br><span style="font-family:\'Segoe Script\',cursive;font-size:1.3em">Willkommen zu Hause.</span>',
-          beimLesen: function (api) { api.nervenProbe('1/1W6', { grund: 'Willkommen zu Hause', gewoehnung: 'willkommen' }); } }
+        // --- Stufe 4a: Carsten bekehrt ---
+        { titel: 'Letzte Seite', erscheint: function (api) { return variante(api) === 'a'; }, bedingung: nurA,
+          hinweis: 'carstens_letzte_seite',
+          text: 'Ich weiß jetzt, was ich falsch gemacht habe. Es sind zwei Hände, und sie sehen sich ähnlich. Ich habe die genommen, die mich gehalten hat. Nimm die andere – die dünne, die mit dem Abdruck vom Ring. Und dann lass los. – C.' },
+        // --- Stufe 4b: nicht bekehrt – eine fremde Hand ---
+        { titel: '…', schrift: 'druck', papier: 'spaet', erscheint: istB, bedingung: nurB,
+          text: fremd('Er gehört mir.'),
+          beimLesen: function (api) { api.nervenProbe('1/1W6', { grund: 'eine fremde Schrift in Carstens Tagebuch', gewoehnung: 'tb_fremd' }); } },
+        { titel: '… …', schrift: 'druck', papier: 'spaet', erscheint: istB, bedingung: nurB,
+          text: fremd('Du gehörst auch zu mir.') },
+        { titel: 'Die allerletzte Seite', schrift: 'druck', papier: 'spaet', erscheint: istB, bedingung: nurB,
+          text: '<i>(Auf der allerletzten Seite steht eine einzige Zeile in derselben sauberen, altmodischen Handschrift.)</i><br><br>' + fremd('Willkommen zu Hause.') }
       ]
     }
+  });
+  HG.tagebuchStufe = stufe;
+
+  // Spielstände bis Version 9: Seiten neu geordnet (Kästchen jetzt 14.2.2026 nach „Lager gemietet“, neue Enden) –
+  // gelesene Seiten umrechnen; wer den Brandversuch schon kannte, bekommt den neuen Hinweis dazu (nichts geht verloren).
+  HG.zustand.migration(9, function (z) {
+    var st = z.buecher && z.buecher.tagebuch;
+    var gib = function (id) { if (z.hinweise.indexOf(id) < 0) { z.hinweise.push(id); z.gesehen[id] = true; } };
+    if (st) {
+      var KARTE = { 6: 7, 7: 6, 15: -1 };   // alte letzte Seite („Willkommen zu Hause“) gibt es erst in Stufe 4b
+      if (st.gelesen) st.gelesen = st.gelesen.map(function (i) { return KARTE[i] !== undefined ? KARTE[i] : i; }).filter(function (i) { return i >= 0; });
+      if (KARTE[st.seite] !== undefined) st.seite = Math.max(0, KARTE[st.seite]);
+      if (st.entziffert || (st.gelesen || []).indexOf(10) >= 0) gib('tb_brand');
+    }
+    if (z.hinweise.indexOf('tb_wandlung') >= 0) gib('tb_brand');
   });
 
   // Alte Spielstände (bis Version 4): Am 22.11.2026 kamen die Einträge 2.9. und 19.9.2026 hinzu.

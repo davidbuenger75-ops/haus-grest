@@ -109,7 +109,8 @@
       }
       if (api.tageszeit() === 'abend' && api.flag('spiegel_lindenhof') !== api.tag()) {
         api.setzeFlag('spiegel_lindenhof', api.tag());
-        api.sage('In der dunkler werdenden Scheibe hinter Lotte siehst du den Raum noch einmal: die Sessel, den Fernseher, dich. Und hinter deinem Stuhl, sehr gerade, eine Frau in einem hellen Kleid, die Hand auf deiner Lehne. Du drehst dich um. Da ist nur der Puzzletisch.<br>' +
+        // Text passt zum Bild raum-aufenthaltsraum-spuk (David, Alpha-Test 27.11.2026)
+        api.sage('In der dunkler werdenden Scheibe siehst du den Raum noch einmal: die Sessel, den Fernseher, dich. Und draußen im Garten, hinter dem Glas, steht eine Frau in einem hellen Kleid und sieht herein. Nicht zu Lotte. Zu dir. Auf der Vogeltränke neben ihr sitzt eine Krähe. Du blinzelst, und da ist nur noch der Regen.<br>' +
           'Lotte hat es auch gesehen. Sie zieht die Wolldecke höher. „Die geht mit“, sagt sie. „Die geht immer mit.“');
         api.nervenProbe('0/1W3', { grund: 'Die Frau in der Scheibe' });
       }
@@ -142,7 +143,7 @@
     3: function (api) {
       var t = ['Komm vormittags wieder, zwischen 9 und 11 Uhr.'];
       if (api.hatHinweis('zwei_gesichter') || api.hatHinweis('bettinas_referat')) t.push('Oder frag sie nach etwas, das nur sie kennt – ihre Kammer unter dem Dach, ihre Mutter Martha. <span class="nebenbei">(„frage lotte nach der kammer“)</span>');
-      else t.push('Unter dem Dach von Haus Grest, in der Mädchenkammer, hat sie als Kind geschlafen. Was dort steht, würde sie wiedererkennen.');
+      else t.push(HG.zustand.z.besucht.maedchenkammer ? 'Unter dem Dach von Haus Grest, in der Mädchenkammer, hat sie als Kind geschlafen. Was dort steht, würde sie wiedererkennen.' : 'Lotte ist in Haus Grest aufgewachsen. Etwas aus ihrer Kindheit dort würde sie zurückholen.');
       t.push('Oder nimm ihre Hand und rede ruhig mit ihr. <span class="nebenbei">(„sprich mit lotte“)</span>');
       return t.join(' ');
     }

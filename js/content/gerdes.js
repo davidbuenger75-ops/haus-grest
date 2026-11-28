@@ -32,17 +32,19 @@
     beschreibung: function (api) {
       var t = 'Ein Treppenhaus aus den Siebzigern: Waschbeton, Geländer mit braunem Kunststoffhandlauf, ein Geruch nach Bohnensuppe und Reinigungsmittel. Im Erdgeschoss eine Wohnungstür mit dem Schild „Gerdes“. ';
       if (api.flag('gerdes_herein')) return t + 'Die Tür ist nur angelehnt. Brigitte hat dir offen gelassen.';
+      if (api.flag('gerdes_tuer_zu')) return t + 'Sie ist zu. Hinter dem Spion bewegt sich ein Schatten, dann nichts mehr.';
       return t + 'Sie steht einen Spalt offen, die Kette vorgelegt. Dahinter: Brigitte Gerdes.';
     },
-    kurz: function (api) { return 'Das Treppenhaus vor der Wohnung Gerdes. ' + (api.flag('gerdes_herein') ? 'Die Tür ist angelehnt.' : 'Die Tür ist einen Spalt offen, die Kette vorgelegt.'); },
+    kurz: function (api) { return 'Das Treppenhaus vor der Wohnung Gerdes. ' + (api.flag('gerdes_herein') ? 'Die Tür ist angelehnt.' : api.flag('gerdes_tuer_zu') ? 'Die Tür ist zu.' : 'Die Tür ist einen Spalt offen, die Kette vorgelegt.'); },
     riechen: 'Bohnensuppe aus dem ersten Stock, Reinigungsmittel, kalter Zigarettenrauch.',
     horchen: 'Irgendwo oben ein Fernseher. Draußen schreien Kinder beim Fußball. Hinter Brigittes Tür ist es sehr still.',
     ausgaenge: {
-      hinein: { ziel: 'gerdes_wohnung', sperre: function (api) {
-        return api.flag('gerdes_herein') ? null : 'Die Kette ist vorgelegt, und Brigitte macht keine Anstalten, sie abzunehmen. <span class="nebenbei">(„sprich mit brigitte“)</span>';
+      // Erst, wenn Brigitte einen hereinlässt, gibt es den Weg hinein (Alpha-Test: kein „geh hinein“ vor geschlossener Tür)
+      hinein: { ziel: 'gerdes_wohnung', unsichtbar: function (api) { return !api.flag('gerdes_herein'); }, sperre: function (api) {
+        return api.flag('gerdes_herein') ? null : (api.flag('gerdes_tuer_zu') ? 'Die Tür ist zu. <span class="nebenbei">(„klopfe an die tür“)</span>' : 'Die Kette ist vorgelegt, und Brigitte macht keine Anstalten, sie abzunehmen. <span class="nebenbei">(„sprich mit brigitte“)</span>');
       } }
     },
-    vorBetreten: function (api) { if (!api.flag('gerdes_herein')) api.bewege('brigitte', 'gerdes'); },
+    vorBetreten: function (api) { if (!api.flag('gerdes_herein')) { api.bewege('brigitte', 'gerdes'); api.setzeFlag('gerdes_tuer_zu', false); } },
     beimBetreten: function (api, info) {
       if (api.flag('gerdes_herein')) return;
       api.sage(info.erstesMal
@@ -51,28 +53,60 @@
     },
     vorschlaege: function (api) {
       if (api.flag('gerdes_herein')) return ['geh hinein'];
+      if (api.flag('gerdes_tuer_zu')) return api.traegt('haarspange') ? ['klopfe an die tür', 'zeige brigitte die haarspange'] : ['klopfe an die tür'];
       var v = ['sprich mit brigitte'];
       if (api.traegt('haarspange')) v.push('zeige brigitte die haarspange');
       return v;
     },
     details: [
-      { nomen: 'Wohnungstür', genus: 'f', woerter: ['tuer', 'wohnungstuer', 'kette', 'tuerkette', 'spalt', 'schild', 'klingel'],
-        text: function (api) { return api.flag('gerdes_herein') ? 'Die Tür ist angelehnt, die Kette hängt lose herunter.' : 'Eine furnierte Tür mit Spion und einem Messingschild „Gerdes“. Die Kette ist vorgelegt. Im Spalt: ein Stück Flur, ein Ärmel, ein Auge.'; } },
       { nomen: 'Briefkästen', genus: 'pl', woerter: ['briefkaesten', 'briefkasten', 'post'],
         text: 'Eine Reihe Briefkästen. Bei „Gerdes“ ist das Namensschild zweimal überklebt worden: erst „P. + B. Gerdes“, darüber nur noch „B. Gerdes“.' }
     ]
   });
 
-  // Gestaffelte Hinweise, wenn Brigitte einen nicht hereinlässt
+  // Die Wohnungstür (eigenes Ding, damit man klopfen und klingeln kann)
+  HG.ding('gerdes_tuer', {
+    nomen: 'Wohnungstür', genus: 'f', woerter: ['tuer', 'wohnungstuer', 'kette', 'tuerkette', 'spalt', 'schild', 'klingel', 'spion'],
+    ort: 'gerdes', fest: true, szenerie: true,
+    beschreibung: function (api) {
+      if (api.flag('gerdes_herein')) return 'Die Tür ist angelehnt, die Kette hängt lose herunter.';
+      if (api.flag('gerdes_tuer_zu')) return 'Eine furnierte Tür mit Spion und einem Messingschild „Gerdes“. Sie ist zu. <span class="nebenbei">(„klopfe an die tür“)</span>';
+      return 'Eine furnierte Tür mit Spion und einem Messingschild „Gerdes“. Die Kette ist vorgelegt. Im Spalt: ein Stück Flur, ein Ärmel, ein Auge.';
+    },
+    bei: {
+      klopfen: function (api) { klopfen(api); return true; },
+      druecken: function (api) { klopfen(api); return true; },
+      oeffnen: function (api) { api.sage(api.flag('gerdes_herein') ? 'Sie ist schon offen.' : 'Von außen? Mit vorgelegter Kette? Das muss Brigitte tun.'); return true; }
+    }
+  });
+  /** An die geschlossene Tür klopfen: Brigitte macht wieder einen Spalt auf – außer, sie hat heute endgültig genug. */
+  function klopfen(api) {
+    if (api.flag('gerdes_herein')) { api.sage('Die Tür ist doch offen.'); return; }
+    if (!api.flag('gerdes_tuer_zu')) { api.sage('Brigitte steht doch im Spalt und sieht dich an. <span class="nebenbei">(„sprich mit brigitte“)</span>'); return; }
+    if (api.flag('brigitte_abgewiesen') === api.tag()) {
+      api.sage('Du klopfst. Hinter der Tür bleibt es still. Heute macht Brigitte nicht mehr auf.');
+      api.fehlversuch('gerdes_tuer', TUER_TIPPS);
+      return;
+    }
+    api.setzeFlag('gerdes_tuer_zu', false);
+    api.sage('Du klopfst. Eine ganze Weile passiert nichts. Dann geht die Tür wieder einen Spalt auf, die Kette bleibt vor. „Was denn noch?“ <span class="nebenbei">(„sprich mit brigitte“)</span>');
+  }
+
+  /** Kennt die Spielfigur Bettinas Haarspange schon? (gefunden – erst dann darf ein Tipp davon reden) */
+  function kenntHaarspange(api) { return api.traegt('haarspange') || !api.eig('haarspange', 'versteckt'); }
+
+  // Gestaffelte Hinweise, wenn Brigitte einen nicht hereinlässt – sie verraten nichts, was man noch nicht gefunden hat
   var TUER_TIPPS = {
-    2: 'Brigitte hat Angst – aber nicht vor dir. Vielleicht hat das Haus auch ihr Nachrichten geschickt, wie Carsten. Oder du bringst ihr etwas mit, das Bettina gehört hat.',
+    2: function (api) {
+      return 'Brigitte hat Angst – aber nicht vor dir. Vielleicht hat das Haus auch ihr Nachrichten geschickt, wie Carsten.' +
+        (kenntHaarspange(api) ? ' Oder du bringst ihr etwas mit, das Bettina gehört hat.' : '');
+    },
     3: function (api) {
       var t = [];
       if (kenntNummern(api)) t.push('Frag sie, ob das Haus ihr auch von fremden Nummern schreibt. <span class="nebenbei">(„sprich mit brigitte“, dann die passende Antwort)</span>');
-      else t.push('In Carstens Tagebuch steht, wie das Haus mit fremden Nummern schreibt. Wer das weiß, kann Brigitte danach fragen.');
-      t.push(api.traegt('haarspange')
-        ? 'Zeig ihr Bettinas Haarspange. <span class="nebenbei">(„zeige brigitte die haarspange“)</span>'
-        : 'Bettinas Haarspange liegt noch im Haus – im Kinderzimmer, im Puppenhaus. Die würde sie erkennen.');
+      else t.push('Wer weiß, wie das Haus mit Menschen Kontakt aufnimmt, kann Brigitte danach fragen.');
+      if (api.traegt('haarspange')) t.push('Zeig ihr Bettinas Haarspange. <span class="nebenbei">(„zeige brigitte die haarspange“)</span>');
+      else if (kenntHaarspange(api)) t.push('Bettinas Haarspange würde sie erkennen. Bring sie mit.');
       t.push('Oder versuch es morgen noch einmal mit Überreden.');
       return t.join(' ');
     }
@@ -90,6 +124,7 @@
   }
   function abweisen(api, text) {
     api.sage(text + altenheimSatz(api) + ' Dann schließt sie die Tür. Die Kette klirrt.');
+    api.setzeFlag('gerdes_tuer_zu');
     api.fehlversuch('gerdes_tuer', TUER_TIPPS);
   }
 
@@ -105,6 +140,11 @@
 
   /** Das Gespräch an der Tür: Spielbuch-Auswahl. */
   function anDerTuer(api) {
+    if (api.flag('gerdes_tuer_zu')) {
+      if (api.flag('brigitte_abgewiesen') === api.tag()) { klopfen(api); return true; }
+      api.setzeFlag('gerdes_tuer_zu', false);
+      api.sage('Du klopfst, bis die Tür wieder einen Spalt aufgeht.');
+    }
     if (api.flag('brigitte_abgewiesen') === api.tag()) {
       api.sage('„Ich hab gesagt, was ich sagen kann.“ Hinter der Tür wird es still. Dann, leiser: „Gehen Sie. Bitte.“');
       api.fehlversuch('gerdes_tuer', TUER_TIPPS);
@@ -138,6 +178,7 @@
   /** Bettinas Haarspange zeigen – der Anker öffnet die Tür (und bleibt bei der Spielfigur). */
   function haarspangeZeigen(api) {
     if (!api.traegt('haarspange')) return false;
+    if (api.flag('gerdes_tuer_zu') && !api.flag('gerdes_herein')) { api.setzeFlag('gerdes_tuer_zu', false); api.sage('Du klopfst. Als die Tür einen Spalt aufgeht, bist du schneller als jedes Wort.'); }
     if (api.flag('gerdes_herein')) {
       api.sage('Brigitte streicht mit einem Finger über die Glitzersteinchen. „Behalten Sie sie“, sagt sie. „Sie gehört nicht hierher. Sie gehört zu ihr.“');
       return true;

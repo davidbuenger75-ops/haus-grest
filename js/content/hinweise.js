@@ -172,7 +172,7 @@ HG.hinweis('architekt_brinkhoff', {
 
 // [Vorschlag] Beide Brandversuche zusammen
 HG.schluss('das_haus_brennt_nicht', {
-  aus: ['hallmann_brand', 'tb_wandlung'],
+  aus: ['hallmann_brand', 'tb_brand'],
   titel: 'Das Haus lässt sich nicht verbrennen',
   text: '1974 Wolfgang Hallmann, 2026 Carsten: Zweimal wollte jemand das Haus anzünden, beide Male kamen Anrufe mit Stimmen, die es nicht geben dürfte. 1974 hat das Haus sogar selbst die Feuerwehr gerufen. Wer es anzünden will, darf es niemanden rufen lassen.'
 });

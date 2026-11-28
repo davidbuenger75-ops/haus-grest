@@ -120,8 +120,17 @@
     if (helfer) api.sage(texte[helfer]);
     else api.fehlversuch('finale_kreis', {
       1: 'Es kommt von unten. Was immer das Haus trägt, sitzt unter der Halle.',
-      2: 'Die Pflegerin schrieb von einer „Tür unter dem Haus“. Carsten hat im Keller 2,40 Meter vermisst.',
-      3: 'Hinter der Westwand im Heizungskeller liegt der alte Kohlenkeller. Dort ist der Kreis der Krähe – erst wenn er gebrochen ist, kannst du ins Spiegelzimmer. <span class="nebenbei">(Keller → Heizungskeller → Wand durchbrechen → den Kreis rückwärts brechen)</span>'
+      2: function (a) {
+        var t = [];
+        if ((HG.zustand.z.schluesse || []).indexOf('tuer_unter_dem_haus') >= 0) t.push('Die Pflegerin schrieb von einer „Tür unter dem Haus“.');
+        if (a.hatHinweis('carstens_plan')) t.push('Carsten hat im Keller 2,40 Meter vermisst.');
+        return t.length ? t.join(' ') : 'Unter dem Haus, im Keller, ist etwas, das dem Haus Kraft gibt. Such dort.';
+      },
+      3: function (a) {
+        if (HG.zustand.z.besucht.ritualraum) return 'Der Kreis der Krähe im alten Kohlenkeller – erst wenn er gebrochen ist, kannst du ins Spiegelzimmer. <span class="nebenbei">(den Kreis rückwärts brechen)</span>';
+        if (a.flag('wand_gefunden')) return 'Hinter der hohlen Westwand im Heizungskeller liegt noch ein Raum. Dort sitzt, was das Haus trägt. <span class="nebenbei">(Wand durchbrechen)</span>';
+        return 'Im Heizungskeller stimmt etwas nicht: Der Raum ist kleiner, als er sein dürfte. Miss nach oder klopf die Wände ab – dahinter sitzt, was das Haus trägt.';
+      }
     });
   }
 
@@ -137,7 +146,7 @@
         { text: 'Sie zieht dich zum Glas. Du siehst dein Spiegelbild – es hat schon aufgehört, sich zu wehren.', lp: st === 'schwach' ? '1W3' : '1W6' },
         { text: '„Bleib“, singt sie, und in ihrer Stimme sind alle, die je in diesem Haus gestorben sind. „Bleib doch. Hier tut nichts mehr weh.“', nerven: st === 'stark' ? '1/1W8' : '1/1W4' }
       ];
-      if (!api.bekehrt('carsten') && k.runde % 3 === 0) return { text: 'Hinter dir: Carsten. Er hält dich fest, sanft, fast entschuldigend. „Sie will doch nur, dass jemand bleibt“, flüstert er.', griff: true, nerven: '0/1W4' };
+      if (!api.bekehrt('carsten') && k.runde % 3 === 0) { api.setzeFlag('tb_fremd'); return { text: 'Hinter dir: Carsten. Er hält dich fest, sanft, fast entschuldigend. „Sie will doch nur, dass jemand bleibt“, flüstert er.', griff: true, nerven: '0/1W4' }; }
       return liste[(k.runde - 1) % liste.length];
     },
     griffFolge: { runden: 3, text: 'Deine Hand berührt das Glas. Es gibt nach.', endet: true },
@@ -248,6 +257,14 @@
       'Wochen später steht Haus Grest zum Verkauf. Der Makler schreibt „lichtdurchflutet“ ins Exposé. Es ist das erste Mal, dass das stimmt.');
   }
   HG.finale = { stufe: stufe, bekehrte: bekehrte, endeWillkommen: endeWillkommen };
+
+  // Carstens Tagebuch, Stufe 4b (lager-schmidt.js): Ist Carsten nicht bekehrt, füllen sich in der Neumondnacht
+  // die leeren Seiten in einer fremden Schrift – ebenso, sobald er im Finale gegen dich kämpft.
+  var stundeVorher = HG.daten.spiel.stunde;
+  HG.daten.spiel.stunde = function (api, h) {
+    if (stundeVorher) stundeVorher(api, h);
+    if ((h >= 19 || h < 6) && HG.nacht.istNeumond(nacht()) && !api.bekehrt('carsten') && !api.flag('tb_fremd')) api.setzeFlag('tb_fremd');
+  };
 
   // Um drei Uhr in einer Neumondnacht öffnet sich die Tapetentür
   var hoehepunktVorher = HG.daten.spiel.hoehepunkt;

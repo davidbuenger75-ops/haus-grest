@@ -118,10 +118,11 @@
     3: function (api) {
       var t = [];
       if (api.hatHinweis('natascha_romanow')) t.push('Sie hat unter Nataschas Artikel einen Kommentar geschrieben. Sprich sie darauf an. <span class="nebenbei">(„frage frau kolbe nach dem haus“, dann die passende Antwort)</span>');
-      else t.push('Unter dem Online-Artikel über Natascha Romanow (Lager Schmidt, Karton ROMANOW) steht ein Kommentar von „K. Kolbe“.');
+      else t.push('Vielleicht hat sie sich schon einmal über das Haus geäußert – öffentlich. Carsten hat im Lager gesammelt, was über Natascha Romanow geschrieben wurde.');
       if (api.hatHinweis('renate_vogt')) t.push('Oder erzähl ihr, was in Renate Vogts Notenheft steht.');
-      t.push(api.traegt('taschenuhr') ? 'Oder zeig ihr Hallmanns Taschenuhr. <span class="nebenbei">(„zeige frau kolbe die taschenuhr“)</span>'
-        : 'Hallmanns Taschenuhr (Dachboden) würde sie wiedererkennen.');
+      if (api.traegt('taschenuhr')) t.push('Oder zeig ihr Hallmanns Taschenuhr. <span class="nebenbei">(„zeige frau kolbe die taschenuhr“)</span>');
+      else if (api.kennt('taschenuhr')) t.push('Hallmanns Taschenuhr würde sie wiedererkennen. Bring sie mit.');
+      else t.push('Oder bring ihr etwas mit, das einem der früheren Bewohner gehört hat.');
       return t.join(' ');
     }
   };

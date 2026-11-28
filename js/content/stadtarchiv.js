@@ -79,11 +79,11 @@
     1974: { 2: 'Ein genaues Datum würde helfen. Frau Wessels kann einen Artikel selbst heraussuchen, wenn man ihr den Tag nennt.',
       3: function (api) { return api.hatHinweis('hallmann_brand')
         ? 'Der Feuerwehrbericht in der Bauakte nennt die Nacht: 4.11.1974. Frag Frau Wessels noch einmal nach Hallmann. <span class="nebenbei">(„frage frau wessels nach hallmann“)</span>'
-        : 'Das genaue Datum des Brands steht im Feuerwehrbericht – in der Bauakte im Bauamt (Frau Pohl). Oder versuch es am Lesegerät noch einmal.'; } },
+        : 'Ein genaues Datum steht vielleicht in amtlichen Unterlagen über das Haus – das Bauamt führt eine Akte. Oder versuch es am Lesegerät noch einmal.'; } },
     1963: { 2: 'Wonach suchst du eigentlich? Ein Steiger, ein Todesfall, Spiegel. Wer mehr über Brzezinski weiß, erkennt die Meldung schneller.',
       3: function (api) { return api.hatHinweis('kiste_brzezinski')
         ? 'Du weißt von der Kiste auf dem Dachboden, was geschah. Versuch es noch einmal am Lesegerät – du weißt jetzt, wonach du suchst. <span class="nebenbei">(„benutze lesegerät“)</span>'
-        : 'Auf dem Dachboden von Haus Grest steht eine Kiste BRZEZINSKI. Wer weiß, was darin steht, findet die Meldung leichter. Oder versuch es noch einmal am Lesegerät.'; } }
+        : 'Wer mehr über Brzezinski weiß, findet die Meldung leichter – vielleicht hat das Haus selbst noch etwas von seinen früheren Bewohnern aufbewahrt. Oder versuch es noch einmal am Lesegerät.'; } }
   };
 
   function suchen(api, jahr) {

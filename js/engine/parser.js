@@ -315,6 +315,25 @@
     return mitNomen ? 2 : 1;
   }
 
+  /** „gravur am kästchen“ / „gravur kästchens“: vorn das Ding, hinten das, woran/worin/worauf es ist (oder teilVon). */
+  var TRAEGER_P = { am: 1, an: 1, vom: 1, von: 1, im: 1, in: 1, auf: 1, aus: 1 };
+  function mitTraeger(g, umfeld) {
+    for (var j = 1; j < g.length; j++) {
+      var kopf = g.slice(0, j), rest = g.slice(j);
+      if (TRAEGER_P[rest[0]]) rest = rest.slice(1);
+      if (!rest.length) continue;
+      var traeger = umfeld.filter(function (id) { return passt(id, rest) === 2; });
+      if (!traeger.length) continue;
+      var k = umfeld.filter(function (id) {
+        if (traeger.indexOf(id) >= 0 || !passt(id, kopf)) return false;
+        var ort = eig(id, 'ort');
+        return traeger.indexOf(ort) >= 0 || traeger.indexOf(D(id).teilVon) >= 0;
+      });
+      if (k.length) return k;
+    }
+    return [];
+  }
+
   /** Versteckte Dinge mit passender Andeutung, deren Versteck hier zugänglich ist. */
   function angedeutetes(woerter, umfeld) {
     var an = lex().andeutung;
@@ -593,6 +612,8 @@
           var s = passt(id, g);
           if (s > besteStufe) { besteStufe = s; treffer = [id]; } else if (s && s === besteStufe) treffer.push(id);
         });
+        // „die Gravur am Kästchen“, „die Gravur des Kästchens“, „der Brief in der Schublade“: Kopf + Träger
+        if (!treffer.length) { var tt = mitTraeger(g, umfeld); if (tt.length) { treffer = tt; besteStufe = 2; } }
         // Verstecktes, auf das ein Text hindeutet ("nimm etwas Hartes"): schlägt reine Adjektiv-Treffer, nicht aber Nomen
         if (besteStufe < 2) {
           var angedeutet = angedeutetes(g, opt.universum ? umfeld.concat(HG.welt.umfeld(opt.blind)) : umfeld);
@@ -612,6 +633,12 @@
         if (treffer.length > 1 && opt.bevorzuge) {
           var besser = treffer.filter(opt.bevorzuge);
           if (besser.length) treffer = besser;
+        }
+        // Dinge im Raum vor Dingen in der Tasche (samt ihren Teilen): „lies inschrift“ am Grab meint das Grab,
+        // nicht die Gravur des Kästchens im Rucksack
+        if (treffer.length > 1 && !opt.universum) {
+          var dabei = HG.welt.inventar(), imRaum = treffer.filter(function (id) { return dabei.indexOf(id) < 0; });
+          if (imRaum.length) treffer = imRaum;
         }
         if (treffer.length > 1) {
           var gen = D(treffer[0]).genus;

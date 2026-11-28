@@ -40,7 +40,9 @@
   HG.ausgabe.schreibe = function (typ, html, extra) {
     schreibe.apply(this, arguments);
     if (this.puffer && (typ === 'wert' || typ === 'hinweis' || typ === 'andeutung' || typ === 'ziel')) return;   // kommt später über leere()
-    var t = reinerText(typeof html === 'string' ? html : (html && html.html) || '');
+    // Platzhalter wie auf dem Bildschirm ersetzen ({name}, {g:…}) – sonst stünde im Protokoll etwas anderes, als der Tester sah
+    var roh = typeof html === 'string' ? html : (html && html.html) || '';
+    var t = reinerText(typ === 'eingabe' || !HG.text ? roh : HG.text.fuelle(roh));
     if (!t && typ !== 'eingabe') return;
     eintraege.push({ z: spielzeit(), t: typ, x: typ === 'abschnitt' && extra && extra.nr ? '§' + extra.nr + ' ' + t : t });
     if (eintraege.length > MAX) eintraege.splice(0, eintraege.length - MAX);
@@ -59,14 +61,18 @@
       if (!z) return 'Kein Spiel geladen.';
       try {
         var sp = z.spieler || {};
-        zeilen.push('Figur: ' + ([sp.vorname, sp.nachname].filter(Boolean).join(' ') || '–') + (HG.charakter && HG.charakter.berufName ? ' · ' + HG.charakter.berufName() : ''));
+        zeilen.push('Figur: ' + (sp.name ? sp.name + ' (' + ({ m: 'männlich', w: 'weiblich', d: 'ohne Angabe' }[sp.geschlecht] || 'Geschlecht offen') + (sp.fertig ? '' : ', Erstellung läuft') + ')' : '–') + (HG.charakter && HG.charakter.berufName ? ' · ' + HG.charakter.berufName() : ''));
         zeilen.push('Zeit: ' + (HG.zeit.langText ? HG.zeit.langText() : spielzeit()) + ' · Nacht ' + (HG.nacht ? HG.nacht.nummer() : '?') +
           (HG.nacht && HG.nacht.bisNeumond ? ' · Neumond in ' + HG.nacht.bisNeumond() + ' Nächten' : '') + ' · Zug ' + (z.zug || 0));
         var r = HG.daten.raeume[z.raum];
         zeilen.push('Ort: ' + (r ? r.name + ' (' + z.raum + ', ' + (r.schauplatz || '–') + ')' : z.raum));
         zeilen.push('Werte: LP ' + z.werte.lp + '/' + (z.max && z.max.lp) + ' · NERVEN ' + z.werte.nerven + ' · WP ' + z.werte.wp + '/' + (z.max && z.max.wp) +
           (HG.macht ? ' · MACHT ' + Math.round(HG.macht.wert()) : ''));
-        zeilen.push('Inventar: ' + (HG.welt.inventar().map(function (id) { return id; }).join(', ') || '–'));
+        // nur, was man wirklich trägt (ohne feste Teile wie Gravur oder Schlitz des Kästchens), Inhalt von Behältern in Klammern
+        zeilen.push('Inventar: ' + (HG.welt.kinder('spieler').map(function (id) {
+          var drin = HG.welt.innenZugaenglich(id) ? HG.welt.kinder(id, 'in') : [];
+          return id + (drin.length ? ' (' + drin.join(', ') + ')' : '');
+        }).join(', ') || '–'));
         zeilen.push('Notizbuch: ' + (z.hinweise || []).length + ' Hinweise, ' + (z.schluesse || []).length + ' Schlüsse (' + (z.schluesse || []).join(', ') + ')');
         var seelen = (z.gefahren && z.gefahren.seelen) || {};
         var bekehrt = Object.keys(seelen).filter(function (k) { return seelen[k] === 'bekehrt'; });
@@ -81,7 +87,7 @@
     text: function () {
       var kopf = [
         '=== Haus Grest – Spielprotokoll ===',
-        'Kopiert: ' + new Date().toLocaleString('de-DE') + ' · Spielstand-Version ' + (HG.zustand.VERSION || '?'),
+        'Kopiert: ' + new Date().toLocaleString('de-DE') + ' · Spielversion ' + (HG.SPIELVERSION || '?') + ' · Spielstand-Version ' + (HG.zustand.VERSION || '?'),
         (typeof navigator !== 'undefined' && navigator.userAgent ? 'Browser: ' + navigator.userAgent : ''),
         '',
         '--- Spielstand ---',

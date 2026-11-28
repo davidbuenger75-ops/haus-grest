@@ -14,6 +14,10 @@
   function Z() { return HG.zustand.z; }
   function D(id) { return HG.daten.dinge[id]; }
   function hz() { var z = Z(); if (!z.handy) z.handy = { nachrichten: [], anrufe: [], fotos: [], klingelt: null }; return z.handy; }
+  /** „Auf dem Display: …“ – aber nicht doppelt, wenn der Foto-Text selbst schon so anfängt */
+  function aufDemDisplay(text) {
+    return /^\s*(<[^>]+>)*\s*Auf dem (Display|Foto)/i.test(text) ? '<i>' + text + '</i>' : '<span class="nebenbei">Auf dem Display:</span> <i>' + text + '</i>';
+  }
 
   var H = HG.handy = {
     id: function () {
@@ -166,7 +170,7 @@
         var d = D(id), extra = HG.wert(d.foto, HG.api, ctx);
         hz().fotos.push({ id: id, titel: T.gross(T.name(id, 'nom', '')), text: extra || '', zeit: HG.zeit.text(), dokument: true });
         HG.ausgabe.text('Klick. Du fotografierst ' + T.der(id, 'akk') + ' – scharf genug zum Nachlesen. <span class="nebenbei">(im Handy unter „fotos“)</span>' +
-          (extra ? ' <span class="nebenbei">Auf dem Display:</span> <i>' + extra + '</i>' : ''));
+          (extra ? ' ' + aufDemDisplay(extra) : ''));
         // Dabei liest bzw. betrachtest du es – mit allen Haken des Inhalts (Hinweise, NERVEN-Proben, Bild)
         HG.spiel.handle({ aktion: d.lesbar ? 'lesen' : 'untersuchen', obj: id, np1: [], np2: [], mehrfach: true });
         HG.spiel.zeigeFundBild(id, ctx);   // Bild des Dokuments – ein Bauplan öffnet dabei die Karte
@@ -185,7 +189,7 @@
         text = HG.wert(r.foto, HG.api) || (r.name + ', festgehalten.');
       }
       hz().fotos.push({ id: id || r.id, titel: titel, text: text, zeit: HG.zeit.text() });
-      HG.ausgabe.text('Klick. ' + (id ? 'Du fotografierst ' + T.der(id, 'akk') + '.' : 'Du machst ein Foto.') + ' <span class="nebenbei">Auf dem Display:</span> <i>' + text + '</i>');
+      HG.ausgabe.text('Klick. ' + (id ? 'Du fotografierst ' + T.der(id, 'akk') + '.' : 'Du machst ein Foto.') + ' ' + aufDemDisplay(text));
       if (id && D(id).fotoHinweis) HG.api.hinweis(D(id).fotoHinweis);
     }
   };

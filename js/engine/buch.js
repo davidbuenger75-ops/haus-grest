@@ -20,6 +20,13 @@
 // gelesen und gibt keinen Hinweis. Entziffern per Probe ("entziffere tagebuch"):
 //   buch: { entziffern: { wer: ['ve', 'geschichte'], mod: -20, dauer: 20, erfolg: 'Text', misserfolg: 'Text',
 //           tipps: { 2: …, 3: … } } }   – geprobt wird mit dem besseren der Werte; Erfolg gilt fürs ganze Buch.
+// Seiten, die sich erst später füllen (Carstens Tagebuch in Stufen, David 27.11.2026): Seite mit
+//   erscheint: function (api) { … }      – bis dahin ist sie leer (buch.leerText), ohne Titel, ohne Hinweis
+//   bedingung: function (api) { … }      – (wie bisher) ohne Bedingung fehlt die Seite ganz, auch nicht leer
+//   nachText: '…'                        – Erzähltext UNTER der Seite (z. B. „Hier wird die Schrift fahrig …“)
+// Füllen sich Seiten, ruft die Engine nach dem Zug buch.gefuellt(api, { seiten, getragen, hier, gelesen }) – der
+// Inhalt erzählt den Moment; beim nächsten Aufschlagen buch.neuBeimOeffnen(api, seiten) (Text) und es geht zur
+// ersten neuen Seite.
 // Ohne Browser-Oberfläche (Tests) erscheinen die Seiten vollständig im Textverlauf.
 (function (HG) {
   'use strict';
@@ -48,18 +55,43 @@
     },
     hatOberflaeche: function () { return !!(HG.anzeige && HG.anzeige.zeigeBuch); },
 
-    /** Ist die Seite lesbar? (nicht gesperrt, Bedingung erfüllt oder das Buch entziffert) */
+    /** Ist die Seite schon beschrieben? (Seiten mit erscheint: erst, wenn es so weit ist) */
+    erschienen: function (s) { return !s.erscheint || !!s.erscheint(HG.api); },
+    /** Titel einer Seite – leere Seiten haben keinen. */
+    titel: function (id, x) { return B.erschienen(x.s) ? x.s.titel : '(leer)'; },
+    /** Ist die Seite lesbar? (beschrieben, nicht gesperrt bzw. Bedingung erfüllt oder das Buch entziffert) */
     frei: function (id, s) {
+      if (!B.erschienen(s)) return false;
       if (!s.gesperrt) return true;
       return !!bz(id).entziffert || !!HG.wert(s.gesperrt.frei, HG.api);
     },
     /** Text einer Seite – bei gesperrten Seiten der Ersatztext. */
     text: function (id, x) {
+      if (!B.erschienen(x.s)) return HG.wert(D(id).buch.leerText, HG.api) || '<i>(Diese Seite ist leer.)</i>';
       return B.frei(id, x.s) ? HG.wert(x.s.text, HG.api)
         : HG.wert(x.s.gesperrt.text, HG.api) + ' <span class="nebenbei">(„entziffere ' + D(id).nomen.toLowerCase() + '“)</span>';
     },
     /** Gibt es noch gesperrte Seiten? */
-    hatGesperrte: function (id) { return B.seiten(id).some(function (x) { return !B.frei(id, x.s); }); },
+    hatGesperrte: function (id) { return B.seiten(id).some(function (x) { return B.erschienen(x.s) && !B.frei(id, x.s); }); },
+    /** Beschriebene Seiten (ohne leere). */
+    beschrieben: function (id) { return B.seiten(id).filter(function (x) { return B.erschienen(x.s); }); },
+
+    /** Nach jedem Zug: Haben sich Seiten gefüllt? Dann erzählt der Inhalt den Moment (buch.gefuellt). */
+    zug: function () {
+      var z = Z(); if (!z) return;
+      Object.keys(HG.daten.dinge).forEach(function (id) {
+        var b = D(id).buch;
+        if (!b || !b.seiten.some(function (s) { return s.erscheint; })) return;
+        var da = B.seiten(id).filter(function (x) { return x.s.erscheint && B.erschienen(x.s); }).map(function (x) { return x.i; });
+        if (!z.buchSeiten) z.buchSeiten = {};
+        var alt = z.buchSeiten[id] || [], neu = da.filter(function (i) { return alt.indexOf(i) < 0; });
+        z.buchSeiten[id] = da;
+        if (!neu.length) return;
+        var st = z.buecher && z.buecher[id], gelesen = !!(st && st.gelesen && st.gelesen.length);
+        if (gelesen) { st.neueSeiten = (st.neueSeiten || []).concat(neu); }
+        if (b.gefuellt) b.gefuellt(HG.api, { seiten: neu, getragen: W.getragen(id), hier: W.umfeld().indexOf(id) >= 0, gelesen: gelesen });
+      });
+    },
 
     /** Fahrige oder verklebte Seiten per Probe entziffern. */
     entziffere: function (id, ctx) {
@@ -85,14 +117,19 @@
       if (!W.hell()) { HG.ausgabe.text('Es ist zu dunkel zum Lesen.'); return; }
       Z().buchOffen = id;
       var b = D(id).buch, liste = B.seiten(id), st = bz(id);
-      // beim ersten Öffnen: erste Seite; sonst die erste ungelesene
-      var naechste = liste.filter(function (x) { return st.gelesen.indexOf(x.i) < 0; })[0];
+      // beim ersten Öffnen: erste Seite; sonst die erste ungelesene (beschriebene)
+      var naechste = liste.filter(function (x) { return B.erschienen(x.s) && st.gelesen.indexOf(x.i) < 0; })[0];
       var pos = naechste ? liste.indexOf(naechste) : 0;
-      HG.ausgabe.text('Du schlägst ' + T.der(id, 'akk') + ' auf. ' + liste.length + ' beschriebene Seiten.' +
+      var neue = (st.neueSeiten || []).slice();
+      st.neueSeiten = [];
+      if (neue.length && b.neuBeimOeffnen) HG.ausgabe.text(HG.wert(b.neuBeimOeffnen, HG.api, neue));
+      var anzahl = B.beschrieben(id).length;
+      HG.ausgabe.text('Du schlägst ' + T.der(id, 'akk') + ' auf. ' + anzahl + (anzahl === 1 ? ' beschriebene Seite' : ' beschriebene Seiten') +
+        (anzahl < liste.length ? ', ' + (liste.length - anzahl) + ' leer' : '') + '.' +
         (B.hatOberflaeche() ? '' : ' <span class="nebenbei">(„lies eintrag 1“ … „lies eintrag ' + liste.length + '“, „blättere weiter“)</span>'));
       if (!B.hatOberflaeche()) {
         HG.ausgabe.schreibe('buchinhalt', '<b>' + b.titel + '</b><ol>' + liste.map(function (x) {
-          return '<li>' + x.s.titel + (st.gelesen.indexOf(x.i) >= 0 ? ' ✓' : '') + '</li>';
+          return '<li>' + B.titel(id, x) + (st.gelesen.indexOf(x.i) >= 0 ? ' ✓' : '') + '</li>';
         }).join('') + '</ol>');
       }
       B.lies(id, pos, ctx);
@@ -105,16 +142,20 @@
       var x = liste[pos], frei = B.frei(id, x.s), neu = frei && st.gelesen.indexOf(x.i) < 0;
       st.seite = pos;
       Z().buchOffen = id;
+      var wieder = Z().buchOffen === id && st.seite === pos && st._zuletzt === pos;
       HG.medien.effekt('seite');
       if (ctx) ctx.dauer = neu ? (b.dauerProSeite === undefined ? 2 : b.dauerProSeite) : 1;
       var text = B.text(id, x);
       if (neu) st.gelesen.push(x.i); // vor der Anzeige, damit das Lesezeichen ein Häkchen bekommt
       if (B.hatOberflaeche()) {
-        HG.ausgabe.text('<span class="nebenbei">📖 ' + T.esc(b.titel) + ', Seite ' + (pos + 1) + ' von ' + liste.length + ': ' + x.s.titel + '</span>');
+        // dieselbe Seite gleich noch einmal (Doppelklick, Pfeiltaste am Ende) nicht erneut in den Verlauf schreiben
+        if (!wieder) HG.ausgabe.text('<span class="nebenbei">📖 ' + T.esc(b.titel) + ', Seite ' + (pos + 1) + ' von ' + liste.length + ': ' + B.titel(id, x) + '</span>');
         HG.anzeige.zeigeBuch(id);
       } else {
-        HG.ausgabe.schreibe('schrift', '<b>' + x.s.titel + '</b><br>' + text, { stil: x.s.schrift || b.schrift || 'hand' });
+        HG.ausgabe.schreibe('schrift', (B.erschienen(x.s) ? '<b>' + x.s.titel + '</b><br>' : '') + text, { stil: x.s.schrift || b.schrift || 'hand' });
       }
+      st._zuletzt = pos;
+      if (x.s.nachText && frei && !wieder) HG.ausgabe.text(HG.wert(x.s.nachText, HG.api));
       if (neu) {
         if (x.s.hinweis) [].concat(x.s.hinweis).forEach(function (h) { HG.api.hinweis(h); });
         if (x.s.beimLesen) x.s.beimLesen(HG.api);
@@ -135,7 +176,7 @@
       else if (typeof ziel === 'object') {
         // "lies den eintrag vom 7. oktober"
         pos = -1;
-        liste.forEach(function (x, i) { if (pos < 0 && T.norm(x.s.titel).indexOf(ziel.tag + '. ' + ziel.monat) === 0) pos = i; });
+        liste.forEach(function (x, i) { if (pos < 0 && B.erschienen(x.s) && T.norm(x.s.titel).indexOf(ziel.tag + '. ' + ziel.monat) === 0) pos = i; });
         if (pos < 0) { HG.ausgabe.text('Einen Eintrag von diesem Tag findest du nicht.'); return; }
       }
       else pos = parseInt(ziel, 10) - 1;

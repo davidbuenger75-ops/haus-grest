@@ -112,7 +112,13 @@
     ding: { nomen: 'Mann', genus: 'm', woerter: ['carsten', 'haeuser', 'mann', 'gestalt', 'cousin', 'vetter'], beschreibung: 'Carsten. Er sieht aus wie auf dem Foto im Lager, nur blasser, und er lächelt, als hätte er dich erwartet.' },
     erscheint: { orte: ['gaestezimmer'], phasen: ['daemmerung', 'tief'], chance: 0.2, zuege: 3,
       text: 'Auf der Bettkante sitzt Carsten. Er hat zwei Tassen in den Händen und hält dir eine hin. „Du bist ja doch gekommen“, sagt er. „Sie hat gesagt, du kommst.“',
-      weg: 'Die Bettkante ist leer. Auf dem Nachttisch stehen zwei Tassen.' }
+      weg: 'Die Bettkante ist leer. Auf dem Nachttisch stehen zwei Tassen.' },
+    // Begegnung zählt für Carstens Tagebuch, Stufe 3 (lager-schmidt.js)
+    beimErscheinen: function (api) { api.setzeFlag('carsten_begegnet'); },
+    zuWenig: function (api) {
+      return 'Du willst ihm etwas sagen, aber was weißt du schon von seinen letzten Wochen? ' +
+        (api.hatHinweis('polizeiakte_haeuser') ? 'Vielleicht steht es inzwischen in seinem Tagebuch.' : 'Wie er gestorben ist, steht in den Akten der Polizei.');
+    }
   });
 
   // =====================================================================

@@ -68,19 +68,27 @@ HG.hinweis('taschenspiegel', {
   stichworte: ['taschenspiegel']
 });
 
-// --- Carstens Tagebuch: vier zusammenfassende Hinweise (die Einträge selbst bleiben im Tagebuch nachlesbar) ---
-HG.hinweis('tb_zweifel', { titel: 'Tagebuch: Carstens erste Monate (Aug.–Dez. 2025)', strang: 'E',
-  text: 'Carsten kaufte das Haus 2025 für ein Drittel des Werts. Jede Nacht gegen drei roch es nach Lavendel. Hinter der Tapete im ersten Stock fand er eine Tür zu einem Zimmer voller verhängter Spiegel. Im Stadtarchiv zählte er die Todesfälle im Haus – und hörte bei dreizehn auf.',
-  stichworte: ['zweifel', 'lavendel', 'tapetentuer', 'dreizehn'] });
+// --- Carstens Tagebuch: zusammenfassende Hinweise je Stufe (lager-schmidt.js; die Einträge bleiben im Tagebuch nachlesbar) ---
+HG.hinweis('tb_zweifel', { titel: 'Tagebuch: Carstens erste Monate (Aug. 2025 – Feb. 2026)', strang: 'E',
+  text: 'Carsten kaufte das Haus 2025 für ein Drittel des Werts. Jede Nacht gegen drei roch es nach Lavendel. Hinter der Tapete im ersten Stock fand er eine Tür zu einem Zimmer voller verhängter Spiegel. Im Stadtarchiv zählte er die Todesfälle im Haus – und hörte bei dreizehn auf. Weil das Haus „mitliest“ („Bleib.“), mietete er das Lager und brachte Bernwards Kästchen dorthin: „Sie soll es nicht haben.“',
+  stichworte: ['zweifel', 'lavendel', 'tapetentuer', 'dreizehn', 'bleib', 'kaestchen'] });
 HG.hinweis('fremde_nummern', { titel: 'Das Haus benutzt fremde Nummern', strang: 'E',
   text: 'Carsten bekam eine SMS „von Peter Gerdes“ („Grüßen Sie Bettina“), die Peter nie geschrieben hat. An Heiligabend rief seine Mutter an, seit 2011 tot – von Carstens eigener Festnetznummer. Das Haus schreibt und ruft mit fremden Nummern und Stimmen an.',
   stichworte: ['nummern', 'sms', 'peter', 'mutter'] });
-HG.hinweis('tb_angst', { titel: 'Tagebuch: Angst (Jan.–Juni 2026)', strang: 'E',
-  text: 'Carsten fand hinter der Täfelung im Arbeitszimmer Bernwards Kästchen und brachte es ins Lager: „Sie soll es nicht haben.“ In seinem Notizbuch stand in seiner Schrift „Bleib.“ Nachts gingen Schritte durch ihn hindurch; er kaufte eine Pistole. Im Juni beschloss er: Das Haus muss brennen.',
-  stichworte: ['angst', 'bleib', 'pistole', 'brennen'] });
-HG.hinweis('tb_wandlung', { titel: 'Tagebuch: Carsten verliebt sich (Aug.–Okt. 2026)', strang: 'E',
-  text: 'Der Brand scheiterte: ein falscher Anruf „von Peter Gerdes“, nasse Streichhölzer in einer verschlossenen Packung. Danach wollte Carsten es selbst nicht mehr. Es wurde still, „sie“ belohnte ihn – Kaffee, eine warme Hand auf der Schulter. Er nahm die Laken von den Spiegeln, machte auf ihren Wunsch sein Testament („Sie wird dich kennenlernen“) und schrieb zuletzt, mit links: Sie habe ihm ein Rasiermesser von drüben gereicht. „Ich habe keine Angst mehr.“',
-  stichworte: ['wandlung', 'verliebt', 'testament', 'drueben', 'verbrennen'] });
+HG.hinweis('tb_angst', { titel: 'Tagebuch: Angst (Okt. 2025 – Apr. 2026)', strang: 'E',
+  text: 'Erst falsche Nachrichten und Anrufe, dann jede Nacht Schritte die Treppe hinauf bis zur Tapetentür – Schritte, die durch Carsten hindurchgingen. Er kaufte ohne Papiere eine Pistole und ließ sie im Lager, weil er sich im Haus selbst nicht mehr traute.',
+  stichworte: ['angst', 'schritte', 'pistole'] });
+HG.hinweis('tb_brand', { titel: 'Tagebuch: Carsten wollte das Haus anzünden (Juni–Aug. 2026)', strang: 'E',
+  text: 'Im Juni beschloss Carsten: Das Haus muss brennen – drei Kanister, sechzig Liter. Im August war das Benzin schon verteilt, da rief „Peter Gerdes“ an, weinend, und Carsten wartete vier Stunden. Peter lebt in Portugal. Danach waren die Streichhölzer nass, in einer verschlossenen Packung. Carsten schrubbte den Boden, summte ein Lied, das er nicht kannte, und brachte die Kanister ins Lager.',
+  stichworte: ['brand', 'benzin', 'kanister', 'streichhoelzer', 'verbrennen'] });
+HG.hinweis('tb_wandlung', { titel: 'Tagebuch: Carsten verliebt sich (Sept.–Okt. 2026)', strang: 'E',
+  text: 'Nach dem gescheiterten Brand wurde es still, und „sie“ belohnte ihn – Kaffee am Morgen, eine warme Hand auf der Schulter. Er nahm die Laken von den Spiegeln und machte auf IHREN Wunsch sein Testament: Ein Haus brauche Familie, jemand solle nachkommen, der zu ihm gehört („Sie wird dich kennenlernen“). Zuletzt schrieb er, mit links: Sie habe ihm ein Rasiermesser von drüben gereicht. „Ich habe keine Angst mehr.“',
+  stichworte: ['wandlung', 'verliebt', 'testament', 'drueben', 'familie'] });
+HG.hinweis('carstens_letzte_seite', { titel: 'Carstens letzte Seite', strang: 'E',
+  text: 'Nachdem Carsten frei war, stand hinten in seinem Tagebuch eine neue Seite, ruhig geschrieben: „Es sind zwei Hände, und sie sehen sich ähnlich. Ich habe die genommen, die mich gehalten hat. Nimm die andere – die dünne, die mit dem Abdruck vom Ring. Und dann lass los.“',
+  stichworte: ['haende', 'hand', 'ring', 'abdruck', 'loslassen'] });
+// Carstens letzte Seite ist eine weitere Quelle für „Der Ring ist der Anker“ (hinweise.js)
+HG.daten.schluesse.ring_ist_anker.aus.push('carstens_letzte_seite');
 
 // --- Schlussfolgerungen ----------------------------------------------
 HG.schluss('das_haus_ruft_an', {

@@ -56,6 +56,7 @@
 //     erscheint: { orte, phasen, chance, text, zuege: 3 },
 //     macht: 15,                            // so viel MACHT verliert das Haus beim Bekehren
 //     bekehrt: function (api) {}            // Text/Wirkung nach dem Bekehren
+//     beimErscheinen: function (api) {}     // jedes Mal, wenn sie erscheint (z. B. Flag „begegnet“)
 //   });
 //   "nenne sie beim namen" (bei einer Gefahr/Manifestation eines Dieners) → Auswahl: Name, dann Wahrheit,
 //   dann Willenskraft-Probe (WP × 5 % + 20) → für diese Nacht gebannt.
@@ -300,6 +301,7 @@
       if (HG.daten.dinge['seele_' + id]) HG.zustand.setze('seele_' + id, 'ort', Z().raum);
       HG.ausgabe.schreibe('spuk', wert(e.text) || (se.name + ' ist hier.'));
       if (e.sound) HG.medien.effekt(e.sound);
+      if (se.beimErscheinen) se.beimErscheinen(A());
     },
     verschwinde: function () {
       var s = st(); if (!s.da) return;

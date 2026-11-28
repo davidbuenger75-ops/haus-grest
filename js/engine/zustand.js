@@ -4,12 +4,13 @@
 (function (HG) {
   'use strict';
 
-  var VERSION = 9; // 2: Tageszeit, Reiseziele, Handy, Spuk · 3: Spielfigur, Uhrzeit, NERVEN in Prozent, Bücher · 4: MACHT des Hauses
+  var VERSION = 10; // 2: Tageszeit, Reiseziele, Handy, Spuk · 3: Spielfigur, Uhrzeit, NERVEN in Prozent, Bücher · 4: MACHT des Hauses
                    // 5: angesehene Hinweise (gesehen), erledigte Handlungen an Dingen (getan)
                    // 6: Regelsystem nach Delta Green: Eigenschaften, Fertigkeiten, Beruf, LP, WP, Wunden
                    // 7: Tagebuch mit zusammenfassenden Hinweisen und gesperrten Seiten (nur Inhalts-Migration)
                    // 8: Werte-Bonus getragener Dinge (tragBonus, z. B. Pistole +5 NERVEN)
                    // 9: Gefahren, Kämpfe, Seelen (gefahren, kampf)
+                   // 10: Bücher mit Seiten, die sich später füllen (buchSeiten; Carstens Tagebuch in Stufen)
 
   // Ältere Spielstände an das aktuelle Format anpassen: MIGRATION[v] macht aus Version v die Version v+1.
   var MIGRATION = {
@@ -30,7 +31,8 @@
     },
     6: function () { /* Inhalte passen sich per HG.zustand.migration(6, …) an */ },
     7: function (z) { z.tragBonus = {}; },
-    8: function (z) { z.gefahren = { nacht: {}, gebannt: {}, seelen: {}, wanderer: null, da: null, aktiv: null }; z.kampf = null; }
+    8: function (z) { z.gefahren = { nacht: {}, gebannt: {}, seelen: {}, wanderer: null, da: null, aktiv: null }; z.kampf = null; },
+    9: function (z) { z.buchSeiten = {}; /* Inhalte ordnen ihre Seiten per HG.zustand.migration(9, …) um */ }
   };
   // Inhalte können eigene Schritte anhängen, z. B. wenn sich Buchseiten verschoben haben:
   // HG.zustand.migration(4, function (z) { ... })  läuft beim Laden nach MIGRATION[4].
@@ -83,7 +85,7 @@
         spuk: { zaehl: {}, letzter: -99 },
         macht: HG.macht ? HG.macht.start() : 100   // unsichtbare Kraftreserve des Hauses (Spielbibel 8.3)
       };
-      (sp.startZiele || []).forEach(function (id) { z.ziele[id] = true; });
+      (sp.startZiele || []).forEach(function (id, i) { z.ziele[id] = i + 1; });   // Nummer = Reihenfolge der Freischaltung (reisen.js)
       Object.keys(w).forEach(function (k) {
         z.werte[k] = HG.wuerfel(w[k]);
         z.max[k] = mx[k] || z.werte[k];

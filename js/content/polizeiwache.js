@@ -198,10 +198,13 @@
     return true;
   }
   var TIPPS = {
-    2: 'Frau Jansen ist keine, die man überrumpelt. Aber sie merkt sich, wer ehrlich zu ihr ist – vielleicht hast du etwas bei dir, das du ihr besser freiwillig gibst. Und hinten, im Besprechungsraum, hat sie ihren Bildschirm offen gelassen.',
+    2: function (api) {
+      return 'Frau Jansen ist keine, die man überrumpelt. Aber sie merkt sich, wer ehrlich zu ihr ist' +
+        (api.traegt('pistole') ? ' – vielleicht hast du etwas bei dir, das du ihr besser freiwillig gibst' : '') + '. Und hinten, im Besprechungsraum, hat sie ihren Bildschirm offen gelassen.';
+    },
     3: function (api) {
       return (api.traegt('pistole') ? 'Gib ihr Carstens Pistole. <span class="nebenbei">(„gib pistole an jansen“)</span> Danach zeigt sie dir die Akte. ' : '') +
-        'Morgen kannst du es noch einmal versuchen – mit dem Aktenzeichen aus dem Karton ROMANOW fällt es leichter. Den Vorgang Häuser kannst du auch auf ihrem Bildschirm lesen, solange sie den Karton holt. <span class="nebenbei">(„lies bildschirm“)</span>';
+        'Morgen kannst du es noch einmal versuchen' + (api.hatHinweis('aktenzeichen_romanow') ? ' – mit dem Aktenzeichen aus dem Freigabe-Bescheid fällt es leichter' : ' – mit einem amtlichen Schreiben, das die Akte betrifft, fällt es leichter') + '. Den Vorgang Häuser kannst du auch auf ihrem Bildschirm lesen, solange sie den Karton holt. <span class="nebenbei">(„lies bildschirm“)</span>';
     }
   };
   function zeigeAkte(api, schonGezeigt) {
@@ -219,19 +222,30 @@
     ort: null, person: true, szenerie: true,
     beschreibung: 'Polizeioberkommissarin Anke Jansen, Mitte vierzig, kurze graue Haare, Lesebrille an einer Kette. Sie hat die Art, dich anzusehen, als würde sie sich jedes Wort merken. Wahrscheinlich tut sie das.',
     gespraech: function (api) {
-      return '„Jansen.“ Sie schiebt die Brille hoch. „Ich hab die Fälle im Ulmenweg bearbeitet. Beide.“ Eine Pause. „Was wollen Sie wissen?“ <span class="nebenbei">(„frage jansen nach carstens sachen“, „… nach der akte“, „… nach romanow“)</span>';
+      if (!api.flag('nachlass_erhalten'))
+        return '„Jansen.“ Sie schiebt die Brille hoch. „Ich hab die Fälle im Ulmenweg bearbeitet. Beide.“ Eine Pause. „Was wollen Sie wissen?“ <span class="nebenbei">(„frage jansen nach carstens sachen“, „… nach der akte“, „… nach romanow“)</span>';
+      // Nach der Übergabe des Nachlasses: neuer Einstieg mit den Themen, die noch offen sind (Alpha-Test 27.11.2026)
+      var offen = [];
+      if (!api.flag('akte_gezeigt')) offen.push('„… nach der akte“');
+      if (!api.flag('jansen_carsten')) offen.push('„… nach carsten“');
+      if (!api.flag('jansen_keller')) offen.push('„… nach dem kellerschlüssel“');
+      if (!api.flag('jansen_rasiermesser')) offen.push('„… nach dem rasiermesser“');
+      return '„Haben Sie alles?“ Sie nickt zu dem Karton, ohne ihn anzusehen. „Noch Fragen?“' +
+        (offen.length ? ' <span class="nebenbei">(„frage jansen nach …“: ' + offen.join(', ').replace(/„… nach /g, '„') + ')</span>' : ' Sie wartet einen Moment. „Dann passen Sie auf sich auf. In dem Haus.“');
     },
     themen: {
       'nachlass,sachen,effekten,gegenstaende,persoenliche,karton,abholen,erbe,schluessel,carstens': nachlass,
       'akte,akten,ermittlung,ermittlungen,ermittlungsakte,aktenzeichen,vorgang,bericht,romanow,natascha': akte,
       'carsten,haeuser,tod,selbstmord,suizid,spiegelzimmer': function (api) {
         if (!api.flag('nachlass_erhalten')) return '„Herr Häuser.“ Sie nimmt die Brille ab. „Ich war selbst da, in dem Zimmer mit den Spiegeln. Mehr sag ich dazu nicht, nicht am Tresen.“ Sie sieht dich an. „Seine Sachen liegen übrigens noch bei uns. Die müssten Sie abholen.“';
+        api.setzeFlag('jansen_carsten');
         return '„Ich war selbst in dem Zimmer.“ Sie schweigt einen Moment. „Ich hab in zweiundzwanzig Jahren viel gesehen. Aber ich hab danach drei Wochen lang den Badezimmerspiegel zugehängt.“';
       },
       'brenner,anruf,hauptkommissar': function (api) {
         return '„Brenner?“ Sie schüttelt den Kopf. „Gibt’s hier nicht. Wenn Sie so einen Anruf kriegen: auflegen und die 110 wählen. Oder herkommen.“ Sie zögert. „Herr Häuser hat damals auch gesagt, wir hätten ihn angerufen. Hatten wir nicht.“';
       },
       'rasiermesser,messer,1906': function (api) {
+        if (api.flag('nachlass_erhalten')) api.setzeFlag('jansen_rasiermesser');
         return api.flag('nachlass_erhalten')
           ? '„Steht im Protokoll. Asservat sieben.“ Ihre Stimme ist sehr ruhig. „Das Siegel war heil. Der Beutel war leer. Ich hab das dreimal nachgezählt, und mein Chef auch.“'
           : '„Darüber rede ich nicht am Tresen.“';
@@ -242,6 +256,7 @@
       },
       'haus,ulmenweg,grest,villa,kolbe,nachbarin': '„Ulmenweg zwölf.“ Sie sagt es, wie andere Leute „Autobahnkreuz“ sagen: eine Stelle, an der es immer wieder kracht. „Die Nachbarin, Frau Kolbe, ruft öfter an. Licht im Haus, wenn keiner drin ist. Wir fahren hin, und da ist nie jemand.“',
       'kellerschluessel,keller,kette,vorhaengeschloss': function (api) {
+        if (api.flag('nachlass_erhalten')) api.setzeFlag('jansen_keller');
         return api.flag('nachlass_erhalten') ? '„Den kleinen Schlüssel? Der war an seinem Bund. Den hatte er in der Hand, als wir ihn gefunden haben. Fest in der Hand.“' : '„Was am Schlüsselbund ist, sehen Sie dann ja.“';
       }
     },

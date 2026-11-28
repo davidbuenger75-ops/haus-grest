@@ -316,7 +316,7 @@
       var e = api.probe('wahrnehmung', { grund: 'von Hand messen' });
       if (!e.erfolg) {
         api.sage('Du klappst den Zollstock auf und zu, Meter für Meter an der Wand entlang, über den Öltank hinweg. Irgendwo verzählst du dich: einmal 10,40, einmal 10,80. Du müsstest noch einmal von vorn anfangen.');
-        api.fehlversuch('wand_messen', { 2: 'Mit einem Laser ginge es schneller – Carsten hatte einen. Oder du versuchst es noch einmal mit dem Zollstock.', 3: 'Du kannst die Stelle auch finden, indem du an die Wände klopfst. <span class="nebenbei">(„klopfe an die westwand“)</span>' });
+        api.fehlversuch('wand_messen', { 2: function (a) { return (a.kennt('laser') ? 'Mit Carstens Laser ginge es schneller.' : 'Mit einem elektronischen Messgerät ginge es schneller.') + ' Oder du versuchst es noch einmal mit dem Zollstock.'; }, 3: 'Du kannst die Stelle auch finden, indem du an die Wände klopfst. <span class="nebenbei">(„klopfe an die westwand“)</span>' });
         return true;
       }
       ergebnis = 'Du klappst den Zollstock auf und zu, Meter für Meter, über den Öltank hinweg, bis an die Westwand. Zweimal, um sicher zu sein: <b>10,60 m</b>.';
@@ -425,7 +425,7 @@
       if (api.zaehle('wand_blind') < 2) {
         api.sage('Du weißt nicht, wo. Bruchstein, Putz, Ziegel – die Wände sehen alle gleich aus. Du suchst dir eine Stelle an der Nordwand aus und holst aus. Der Hammer prallt vom Bruchstein ab, der Stiel schlägt dir gegen den Oberschenkel.');
         api.verletze('1', { grund: 'Rückschlag' });
-        api.fehlversuch('wand_blind', { 2: 'Carsten hat hier unten etwas vermisst – 2,40 Meter. Vielleicht lohnt es sich nachzumessen, bevor du die Wände einreißt.', 3: 'Miss den Raum nach (Laser oder Zollstock) oder klopfe die Wände ab. <span class="nebenbei">(„miss raum“, „klopfe an westwand“)</span>' });
+        api.fehlversuch('wand_blind', { 2: function (a) { return a.hatHinweis('carstens_plan') ? 'Carsten hat hier unten etwas vermisst – 2,40 Meter. Vielleicht lohnt es sich nachzumessen, bevor du die Wände einreißt.' : 'Blind draufzuschlagen bringt nichts. Vielleicht lohnt es sich nachzumessen, bevor du die Wände einreißt.'; }, 3: 'Miss den Raum nach (Laser oder Zollstock) oder klopfe die Wände ab. <span class="nebenbei">(„miss raum“, „klopfe an westwand“)</span>' });
       } else {
         gefunden(api, 'Diesmal versuchst du es an der Westwand, der mit dem frischen Putz. Er platzt in einer Platte ab – und darunter klingt es hohl. Nicht Bruchstein. Ziegel, und dahinter Luft.');
       }
@@ -485,7 +485,7 @@
         wenn: function (api) { return !api.flag('wand_gefunden') && !durch(api); },
         erfolg: function (api) { gefunden(api, 'Du klopfst dich Wand für Wand entlang. Bruchstein, Bruchstein, Bruchstein – und dann, an der Westwand, ein anderer Klang: dumpf und hohl, wie ein Fass. Dahinter ist Luft.'); },
         misserfolg: 'Du klopfst die Wände ab, Handbreit für Handbreit. Überall klingt es gleich dumpf. Vielleicht täuschst du dich, vielleicht ist der Putz zu dick.',
-        tipps: { 2: 'Carstens Notiz: „Heizungskeller bis Wand 3,60. Fehlen: 2,40 m.“ Nachmessen wäre genauer als klopfen.', 3: 'Miss den Raum nach – mit dem Laser oder dem Zollstock von der Werkbank. <span class="nebenbei">(„miss raum“)</span>' }
+        tipps: { 2: function (a) { return a.hatHinweis('carstens_plan') ? 'Carstens Notiz: „Heizungskeller bis Wand 3,60. Fehlen: 2,40 m.“ Nachmessen wäre genauer als klopfen.' : 'Nachmessen wäre genauer als klopfen.'; }, 3: 'Miss den Raum nach – mit dem Zollstock von der Werkbank. <span class="nebenbei">(„miss raum“)</span>' }
       }
     },
     bei: {

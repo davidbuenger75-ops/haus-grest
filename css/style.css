@@ -190,6 +190,7 @@ body[data-zeit=nacht] .buehne { box-shadow: 0 10px 40px #000c, inset 0 0 110px #
 #log .anruf { border-left: 4px solid var(--tinte); border-radius: 3px; }
 #log .auswahl ol { margin: 6px 0; padding-left: 24px; }
 #log .auswahl .oeffnung, .wann { color: var(--tinte-hell); font-size: .85em; }
+#log .auswahl li.hier { color: var(--tinte-hell); opacity: .7; }
 .sms { margin: 6px 0; padding: 6px 10px; border-radius: 10px 10px 10px 2px; background: #fffaf0; border: 1px solid #2a1d1222; }
 .sms.neu { border-color: var(--blut); }
 .sms .von { font-weight: bold; }
@@ -222,6 +223,7 @@ body[data-zeit=nacht] .buehne { box-shadow: 0 10px 40px #000c, inset 0 0 110px #
 #log .schrift .rot, .buch-text .rot { color: #b00; border: 2px solid #c22; border-radius: 40% 50% 45% 55%; padding: 0 4px; }
 #buch { background: #f3ead6; color: var(--tinte); border: 1px solid var(--tinte); border-radius: 3px; width: min(640px, 94vw); padding: 0; box-shadow: 0 20px 60px #000c; }
 #buch::backdrop { background: #000b; }
+#buch .buch-unter { margin: 8px 30px 0; font-style: italic; font-size: .9em; color: #6a5a44; }
 #buch .buch-seite { padding: 22px 30px 12px; min-height: 340px; max-height: 70vh; overflow-y: auto; background: repeating-linear-gradient(#f3ead6 0 31px, #d8c9a8 31px 32px); }
 #buch .buch-seite.blaettern { animation: blaettern .45s ease-out; }
 @keyframes blaettern { from { opacity: 0; transform: perspective(900px) rotateY(-12deg); transform-origin: left; } to { opacity: 1; transform: none; } }
@@ -459,10 +461,12 @@ body[data-zeit=nacht] #grossbild-bild.art-svg svg { filter: invert(.86) sepia(.5
 .werte .wunden button { font: inherit; font-size: .9em; background: #f3ead6; color: var(--blut); border: 1px solid #7a1a1266; border-radius: 10px; padding: 0 8px; cursor: pointer; }
 .fertigkeiten { margin-top: 4px; font-size: .85em; }
 .fertigkeiten summary { cursor: pointer; font-variant: small-caps; letter-spacing: 1px; padding: 3px 0; }
-.fertigkeiten ul { list-style: none; margin: 4px 0 0; padding: 0; columns: 2; column-gap: 14px; }
-.fertigkeiten li { display: flex; justify-content: space-between; gap: 6px; break-inside: avoid; padding: 1px 0; border-bottom: 1px dotted #2a1d1222; }
+.fertigkeiten ul { list-style: none; margin: 4px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(10.5em, 1fr)); column-gap: 14px; }
+.fertigkeiten li { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; min-width: 0; padding: 1px 0; border-bottom: 1px dotted #2a1d1222; }
+.fertigkeiten li span { min-width: 0; overflow-wrap: anywhere; hyphens: auto; }
+.fertigkeiten li b { white-space: nowrap; flex-shrink: 0; }
 .fertigkeiten li.stark { font-weight: bold; }
-@media (max-width: 860px) { .fertigkeiten[open] ul, .fertigkeiten ul { columns: 1; } }
+
 
 /* ---------- Charaktererstellung ---------- */
 ol.berufe { margin: 6px 0 2px; padding-left: 1.4em; }
@@ -518,3 +522,8 @@ ol.berufe li { margin-bottom: 4px; }
 /* Ton: zwei Regler und Untertitel-Schalter */
 .ton-regler { display: grid; grid-template-columns: auto 1fr; gap: 2px 8px; align-items: center; flex: 1; }
 .ton-regler .ton-ut { grid-column: 1 / -1; font-size: .85em; }
+
+/* Notizbuch: kombinierbare Paare – gleiches Zeichen, gleiche Farbe an beiden Einträgen */
+.nb-paar { display: inline-block; margin-right: 5px; font-size: .95em; font-weight: bold; }
+.nb-paar.p0 { color: #8a1c12; } .nb-paar.p1 { color: #1f5a7a; } .nb-paar.p2 { color: #3d6b2a; } .nb-paar.p3 { color: #7a4a10; }
+.nb-paar.p4 { color: #5b2a7a; } .nb-paar.p5 { color: #0f6b63; } .nb-paar.p6 { color: #9a6b00; } .nb-paar.p7 { color: #444; }

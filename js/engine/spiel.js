@@ -110,6 +110,23 @@
     willenskraft: function (kosten, grund) { return HG.charakter.willenskraft(kosten, grund); },
     /** Geschlechtsabhängig: api.g('Cousin', 'Cousine', 'Cousin/Cousine') */
     g: function (m, w, d) { return HG.g(m, w, d); },
+    /** Kennt die Spielfigur dieses Ding schon? (getragen, untersucht/gelesen, bewegt, oder offen sichtbar in einem
+     *  besuchten Raum) – Tipps nennen nur Dinge, die man kennt (Alpha-Test 27.11.2026). */
+    kennt: function (id) {
+      var z = Z(), d = D(id);
+      if (!d) return false;
+      if (W.getragen(id) || (z.getan && z.getan[id])) return true;
+      if (eig(id, 'versteckt')) return false;
+      var ort = eig(id, 'ort'), rel = eig(id, 'rel');
+      if (ort !== d.ort) return !!ort;
+      for (var n = 0; n < 12 && ort; n++) {
+        if (HG.daten.raeume[ort]) return !!z.besucht[ort];
+        if (ort === 'spieler') return true;
+        if (rel === 'in' && !W.innenZugaenglich(ort)) return false;
+        rel = eig(ort, 'rel'); ort = eig(ort, 'ort');
+      }
+      return false;
+    },
     spieler: function () { return Z().spieler || {}; },
 
     flag: function (n) { return Z().flags[n]; },
@@ -191,14 +208,11 @@
       z.hinweise.push(id);
       HG.ausgabe.hinweis('Neu im Notizbuch: <b>' + h.titel + '</b>');
       (h.schaltetFrei || []).forEach(function (zid) { HG.reisen.schalteFrei(zid); });
-      // Gibt es jetzt eine Schlussfolgerung, deren Hinweise alle beisammen sind?
-      Object.keys(HG.daten.schluesse).forEach(function (sid) {
-        var s = HG.daten.schluesse[sid];
-        if (z.schluesse.indexOf(sid) >= 0 || z.flags['_angedeutet_' + sid]) return;
-        if (s.aus.every(function (a) { return z.hinweise.indexOf(a) >= 0; })) {
-          z.flags['_angedeutet_' + sid] = true;
-          HG.ausgabe.schreibe('andeutung', HG.daten.spiel.andeutungText || 'Zwei deiner Notizen scheinen zusammenzupassen. Verbinde sie im Notizbuch – oder tippe „kombiniere … mit …“.');
-        }
+      // Gibt es jetzt eine Schlussfolgerung, deren Hinweise beisammen sind? (Zug merken – später nennt eine Erinnerung beide)
+      S.paare().forEach(function (p) {
+        if (z.flags['_angedeutet_' + p.sid]) return;
+        z.flags['_angedeutet_' + p.sid] = z.zug || 1;
+        HG.ausgabe.schreibe('andeutung', HG.daten.spiel.andeutungText || 'Zwei deiner Notizen scheinen zusammenzupassen. Verbinde sie im Notizbuch – oder tippe „kombiniere … mit …“.');
       });
       if (HG.anzeige && HG.anzeige.blitz) HG.anzeige.blitz('notizbuch', 1);
       return true;
@@ -233,7 +247,7 @@
     anzuenden: { np1: function (id) { return (D(id).anzuendbar || D(id).schalter) && !eig(id, 'brennt'); }, np2: function (id) { return D(id).feuer; } },
     loeschen: { np1: function (id) { return !!eig(id, 'brennt'); } },
     // Nur Unmögliches aussortieren (Unlesbares) – zwischen zwei lesbaren Briefen wird wie bei jedem Verb nachgefragt
-    lesen: { np1: function (id) { return !!(D(id).lesbar || D(id).buch || D(id).lesen); } }
+    lesen: { np1: function (id) { var d = D(id); return !!(d.lesbar || d.buch || d.lesen || (d.bei && d.bei.lesen) || (d.texte && d.texte.lesen)); } }
   };
 
   var INFINITIV = {
@@ -344,7 +358,7 @@
           C.setzeEigenschaften(r.werte);
           HG.ausgabe.schreibe('auswahl', '<b>Deine Würfe</b> (4W6, die niedrigste fällt weg):<ul class="eigenschaftswuerfe">' + C.eigenschaftListe().map(function (d) {
             var x = r.einzeln[d.k];
-            return '<li><b>' + d.name + '</b>: ' + x.slice(0, 3).join(' + ') + ' <s>' + x[3] + '</s> = <b>' + r.werte[d.k] + '</b></li>';
+            return '<li><b>' + d.name + '</b>: ' + x.slice(0, 3).join(' + ') + ' <s title="fällt weg">(' + x[3] + ')</s> = <b>' + r.werte[d.k] + '</b></li>';
           }).join('') + '</ul>');
           S.frageBeruf();
           return true;
@@ -771,8 +785,11 @@
         var traegt = W.getragen(id), wert = b.wert || 'nerven', alt = z.werte[wert];
         if (alt === undefined) return;
         if (traegt && tb[id] === undefined) {
-          var plus = Math.max(0, Math.min(b.menge, (z.max[wert] || 99) - alt));
+          // menge darf eine Funktion sein (z. B. 0 für einen Beruf); bei 0 erzählt „ohne“, warum es nicht wirkt
+          var menge = +HG.wert(b.menge, api) || 0;
+          var plus = Math.max(0, Math.min(menge, (z.max[wert] || 99) - alt));
           tb[id] = plus; z.werte[wert] = alt + plus;
+          if (!menge && b.ohne) HG.ausgabe.text(HG.wert(b.ohne, api));
           if (plus) HG.ausgabe.wert('+' + plus + ' ' + WERTNAME[wert] + (b.an ? ' <span class="grund">(' + b.an + ')</span>' : '') + ' – jetzt ' + z.werte[wert], { wert: wert, delta: plus });
         } else if (!traegt && tb[id] !== undefined) {
           var minus = Math.min(tb[id], Math.max(0, alt - 1));
@@ -802,6 +819,8 @@
       if (r.jedeRunde) r.jedeRunde(api);
       if (HG.daten.spiel.jedeRunde) HG.daten.spiel.jedeRunde(api);
       HG.handy.zug();
+      if (HG.buch && HG.buch.zug) HG.buch.zug();   // Seiten, die sich gefüllt haben (Carstens Tagebuch)
+      if (!z.kampf) S.erinnerePaare();
       HG.macht.zug();        // zerbrochene Spiegel erneuern sich über Nacht
       if (!z.kampf) HG.spukwerk.zug();
       HG.gefahren.zug();
@@ -811,6 +830,31 @@
     },
 
     // =============== Notizbuch ======================================
+    /** Kombinierbare Paare: Schlussfolgerungen, die man noch nicht gezogen hat, deren Hinweise aber beisammen sind.
+     *  [{ sid, ids: [a, b] }] – die ersten zwei vorhandenen Quellen (bei „mindestens: 2“ genügen zwei). */
+    paare: function () {
+      var z = Z(), liste = [];
+      Object.keys(HG.daten.schluesse).forEach(function (sid) {
+        var s = HG.daten.schluesse[sid];
+        if (z.schluesse.indexOf(sid) >= 0) return;
+        var da = s.aus.filter(function (h) { return z.hinweise.indexOf(h) >= 0; });
+        if (da.length >= (s.mindestens || s.aus.length) && da.length >= 2) liste.push({ sid: sid, ids: da.slice(0, 2) });
+      });
+      return liste;
+    },
+    /** Nach einer Weile ohne Kombinieren nennt die Erinnerung beide Notizen beim Namen (paarErinnerung in allgemein.js). */
+    erinnerePaare: function () {
+      var z = Z(), nach = HG.daten.spiel.paarErinnerung || 40;
+      S.paare().forEach(function (p) {
+        var seit = z.flags['_angedeutet_' + p.sid];
+        if (seit === true) seit = z.flags['_angedeutet_' + p.sid] = z.zug;   // alter Spielstand
+        if (!seit || z.flags['_genannt_' + p.sid] || z.zug - seit < nach) return;
+        z.flags['_genannt_' + p.sid] = true;
+        var t = p.ids.map(function (id) { return '„' + HG.daten.hinweise[id].titel + '“'; });
+        HG.ausgabe.schreibe('andeutung', 'Du musst immer wieder an zwei deiner Notizen denken: ' + t[0] + ' und ' + t[1] + '. Sie gehören zusammen. <span class="nebenbei">(Im Notizbuch beide anhaken – oder „kombiniere … mit …“)</span>');
+      });
+    },
+
     kombiniereHinweise: function (a, b) {
       var z = Z();
       if (a === b) { HG.ausgabe.text('Das ist zweimal derselbe Hinweis.'); return; }
@@ -856,7 +900,7 @@
           break;
         case 'notizbuch': S.zeigeNotizbuch(); if (HG.anzeige && HG.anzeige.zeigeTab) HG.anzeige.zeigeTab('notizbuch'); break;
         case 'karte':
-          if (HG.anzeige && HG.anzeige.zeigeKarte) { HG.anzeige.zeigeKarte(); HG.ausgabe.system(HG.anzeige._plan ? 'Du faltest den Bauplan auseinander.' : 'Du wirfst einen Blick auf deine Skizze des Hauses.'); }
+          if (HG.anzeige && HG.anzeige.zeigeKarte) { HG.anzeige.zeigeKarte(); HG.ausgabe.system(HG.anzeige._plan ? 'Du faltest den Bauplan auseinander.' : S.skizzeText()); }
           else HG.ausgabe.system('Bekannte Räume: ' + T.liste(W.kartenDaten().raeume.map(function (r) { return r.name; })) + '.');
           break;
         case 'speichern': {
@@ -895,6 +939,13 @@
       var l = HG.zustand.plaetze().filter(function (p) { return p.platz !== 'auto'; });
       if (!l.length) return '';
       return ' Belegte Plätze: ' + l.map(function (p) { return '„' + T.esc(p.platz) + '“'; }).join(', ') + '.';
+    },
+
+    /** „karte“ ohne Bauplan: Skizze des aktuellen Schauplatzes (nicht immer „des Hauses“). */
+    skizzeText: function () {
+      var sp = W.raum() && W.raum().schauplatz, zi = sp && HG.daten.ziele[sp];
+      if (sp === 'haus') return 'Du wirfst einen Blick auf deine Skizze des Hauses.';
+      return 'Du wirfst einen Blick auf deine Skizze' + (zi && zi.name ? ': ' + T.esc(zi.name.replace(/\s*\(.*\)$/, '')) : ' der Räume, die du hier kennst') + '.';
     },
 
     zeigeInventar: function () {
@@ -1009,6 +1060,8 @@
       if (S.nehmbar(id)) add('Nehmen', 'nimm ' + k);
       if (d.dokument && !W.inHand(id)) add(HG.handy.hatFoto(id) ? 'Foto ansehen' : 'Fotografieren', HG.handy.hatFoto(id) ? 'fotos' : 'fotografiere ' + k);
       if (W.inHand(id)) add('Ablegen', 'lege ' + k + ' ab');
+      // Zwei Dinge zusammen: legt „benutze X mit “ in die Eingabe, die Ergänzung bietet alles an, was man sieht oder trägt
+      if (W.getragen(id) && !d.istHandy) a.push({ text: 'Benutzen mit …', eingabe: 'benutze ' + k + ' mit ' });
       if (d.riechen) add('Riechen', 'rieche an ' + k);
       if (d.horchen) add('Lauschen', 'lausche an ' + k);
       if (d.tasten) add('Betasten', 'taste ' + k);
@@ -1054,8 +1107,9 @@
       var offen = /\s$/.test(roh), teile = roh.trim().split(/\s+/);
       var rest = offen ? '' : teile.pop(), vorne = teile.join(' ');
       var p = T.norm(rest), getippt = T.norm(roh.trim()) + (offen ? ' ' : '');
+      var grenze = 8;
       function add(anzeige, neu) {
-        if (erg.length < 8 && T.norm(neu.trim()) !== T.norm(roh.trim()) && !erg.some(function (e) { return e.neu === neu; })) erg.push({ anzeige: anzeige, neu: neu });
+        if (erg.length < grenze && T.norm(neu.trim()) !== T.norm(roh.trim()) && !erg.some(function (e) { return e.neu === neu; })) erg.push({ anzeige: anzeige, neu: neu });
       }
       function passt(woerter) { return !p || woerter.some(function (w) { return T.norm(w).indexOf(p) === 0; }); }
 
@@ -1086,8 +1140,20 @@
         zusatz = (vorlage.v.split('…')[1] || '').trim();
         if (zusatz) zusatz = ' ' + zusatz + (vorlage.v.split('…').length > 2 ? ' ' : '');
       }
-      W.umfeld().forEach(function (id) {
+      // Alle Dinge anbieten, die man sieht oder trägt (Alpha-Test: beim Zirkel fehlte das Kästchen): Getragenes zuerst,
+      // dann der Raum; feste Teile und die allgemeine Kulisse nur, wenn man schon etwas dazu getippt hat
+      grenze = 30;
+      var vorneN = ' ' + T.norm(vorne) + ' ';
+      var dabei = W.inventar(), getragen = W.kinder('spieler');
+      var reihe = W.umfeld().slice().sort(function (a, b) {
+        var ra = getragen.indexOf(a) >= 0 ? 0 : dabei.indexOf(a) >= 0 ? 2 : 1, rb = getragen.indexOf(b) >= 0 ? 0 : dabei.indexOf(b) >= 0 ? 2 : 1;
+        return ra - rb;
+      });
+      reihe.forEach(function (id) {
         var d = D(id), k = S.kurzwort(id);
+        if (!p && (d.kulisse || (eig(id, 'rel') === 'teil' && getragen.indexOf(id) < 0))) return;
+        // das erste Objekt nicht noch einmal als zweites anbieten („benutze zirkel mit zirkel“)
+        if (/ (mit|in|auf|an) $/.test(vorneN) && vorneN.indexOf(' ' + T.norm(k) + ' ') >= 0) return;
         if (passt(k.split(' ').concat(d.woerter || [], d.nomen ? [d.nomen] : []))) add(k, vorne + ' ' + k + zusatz);
       });
       return erg;
@@ -1105,7 +1171,7 @@
       if (z.handy && z.handy.klingelt) return ['geh ran', 'ignoriere'];
       if (S.offen && S.offen.art === 'auswahl') return S.offen.optionen.map(function (o) { return String(o.text).replace(/<[^>]+>/g, ''); });
       if (z.kampf) return HG.kampf.moeglich().map(function (a) { return a.vorschlag; });
-      if (S.offen && S.offen.art === 'ziel') return S.offen.liste.map(function (id) { return 'fahre zu ' + HG.daten.ziele[id].name; });
+      if (S.offen && S.offen.art === 'ziel') return S.offen.liste.filter(function (id) { return id !== HG.reisen.hier(); }).map(function (id) { return 'fahre zu ' + HG.daten.ziele[id].name; });
       if (S.offen && S.offen.art === 'wahl') {
         return S.offen.kandidaten.map(function (id) { return T.name(id, 'akk', ''); });
       }
