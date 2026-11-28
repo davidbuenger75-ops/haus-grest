@@ -1317,6 +1317,17 @@ window.KANDIDATEN = [
     "vorlage": null
   },
   {
+    "name": "raum-lager_c214-kaestchen",
+    "titel": "Einheit C-214 – kaestchen",
+    "prompt": "Bearbeite das beigefügte Bild: Auf den Campingtisch neben das kleine schwarze Notizbuch ein kleines Kästchen aus dunklem Nussbaumholz mit Messingbeschlägen und einer runden Messingrosette auf dem Deckel stellen, etwa so groß wie eine Zigarrenkiste. Alles andere, Perspektive, Licht und Malstil exakt beibehalten. Perspektive, Bildaufbau und Malstil exakt beibehalten, sonst nichts verändern. Stil: halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",
+    "kandidaten": [
+      "raum-lager_c214-kaestchen-1.jpg",
+      "raum-lager_c214-kaestchen-2.jpg"
+    ],
+    "gewaehlt": null,
+    "vorlage": "raum-lager_c214.jpg"
+  },
+  {
     "name": "raum-lager_empfang",
     "titel": "Büro von Lager Schmidt",
     "prompt": "Enges Büro in einem Bürocontainer mit Resopaltheke, Gummibaum, Wandkalender mit einem roten Sportwagen vor einem Bergsee, Filterkaffeemaschine mit halbvoller Glaskanne auf der Warmhalteplatte, kleines Kofferradio, dahinter sitzt ein freundlicher alter Mann um die siebzig in grauer Strickjacke mit Lesebrille auf der Nase über einem Rätselheft, Kugelschreiber in der Hand, Tür zum Parkplatz mit grauem Tageslicht – halbrealistische digitale Ölmalerei, dunkle Gothic-Horror-Atmosphäre, sichtbare Pinselstriche, gedämpfte Farben, starke Licht-Schatten-Kontraste, kein Text",

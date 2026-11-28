@@ -1352,11 +1352,16 @@ const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'diens
     pruefeMenues(s, 'Aufenthaltsraum');
     s.tu('frage lotte nach der gnädigen frau');
     pruefe(Z().hinweise.includes('lotte_zwei_gesichter'), 'Lotte: zwei Gesichter');
+    pruefe(!HG.spiel.vorschlaege().includes('frage lotte nach dem ring'), 'Lotte: „frage nach dem Ring“ erst, wenn man den Ehering gefunden hat');
+    s.tu('frage lotte nach dem ring');
+    pruefe(!Z().hinweise.includes('lotte_ring'), 'Ohne Ehering erzählt Lotte nichts vom Ring');
+    HG.zustand.setze('ehering', 'ort', 'spieler');
+    pruefe(HG.spiel.vorschlaege().includes('frage lotte nach dem ring'), 'Mit Ehering: „frage lotte nach dem ring“');
     s.tu('frage lotte nach dem ring');
     pruefe(Z().hinweise.includes('lotte_ring'), 'Lotte: der Ring');
     Z().hinweise.push('elisabeths_siegel', 'elisabeths_ring');
     const sl = Object.values(HG.daten.schluesse);
-    pruefe(sl.find(x => x.id === 'zwei_elisabeths').aus.includes('lotte_zwei_gesichter') && sl.find(x => x.id === 'ring_ist_anker').aus.includes('lotte_ring'), 'Lottes Aussagen zählen für „Zwei Elisabeths“ und „Der Ring ist der Anker“');
+    pruefe(sl.find(x => x.id === 'zwei_elisabeths').aus.includes('lotte_zwei_gesichter') && sl.find(x => x.id === 'ring_wartet').aus.includes('lotte_ring'), 'Lottes Aussagen zählen für „Zwei Elisabeths“ und „Der Ring wartet“');
   }
   // Nachmittags, nie im Haus gewesen: verwirrt → Hinweise → Erste Hilfe misslingt (döst) → gelingt
   {
@@ -1370,6 +1375,7 @@ const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'diens
     s.tu('warte 30 minuten'); HG.zufall = () => 0.05;
     s.tu('sprich mit lotte'); s.tu('1');
     pruefe(Z().flags.lotte_klar === Z().zeit.tag, 'Erste Hilfe gelungen: Lotte ist wieder da');
+    HG.zustand.setze('ehering', 'ort', 'spieler');
     s.tu('frage lotte nach dem ring');
     pruefe(Z().hinweise.includes('lotte_ring'), 'Danach erzählt sie vom Ring');
   }
@@ -1548,7 +1554,7 @@ const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'diens
     pruefe(Z().flags.moos_weg && Z().hinweise.includes('grabstein_grest'), 'Kopf: Moos entfernt, Inschrift gelesen');
     Z().hinweise.push('elisabeths_ring');
     HG.spiel.kombiniereHinweise('grabstein_grest', 'elisabeths_ring');
-    pruefe(Z().schluesse.includes('ring_ist_anker'), 'Grabstein + Ring: „Der Ring ist der Anker“');
+    pruefe(Z().schluesse.includes('ring_wartet') && !Z().schluesse.includes('ring_ist_anker'), 'Grabstein + Ring: erst „Der Ring wartet“ (noch nicht „Der Ring ist der Anker“)');
   }
   {
     const s = zumFriedhof(); const Z = () => s.HG.zustand.z;
@@ -1565,7 +1571,12 @@ const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'diens
   {
     const s = zumFriedhof({ uhr: 18 }); const Z = () => s.HG.zustand.z;
     s.tu('geh nach norden');
-    pruefe(Z().flags['friedhof_abend_' + Z().zeit.tag], 'Abends: die Krähe auf der Hand ohne Ring');
+    const tk = s.bloecke.slice(-6).map(b => b.html || '').join(' ');
+    pruefe(Z().flags['friedhof_abend_' + Z().zeit.tag] && !/auf die Hand/.test(tk) && /Grabsteine weiter/.test(tk), 'Abends: die Krähe fliegt auf und landet ein paar Grabsteine weiter (nicht auf der Hand)');
+    const k1 = s.tu('schau'), k2 = s.tu('schau');
+    pruefe(/Krähe/.test(k1) && /Krähe/.test(k2) && k1 !== k2, 'Bei „schau“ sitzt die Krähe jedes Mal woanders und sieht her');
+    s.tu('geh nach süden'); const k3 = s.tu('geh nach norden');
+    pruefe(/Krähe/.test(k3), 'Bei der Rückkehr ist die Krähe noch da');
     const n = imHaus(); n.HG.reisen.schalteFrei('friedhof'); n.tu('geh nach süden'); n.HG.zustand.z.zeit.minute = 22 * 60;
     n.tu('fahre zum friedhof');
     pruefe(n.HG.zustand.z.raum !== 'friedhof', 'Nachts ist das Tor zu');
@@ -1847,7 +1858,7 @@ const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'diens
     for (let i = 1; i <= 25; i++) s.tu('lies eintrag ' + i);
     const klar = H.buch.beschrieben('tagebuch').map(x => H.wert(x.s.text, H.api)).join(' ');
     pruefe(/Nimm die andere – die dünne, die mit dem Abdruck vom Ring/.test(klar) && !/Er gehört mir/.test(klar), 'Stufe 4a: Carstens letzte Seite – die richtige Hand');
-    pruefe(Z().hinweise.includes('carstens_letzte_seite') && H.daten.schluesse.ring_ist_anker.aus.includes('carstens_letzte_seite'), 'Stufe 4a: Hinweis „Carstens letzte Seite“ (Quelle für „Der Ring ist der Anker“)');
+    pruefe(Z().hinweise.includes('carstens_letzte_seite') && H.daten.schluesse.ring_wartet.aus.includes('carstens_letzte_seite'), 'Stufe 4a: Hinweis „Carstens letzte Seite“ (Quelle für „Der Ring wartet“)');
     // Finale: kämpft Carsten gegen dich, füllen sich die Seiten ebenfalls fremd
     H.zustand.z = JSON.parse(s2);
     const k = H.daten.manifestationen ? H.daten.manifestationen.die_andere : null;
@@ -1914,6 +1925,223 @@ const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'diens
   }
   // Pistole im Schuhkarton antippbar: der Öffnen-Text nennt sie
   pruefe(/Pistole/.test(prolog().HG.daten.dinge.schuhkarton.texte.oeffnen), 'Schuhkarton: der Öffnen-Text nennt die Pistole (antippbar)');
+}
+// --- 30. Spieltest 2 (28.11.2026): alle Orte außer dem Haus ------------------------------------------------
+{
+  console.log('\n30. Spieltest 2: Fälle, Grest-Karton, Gerdes (Tür, Handy, Packung), Archiv, Lotte, Ring-Schlüsse, Fahrziele, Krähe, Tagebuch-Reihenfolge, SMS, Fotos, Protokoll');
+  // 2. Fälle: jeder Artikel stimmt (Nominativ nach „Darin liegt“, Akkusativ nach „du findest“)
+  {
+    const H = prolog().HG, T = H.text, bad = [];
+    Object.keys(H.daten.dinge).forEach(id => {
+      const d = H.daten.dinge[id]; if (!d.nomen) return;
+      if (/^(einen|keinen) /.test(T.ein(id, 'nom'))) bad.push(id + ' nom');
+      if (d.genus === 'm' && !d.eigenname && /^ein /.test(T.ein(id, 'akk'))) bad.push(id + ' akk');
+    });
+    pruefe(!bad.length, 'Alle Dinge: Nominativ/Akkusativ der Artikel stimmen' + (bad.length ? ' – ' + bad.slice(0, 5).join(', ') : ''));
+  }
+  // 3. Grest-Karton: „etwas Hartes“ schon beim Öffnen, antippbar
+  {
+    const s = imLager(); const H = s.HG;
+    s.tu('öffne grest-karton');
+    const b = s.bloecke.slice(-3).map(x => x.html || '').join(' ');
+    pruefe(/etwas Hartes/.test(b) && /data-befehle="Nehmen=nimm etwas hartes/.test(b), 'Grest-Karton: beim Öffnen „etwas Hartes“, antippbar mit „nimm etwas hartes“');
+    s.tu('nimm etwas hartes');
+    pruefe(H.welt.getragen('zirkel'), '„nimm etwas hartes“ findet den Zirkel');
+    s.tu('öffne schuhkarton');
+    pruefe(s.bloecke.slice(-2).filter(x => /Pistole/.test(x.html || '')).length === 1 && !/Darin liegen eine Pistole/.test(s.bloecke.slice(-2).map(x => x.html).join(' ')), 'Schuhkarton: Pistole einmal genannt, keine doppelte Aufzählung');
+  }
+  // 4. Schleifen nur gleichmäßiger Hintergrund, Effekte einmalig
+  {
+    const H = prolog().HG;
+    const orte = Object.keys(H.daten.klaenge).filter(n => /^ort-/.test(n) && n !== 'ort-haus-nacht');
+    const mitEreignis = orte.filter(n => !/no distinct single events/.test(H.daten.klaenge[n].prompt) && /door|footsteps|phone|knock/i.test(H.daten.klaenge[n].prompt));
+    pruefe(!mitEreignis.length, 'Hintergrund-Schleifen ohne Einzelereignisse (Türen, Schritte, Telefon)' + (mitEreignis.length ? ' – ' + mitEreignis.join(', ') : ''));
+    pruefe(/a\.loop = false/.test(fs.readFileSync(path.join(WURZEL, 'js/engine/medien.js'), 'utf8')), 'Effekte werden nie in Schleife gespielt');
+  }
+  // 5.–8. Wohnung Gerdes
+  const zuGerdes = (opt) => {
+    const s = prolog(); const H = s.HG, Z = () => H.zustand.z;
+    H.spukwerk.zug = () => {};
+    Z().zeit.minute = 10 * 60; H.reisen.schalteFrei('gerdes', true); H.spiel.betrete('gerdes');
+    if (opt && opt.vorher) opt.vorher(H, Z());
+    return s;
+  };
+  const optionen = s => (s.HG.spiel.offen && s.HG.spiel.offen.optionen || []).map(o => o.text).join(' | ');
+  {
+    const s = zuGerdes({ vorher: (H, z) => { z.hinweise.push('tote_anrufer'); } });
+    s.tu('sprich mit brigitte');
+    pruefe(!/Schreibt es Ihnen auch/.test(optionen(s)), 'Gerdes: „Schreibt es Ihnen auch?“ nicht nur nach Schmidts Erzählung');
+    s.HG.spiel.offen = null;
+    s.HG.handy.nachricht('carsten_spiegelzimmer');
+    s.tu('sprich mit brigitte');
+    pruefe(/Schreibt es Ihnen auch/.test(optionen(s)), 'Gerdes: nach einer gefälschten SMS von Carsten wird die Frage angeboten');
+  }
+  {
+    const s = zuGerdes({ vorher: (H, z) => { z.hinweise.push('lotte_zwei_gesichter'); } });
+    s.tu('sprich mit brigitte');
+    pruefe(/Lotte Wiegand/.test(optionen(s)), 'Gerdes: „Ich war bei Lotte Wiegand“ nach dem Gespräch mit Lotte');
+    s.tu('„Ich war bei Lotte Wiegand. Im Lindenhof.“');
+    pruefe(s.HG.zustand.z.raum === 'gerdes_wohnung', 'Gerdes: über Lotte hinein');
+  }
+  {
+    const s = zuGerdes({ vorher: (H) => { H.zustand.setze('haarspange', 'ort', 'spieler'); H.zustand.setze('haarspange', 'versteckt', false); } });
+    s.tu('sprich mit brigitte');
+    pruefe(/Haarspange/.test(optionen(s)), 'Gerdes: Haarspange zeigen als Antwort an der Tür');
+    s.tu('Ihr Bettinas Haarspange zeigen');
+    pruefe(s.HG.zustand.z.raum === 'gerdes_wohnung', 'Gerdes: mit der Haarspange hinein');
+    // 6. Trauerkarte ohne Carstens Anmerkungen und ohne Foto-Effekt
+    const H = s.HG;
+    const tk = [H.wert(H.daten.dinge.trauerkarte.beschreibung, H.api), H.wert(H.daten.dinge.trauerkarte.lesbar, H.api), H.daten.dinge.trauerkarte.foto].join(' ');
+    pruefe(!/Carsten|eingekreist|nachgezogen/.test(tk), 'Trauerkarte: keine Anmerkungen von Carsten, kein Foto-Effekt');
+    // 7. „Packung“ meint die Taschentücher, nicht die Streichhölzer im Gepäck
+    ['sturmstreichhoelzer', 'streichhoelzer'].forEach(id => H.zustand.setze(id, 'ort', 'spieler'));
+    const tp = s.tu('untersuche packung');
+    pruefe(/Taschentücher/.test(tp) && !H.spiel.offen, '„untersuche packung“ auf dem Sofa: die Taschentücher');
+    pruefe(!(H.spiel.wortIndex().packung || []).some(id => /streich/.test(id)), 'Antippbares „Packung“ zeigt nicht auf die Streichhölzer im Gepäck');
+    // 8. Brigittes Handy: nie das eigene Handy; Bettinas Handy in der Schublade ist nicht antippbar
+    const th = s.tu('untersuche handy');
+    pruefe(/Brigittes Handy/.test(th), '„untersuche handy“ bei Brigitte: ihr Handy, nicht deins');
+    pruefe(/Brigittes Handy/.test(s.tu('lies nachrichten auf brigittes handy')), '„lies nachrichten auf brigittes handy“ springt nicht auf dein Handy');
+    pruefe(!/Brigittes Handy/.test(s.tu('lies nachrichten')), '„lies nachrichten“ allein: dein eigenes Handy');
+    pruefe(/kein-wort">Handy/.test(s.tu('öffne schublade') && s.bloecke.slice(-1)[0].html), 'Bettinas Handy in der Schublade ist nicht antippbar');
+    pruefe(!H.daten.dinge.handy_brigitte.woerter.some(w => /brigitte/.test(w)), 'Brigittes Handy konkurriert nicht mit Brigitte selbst');
+  }
+  // 7. Allgemein: Ein Wort, das ein Ding im Raum trifft, meint nie ein gleichnamiges Ding im Gepäck
+  {
+    const s = prolog(); const H = s.HG, P = H.parser, z = H.zustand.z, fehler7 = [];
+    const nehmbar = Object.keys(H.daten.dinge).filter(id => H.spiel.nehmbar(id) && !H.daten.dinge[id].dokument);
+    Object.keys(H.daten.raeume).forEach(r => {
+      Object.keys(H.daten.dinge).forEach(a => {
+        const d = H.daten.dinge[a];
+        if (d.ort !== r || d.versteckt || d.kulisse || d.person) return;
+        (d.woerter || []).forEach(w => {
+          nehmbar.filter(b => b !== a && (H.daten.dinge[b].woerter || []).includes(w)).forEach(b => {
+            const alt = JSON.stringify(z.dinge[b] || null);
+            H.zustand.setze(b, 'ort', 'spieler'); z.raum = r;
+            const e = H.welt.hell(r) ? P.aufloesen([w], {}) : {};   // im Dunkeln sieht man nur, was man trägt
+            if (e.ids && e.ids.length === 1 && e.ids[0] === b) fehler7.push(r + ': „' + w + '“ → ' + b + ' statt ' + a);
+            z.dinge[b] = JSON.parse(alt) || undefined; if (!z.dinge[b]) delete z.dinge[b];
+          });
+        });
+      });
+    });
+    pruefe(!fehler7.length, 'Gleiche Wörter: Dinge im Raum gehen vor Dingen im Gepäck' + (fehler7.length ? ' – ' + fehler7.slice(0, 4).join('; ') : ''));
+  }
+  // 9. Archiv: alles gefunden → „Mehr hab ich zu dem Haus nicht.“
+  {
+    const s = prolog(); const H = s.HG, z = H.zustand.z;
+    z.zeit.minute = 10 * 60; H.reisen.schalteFrei('stadtarchiv', true); H.spiel.betrete('stadtarchiv');
+    pruefe(!/Mehr hab ich/.test(s.tu('sprich mit frau wessels')), 'Archiv: am Anfang hilft Frau Wessels');
+    z.flags.archiv_grest = true; z.hinweise.push('hochzeitstag', 'bauantrag_1899', 'pflegerin_vermisst', 'zeitung_1974', 'zeitung_1963');
+    pruefe(/Mehr hab ich zu dem Haus nicht/.test(s.tu('sprich mit frau wessels')), 'Archiv: alles gefunden – „Mehr hab ich zu dem Haus nicht. Wirklich nicht.“');
+    pruefe(H.reisen.erschoepft('stadtarchiv') === false, 'Fahrziel: am aktuellen Ort nie „erschöpft“');
+  }
+  // 10. Keine nackten Zahlen in den Reitern
+  {
+    const a = fs.readFileSync(path.join(WURZEL, 'js/engine/anzeige.js'), 'utf8');
+    pruefe(/rn\.textContent = 'NERVEN ' \+/.test(a) && /neu \? neu \+ ' neu'/.test(a), 'Reiter zeigen keine Zahl ohne Bedeutung (NERVEN …, „3 neu“)');
+  }
+  // 11. + 16. Lotte: Ring erst mit Ehering, Andeutung statt Lösung, danach schließt sie sich
+  {
+    const s = prolog(); const H = s.HG, z = H.zustand.z;
+    z.zeit.minute = 10 * 60; z.flags.lotte_klar = z.zeit.tag; H.reisen.schalteFrei('altenheim', true); H.spiel.betrete('altenheim_aufenthalt');
+    pruefe(!H.spiel.vorschlaege().includes('frage lotte nach dem ring') && !/der Ring/.test(s.tu('sprich mit lotte')), 'Lotte: ohne Ehering kein Angebot „Ring“');
+    H.zustand.setze('ehering', 'ort', 'spieler');
+    s.tu('frage lotte nach der gnädigen frau');
+    const tr = s.tu('frage lotte nach dem ring');
+    pruefe(/an ihren Finger gefasst/.test(tr) && /Die andere nie/.test(tr) && !/keinen Ring/.test(tr), 'Lotte: Andeutung („Die andere nie“), nicht die Lösung');
+    s.tu('warte');
+    const tz = s.tu('sprich mit lotte');
+    pruefe(/erkennt dich nicht mehr/.test(tz), 'Lotte: alles erzählt – sie erkennt dich nicht mehr');
+    pruefe(/erkennt dich nicht mehr/.test(s.tu('frage lotte nach der schwester')) && H.spiel.vorschlaege().join() === 'geh nach süden', 'Lotte bleibt verschlossen, keine Gesprächsvorschläge');
+    pruefe(H.reisen.erschoepft('altenheim') === false, 'Altenheim: solange man dort ist, nicht „erschöpft“');
+  }
+  // 12. Ehering im Kästchen: „Nehmen“ im Menü
+  {
+    const s = imLager(); const H = s.HG;
+    H.zustand.setze('kaestchen', 'ort', 'spieler'); H.zustand.setze('kaestchen', 'offen', true); H.zustand.setze('ehering', 'ort', 'kaestchen'); H.zustand.setze('ehering', 'rel', 'in');
+    pruefe(H.spiel.aktionenFuer('ehering').some(a => /^nimm /.test(a.befehl || '')), 'Ehering im getragenen Kästchen: Menü bietet „nimm“');
+  }
+  // 13. + 17. Ring-Schlüsse: erst „Der Ring wartet“, mit „Zwei Elisabeths“ folgt „Der Ring ist der Anker“
+  {
+    const s = imHaus(); const H = s.HG, z = H.zustand.z;
+    z.hinweise.push('bernwards_letzter_brief', 'elisabeths_ring');
+    H.spiel.kombiniereHinweise('bernwards_letzter_brief', 'elisabeths_ring');
+    const t = H.spiel.schlussText('ring_wartet');
+    pruefe(z.schluesse.includes('ring_wartet') && !z.schluesse.includes('ring_ist_anker'), 'Brief 1905 + Ring: „Der Ring wartet“');
+    pruefe(!/gute|frei|zwei Elisabeth|andere/.test(t), '„Der Ring wartet“ nimmt nichts vorweg: ' + t);
+    z.hinweise.push('kraehe_gebetbuch', 'lotte_zwei_gesichter');
+    H.spiel.kombiniereHinweise('kraehe_gebetbuch', 'lotte_zwei_gesichter');
+    pruefe(z.schluesse.includes('zwei_elisabeths') && z.schluesse.includes('ring_ist_anker'), 'Mit „Zwei Elisabeths“ folgt „Der Ring ist der Anker“');
+    // Kein Zitat aus nicht gefundenen Quellen – für jeden Schluss mit „mindestens“ und jedes mögliche Paar
+    const zitate = id => (String(H.daten.hinweise[id].text).match(/„[^“]{15,}“/g) || []);   // echte Zitate, keine Allerweltswörter wie „die andere“
+    const verstoesse = [];
+    Object.values(H.daten.schluesse).filter(x => x.mindestens).forEach(sl => {
+      sl.aus.forEach((a, i) => sl.aus.slice(i + 1).forEach(b => {
+        z.hinweise = [a, b];
+        const text = H.spiel.schlussText(sl.id);
+        sl.aus.filter(c => c !== a && c !== b).forEach(c => {
+          zitate(c).filter(q => !zitate(a).concat(zitate(b)).includes(q)).forEach(q => { if (text.includes(q.slice(1, -1))) verstoesse.push(sl.id + ' zitiert ' + c + ' (' + a + '+' + b + ')'); });
+        });
+      }));
+    });
+    pruefe(!verstoesse.length, 'Schlussfolgerungen zitieren nur gefundene Quellen' + (verstoesse.length ? ' – ' + verstoesse.slice(0, 3).join('; ') : ''));
+  }
+  // 14. Fahrziele: erschöpfte Orte verschwinden, Nummern bleiben, Zuhause/Krankenhaus/Haus immer
+  {
+    const s = prolog(); const H = s.HG, z = H.zustand.z, R = H.reisen;
+    s.tu('öffne umschlag'); s.tu('lies notarbrief');
+    ['stadtarchiv', 'altenheim', 'gerdes', 'polizei'].forEach(id => R.schalteFrei(id, true));
+    const nummer = id => R.bekannt().indexOf(id) + 1;
+    const vorher = { gerdes: nummer('gerdes'), polizei: nummer('polizei') };
+    z.flags.archiv_grest = true; z.hinweise.push('hochzeitstag', 'bauantrag_1899', 'pflegerin_vermisst', 'zeitung_1974', 'zeitung_1963');
+    pruefe(R.erschoepft('stadtarchiv') && !R.liste().includes('stadtarchiv'), 'Archiv erschöpft: verschwindet aus „fahre los“');
+    z.hinweise.push('polizeiakte_haeuser', 'polizeiakte_romanow'); z.flags.nachlass_erhalten = true;
+    pruefe(!R.erschoepft('polizei'), 'Wache: solange die Pistole nicht abgegeben ist, bleibt sie im Angebot');
+    z.flags.pistole_abgegeben = true;
+    pruefe(R.erschoepft('polizei'), 'Wache: alles geholt und Pistole abgegeben → erschöpft');
+    pruefe(['zuhause', 'krankenhaus', 'haus'].every(id => !R.erschoepft(id)), 'Zuhause, Krankenhaus und Haus Grest bleiben immer');
+    s.tu('geh nach süden'); s.tu('fahre los');
+    const html = s.bloecke.filter(b => b.typ === 'auswahl').pop().html;
+    pruefe(!/Stadtarchiv/.test(html) && new RegExp('value="' + vorher.gerdes + '">Wohnung Gerdes').test(html), 'Zielauswahl: Archiv fehlt, Gerdes behält Nummer ' + vorher.gerdes);
+    const ziel = s.HG.spiel.offen && s.HG.spiel.offen.liste;
+    pruefe(ziel && ziel[vorher.gerdes - 1] === 'gerdes', 'Antwort per fester Nummer trifft dasselbe Ziel');
+    H.spiel.offen = null;
+  }
+  // 18. Tagebuch-Stufen strikt nacheinander
+  {
+    const s = imLager(); const H = s.HG, z = H.zustand.z;
+    H.spukwerk.zug = () => {}; H.gefahren.darf = () => false;
+    z.flags.nacht_im_haus = true; z.flags.carsten_begegnet = true; z.hinweise.push('polizeiakte_haeuser');
+    const stufen = [];
+    for (let i = 0; i < 4; i++) { s.tu('warte'); stufen.push(H.tagebuchStufe(H.api)); }
+    pruefe(stufen.join() === '1,2,3,3', 'Tagebuch: Stufen nacheinander, auch wenn alles schon erfüllt ist (' + stufen.join() + ')');
+  }
+  // 19. Erste SMS: „Du hast seine Augen.“ – Carstens SMS später und woanders
+  {
+    const H = prolog().HG;
+    pruefe(H.daten.nachrichten.willkommen.text === 'Du hast seine Augen.', 'Erste SMS des Hauses: „Du hast seine Augen.“');
+    const sp = H.daten.spuk.sms_carsten; const z = H.zustand.z;
+    z.flags.willkommen_min = H.zeit.jetzt(); z.raum = 'halle';
+    pruefe(!sp.bedingung(H.api), 'Carstens SMS nicht gleichzeitig');
+    z.zeit.minute += 15; z.raum = 'flur';
+    pruefe(sp.bedingung(H.api), 'Carstens SMS einige Minuten später in einem anderen Raum');
+  }
+  // 20. Handyfotos: jede Unheimlichkeit nur einmal
+  {
+    const H = prolog().HG;
+    const fotos = Object.keys(H.daten.dinge).map(id => H.daten.dinge[id].foto).filter(f => typeof f === 'string');
+    pruefe(fotos.filter(f => /nachgezogen/.test(f)).length <= 1 && new Set(fotos).size === fotos.length, 'Handyfotos: keine wiederholte Unheimlichkeit');
+  }
+  // 21. Protokoll: nur die aktuelle Partie
+  {
+    const ctx = neueWelt(); const s = spieler(ctx); const H = s.HG;
+    H.protokoll.leeren();
+    H.spiel.start(); ['Alte Partie', 'Frau', 'würfeln', '1', 'öffne umschlag'].forEach(c => s.tu(c));
+    ['neustart ja', 'Neue Partie', 'Mann', 'würfeln', '1'].forEach(c => s.tu(c));
+    const t = H.protokoll.text();
+    pruefe(!/Alte Partie/.test(t.split('--- Verlauf')[1]) && /Neue Partie/.test(t), 'Protokoll kopiert nur die aktuelle Partie');
+  }
 }
 pruefe(!UNERSETZT.length, 'In keiner Ausgabe aller Tests steht ein unersetzter Platzhalter' + (UNERSETZT.length ? ': ' + UNERSETZT.slice(0, 3).join(' | ') : ''));
 

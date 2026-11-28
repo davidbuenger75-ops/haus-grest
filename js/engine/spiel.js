@@ -830,6 +830,31 @@
     },
 
     // =============== Notizbuch ======================================
+    /** Text einer Schlussfolgerung. Schlüsse mit „mindestens“ bauen ihn aus Bausteinen, die nur erscheinen, wenn ihre
+     *  Quelle gefunden ist (Spieltest 2: kein Zitat aus nicht gefundenen Quellen):
+     *    teile: [[hinweisId | [ids], 'Satz'], …], fazit: 'Satz'      – sonst wie bisher text (darf eine Funktion sein) */
+    schlussText: function (sid) {
+      var s = HG.daten.schluesse[sid], z = Z();
+      if (!s) return '';
+      if (!s.teile) return HG.wert(s.text, api) || '';
+      var hat = function (h) { return z.hinweise.indexOf(h) >= 0; };
+      return s.teile.filter(function (t) { return [].concat(t[0]).some(hat); }).map(function (t) { return t[1]; })
+        .concat(s.fazit ? [HG.wert(s.fazit, api)] : []).join(' ');
+    },
+    /** Schlüsse, die aus anderen Schlüssen folgen (folgtAus: ['ring_wartet', 'zwei_elisabeths']), stellen sich von selbst ein. */
+    folgeSchluesse: function () {
+      var z = Z();
+      Object.keys(HG.daten.schluesse).forEach(function (sid) {
+        var s = HG.daten.schluesse[sid];
+        if (!s.folgtAus || z.schluesse.indexOf(sid) >= 0) return;
+        if (!s.folgtAus.every(function (k) { return z.schluesse.indexOf(k) >= 0; })) return;
+        z.schluesse.push(sid);
+        z.flags['schluss_' + sid] = true;
+        HG.ausgabe.hinweis('Daraus folgt: <b>' + s.titel + '</b><br>' + S.schlussText(sid));
+        if (s.beiErkenntnis) s.beiErkenntnis(api);
+      });
+    },
+
     /** Kombinierbare Paare: Schlussfolgerungen, die man noch nicht gezogen hat, deren Hinweise aber beisammen sind.
      *  [{ sid, ids: [a, b] }] – die ersten zwei vorhandenen Quellen (bei „mindestens: 2“ genügen zwei). */
     paare: function () {
@@ -870,7 +895,8 @@
       if (da < (s.mindestens || s.aus.length)) { HG.ausgabe.text('Da fehlt noch ein Puzzlestück. Irgendwo im Haus gibt es mehr darüber zu erfahren.'); return; }
       z.schluesse.push(sid);
       z.flags['schluss_' + sid] = true;
-      HG.ausgabe.hinweis('Schlussfolgerung: <b>' + s.titel + '</b><br>' + s.text);
+      HG.ausgabe.hinweis('Schlussfolgerung: <b>' + s.titel + '</b><br>' + S.schlussText(sid));
+      S.folgeSchluesse();
       (s.schaltetFrei || []).forEach(function (zid) { HG.reisen.schalteFrei(zid); });
       if (s.beiErkenntnis) s.beiErkenntnis(api);
     },
@@ -965,7 +991,7 @@
       var z = Z();
       if (!z.hinweise.length && !z.notizen.length) { HG.ausgabe.system('Dein Notizbuch ist noch leer.'); return; }
       var h = [];
-      z.schluesse.forEach(function (id) { var s = HG.daten.schluesse[id]; h.push('★ <b>' + s.titel + '</b> – ' + s.text); });
+      z.schluesse.forEach(function (id) { var s = HG.daten.schluesse[id]; h.push('★ <b>' + s.titel + '</b> – ' + S.schlussText(id)); });
       S.notizGruppen().forEach(function (g) {
         h.push('<br><b>' + T.esc(g.titel) + '</b> (' + g.ids.length + ')');
         g.ids.forEach(function (id) { var x = HG.daten.hinweise[id]; h.push('• <b>' + x.titel + '</b> – ' + x.text); S.hinweisGesehen(id); });
@@ -1016,7 +1042,8 @@
 
     nehmbar: function (id) {
       var d = D(id);
-      return !W.getragen(id) && !d.szenerie && !eig(id, 'fest') && !d.orte && !d.person && !d.tuer && !d.dokument;
+      // auch aus einem getragenen Behälter heraus (Ehering im Kästchen, Spieltest 2) – nur nicht, was man schon in der Hand hat
+      return eig(id, 'ort') !== 'spieler' && !d.szenerie && !eig(id, 'fest') && !d.orte && !d.person && !d.tuer && !d.dokument;
     },
 
     /** Sichtbare Ausgänge des Raums: [{ id, richtung, befehl }] */
@@ -1089,11 +1116,19 @@
         idx[w] = idx[w] || [];
         if (idx[w].indexOf(id) < 0) idx[w].push(id);
       }
+      // Dinge im Raum mit allen Wörtern; Getragenes nur mit Namen (Spieltest 2: „Packung Taschentücher“ im Text zeigte
+      // sonst auf die Sturmstreichhölzer im Gepäck). Passt ein Wort auf etwas im Raum, gilt nur das.
+      var dabei = W.inventar(), raum = {};
       W.umfeld().forEach(function (id) {
-        var d = D(id);
+        var d = D(id), getragen = dabei.indexOf(id) >= 0;
         if (d.nomen) add(d.nomen, id);
         if (d.nomenDat) add(d.nomenDat, id);
+        if (getragen) { if (d.kurzwort) add(d.kurzwort, id); return; }
         (d.woerter || []).forEach(function (w) { add(w, id); });
+      });
+      Object.keys(idx).forEach(function (w) {
+        var imRaum = idx[w].filter(function (id) { return id.charAt(0) === '>' || dabei.indexOf(id) < 0; });
+        if (imRaum.length && imRaum.length < idx[w].length) idx[w] = imRaum;
       });
       S.ausgaenge().forEach(function (a) { if (a.richtung) add(W.RICHTUNGEN[a.id].name, '>' + a.id); });
       return idx;
@@ -1171,7 +1206,7 @@
       if (z.handy && z.handy.klingelt) return ['geh ran', 'ignoriere'];
       if (S.offen && S.offen.art === 'auswahl') return S.offen.optionen.map(function (o) { return String(o.text).replace(/<[^>]+>/g, ''); });
       if (z.kampf) return HG.kampf.moeglich().map(function (a) { return a.vorschlag; });
-      if (S.offen && S.offen.art === 'ziel') return S.offen.liste.filter(function (id) { return id !== HG.reisen.hier(); }).map(function (id) { return 'fahre zu ' + HG.daten.ziele[id].name; });
+      if (S.offen && S.offen.art === 'ziel') return S.offen.liste.filter(function (id) { return id && id !== HG.reisen.hier(); }).map(function (id) { return 'fahre zu ' + HG.daten.ziele[id].name; });
       if (S.offen && S.offen.art === 'wahl') {
         return S.offen.kandidaten.map(function (id) { return T.name(id, 'akk', ''); });
       }

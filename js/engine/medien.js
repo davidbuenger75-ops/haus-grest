@@ -164,6 +164,8 @@
       if (stumm || !hatAudio || !M.entsperrt || M.einst.stumm) return;
       ersterTon(['effekt-' + name], function (a) {
         if (!a) return;
+        a.loop = false;   // Effekte immer einmalig – Schleifen gibt es nur im Hintergrund
+        try { a.currentTime = 0; } catch (e) { /* noch nicht geladen */ }
         a.volume = M.pegel(1);
         var p = a.play(); if (p && p.catch) p.catch(function () { /* blockiert */ });
         var w = def && def.wiederholen;

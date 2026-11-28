@@ -338,4 +338,21 @@
       'Im Frühjahr liest du in der Zeitung, dass jemand das Grundstück am Ulmenweg gekauft hat. Ein Bauherr, der anonym bleiben will. Das Haus soll originalgetreu wiederaufgebaut werden, nach den alten Plänen von 1899. Auf dem Foto zum Artikel steht ein Architekt vor dem Bauzaun und hält die Zeichnungen hoch. Du erkennst die Handschrift auf dem obersten Blatt: <i>Ankleidezimmer</i>.<br><br>Alles beginnt von vorn.');
   }
 
+  // ===================================================================
+  // FAHRZIELE: wann ein Ort aus „fahre los“ verschwindet (Spieltest 2, reisen.js R.erschoepft)
+  // ===================================================================
+  // Nur, wenn dort wirklich nichts mehr zu holen ist und auch später nichts mehr kommen kann – Rückgaben eingeschlossen
+  // (die Pistole kann man immer noch auf der Wache abgeben). Zuhause, Krankenhaus und Haus Grest bleiben immer.
+  var ZIELE = HG.daten.ziele;
+  ['zuhause', 'krankenhaus', 'haus'].forEach(function (id) { if (ZIELE[id]) ZIELE[id].immer = true; });
+  function setze(id, def) { if (ZIELE[id]) Object.assign(ZIELE[id], def); }
+  setze('bauamt', { funde: ['hallmann_brand', 'architekt_brinkhoff'] });
+  setze('polizei', { funde: ['polizeiakte_haeuser', 'polizeiakte_romanow'],
+    fertig: function (api) { return !!api.flag('nachlass_erhalten') && !!api.flag('pistole_abgegeben'); } });
+  setze('gerdes', { funde: ['gespraech_brigitte', 'bettinas_referat'] });
+  setze('altenheim', { funde: ['lotte_zwei_gesichter', 'lotte_ring'] });
+  setze('stadtarchiv', { fertig: function (api) { return HG.archivFertig ? HG.archivFertig(api) : false; } });
+  setze('friedhof', { funde: ['grabstein_grest'], fertig: function (api) { return !!api.flag('carstens_grab'); } });
+  setze('lager', { fertig: function () { return true; }, ignoriere: ['kugelschreiber'] });   // allgemein: nichts Nehmbares, kein offener Hinweis mehr
+
 })();

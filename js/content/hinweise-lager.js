@@ -88,7 +88,8 @@ HG.hinweis('carstens_letzte_seite', { titel: 'Carstens letzte Seite', strang: 'E
   text: 'Nachdem Carsten frei war, stand hinten in seinem Tagebuch eine neue Seite, ruhig geschrieben: „Es sind zwei Hände, und sie sehen sich ähnlich. Ich habe die genommen, die mich gehalten hat. Nimm die andere – die dünne, die mit dem Abdruck vom Ring. Und dann lass los.“',
   stichworte: ['haende', 'hand', 'ring', 'abdruck', 'loslassen'] });
 // Carstens letzte Seite ist eine weitere Quelle für „Der Ring ist der Anker“ (hinweise.js)
-HG.daten.schluesse.ring_ist_anker.aus.push('carstens_letzte_seite');
+HG.daten.schluesse.ring_wartet.aus.push('carstens_letzte_seite');
+HG.daten.schluesse.ring_wartet.teile.push(['carstens_letzte_seite', 'Carstens letzte Seite: „Nimm die andere – die dünne, die mit dem Abdruck vom Ring.“']);
 
 // --- Schlussfolgerungen ----------------------------------------------
 HG.schluss('das_haus_ruft_an', {

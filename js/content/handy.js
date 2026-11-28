@@ -83,9 +83,10 @@ HG.nachricht('brandt_strom', {
   text: 'Guten Tag, kurze Info: Der Strom in Haus Grest ist abgestellt, ich kümmere mich darum. Nehmen Sie eine Lampe mit. Und bitte nicht die Treppe ins Obergeschoss – sie soll morsch sein. Brandt'
 });
 
+// Spieltest 2: „Willkommen zu Hause.“ ist dem Ende vorbehalten – die erste SMS des Hauses ist eine andere
 HG.nachricht('willkommen', {
   von: 'Unbekannte Nummer', falsch: true,
-  text: 'Willkommen zu Hause.'
+  text: 'Du hast seine Augen.'
 });
 
 HG.nachricht('carsten_spiegelzimmer', {

@@ -112,10 +112,19 @@
     }
   };
 
-  /** Weiß die Spielfigur, dass das Haus mit fremden Nummern anruft und schreibt? */
+  /** Hat die Spielfigur selbst erlebt, dass das Haus mit fremden Nummern schreibt oder anruft? (Spieltest 2: erst dann
+   *  die Frage „Schreibt es Ihnen auch?“) – Carstens Tagebuch („fremde Nummern“) oder eine gefälschte Nachricht bzw. ein
+   *  gefälschter Anruf von jemandem, den man kennt (nicht nur „Unbekannte Nummer“). */
   function kenntNummern(api) {
-    return ['fremde_nummern', 'tote_anrufer', 'falscher_anruf_polizei', 'falscher_anruf_schmidt'].some(api.hatHinweis);
+    if (['fremde_nummern', 'falscher_anruf_polizei', 'falscher_anruf_schmidt'].some(api.hatHinweis)) return true;
+    var h = HG.zustand.z.handy || {};
+    return (h.nachrichten || []).concat(h.anrufe || []).some(function (n) {
+      var d = HG.daten.nachrichten[n.id] || HG.daten.anrufe[n.id];
+      return d && d.falsch && !/unbekannt/i.test(HG.wert(d.von, api) || '');
+    });
   }
+  /** Hat man mit Lotte Wiegand gesprochen (und von ihr etwas erfahren)? */
+  function warBeiLotte(api) { return api.hatHinweis('lotte_zwei_gesichter') || api.hatHinweis('lotte_ring') || !!api.flag('lotte_lavendel'); }
 
   /** Davids Festlegung: An der Tür schickt sie einen ins Altenheim – ohne zu sagen, zu wem. */
   function altenheimSatz(api) {
@@ -167,6 +176,11 @@
       api.setzeFlag('brigitte_abgewiesen', api.tag());
       abweisen(api, '„Dann ziehen Sie aus“, sagt sie. „Heute noch. Das ist die ganze Hilfe, die ich habe.“');
     } });
+    // Weitere Wege hinein (Spieltest 2): Lotte Wiegand, die Haarspange – und Überreden (oben, einmal pro Tag)
+    if (warBeiLotte(api)) optionen.push({ text: '„Ich war bei Lotte Wiegand. Im Lindenhof.“', tu: function () {
+      herein(api, 'Brigitte hält die Luft an. „Bei Lotte.“ Sie sagt den Namen, als hätte sie ihn lange nicht gehört. „Bettina war jeden Mittwoch bei ihr. Für das Referat. Danach hat sie nicht mehr geschlafen.“ Sie sieht dich an, ein langer Blick durch den Spalt. „Was hat sie Ihnen erzählt?“');
+    } });
+    if (api.traegt('haarspange')) optionen.push({ text: 'Ihr Bettinas Haarspange zeigen', tu: function () { haarspangeZeigen(api); } });
     optionen.push({ text: '„Es geht um Bettina.“', tu: function () {
       abweisen(api, '„Nicht.“ Ihre Stimme bricht nicht, sie wird nur sehr leise. „Nicht Bettinas Namen. Nicht hier im Treppenhaus.“');
     } });
@@ -208,7 +222,7 @@
   function nummer(api) {
     if (api.raum() !== 'gerdes_wohnung') return anDerTuer(api);
     api.setzeFlag('brigitte_handy_erzaehlt');
-    return '„Ich zahl ihren Vertrag weiter. Damit keiner anders ihre Nummer kriegt.“ Brigitte zeigt auf die Schublade im Sideboard. „Ihr Handy liegt da drin. Aus. Seit drei Jahren.“ Sie schluckt. ' +
+    return '„Ich zahl ihren Vertrag weiter. Damit keiner anders ihre Nummer kriegt.“ Brigitte zeigt auf die Schublade im Sideboard. „Ihr <span class="kein-wort">Handy</span> liegt da drin. Aus. Seit drei Jahren.“ Sie schluckt. ' +
       '„Und trotzdem schreibt sie mir. Nachts. ‚Mama, komm nach Hause.‘ ‚Mama, mir ist kalt.‘ ‚Mama, die Dame ist so lieb zu mir.‘“ Sie sieht dich an. „Bettina hat nie ‚Dame‘ gesagt. Das war nicht ihr Wort.“';
   }
   function referat(api) {
@@ -260,7 +274,7 @@
       },
       'trauerkarte,karte,karten': function (api) {
         if (api.raum() !== 'gerdes_wohnung') return anDerTuer(api);
-        return '„Die eine da, mit dem Kreis.“ Ihre Stimme wird flach. „Die kam mit der Post. Eine Woche nachdem Herr Häuser tot war. Kein Absender, kein Brief. Nur die Karte, und das Wort eingekreist. In seiner Schrift.“';
+        return '„Hundert Stück hab ich drucken lassen.“ Ihre Stimme wird flach. „Verschickt hab ich keine. Ich wusste nicht, an wen. Alle, die sie kannten, waren ja auf der Beerdigung.“ Sie sieht auf die oberste Karte. „Der Vierzehnte. Da hab ich sie zum letzten Mal lachen hören.“';
       }
     },
     themaSonst: function (api) {
@@ -317,7 +331,10 @@
         text: 'Ein kleines Bad mit beigen Fliesen. Über dem Waschbecken sind vier Dübellöcher und ein hellerer Rahmen auf den Fliesen, wo einmal ein Spiegelschrank hing. Daneben klebt ein Zettel mit Tesafilm: „Haare: gut. Zähne: gut.“' },
       { nomen: 'Vorhänge', genus: 'pl', woerter: ['vorhaenge', 'vorhang', 'fenster', 'gardinen', 'waescheklammer'],
         text: 'Dicke Vorhänge. Am Abend zieht Brigitte sie zu, bevor es draußen dunkel genug wird, dass die Scheibe spiegelt.' },
-      { nomen: 'Sofa', genus: 'n', woerter: ['sofa', 'couch'], text: 'Ein graues Sofa mit einer Wolldecke. Auf der Armlehne eine Packung Taschentücher und eine Fernbedienung, die sie nicht braucht.' }
+      { nomen: 'Sofa', genus: 'n', woerter: ['sofa', 'couch', 'wolldecke', 'armlehne'], text: 'Ein graues Sofa mit einer Wolldecke. Auf der Armlehne eine Packung Taschentücher und eine Fernbedienung, die sie nicht braucht.' },
+      // Spieltest 2: „Packung“ meinte sonst die Sturmstreichhölzer im Gepäck
+      { nomen: 'Taschentücher', genus: 'pl', woerter: ['taschentuecher', 'taschentuch', 'packung', 'tempos'], text: 'Eine angebrochene Packung Taschentücher. Ein paar zerknüllte liegen daneben, als hätte sie sie nicht mehr bis in den Müll geschafft.' },
+      { nomen: 'Fernbedienung', genus: 'f', woerter: ['fernbedienung'], text: 'Die Fernbedienung für den verhängten Fernseher. Die Batteriefachklappe fehlt, die Batterien auch.' }
     ]
   });
 
@@ -326,11 +343,29 @@
     ort: 'gerdes_wohnung', fest: true, szenerie: true, ablage: true,
     beschreibung: 'Ein niedriger Tisch aus Kiefernholz. Eine Teetasse mit Rand, ein Untersetzer aus Kork, Brigittes Handy mit dem Display nach unten.'
   });
+  // Brigittes Handy: ein eigenes Ding, damit „handy“, „nachrichten“, „fotos“ hier nie auf dein eigenes Handy springen.
+  // Man sieht nur, was Brigitte zeigt (die Nachricht von Bettinas Nummer, wenn sie kam). Bettinas Handy in der Schublade
+  // ist kein Ding – die Schublade bleibt zu (Spieltest 2).
+  function brigittesHandy(api) {
+    api.sage(api.flag('bettina_sms')
+      ? 'Brigittes Handy liegt mit dem Display nach unten. Du hast gesehen, was darauf stand: <b>Bettina ♥</b> – <i>„mama wer ist da bei dir“</i>. Du drehst es nicht um.'
+      : 'Brigittes Handy liegt mit dem Display nach unten auf dem Couchtisch. Es gehört dir nicht, und Brigitte sieht dir zu.');
+    return true;
+  }
+  HG.ding('handy_brigitte', {
+    nomen: 'Handy', genus: 'n', zusatz: function () { return 'von Brigitte'; }, kurzwort: 'brigittes handy',
+    woerter: ['handy', 'smartphone', 'telefon', 'sperrbildschirm'], adjektive: ['brigittes'],
+    // „lies nachrichten“ allein bleibt dein eigenes Handy; „nachrichten auf brigittes handy“ meint dieses (parser.js)
+    teilWoerter: ['nachrichten', 'nachricht', 'sms', 'fotos', 'bilder', 'display'],
+    ort: 'couchtisch_gerdes', rel: 'auf', fest: 'Das ist Brigittes Handy. Du lässt es liegen.', szenerie: true,
+    beschreibung: 'Brigittes Handy, mit dem Display nach unten.',
+    bei: { untersuchen: brigittesHandy, hineinschauen: brigittesHandy, lesen: brigittesHandy, benutzen: brigittesHandy, umdrehen: brigittesHandy, nehmen: function (api) { api.sage('Das ist Brigittes Handy. Du lässt es liegen.'); return true; } }
+  });
   HG.ding('sideboard_gerdes', {
     nomen: 'Sideboard', genus: 'n', woerter: ['sideboard', 'kommode', 'anrichte', 'schublade', 'schrank'],
     ort: 'gerdes_wohnung', fest: true, szenerie: true, ablage: true,
     beschreibung: 'Ein Sideboard in Buche. Darauf Bettinas Foto und ein Stapel Trauerkarten. Die obere Schublade ist zu.',
-    bei: { oeffnen: function (api) { api.sage('Du legst die Hand an die Schublade. Brigitte sagt nichts. Sie sieht dich nur an, und du nimmst die Hand wieder weg. Darin liegt Bettinas Handy. Es bleibt, wo es ist.'); return true; } }
+    bei: { oeffnen: function (api) { api.sage('Du legst die Hand an die Schublade. Brigitte sagt nichts. Sie sieht dich nur an, und du nimmst die Hand wieder weg. Darin liegt Bettinas <span class="kein-wort">Handy</span>. Es bleibt, wo es ist.'); return true; } }
   });
   HG.ding('foto_bettina', {
     nomen: 'Foto', genus: 'n', woerter: ['foto', 'bild', 'rahmen', 'bettina', 'portraet'], adj: ['gerahmt'],
@@ -345,9 +380,10 @@
     nomen: 'Trauerkarte', genus: 'f',
     woerter: ['trauerkarte', 'karte', 'sterbebild', 'karten', 'trauerkarten'],
     ort: 'sideboard_gerdes', rel: 'auf',
-    beschreibung: 'Ein Stapel Trauerkarten für Bettina Gerdes. Das Foto zeigt ein lachendes Mädchen mit Zahnspange. Darunter: <i>„Du bist nur in ein anderes Zimmer gegangen.“</i> Auf der obersten Karte hat jemand mit Kugelschreiber das Wort „Zimmer“ eingekreist.',
-    lesbar: '<i>Bettina Gerdes · 2005 – 2022</i><br><br>„Du bist nur in ein anderes Zimmer gegangen.“<br><br><span class="rot">Zimmer</span> <i>(eingekreist, mit blauem Kugelschreiber – in Carstens Schrift)</i>',
-    foto: 'Auf dem Foto ist der Kreis um „Zimmer“ dunkler als auf der Karte, als hätte ihn jemand nachgezogen.'
+    // Spieltest 2: keine Anmerkungen von Carsten (Rest der alten Lager-Fassung), kein Foto-Effekt – nur Brigittes Datum
+    beschreibung: 'Ein Stapel Trauerkarten für Bettina Gerdes, alle gleich, keine verschickt. Das Foto zeigt ein lachendes Mädchen mit Zahnspange. Darunter: <i>„Du bist nur in ein anderes Zimmer gegangen.“</i>',
+    lesbar: '<i>Bettina Gerdes · 2005 – 2022</i><br><br>„Du bist nur in ein anderes Zimmer gegangen.“<br><br><i>(Auf der Rückseite der obersten Karte, in Brigittes runder Schrift, nur ein Datum: 14.10.)</i>',
+    foto: 'Bettinas Trauerkarte, scharf und gerade.'
   });
 
   HG.ding('referat_bettina', {

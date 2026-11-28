@@ -12,7 +12,7 @@
 // (node tools/test.js prüft das).
 'use strict';
 
-var VERSION = 'haus-grest-30';
+var VERSION = 'haus-grest-31';
 var GRUNDDATEIEN = ['./', './index.html', './manifest.webmanifest', './assets/icons/icon.svg',
   './assets/icons/icon-192.png', './assets/icons/icon-512.png'];
 

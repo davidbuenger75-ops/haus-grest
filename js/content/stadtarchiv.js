@@ -138,6 +138,7 @@
   // FRAU WESSELS
   // ===================================================================
   function grest(api) {
+    if (allesGefunden(api)) return NICHTS_MEHR;
     if (api.flag('archiv_grest')) {
       return '„Alles, was wir zu Grest haben, liegt auf Ihrem Platz.“ Sie zählt an den Fingern ab: „Kirchenbuch, Bauantrag, die Sache von 1905, die Todesnachricht 1930. Mehr gibt’s nicht. Den Rest hat der Rathausbrand gefressen.“';
     }
@@ -167,12 +168,20 @@
     return '„Brzezinski. Neunzehnhundertdreiundsechzig.“ Sie schreibt es auf einen Bestellzettel. „Ein Datum haben Sie nicht? Dann bekommen Sie die Rollen. Westfälische Rundschau, Lokales Süd. Viel Glück, das sind dreihundert Ausgaben.“ Sie legt eine Filmrolle neben das Lesegerät. <span class="nebenbei">(„benutze lesegerät“)</span>';
   }
 
+  /** Alles gefunden, was das Archiv zum Haus hat? (Grest-Unterlagen gelesen, beide Mikrofilm-Artikel) */
+  function allesGefunden(api) {
+    return !!api.flag('archiv_grest') && ['hochzeitstag', 'bauantrag_1899', 'pflegerin_vermisst', 'zeitung_1974', 'zeitung_1963'].every(api.hatHinweis);
+  }
+  var NICHTS_MEHR = '„Mehr hab ich zu dem Haus nicht.“ Frau Wessels nimmt die Brille ab. „Wirklich nicht. Ich hab für Herrn Häuser schon jeden Karton zweimal umgedreht.“';
+  HG.archivFertig = allesGefunden;
+
   HG.ding('frau_wessels', {
     nomen: 'Frau Wessels', genus: 'f', eigenname: true,
     woerter: ['wessels', 'frau', 'angestellte', 'archivarin', 'mitarbeiterin', 'dame'],
     ort: 'stadtarchiv', person: true, szenerie: true,
     beschreibung: 'Frau Wessels, Mitte vierzig, Strickjacke, eine Brille an einer Perlenkette. Auf ihrem Namensschild steht „S. Wessels – Lesesaal“. Sie bewegt sich zwischen den Regalen, als wüsste sie im Dunkeln, wo jedes Blatt liegt.',
     gespraech: function (api) {
+      if (allesGefunden(api)) return NICHTS_MEHR;
       return '„Was suchen Sie denn?“ Frau Wessels schiebt die Brille hoch. „Ich brauch einen Namen und am besten ein Jahr. Mit einem genauen Datum bin ich schneller als jede Datenbank.“ <span class="nebenbei">(„frage frau wessels nach …“ – Grest, Hallmann, Brzezinski, Pflegerin, Carsten, Friedhof)</span>';
     },
     themen: {
@@ -196,7 +205,7 @@
         return '„Dazu hab ich nur, was in der Zeitung stand – und da stand bei dem Haus immer erstaunlich wenig.“ Sie zuckt mit den Schultern. „Wenn Sie ein Datum haben, suche ich’s Ihnen raus.“';
       }
     },
-    themaSonst: '„Dazu müsste ich wissen, wonach ich suche. Ein Name, ein Jahr?“'
+    themaSonst: function (api) { return allesGefunden(api) ? NICHTS_MEHR : '„Dazu müsste ich wissen, wonach ich suche. Ein Name, ein Jahr?“'; }
   });
 
   // ===================================================================

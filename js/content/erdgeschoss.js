@@ -75,7 +75,7 @@ HG.raum('halle', {
       (api.eig('eichentuer', 'offen') ? 'offen' : 'geschlossen') + '. Osten: Speisezimmer, Südosten: Salon, Südwesten: Garderobe, Norden: Flur, Süden: Haustür.';
   },
   beimBetreten: function (api, info) {
-    if (info.erstesMal) api.nachricht('willkommen');
+    if (info.erstesMal) { api.nachricht('willkommen'); api.setzeFlag('willkommen_min', api.minuten()); }
   },
   horchen: { tag: 'Irgendwo über dir knackt eine Diele. Dann ist es wieder still – zu still für ein Haus dieser Größe.', nacht: 'Das Haus atmet. Holz arbeitet, Rohre knacken. Und über dir, ganz leise, etwas, das wie Summen klingt.' },
   riechen: 'Staub, kaltes Kerzenwachs und etwas Süßliches, das du nicht einordnen kannst.',

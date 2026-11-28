@@ -30,10 +30,37 @@
         return na - nb || alle.indexOf(a) - alle.indexOf(b);
       });
     },
-    /** Freigeschaltete Ziele außer dem aktuellen Schauplatz. */
+    /** Freigeschaltete Ziele außer dem aktuellen Schauplatz (und ohne erschöpfte). */
     liste: function () {
       var hier = R.hier();
-      return R.bekannt().filter(function (id) { return id !== hier; });
+      return R.bekannt().filter(function (id) { return id !== hier && !R.erschoepft(id); });
+    },
+
+    /** Gibt es an diesem Ort nichts mehr zu holen – und kann auch später nichts mehr kommen? (Spieltest 2)
+     *  Ziel-Daten: immer: true (Zuhause, Krankenhaus, Haus) · funde: [Hinweise, die man dort bekommt] ·
+     *  fertig: function (api) (weitere Bedingungen, z. B. Rückgaben) · ignoriere: [Dinge, die nicht zählen].
+     *  Dazu allgemein: Kein Ding an diesem Schauplatz hat noch einen ungefundenen Hinweis, nichts Nehmbares liegt
+     *  dort mehr (auch nichts Verstecktes), kein Dokument ist unfotografiert. */
+    erschoepft: function (id) {
+      var d = ZD(id), z = Z(), api = HG.api;
+      if (!d || d.immer || id === R.hier()) return false;
+      if (!(d.funde || d.fertig)) return false;   // ohne Angaben bleibt ein Ort immer im Angebot
+      if ((d.funde || []).some(function (h) { return z.hinweise.indexOf(h) < 0; })) return false;
+      if (d.fertig && !HG.wert(d.fertig, api)) return false;
+      var raeume = Object.keys(HG.daten.raeume).filter(function (r) { return HG.daten.raeume[r].schauplatz === id; });
+      var ign = d.ignoriere || [];
+      function oben(dingId) {
+        var o = HG.zustand.eig(dingId, 'ort'), n = 0;
+        while (o && !HG.daten.raeume[o] && n++ < 12) o = HG.zustand.eig(o, 'ort');
+        return o;
+      }
+      return !Object.keys(HG.daten.dinge).some(function (k) {
+        var dd = HG.daten.dinge[k];
+        if (ign.indexOf(k) >= 0 || dd.person || dd.kulisse || raeume.indexOf(oben(k)) < 0) return false;
+        if (dd.hinweis && z.hinweise.indexOf(dd.hinweis) < 0) return true;
+        if (dd.dokument && !(HG.handy && HG.handy.hatFoto(k))) return true;
+        return HG.spiel.nehmbar(k) && !dd.dokument;
+      });
     },
 
     istOffen: function (id) { return HG.zeit.istOffen(ZD(id).geoeffnet); },
@@ -75,13 +102,15 @@
         return;
       }
       var html = '<b>Wohin fährst du?</b><ol>';
-      liste.forEach(function (id) {
-        if (id === hier) { html += '<li class="hier">' + ZD(id).name + ' <span class="oeffnung">(hier)</span></li>'; return; }
-        html += '<li>' + ZD(id).name + ' <span class="oeffnung">(' + (R.istOffen(id) ? R.oeffnungsText(id) : 'jetzt geschlossen – ' + R.oeffnungsText(id)) + ', ca. ' + R.fahrzeit(id) + ' Min. Fahrt' + ')</span></li>';
+      liste.forEach(function (id, i) {
+        // feste Nummern: ein erschöpftes Ziel fällt heraus, die anderen behalten ihre Nummer
+        if (id === hier) { html += '<li value="' + (i + 1) + '" class="hier">' + ZD(id).name + ' <span class="oeffnung">(hier)</span></li>'; return; }
+        if (R.erschoepft(id)) return;
+        html += '<li value="' + (i + 1) + '">' + ZD(id).name + ' <span class="oeffnung">(' + (R.istOffen(id) ? R.oeffnungsText(id) : 'jetzt geschlossen – ' + R.oeffnungsText(id)) + ', ca. ' + R.fahrzeit(id) + ' Min. Fahrt' + ')</span></li>';
       });
       html += '</ol>Tippe die Nummer oder den Namen.';
       HG.ausgabe.schreibe('auswahl', html);
-      HG.spiel.offen = { art: 'ziel', liste: liste };
+      HG.spiel.offen = { art: 'ziel', liste: liste.map(function (id) { return id === hier || R.erschoepft(id) ? null : id; }) };
     },
 
     fahre: function (id) {

@@ -116,10 +116,11 @@
       }
     },
     vorschlaege: function (api) {
+      if (lotteFertig(api)) return ['geh nach süden'];
       if (!lotteKlar(api)) return ['sprich mit lotte', 'geh nach süden'];
       var v = [];
       if (!api.hatHinweis('lotte_zwei_gesichter')) v.push('frage lotte nach der gnädigen frau');
-      if (!api.hatHinweis('lotte_ring')) v.push('frage lotte nach dem ring');
+      if (!api.hatHinweis('lotte_ring') && api.kennt('ehering')) v.push('frage lotte nach dem ring');
       v.push('frage lotte nach der schwester');
       return v.concat(['geh nach süden']);
     },
@@ -208,10 +209,13 @@
 
   function ring(api) {
     if (!lotteKlar(api)) return verwirrt(api);
-    if (api.hatHinweis('lotte_ring')) { api.sage('„Die im Spiegel hat keinen Ring“, sagt Lotte. „Merken Sie sich das, Kind. Daran erkennt man sie.“'); return true; }
-    api.abschnitt(54, '„Der Ring.“ Lotte greift an ihren eigenen Ringfinger, an dem nichts steckt. „Die gnädige Frau hat das immer gemacht. Da war ein weißer Streifen, wo er gesessen hat. Der Herr hatte ihn verwahrt, sagte Mutter, als sie krank wurde. ‚Bis du gesund bist.‘ Und dann ist der Herr gestorben, und der Ring war weg.“<br><br>' +
-      '„Am Ende, im März, da hat sie mich noch mal zu sich gerufen. Sie war schon ganz dünn. So dünn.“ Lotte hält einen Finger hoch, krumm und knotig. „Sie hat gesagt: ‚Lottchen, wenn einmal einer kommt und fragt – sag ihm: Die im Spiegel hat keinen Ring. Daran erkennt man mich.‘“<br><br>' +
-      'Sie sieht dich lange an. „Jetzt sind Sie gekommen und haben gefragt. Hundert Jahre hab ich das aufgehoben.“');
+    // Erst, wenn man den Ehering kennt (Spieltest 2). Lotte deutet nur an – welche Hand die richtige ist, ergibt sich erst
+    // aus Ring, Bernwards Brief und späteren Funden (Spielbibel 9.6).
+    if (!api.kennt('ehering')) { api.sage('„Ringe.“ Lotte dreht an ihrem leeren Finger. „Ich hab keinen mehr. Die Schwestern hier haben ihn weggeschlossen, weil ich so dünn geworden bin.“'); return true; }
+    if (api.hatHinweis('lotte_ring')) { api.sage('„Die gnädige Frau hat immer an ihren Finger gefasst“, sagt Lotte. „Da, wo der Ring war. Die andere nie.“'); return true; }
+    api.abschnitt(54, '„Der Ring.“ Lotte greift an ihren eigenen Ringfinger, an dem nichts steckt. „Bei der gnädigen Frau war da ein weißer Streifen, wo er gesessen hat. Der Herr hatte ihn verwahrt, sagte Mutter, als sie krank wurde. ‚Bis du gesund bist.‘ Und dann ist der Herr gestorben, und der Ring war weg.“<br><br>' +
+      '„Die gnädige Frau hat immer an ihren Finger gefasst, wo der Ring war. Immer, wenn sie an den Herrn gedacht hat. So.“ Lotte reibt mit dem Daumen über ihren leeren Finger, langsam, hin und her. „Die andere nie.“<br><br>' +
+      'Sie sieht dich lange an. „Hundert Jahre hat mich keiner danach gefragt.“');
     api.hinweis('lotte_ring');
     return true;
   }
@@ -225,7 +229,7 @@
         (lotteKlar(api) ? 'Ihre Augen sind hell und wach, und sie lassen dich nicht los.' : 'Sie sieht aus dem Fenster und bewegt die Lippen, als zählte sie etwas.');
     },
     gespraech: function (api) {
-      if (lotteKlar(api)) return '„Na, Kind?“ Lotte klopft auf die Armlehne neben sich. „Fragen Sie. Die gnädige Frau, die Schwester, der Ring – ich hab alles noch hier drin.“ Sie tippt sich an die Stirn. <span class="nebenbei">(„frage lotte nach …“)</span>';
+      if (lotteKlar(api)) return '„Na, Kind?“ Lotte klopft auf die Armlehne neben sich. „Fragen Sie. Die gnädige Frau, die Schwester' + (api.kennt('ehering') ? ', der Ring' : '') + ' – ich hab alles noch hier drin.“ Sie tippt sich an die Stirn. <span class="nebenbei">(„frage lotte nach …“)</span>';
       if (api.flag('lotte_doest') && api.minuten() < api.flag('lotte_doest')) return verwirrt(api);
       api.sage('Lotte sieht dich an, ohne dich zu erkennen. „Gnädige Frau?“, flüstert sie.');
       api.auswahl('Was tust du?', [
@@ -263,6 +267,24 @@
     }
   });
 
+  // Hat Lotte alles erzählt, schließt sie sich: freundlich, endgültig (Spieltest 2). Gilt ab dem nächsten Gespräch.
+  function lotteFertig(api) { return api.hatHinweis('lotte_zwei_gesichter') && api.hatHinweis('lotte_ring') && api.flag('lotte_fertig_ab') && api.zug() > api.flag('lotte_fertig_ab'); }
+  var LOTTE_ZU = 'Lotte sieht aus dem Fenster. Sie erkennt dich nicht mehr. Als du ihr die Hand auf den Arm legst, lächelt sie freundlich, wie man einem Fremden zulächelt, und sieht wieder hinaus in den Garten.';
+  (function () {
+    var d = HG.daten.dinge.lotte;
+    function zu(fn) {
+      return function (api, ctx) {
+        if (lotteFertig(api)) { api.sage(LOTTE_ZU); return true; }
+        var r = HG.wert(fn, api, ctx);
+        if (api.hatHinweis('lotte_zwei_gesichter') && api.hatHinweis('lotte_ring') && !api.flag('lotte_fertig_ab')) api.setzeFlag('lotte_fertig_ab', api.zug());
+        return r;
+      };
+    }
+    d.gespraech = zu(d.gespraech);
+    d.themaSonst = zu(d.themaSonst);
+    Object.keys(d.themen).forEach(function (k) { d.themen[k] = zu(d.themen[k]); });
+  })();
+
   // ===================================================================
   // HINWEISE
   // ===================================================================
@@ -273,7 +295,7 @@
   });
   HG.hinweis('lotte_ring', {
     titel: 'Lotte: der Ring', strang: 'B',
-    text: 'Elisabeth griff immer an ihren leeren Ringfinger; Bernward hatte den Ring verwahrt, „bis du gesund bist“. Im März 1930, ganz abgemagert, sagte sie zu Lotte: „Wenn einmal einer kommt und fragt – sag ihm: Die im Spiegel hat keinen Ring. Daran erkennt man mich.“',
+    text: 'Elisabeth trug ihren Ehering nicht mehr: Bernward hatte ihn verwahrt, „bis du gesund bist“, und nach seinem Tod war er fort. Lotte: „Die gnädige Frau hat immer an ihren Finger gefasst, wo der Ring war. Die andere nie.“',
     stichworte: ['lotte', 'ring', 'finger', 'elisabeth', 'spiegel', '1930']
   });
 

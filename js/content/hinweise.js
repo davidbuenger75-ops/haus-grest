@@ -123,7 +123,13 @@ HG.hinweis('tinktur', {
 HG.schluss('pflegerin_wachte', {
   aus: ['kraehe_gebetbuch', 'tinktur', 'kraeuterbuch'], mindestens: 2,
   titel: '„Solange ich wache“',
-  text: 'Gebetbuch und Tinktur, dieselbe spitze Schrift: Die Pflegerin hat Elisabeths Krankheit nicht geheilt. Sie hat sie schlafen gelegt – mit Tropfen, Opfern und einem Ritual, „solange ich wache“. Was geschah, als sie nicht mehr wachte?'
+  // Bausteine: nur, was man gefunden hat (Spieltest 2)
+  teile: [
+    ['kraehe_gebetbuch', 'Im Gebetbuch: „Die Herrin schläft, und was in ihr krank ist, schläft mit ihr.“'],
+    ['tinktur', 'Auf der Tinktur, in derselben spitzen Schrift: „Nie, solange ich wache.“'],
+    ['kraeuterbuch', 'Im Kräuterbuch die Tropfen: Sie wirken nur, „solange ich wache“.']
+  ],
+  fazit: 'Die Pflegerin hat Elisabeths Krankheit nicht geheilt. Sie hat sie schlafen gelegt. Was geschah, als sie nicht mehr wachte?'
 });
 HG.schluss('elf_jahre', {
   aus: ['kraehe_gebetbuch', 'vogelschaedel'],
@@ -206,17 +212,43 @@ HG.hinweis('geheimschrift', {
 HG.schluss('zwei_elisabeths', {
   aus: ['kraehe_gebetbuch', 'elisabeths_siegel', 'elisabeths_tagebuch', 'zwei_gesichter', 'lotte_zwei_gesichter'], mindestens: 2,
   titel: 'Es gibt zwei Elisabeths',
-  text: 'Was in Elisabeth krank war, hat eine eigene Stimme bekommen – die Pflegerin hat es in die Spiegel gebannt. Die echte Elisabeth hat sich gewehrt: Sie hat abgelehnt und die Kammer versiegelt. Die Frau im Spiegel ist nicht sie. Sie ist „die andere“.'
+  teile: [
+    ['kraehe_gebetbuch', 'Die Pflegerin schreibt: „Was in ihr krank ist, schläft mit ihr.“'],
+    [['zwei_gesichter', 'lotte_zwei_gesichter'], '„Die gnädige Frau hat zwei Gesichter“ – bei Tag sanft, nachts eine, die mit ihrer Stimme spricht und lächelt.'],
+    ['elisabeths_tagebuch', 'Elisabeth selbst: „Lieber krank und mein eigen.“'],
+    [['elisabeths_siegel', 'elisabeths_tagebuch', 'lotte_zwei_gesichter'], 'Und sie hat sich gewehrt: Das Siegel an der Kammer der Pflegerin trägt ihre Initialen.']
+  ],
+  fazit: 'Was in Elisabeth krank war, hat eine eigene Stimme bekommen. Die Frau im Spiegel ist nicht sie. Sie ist die andere.'
+});
+// Spieltest 2: Brief + Ring verraten noch nichts über „die gute Elisabeth“. Erst „Der Ring wartet“ – und wenn man weiß,
+// dass es zwei Elisabeths gibt, folgt daraus „Der Ring ist der Anker“ (folgtAus, spiel.js).
+HG.schluss('ring_wartet', {
+  aus: ['bernwards_letzter_brief', 'elisabeths_ring', 'lotte_ring', 'grabstein_grest', 'elisabeths_tagebuch'], mindestens: 2,
+  titel: 'Der Ring wartet',
+  teile: [
+    ['bernwards_letzter_brief', 'Bernward hat Elisabeths Ring verwahrt, bis sie gesund ist.'],
+    ['elisabeths_ring', 'Innen graviert: „B. 12. V. 1898“ – ihr Hochzeitstag.'],
+    ['lotte_ring', 'Lotte: Die gnädige Frau hat immer an ihren Finger gefasst, wo der Ring war.'],
+    ['grabstein_grest', 'Auf dem Grab der Grests: „Bis unser Tag wiederkommt.“'],
+    ['elisabeths_tagebuch', 'Elisabeth: „Wenn B. mir den Ring wiedergibt, bin ich frei.“']
+  ],
+  fazit: 'Der Ring wartet auf jemanden. Auf den Tag, an dem sie gesund ist.'
 });
 HG.schluss('ring_ist_anker', {
-  aus: ['bernwards_letzter_brief', 'elisabeths_ring', 'elisabeths_tagebuch', 'lotte_ring'], mindestens: 2,
+  aus: [], folgtAus: ['ring_wartet', 'zwei_elisabeths'],
   titel: 'Der Ring ist der Anker',
-  text: 'Bernward hat den Ring verwahrt, „bis unser Tag wiederkommt“. Elisabeth schreibt: „Wenn B. mir den Ring wiedergibt, bin ich frei.“ Du hast den Ring. Er gehört der guten Elisabeth.'
+  text: 'Es gibt zwei Elisabeths, und der Ring gehört nur einer: der, die gesund werden wollte. Die andere hat ihn nie vermisst. Du hast den Ring.'
 });
 HG.schluss('tuer_unter_dem_haus', {
   aus: ['kraehe_gebetbuch', 'carstens_plan', 'puppenhaus_modell', 'polizeiakte_romanow'], mindestens: 2,
   titel: 'Die Tür unter dem Haus',
-  text: 'Die Pflegerin schreibt von einer „Tür unter dem Haus“. Carsten hat im Keller 2,40 Meter vermisst. Und im Puppenhaus ist die Tür zum Kohlenkeller zugemauert. Unter der Halle ist ein Raum, den es nicht mehr geben soll.'
+  teile: [
+    ['kraehe_gebetbuch', 'Die Pflegerin schreibt von einer „Tür unter dem Haus“.'],
+    ['carstens_plan', 'Carsten hat im Keller 2,40 Meter vermisst.'],
+    ['puppenhaus_modell', 'Im Puppenhaus ist die Tür zum Kohlenkeller zugemauert.'],
+    ['polizeiakte_romanow', 'Nataschas letzte SMS: „Die Wand im Keller ist neu verputzt. Da ist ein Raum.“']
+  ],
+  fazit: 'Unter der Halle ist ein Raum, den es nicht mehr geben soll.'
 });
 
 

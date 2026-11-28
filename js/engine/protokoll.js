@@ -85,6 +85,10 @@
 
     /** Der ganze Text zum Kopieren. */
     text: function () {
+      // Nur die aktuelle Partie: ab dem letzten „Neues Spiel“ (Spieltest 2) – frühere Partien bleiben gespeichert, aber draußen
+      var ab = 0;
+      eintraege.forEach(function (e, i) { if (e.t === 'marke' && /^Neues Spiel/.test(e.x)) ab = i; });
+      var partie = eintraege.slice(ab);
       var kopf = [
         '=== Haus Grest – Spielprotokoll ===',
         'Kopiert: ' + new Date().toLocaleString('de-DE') + ' · Spielversion ' + (HG.SPIELVERSION || '?') + ' · Spielstand-Version ' + (HG.zustand.VERSION || '?'),
@@ -93,9 +97,9 @@
         '--- Spielstand ---',
         HG.protokoll.kurzinfo(),
         '',
-        '--- Verlauf (' + eintraege.length + ' Einträge) ---'
+        '--- Verlauf dieser Partie (' + partie.length + ' Einträge) ---'
       ].filter(function (x) { return x !== null; });
-      var verlauf = eintraege.map(function (e) {
+      var verlauf = partie.map(function (e) {
         var zeit = e.z ? '[' + e.z + '] ' : '';
         if (e.t === 'eingabe') return '\n' + zeit + '> ' + e.x;
         if (e.t === 'marke') return '\n===== ' + e.x + ' =====';

@@ -226,7 +226,10 @@
     }
     setze(id, 'offen', true);
     var t = txt(id, 'oeffnen', ctx) || ('Du öffnest ' + der(id) + '.');
-    if (d.behaelter) t += ' ' + (darinSatz(id) || Pron(id) + ' ' + ist(id) + ' leer.');
+    // inhaltBeimOeffnen: false – der eigene Öffnen-Text nennt den Inhalt schon selbst (kein doppeltes „Darin liegen …“)
+    if (d.behaelter && d.inhaltBeimOeffnen !== false) t += ' ' + (darinSatz(id) || Pron(id) + ' ' + ist(id) + ' leer.');
+    // nachOeffnen: Text nach der Aufzählung (z. B. „unter dem Foto steckt etwas Hartes“)
+    if (d.nachOeffnen) { var n = HG.wert(d.nachOeffnen, HG.api, ctx); if (n) t += ' ' + n; }
     sag(t);
     W.enthuelle(id, 'oeffnen');
   };

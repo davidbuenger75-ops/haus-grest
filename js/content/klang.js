@@ -47,20 +47,23 @@
   // =====================================================================
   function S(name, art, sek, untertitel, prompt, laut) { HG.klang(name, { art: art, sek: sek, untertitel: untertitel, prompt: prompt, laut: !!laut }); }
   var LOOP = ' Seamless ambient loop, no music, no voices unless described.';
+  // Spieltest 2: Schleifen nur gleichmäßiger Hintergrund – keine einzelnen Ereignisse (Türen, Schritte, Telefon), die
+  // sich alle 25 Sekunden wiederholen würden. Ereignisse sind Effekte und werden einmal gespielt.
+  var RUHIG = ' Steady, even background texture only – no distinct single events: no doors, no footsteps, no phones, no knocks.';
 
   // --- Hintergrundschleifen je Schauplatz --------------------------------
   S('ort-haus', 'schleife', 25, '', 'Inside a large empty old house during the day: slow ticking of a distant clock, old wood quietly creaking and settling, faint wind outside the windows, a very low barely audible hum. Still, uneasy.' + LOOP);
-  S('ort-zuhause', 'schleife', 25, '', 'Small quiet city apartment in the morning: soft distant street traffic through a closed window, a fridge humming, occasionally a door far away in the stairwell. Calm, ordinary.' + LOOP);
+  S('ort-zuhause', 'schleife', 25, '', 'Small quiet city apartment in the morning: soft distant street traffic through a closed window, a fridge humming. Calm, ordinary.' + RUHIG + LOOP);
   S('ort-lager', 'schleife', 25, '', 'Large corrugated-metal self-storage hall: steady buzzing of fluorescent tubes, occasional water drip, faint distant traffic. Cold and empty.' + LOOP);
   S('ort-lager-nacht', 'schleife', 25, '', 'Self-storage hall at night: only the buzz of fluorescent tubes, slow water drips, irregular metallic creaks of the roof cooling down. Lonely, tense.' + LOOP);
-  S('ort-bauamt', 'schleife', 25, '', 'Town hall office corridor: muffled voices behind doors, a printer working, footsteps on linoleum, a phone ringing once far away.' + LOOP);
-  S('ort-polizei', 'schleife', 25, '', 'Small police station waiting area: faint police radio static and chatter far away, a coffee machine gurgling, a phone ringing in a back office, a door closing.' + LOOP);
-  S('ort-friedhof', 'schleife', 25, '', 'Old village cemetery in late autumn: wind in bare old linden trees, occasional crows cawing, distant footsteps on gravel, rustling dry leaves. Melancholic.' + LOOP);
+  S('ort-bauamt', 'schleife', 25, '', 'Town hall office corridor: muffled indistinct voices behind closed doors, the low hum of office ventilation and computers.' + RUHIG + LOOP);
+  S('ort-polizei', 'schleife', 25, '', 'Small police station waiting area: faint, steady police radio static far away, the hum of fluorescent lights and a ventilation fan.' + RUHIG + LOOP);
+  S('ort-friedhof', 'schleife', 25, '', 'Old village cemetery in late autumn: soft wind in bare old linden trees, dry leaves rustling on the ground. Melancholic.' + RUHIG + ' No birds.' + LOOP);
   S('ort-altenheim', 'schleife', 25, '', 'Retirement home common room: a television playing quietly in the background, unintelligible, teaspoons clinking in cups, a wall clock ticking, soft murmured conversation.' + LOOP);
   S('ort-stadtarchiv', 'schleife', 25, '', 'Large silent archive reading room under a glass dome: occasional rustle of old paper, a quiet cough, slow ticking of a wall clock, the faint hum of a microfilm reader.' + LOOP);
-  S('ort-gerdes', 'schleife', 25, '', 'Stairwell of a 1970s apartment block: a television behind a door far away, children playing football outside, a door falling shut somewhere, footsteps on stone stairs.' + LOOP);
+  S('ort-gerdes', 'schleife', 25, '', 'Stairwell of a 1970s apartment block: a television murmuring indistinctly behind a door far away, faint distant children playing outside, the hollow stillness of a concrete stairwell.' + RUHIG + LOOP);
   S('ort-kolbe', 'schleife', 25, '', 'Small old-fashioned kitchen: a ticking kitchen clock, a fluorescent tube humming, a cat purring now and then, a schlager song very quietly on a radio in another room.' + LOOP);
-  S('ort-krankenhaus', 'schleife', 25, '', 'Hospital emergency waiting room: fluorescent hum, a vending machine buzzing, distant beeping monitors, muffled announcements, footsteps hurrying past.' + LOOP);
+  S('ort-krankenhaus', 'schleife', 25, '', 'Hospital emergency waiting room: fluorescent hum, a vending machine buzzing, very faint distant steady beeping of monitors.' + RUHIG + LOOP);
 
   // --- Engine-Effekte (ohne Untertitel – der Text sagt es schon) ----------
   S('effekt-wuerfel', 'effekt', 1, '', 'Two small dice rolling briefly on a wooden table, dry, short.');

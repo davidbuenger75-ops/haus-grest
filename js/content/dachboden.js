@@ -171,7 +171,7 @@
     andeutung: ['flach', 'eckig'],
     beschreibung: 'Ein Taschenkalender von 1974, Kunstleder, „W. Hallmann“ auf dem Vorsatzblatt. Viele Seiten tragen dieselbe Notiz.',
     lesbar: 'Im Herbst stehen auf vielen Seiten nur Uhrzeiten, in Hallmanns kleiner, genauer Schrift: <i>„2:58 – Telefon. I.“</i> – <i>„2:58 – nicht rangegangen. 3 Nächte Ruhe.“</i> – <i>„2:58 – rangegangen.“</i><br><br>Der <b>4. November</b> ist mit Tinte eingekreist. Daneben, in einer anderen, zarten, steilen Handschrift, die nicht Hallmanns ist:<br><i>„2:58 – SIE hat gerufen.“</i>',
-    foto: 'Auf deinem Foto ist der Kreis um den 4. November nicht blau, sondern rotbraun.'
+    foto: 'Auf deinem Foto ist der Kalender auf einen anderen Monat aufgeschlagen – einen, in dem jeder Tag durchgestrichen ist.'
   });
 
   // --- Hallmanns Kiste: Zahlenschloss 0258 ------------------------------

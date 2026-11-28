@@ -321,6 +321,14 @@
       document.querySelectorAll('#log .wort.aktiv').forEach(function (w) { w.classList.remove('aktiv'); });
     },
     wortMenue: function (w) {
+      // Wörter mit festen Befehlen (HG.text.befehlWort), z. B. „etwas Hartes“ für ein noch verstecktes Ding
+      if (w.hasAttribute('data-befehle')) {
+        var feste = w.getAttribute('data-befehle').split(';').filter(Boolean).map(function (x) { var p = x.split('='); return { text: p[0], befehl: p[1] }; });
+        feste.push({ text: 'Eigener Befehl …', eingabe: ' ' + w.textContent.toLowerCase(), cursorVorne: true });
+        A.schliesseMenue(); w.classList.add('aktiv');
+        A.zeigeMenue(w, T.esc(w.textContent), feste);
+        return;
+      }
       var ids = w.getAttribute('data-ids').split(','), liste = [];
       ids.forEach(function (id) {
         var akt = HG.spiel.aktionenFuer(id);
@@ -368,7 +376,7 @@
         var gang = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null), knoten = [];
         while (gang.nextNode()) {
           var n = gang.currentNode;
-          if (!n.parentNode.closest('button, a, .wort, .nebenbei, .unsichtbar')) knoten.push(n);
+          if (!n.parentNode.closest('button, a, .wort, .nebenbei, .unsichtbar, .kein-wort')) knoten.push(n);
         }
         knoten.forEach(function (n) {
           var text = n.nodeValue, re = /[A-ZÄÖÜ][A-Za-zÄÖÜäöüß]{2,}/g, m, frag = null, pos = 0;
@@ -684,7 +692,7 @@
       // Kurzanzeige im Reiter (schmale Bildschirme)
       var rn = $('reiter-nerven');
       if (rn) {
-        rn.textContent = z.werte.nerven;
+        rn.textContent = 'NERVEN ' + z.werte.nerven;   // nie eine Zahl ohne Bedeutung (Spieltest 2)
         rn.parentNode.classList.toggle('knapp', z.max.nerven ? z.werte.nerven / z.max.nerven <= 0.34 : false);
         rn.parentNode.setAttribute('aria-label', 'Werte, NERVEN ' + z.werte.nerven + ' von ' + z.max.nerven);
       }
@@ -724,7 +732,7 @@
       if (!z.hinweise.length && !z.notizen.length) html = '<p class="leer">Noch keine Einträge. Hinweise werden automatisch notiert.</p>';
       if (z.schluesse.length) {
         html += '<section class="nb-schluesse"><h4>★ Schlussfolgerungen <span class="nb-zahl">' + z.schluesse.length + '</span></h4><ul class="schluesse">';
-        z.schluesse.forEach(function (id) { var s = HG.daten.schluesse[id]; html += '<li><b>' + s.titel + '</b><div>' + HG.text.fuelle(s.text) + '</div></li>'; });
+        z.schluesse.forEach(function (id) { var s = HG.daten.schluesse[id]; html += '<li><b>' + s.titel + '</b><div>' + HG.text.fuelle(HG.spiel.schlussText(id)) + '</div></li>'; });
         html += '</ul></section>';
       }
       // Kombinierbare Paare: gleiches Zeichen in gleicher Farbe an beiden Einträgen (Alpha-Test 27.11.2026)
@@ -773,7 +781,8 @@
     notizZaehler: function () {
       var z = Z(), S = HG.spiel, neu = z.hinweise.filter(S.hinweisNeu).length;
       document.querySelectorAll('[data-tab=notizbuch] .anzahl').forEach(function (t) {
-        t.textContent = z.hinweise.length ? '(' + z.hinweise.length + ')' : '';
+        // Spieltest 2: eine nackte Zahl (Anzahl aller Hinweise) wirkte wie ein Wurf – nur neue Hinweise zählen, mit „neu“
+        t.textContent = neu ? neu + ' neu' : '';
         t.classList.toggle('hat-neue', neu > 0);
         t.title = neu ? neu + ' neue Hinweise' : '';
       });

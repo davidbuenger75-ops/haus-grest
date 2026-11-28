@@ -814,7 +814,12 @@
   HG.schluss('nacht_der_tuer', {
     aus: ['kalender_kraehe', 'vogelschaedel', 'elisabeths_tagebuch'], mindestens: 2,
     titel: 'Die Nacht der Tür',
-    text: 'Neumond ist die Nacht der Pflegerin: jeden Neumond ein Opfer, in einer Neumondnacht trug sie Elisabeth in den Keller – und der Kalender in ihrem Gewölbe zählt noch immer die Nächte bis zum nächsten. Wenn sich in diesem Haus etwas entscheidet, dann in einer Neumondnacht.'
+    teile: [
+      [['kalender_kraehe', 'vogelschaedel'], 'Striche in Zwölferblöcken: jeden Neumond ein Leben.'],
+      ['elisabeths_tagebuch', 'In einer Neumondnacht 1929 stand Elisabeth im Keller und lehnte ab.'],
+      ['kalender_kraehe', 'Und der Kalender im Gewölbe zählt noch immer die Nächte bis zum nächsten Neumond.']
+    ],
+    fazit: 'Neumond ist die Nacht der Pflegerin. Wenn sich in diesem Haus etwas entscheidet, dann in einer Neumondnacht.'
   });
 
   // ===================================================================

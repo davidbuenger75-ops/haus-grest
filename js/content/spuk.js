@@ -257,8 +257,10 @@ HG.spuk('ablenkung_nachts', {
 });
 
 // --- Nachrichten und Anrufe vom Haus ---------------------------------
+// Carstens SMS nie gleichzeitig mit der ersten: frühestens zehn Minuten später und in einem anderen Raum als der Halle
 HG.spuk('sms_carsten', {
   art: 'nachricht', schauplatz: 'haus', zeiten: ['abend', 'nacht'], chance: 0.08, einmalig: true,
+  bedingung: function (api) { var w = api.flag('willkommen_min'); return !!w && api.minuten() - w >= 10 && api.raum() !== 'halle'; },
   nachricht: 'carsten_spiegelzimmer'
 });
 

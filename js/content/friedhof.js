@@ -69,11 +69,15 @@
     riechen: 'Moos, Eibennadeln, kalter Sandstein. Und Lavendel, so stark, als stünde jemand neben dir, der sich damit parfümiert hat.',
     horchen: { tag: 'Die Krähen sind hierher gefolgt. Sie sitzen auf der Kirchenmauer, eine neben der anderen, und keine sagt etwas.', abend: 'Nichts. Selbst die Krähen sind still. Dann, vom Grab Grest her, ein leises Knistern, wie trockene Blätter. Es ist windstill.' },
     ausgaenge: { sueden: 'friedhof' },
+    // Abends wacht eine Krähe (Spieltest 2): Sie fliegt auf, landet ein paar Steine weiter und sieht dir zu – solange du
+    // hier bist, jedes Mal von einem anderen Platz aus. Sie setzt sich nicht auf die Hand.
+    vorBetreten: function (api) { api.bewege('kraehe_grab', api.flag('friedhof_abend_' + api.tag()) ? 'friedhof_alt' : null); },
     beimBetreten: function (api, info) {
       if (info.erstesMal) api.sage('Als du um die Kirche biegst, fliegen die Krähen von der Mauer auf, alle zugleich, und lassen sich drei Meter weiter wieder nieder. Wie Leute, die Platz machen.');
       if (api.tageszeit() === 'abend' && !api.flag('friedhof_abend_' + api.tag())) {
         api.setzeFlag('friedhof_abend_' + api.tag());
-        api.sage('Auf dem Stein der Grests sitzt eine einzelne Krähe. Sie sieht dich an, dann zum Lavendel, dann wieder dich. Als du einen Schritt näher kommst, fliegt sie nicht weg. Sie hüpft nur ein Stück zur Seite – auf die Hand, die keinen Ring trägt.');
+        api.bewege('kraehe_grab', 'friedhof_alt');
+        api.sage('Auf dem Stein der Grests sitzt eine einzelne Krähe. Sie sieht dich an, dann zum Lavendel, dann wieder dich. Als du einen Schritt näher kommst, fliegt sie auf, schwer und ohne einen Laut, und landet ein paar Grabsteine weiter auf einem Eisenkreuz. Dort dreht sie den Kopf und sieht dich weiter an.');
       }
     },
     vorschlaege: function (api) {
@@ -86,6 +90,20 @@
       { nomen: 'Eibe', genus: 'f', woerter: ['eibe', 'baum', 'nadeln'], text: 'Eine alte Eibe, dunkel und dicht. Der Boden darunter ist trocken, obwohl es geregnet hat. Nur das Grab der Grests liegt im Schatten, als hätte der Baum sich darüber gebeugt.' },
       { nomen: 'Kirchenmauer', genus: 'f', woerter: ['kirchenmauer', 'mauer', 'kirche'], text: 'Die Rückwand der Dorfkirche, Bruchstein, ein vermauertes gotisches Fenster. Die Krähen sitzen auf dem Sims in einer Reihe.' }
     ]
+  });
+
+  var KRAEHE_PLAETZE = [
+    'Auf einem schiefen Eisenkreuz ein paar Gräber weiter sitzt die Krähe und sieht dich an.',
+    'Die Krähe sitzt jetzt auf dem Kopf eines Engels ohne Nase, zwei Reihen hinter dir. Sie sieht her.',
+    'Auf der Einfassung eines eingesunkenen Grabes, ganz nah am Weg, sitzt die Krähe. Ihr Auge glänzt. Sie sieht dich an.',
+    'Die Krähe hat sich auf den unteren Ast der Eibe gesetzt, genau über dir. Sie sieht hinunter.'
+  ];
+  HG.ding('kraehe_grab', {
+    nomen: 'Krähe', genus: 'f', adj: ['einzeln', 'schwarz'], woerter: ['kraehe', 'vogel', 'rabe'],
+    ort: null, fest: 'Sie lässt dich nicht näher als drei Schritte heran. Dann hüpft sie weiter, ohne Eile.',
+    hierText: function (api) { return KRAEHE_PLAETZE[api.zug() % KRAEHE_PLAETZE.length]; },
+    beschreibung: 'Eine einzelne Krähe, größer als die auf der Mauer, das Gefieder stumpf wie Asche. Sie beobachtet dich. Wenn du dich bewegst, bewegt sich nur ihr Kopf.',
+    texte: { sprechen: 'Die Krähe legt den Kopf schief. Sonst nichts.', horchen: 'Kein Laut. Nicht einmal das Rascheln von Federn.' }
   });
 
   HG.ding('lavendel_grab', {
@@ -211,6 +229,6 @@
     stichworte: ['grab', 'grabstein', 'friedhof', 'haende', 'ring', 'inschrift']
   });
   // Dritte Quelle für „Der Ring ist der Anker“ (Spielbibel 8.7)
-  HG.daten.schluesse.ring_ist_anker.aus.push('grabstein_grest');
+  /* Grabstein: Quelle für „Der Ring wartet“ (hinweise.js) */
 
 })();

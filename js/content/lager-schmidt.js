@@ -276,7 +276,8 @@
     ort: 'lager_c214', szenerie: true, fest: 'Du lässt den Schuhkarton lieber, wo er ist – er ist schwerer, als ein Schuhkarton sein sollte.',
     behaelter: true, oeffenbar: true, offen: false,
     beschreibung: 'Ein Schuhkarton, „Größe 44, schwarz“. Er ist schwerer, als er aussieht.',
-    texte: { oeffnen: 'Du hebst den Deckel. Darin liegt etwas, eingeschlagen in ein kariertes Geschirrtuch. Du schlägst das Tuch zurück: eine Pistole.' }
+    inhaltBeimOeffnen: false,
+    texte: { oeffnen: 'Du hebst den Deckel. Darin liegt etwas, eingeschlagen in ein kariertes Geschirrtuch. Du schlägst das Tuch zurück: eine Pistole. Daneben zwei volle Magazine.' }
   });
   HG.ding('pistole', {
     nomen: 'Pistole', genus: 'f',
@@ -386,11 +387,17 @@
     var t = 'Ein Umzugskarton, beschriftet: „GREST“. Der Deckel ist mit Klebeband mehrfach verstärkt.';
     // Hinweis auf den Zirkel (Rätsel „Bernwards Kästchen“, js/content/kaestchen.js), solange er noch nicht gefunden ist.
     // Der Zirkel hört auf „etwas Hartes“, „das Schwere“ … (versteckt.andeutung) und findet sich auch unter dem Foto.
-    if (api.eig('karton_grest', 'offen') && api.eig('zirkel', 'versteckt') && api.eig('zirkel', 'ort') === 'karton_grest') {
-      t += ' Für ein paar Papiere ist er erstaunlich schwer. Ganz unten, unter dem Foto, steckt etwas Hartes.';
-    }
+    if (zirkelAndeutung(api)) t += ' ' + zirkelAndeutung(api);
     return t;
+  }, {
+    // Auch beim Öffnen (Spieltest 2): der Hinweis auf den Zirkel, „etwas Hartes“ antippbar
+    nachOeffnen: function (api) { return zirkelAndeutung(api); }
   });
+  function zirkelAndeutung(api) {
+    if (!(api.eig('karton_grest', 'offen') && api.eig('zirkel', 'versteckt') && api.eig('zirkel', 'ort') === 'karton_grest')) return '';
+    return 'Für ein paar Papiere ist er erstaunlich schwer. Ganz unten, unter dem Foto, steckt ' +
+      HG.text.befehlWort('etwas Hartes', [['Nehmen', 'nimm etwas hartes'], ['Untersuchen', 'untersuche das harte'], ['Unter das Foto schauen', 'schau unter das foto']]) + '.';
+  }
 
   // Alltagskram in den Kartons: wird beim Öffnen aufgezählt, bleibt aber im Karton (fest). Herausnehmbar sind nur die
   // wichtigen Dinge (Dokumente zum Fotografieren, Zirkel, Feinmechaniker-Set). David, 23.11.2026: „Ergibt keinen Sinn,
@@ -663,7 +670,8 @@
       'Im Obergeschoss ist das Ankleidezimmer dick eingekreist, daneben ein einziges Wort: <b>SIE</b>. Im Keller, beim Kohlenkeller unter der Halle: <i>„Wand?? – gemessen: 2,40 m fehlen“</i>.',
     lesbar: 'Im Stempelfeld, kopiert: „Villa für die Eheleute Grest · Kirchhörde. Entwurf und Ausführung: B. Grest, Architekt. Dortmund, im Mai 1899.“<br><br>' +
       '<i>Carstens Anmerkungen, blauer Kugelschreiber:</i><br>Obergeschoss – das Ankleidezimmer eingekreist, daneben: <b>„SIE“</b><br>Keller – beim Kohlenkeller unter der Halle: <b>„Wand?? – gemessen: 2,40 m fehlen“</b>',
-    foto: 'Auf dem Display ist der Kreis um das Ankleidezimmer dunkler als auf dem Papier. Als hätte ihn jemand nachgezogen.',
+    // Jedes Foto hat seine eigene kleine Unheimlichkeit (Spieltest 2: „nachgezogen“ kam mehrfach vor)
+    foto: 'Auf dem Display steht neben dem Kreis um das Ankleidezimmer nicht „SIE“, sondern „WIR“. Auf dem Papier steht „SIE“.',
     planNotizen: [
       { stock: 'og', raum: 'ankleidezimmer', kreis: true, text: 'SIE', l: [21.9, 8.2], drehung: -8 },
       { stock: 'keller', raum: 'kohlenkeller', text: 'Wand??\ngemessen: 2,40 m fehlen', l: [10, 7.4], drehung: -3 }   // \n = neue Zeile
@@ -716,13 +724,21 @@
   //   Stufe 4b – nicht bekehrt, in der Neumondnacht oder wenn Carsten im Finale gegen dich kämpft (Flag tb_fremd):
   //             „Er gehört mir.“ – „Du gehörst auch zu mir.“ – „Willkommen zu Hause.“ (nur Grusel)
   var KELLER = ['kellertreppe', 'kellerflur', 'vorratskeller', 'weinkeller', 'waschkueche', 'heizungskeller', 'ritualraum'];
-  function stufe(api) {
-    var z = HG.zustand.z, h = function (id) { return api.hatHinweis(id); };
-    if (h('tb_wandlung') || (h('polizeiakte_haeuser') && api.flag('carsten_begegnet'))) return 3;
-    if (h('tb_brand') || h('polizeiakte_haeuser') || KELLER.some(function (r) { return z.besucht[r]; })) return 2;
-    if (h('tb_angst') || api.flag('nacht_im_haus')) return 1;
-    return 0;
+  // Strikt nacheinander (Spieltest 2): Die erreichte Stufe steht im Flag tb_stufe. Nach jedem Zug rückt sie höchstens
+  // um eins vor, wenn die Bedingung der nächsten erfüllt ist – ist eine spätere schon erfüllt, folgt sie im nächsten Zug.
+  var BEDINGUNG = [
+    null,
+    function (api) { return api.hatHinweis('tb_angst') || !!api.flag('nacht_im_haus'); },
+    function (api) { var z = HG.zustand.z; return api.hatHinweis('tb_brand') || api.hatHinweis('polizeiakte_haeuser') || KELLER.some(function (r) { return z.besucht[r]; }); },
+    function (api) { return api.hatHinweis('tb_wandlung') || (api.hatHinweis('polizeiakte_haeuser') && !!api.flag('carsten_begegnet')); }
+  ];
+  function stufe(api) { return +api.flag('tb_stufe') || 0; }
+  function stufeVorruecken(api) {
+    var n = stufe(api);
+    if (n < 3 && BEDINGUNG[n + 1](api)) api.setzeFlag('tb_stufe', n + 1);
   }
+  var jedeRundeTb = HG.daten.spiel.jedeRunde;
+  HG.spielDaten({ jedeRunde: function (api) { if (jedeRundeTb) jedeRundeTb(api); stufeVorruecken(api); } });
   function ab(n) { return function (api) { return stufe(api) >= n; }; }
   function variante(api) { return api.bekehrt('carsten') ? 'a' : api.flag('tb_fremd') ? 'b' : null; }
   function fremd(t) { return '<span style="font-family:\'Segoe Script\',cursive;font-size:1.3em">' + t + '</span>'; }
@@ -824,6 +840,9 @@
       if (st.entziffert || (st.gelesen || []).indexOf(10) >= 0) gib('tb_brand');
     }
     if (z.hinweise.indexOf('tb_wandlung') >= 0) gib('tb_brand');
+    // erreichte Stufe aus den Hinweisen ableiten (alte Spielstände kannten tb_stufe nicht)
+    var h = function (id) { return z.hinweise.indexOf(id) >= 0; };
+    z.flags.tb_stufe = h('tb_wandlung') ? 3 : h('tb_brand') ? 2 : (h('tb_angst') || z.flags.nacht_im_haus) ? 1 : 0;
   });
 
   // Alte Spielstände (bis Version 4): Am 22.11.2026 kamen die Einträge 2.9. und 19.9.2026 hinzu.

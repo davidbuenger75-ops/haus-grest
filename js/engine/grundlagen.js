@@ -4,7 +4,7 @@
 window.HG = window.HG || {};
 // Spielversion: bei jeder Veröffentlichung hochzählen – zusammen mit VERSION in sw.js (der Test prüft, dass beide passen).
 // Steht im Protokollkopf, damit man sieht, welcher Stand gespielt wurde.
-window.HG.SPIELVERSION = 30;
+window.HG.SPIELVERSION = 31;
 
 (function (HG) {
   'use strict';
@@ -103,6 +103,11 @@ window.HG.SPIELVERSION = 30;
     return s.replace(/\{g:([^|}]*)\|([^|}]*)(?:\|([^}]*))?\}/g, function (m, a, b, c) { return HG.g(a, b, c); })
       .replace(/\{name\}/g, voll).replace(/\{vorname\}/g, vor).replace(/\{nachname\}/g, nach)
       .replace(/\{anrede\}/g, anrede).replace(/\{briefanrede\}/g, brief);
+  };
+
+  /** Antippbares Wort mit festen Befehlen: T.befehlWort('etwas Hartes', [['Nehmen', 'nimm etwas hartes'], …]) */
+  T.befehlWort = function (text, befehle) {
+    return '<span class="wort" data-befehle="' + befehle.map(function (b) { return T.esc(b[0]) + '=' + T.esc(b[1]); }).join(';') + '">' + text + '</span>';
   };
 
   /** ["a","b","c"] -> "a, b und c" */

@@ -330,6 +330,9 @@
         return traeger.indexOf(ort) >= 0 || traeger.indexOf(D(id).teilVon) >= 0;
       });
       if (k.length) return k;
+      // „nachrichten auf brigittes handy“: der Kopf ist ein Teil des Trägers selbst (teilWoerter)
+      var selbst = traeger.filter(function (id) { var tw = D(id).teilWoerter || []; return kopf.every(function (w) { return tw.indexOf(w) >= 0 || ARTIKEL.indexOf(w) >= 0; }); });
+      if (selbst.length === 1) return selbst;
     }
     return [];
   }
