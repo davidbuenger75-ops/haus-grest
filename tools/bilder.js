@@ -52,7 +52,9 @@ const MEDIENLISTE = path.join(WURZEL, 'docs', 'medien-liste.md');
 const BILDER = path.join(WURZEL, 'assets', 'bilder');
 const KANDIDATEN = path.join(BILDER, '_kandidaten');
 const ALT = path.join(KANDIDATEN, '_alt');
-const STILBILD = path.join(BILDER, '_stil.png');
+// Originale in voller Größe liegen in assets/original/bilder/ (nicht veröffentlicht); im Spiel nur WebP (tools/bilder-optimieren.js)
+const ORIGINAL = path.join(WURZEL, 'assets', 'original', 'bilder');
+const STILBILD = path.join(ORIGINAL, '_stil.png');
 const KANDIDATEN_JS = path.join(__dirname, 'kandidaten.js');
 const ENDUNGEN = ['.webp', '.jpg', '.png'];
 const MIME = { '.jpg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp' };
@@ -140,10 +142,13 @@ function variantenPrompt(anweisung, nurLicht, stil) {
     (nurLicht ? ZUSATZ_LICHT : ZUSATZ_SONST) + ' Stil: ' + stil;
 }
 
+/** Übernommenes Bild: zuerst das Original (volle Größe, für Bearbeitungen), sonst die Spieldatei. */
 function vorhandeneDatei(name) {
-  for (const e of ENDUNGEN) {
-    const p = path.join(BILDER, name + e);
-    if (fs.existsSync(p)) return p;
+  for (const ordner of [ORIGINAL, BILDER]) {
+    for (const e of ENDUNGEN) {
+      const p = path.join(ordner, name + e);
+      if (fs.existsSync(p)) return p;
+    }
   }
   return null;
 }
@@ -292,7 +297,7 @@ async function erzeugeKandidaten(name, auftrag, info) {
     }
   }
   // Nur ein Kandidat: gleich ins Spiel übernehmen (Davids Vorgabe vom 24.11.2026)
-  if (VARIANTEN === 1 && !fehler) console.log('  Übernommen: ' + uebernimm(name, 1));
+  if (VARIANTEN === 1 && !fehler) console.log('  Übernommen: ' + await uebernimm(name, 1));
   return fehler;
 }
 
@@ -316,7 +321,7 @@ function schreibeKandidatenJs() {
       prompt: info.prompt || '',
       kandidaten: kandidatenVon(name),
       gewaehlt: gewaehlt ? path.basename(gewaehlt) : null,
-      vorlage: vorlage ? path.basename(vorlage) : null
+      vorlage: vorlage ? path.relative(WURZEL, vorlage).replace(/\\/g, '/') : null
     };
   });
   fs.writeFileSync(KANDIDATEN_JS,
@@ -324,16 +329,18 @@ function schreibeKandidatenJs() {
     'window.KANDIDATEN = ' + JSON.stringify(liste, null, 2) + ';\n', 'utf8');
 }
 
-function uebernimm(name, nummer) {
+/** Kandidaten übernehmen: Original nach assets/original/bilder/, dann gleich die WebP-Fassungen fürs Spiel erzeugen. */
+async function uebernimm(name, nummer) {
   const datei = kandidatenVon(name).find(f => f.startsWith(name + '-' + nummer + '.'));
   if (!datei) throw new Error('Kandidat ' + name + ' Nr. ' + nummer + ' nicht gefunden.');
-  for (const e of ENDUNGEN) {               // alte Fassung in anderem Format entfernen
-    const alt = path.join(BILDER, name + e);
-    if (fs.existsSync(alt)) fs.unlinkSync(alt);
+  fs.mkdirSync(ORIGINAL, { recursive: true });
+  for (const ordner of [ORIGINAL, BILDER]) {   // alte Fassungen in anderem Format entfernen
+    for (const e of ['.jpg', '.png']) { const alt = path.join(ordner, name + e); if (fs.existsSync(alt)) fs.unlinkSync(alt); }
   }
-  const ziel = path.join(BILDER, name + path.extname(datei));
+  const ziel = path.join(ORIGINAL, name + path.extname(datei));
   fs.copyFileSync(path.join(KANDIDATEN, datei), ziel);
-  return path.relative(WURZEL, ziel);
+  await require('./bilder-optimieren.js').optimiere(name, true);
+  return path.relative(WURZEL, path.join(BILDER, name + '.webp')) + ' (+ -768.webp; Original: ' + path.relative(WURZEL, ziel) + ')';
 }
 
 // ---------------------------------------------------------------- Auswahl-Server
@@ -347,11 +354,11 @@ function starteAuswahl() {
     if (req.method === 'POST' && url === '/uebernehmen') {
       let body = '';
       req.on('data', c => { body += c; });
-      req.on('end', () => {
+      req.on('end', async () => {
         try {
           const { name, nummer } = JSON.parse(body);
           if (!/^(raum|ding|ort)-[\w-]+$/.test(name) || !/^\d+$/.test(String(nummer))) throw new Error('Ungültige Angabe.');
-          const ziel = uebernimm(name, nummer);
+          const ziel = await uebernimm(name, nummer);
           console.log('Übernommen: ' + ziel);
           schreibeKandidatenJs();
           res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -367,7 +374,7 @@ function starteAuswahl() {
     if (url === '/tools/kandidaten.js') schreibeKandidatenJs();   // immer frisch
     // Nur Dateien aus tools/ und assets/bilder/ ausliefern
     const pfad = path.normalize(path.join(WURZEL, url));
-    const erlaubt = [__dirname, BILDER].some(o => pfad.startsWith(o + path.sep));
+    const erlaubt = [__dirname, BILDER, ORIGINAL].some(o => pfad.startsWith(o + path.sep));
     if (!erlaubt || !fs.existsSync(pfad) || fs.statSync(pfad).isDirectory()) {
       res.writeHead(404); res.end('Nicht gefunden'); return;
     }
@@ -452,7 +459,7 @@ async function main() {
   if (woerter[0] === 'nimm') {
     const name = alleNamen.find(n => passt(n, woerter[1] || '')) || vollerName(woerter[1] || '', eintraege);
     if (!name || !woerter[2]) throw new Error('Aufruf: node tools/bilder.js nimm <name> <nummer>');
-    console.log('Übernommen: ' + uebernimm(name, woerter[2]));
+    console.log('Übernommen: ' + await uebernimm(name, woerter[2]));
     schreibeKandidatenJs();
     return;
   }

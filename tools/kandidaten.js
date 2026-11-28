@@ -745,7 +745,7 @@ window.KANDIDATEN = [
       "raum-altenheim_aufenthalt-abend-1.jpg"
     ],
     "gewaehlt": "raum-altenheim_aufenthalt-abend.jpg",
-    "vorlage": "raum-altenheim_aufenthalt.jpg"
+    "vorlage": "assets/original/bilder/raum-altenheim_aufenthalt.jpg"
   },
   {
     "name": "raum-anrichte",
@@ -765,7 +765,7 @@ window.KANDIDATEN = [
       "raum-anrichte-nacht-1.jpg"
     ],
     "gewaehlt": "raum-anrichte-nacht.jpg",
-    "vorlage": "raum-anrichte.jpg"
+    "vorlage": "assets/original/bilder/raum-anrichte.jpg"
   },
   {
     "name": "raum-anrichte-spuk",
@@ -775,7 +775,7 @@ window.KANDIDATEN = [
       "raum-anrichte-spuk-1.jpg"
     ],
     "gewaehlt": "raum-anrichte-spuk.jpg",
-    "vorlage": "raum-anrichte.jpg"
+    "vorlage": "assets/original/bilder/raum-anrichte.jpg"
   },
   {
     "name": "raum-arbeitszimmer",
@@ -797,7 +797,7 @@ window.KANDIDATEN = [
       "raum-arbeitszimmer-nacht-2.jpg"
     ],
     "gewaehlt": "raum-arbeitszimmer-nacht.jpg",
-    "vorlage": "raum-arbeitszimmer.jpg"
+    "vorlage": "assets/original/bilder/raum-arbeitszimmer.jpg"
   },
   {
     "name": "raum-arbeitszimmer-rasiermesser-nacht",
@@ -808,7 +808,7 @@ window.KANDIDATEN = [
       "raum-arbeitszimmer-rasiermesser-nacht-2.jpg"
     ],
     "gewaehlt": "raum-arbeitszimmer-rasiermesser-nacht.jpg",
-    "vorlage": "raum-arbeitszimmer.jpg"
+    "vorlage": "assets/original/bilder/raum-arbeitszimmer.jpg"
   },
   {
     "name": "raum-bad",
@@ -828,7 +828,7 @@ window.KANDIDATEN = [
       "raum-bad-nacht-1.jpg"
     ],
     "gewaehlt": "raum-bad-nacht.jpg",
-    "vorlage": "raum-bad.jpg"
+    "vorlage": "assets/original/bilder/raum-bad.jpg"
   },
   {
     "name": "raum-bad-spuk",
@@ -838,7 +838,7 @@ window.KANDIDATEN = [
       "raum-bad-spuk-1.jpg"
     ],
     "gewaehlt": "raum-bad-spuk.jpg",
-    "vorlage": "raum-bad.jpg"
+    "vorlage": "assets/original/bilder/raum-bad.jpg"
   },
   {
     "name": "raum-bauamt",
@@ -868,7 +868,7 @@ window.KANDIDATEN = [
       "raum-bibliothek-nacht-1.jpg"
     ],
     "gewaehlt": "raum-bibliothek-nacht.jpg",
-    "vorlage": "raum-bibliothek.jpg"
+    "vorlage": "assets/original/bilder/raum-bibliothek.jpg"
   },
   {
     "name": "raum-bibliothek-spuk",
@@ -878,7 +878,7 @@ window.KANDIDATEN = [
       "raum-bibliothek-spuk-1.jpg"
     ],
     "gewaehlt": "raum-bibliothek-spuk.jpg",
-    "vorlage": "raum-bibliothek.jpg"
+    "vorlage": "assets/original/bilder/raum-bibliothek.jpg"
   },
   {
     "name": "raum-dienstbotenzimmer",
@@ -898,7 +898,7 @@ window.KANDIDATEN = [
       "raum-dienstbotenzimmer-nacht-1.jpg"
     ],
     "gewaehlt": "raum-dienstbotenzimmer-nacht.jpg",
-    "vorlage": "raum-dienstbotenzimmer.jpg"
+    "vorlage": "assets/original/bilder/raum-dienstbotenzimmer.jpg"
   },
   {
     "name": "raum-dienstbotenzimmer-spuk",
@@ -908,7 +908,7 @@ window.KANDIDATEN = [
       "raum-dienstbotenzimmer-spuk-1.jpg"
     ],
     "gewaehlt": "raum-dienstbotenzimmer-spuk.jpg",
-    "vorlage": "raum-dienstbotenzimmer.jpg"
+    "vorlage": "assets/original/bilder/raum-dienstbotenzimmer.jpg"
   },
   {
     "name": "raum-einfahrt",
@@ -930,7 +930,7 @@ window.KANDIDATEN = [
       "raum-einfahrt-nacht-2.jpg"
     ],
     "gewaehlt": "raum-einfahrt-nacht.jpg",
-    "vorlage": "raum-einfahrt.jpg"
+    "vorlage": "assets/original/bilder/raum-einfahrt.jpg"
   },
   {
     "name": "raum-flur",
@@ -950,7 +950,7 @@ window.KANDIDATEN = [
       "raum-flur-spuk-1.jpg"
     ],
     "gewaehlt": "raum-flur-spuk.jpg",
-    "vorlage": "raum-flur.jpg"
+    "vorlage": "assets/original/bilder/raum-flur.jpg"
   },
   {
     "name": "raum-friedhof",
@@ -970,7 +970,7 @@ window.KANDIDATEN = [
       "raum-friedhof-abend-1.jpg"
     ],
     "gewaehlt": "raum-friedhof-abend.jpg",
-    "vorlage": "raum-friedhof.jpg"
+    "vorlage": "assets/original/bilder/raum-friedhof.jpg"
   },
   {
     "name": "raum-friedhof_alt",
@@ -990,7 +990,7 @@ window.KANDIDATEN = [
       "raum-friedhof_alt-abend-1.jpg"
     ],
     "gewaehlt": "raum-friedhof_alt-abend.jpg",
-    "vorlage": "raum-friedhof_alt.jpg"
+    "vorlage": "assets/original/bilder/raum-friedhof_alt.jpg"
   },
   {
     "name": "raum-gaestezimmer",
@@ -1010,7 +1010,7 @@ window.KANDIDATEN = [
       "raum-gaestezimmer-nacht-1.jpg"
     ],
     "gewaehlt": "raum-gaestezimmer-nacht.jpg",
-    "vorlage": "raum-gaestezimmer.jpg"
+    "vorlage": "assets/original/bilder/raum-gaestezimmer.jpg"
   },
   {
     "name": "raum-gaestezimmer-spuk",
@@ -1020,7 +1020,7 @@ window.KANDIDATEN = [
       "raum-gaestezimmer-spuk-1.jpg"
     ],
     "gewaehlt": "raum-gaestezimmer-spuk.jpg",
-    "vorlage": "raum-gaestezimmer.jpg"
+    "vorlage": "assets/original/bilder/raum-gaestezimmer.jpg"
   },
   {
     "name": "raum-galerie",
@@ -1040,7 +1040,7 @@ window.KANDIDATEN = [
       "raum-galerie-nacht-1.jpg"
     ],
     "gewaehlt": "raum-galerie-nacht.jpg",
-    "vorlage": "raum-galerie.jpg"
+    "vorlage": "assets/original/bilder/raum-galerie.jpg"
   },
   {
     "name": "raum-garderobe",
@@ -1060,7 +1060,7 @@ window.KANDIDATEN = [
       "raum-garderobe-nacht-1.jpg"
     ],
     "gewaehlt": "raum-garderobe-nacht.jpg",
-    "vorlage": "raum-garderobe.jpg"
+    "vorlage": "assets/original/bilder/raum-garderobe.jpg"
   },
   {
     "name": "raum-garderobe-spuk",
@@ -1070,7 +1070,7 @@ window.KANDIDATEN = [
       "raum-garderobe-spuk-1.jpg"
     ],
     "gewaehlt": "raum-garderobe-spuk.jpg",
-    "vorlage": "raum-garderobe.jpg"
+    "vorlage": "assets/original/bilder/raum-garderobe.jpg"
   },
   {
     "name": "raum-gerdes",
@@ -1100,7 +1100,7 @@ window.KANDIDATEN = [
       "raum-gerdes_wohnung-abend-1.jpg"
     ],
     "gewaehlt": "raum-gerdes_wohnung-abend.jpg",
-    "vorlage": "raum-gerdes_wohnung.jpg"
+    "vorlage": "assets/original/bilder/raum-gerdes_wohnung.jpg"
   },
   {
     "name": "raum-halle",
@@ -1124,7 +1124,7 @@ window.KANDIDATEN = [
       "raum-halle-nacht-3.jpg"
     ],
     "gewaehlt": "raum-halle-nacht.jpg",
-    "vorlage": "raum-halle.jpg"
+    "vorlage": "assets/original/bilder/raum-halle.jpg"
   },
   {
     "name": "raum-halle-spuk",
@@ -1134,7 +1134,7 @@ window.KANDIDATEN = [
       "raum-halle-spuk-1.jpg"
     ],
     "gewaehlt": "raum-halle-spuk.jpg",
-    "vorlage": "raum-halle.jpg"
+    "vorlage": "assets/original/bilder/raum-halle.jpg"
   },
   {
     "name": "raum-halle-tuer-offen",
@@ -1144,7 +1144,7 @@ window.KANDIDATEN = [
       "raum-halle-tuer-offen-1.jpg"
     ],
     "gewaehlt": "raum-halle-tuer-offen.jpg",
-    "vorlage": "raum-halle.jpg"
+    "vorlage": "assets/original/bilder/raum-halle.jpg"
   },
   {
     "name": "raum-heizungskeller",
@@ -1164,7 +1164,7 @@ window.KANDIDATEN = [
       "raum-heizungskeller-durch-1.jpg"
     ],
     "gewaehlt": "raum-heizungskeller-durch.jpg",
-    "vorlage": "raum-heizungskeller.jpg"
+    "vorlage": "assets/original/bilder/raum-heizungskeller.jpg"
   },
   {
     "name": "raum-heizungskeller-spuk",
@@ -1174,7 +1174,7 @@ window.KANDIDATEN = [
       "raum-heizungskeller-spuk-1.jpg"
     ],
     "gewaehlt": "raum-heizungskeller-spuk.jpg",
-    "vorlage": "raum-heizungskeller.jpg"
+    "vorlage": "assets/original/bilder/raum-heizungskeller.jpg"
   },
   {
     "name": "raum-hinterdiele",
@@ -1194,7 +1194,7 @@ window.KANDIDATEN = [
       "raum-hinterdiele-nacht-1.jpg"
     ],
     "gewaehlt": "raum-hinterdiele-nacht.jpg",
-    "vorlage": "raum-hinterdiele.jpg"
+    "vorlage": "assets/original/bilder/raum-hinterdiele.jpg"
   },
   {
     "name": "raum-hinterdiele-tuer-offen",
@@ -1204,7 +1204,7 @@ window.KANDIDATEN = [
       "raum-hinterdiele-tuer-offen-1.jpg"
     ],
     "gewaehlt": "raum-hinterdiele-tuer-offen.jpg",
-    "vorlage": "raum-hinterdiele.jpg"
+    "vorlage": "assets/original/bilder/raum-hinterdiele.jpg"
   },
   {
     "name": "raum-kellerflur",
@@ -1224,7 +1224,7 @@ window.KANDIDATEN = [
       "raum-kellerflur-spuk-1.jpg"
     ],
     "gewaehlt": "raum-kellerflur-spuk.jpg",
-    "vorlage": "raum-kellerflur.jpg"
+    "vorlage": "assets/original/bilder/raum-kellerflur.jpg"
   },
   {
     "name": "raum-kinderzimmer",
@@ -1244,7 +1244,7 @@ window.KANDIDATEN = [
       "raum-kinderzimmer-nacht-1.jpg"
     ],
     "gewaehlt": "raum-kinderzimmer-nacht.jpg",
-    "vorlage": "raum-kinderzimmer.jpg"
+    "vorlage": "assets/original/bilder/raum-kinderzimmer.jpg"
   },
   {
     "name": "raum-kinderzimmer-spuk",
@@ -1254,7 +1254,7 @@ window.KANDIDATEN = [
       "raum-kinderzimmer-spuk-1.jpg"
     ],
     "gewaehlt": "raum-kinderzimmer-spuk.jpg",
-    "vorlage": "raum-kinderzimmer.jpg"
+    "vorlage": "assets/original/bilder/raum-kinderzimmer.jpg"
   },
   {
     "name": "raum-kolbe",
@@ -1294,7 +1294,7 @@ window.KANDIDATEN = [
       "raum-kueche-nacht-1.jpg"
     ],
     "gewaehlt": "raum-kueche-nacht.jpg",
-    "vorlage": "raum-kueche.jpg"
+    "vorlage": "assets/original/bilder/raum-kueche.jpg"
   },
   {
     "name": "raum-kueche-spuk",
@@ -1304,7 +1304,7 @@ window.KANDIDATEN = [
       "raum-kueche-spuk-1.jpg"
     ],
     "gewaehlt": "raum-kueche-spuk.jpg",
-    "vorlage": "raum-kueche.jpg"
+    "vorlage": "assets/original/bilder/raum-kueche.jpg"
   },
   {
     "name": "raum-lager_c214",
@@ -1325,7 +1325,7 @@ window.KANDIDATEN = [
       "raum-lager_c214-kaestchen-2.jpg"
     ],
     "gewaehlt": null,
-    "vorlage": "raum-lager_c214.jpg"
+    "vorlage": "assets/original/bilder/raum-lager_c214.jpg"
   },
   {
     "name": "raum-lager_empfang",
@@ -1359,7 +1359,7 @@ window.KANDIDATEN = [
       "raum-lager_gang-nacht-3.jpg"
     ],
     "gewaehlt": "raum-lager_gang-nacht.jpg",
-    "vorlage": "raum-lager_gang.jpg"
+    "vorlage": "assets/original/bilder/raum-lager_gang.jpg"
   },
   {
     "name": "raum-lager_tor",
@@ -1381,7 +1381,7 @@ window.KANDIDATEN = [
       "raum-lager_tor-nacht-2.jpg"
     ],
     "gewaehlt": "raum-lager_tor-nacht.jpg",
-    "vorlage": "raum-lager_tor.jpg"
+    "vorlage": "assets/original/bilder/raum-lager_tor.jpg"
   },
   {
     "name": "raum-maedchenkammer",
@@ -1401,7 +1401,7 @@ window.KANDIDATEN = [
       "raum-maedchenkammer-nacht-1.jpg"
     ],
     "gewaehlt": "raum-maedchenkammer-nacht.jpg",
-    "vorlage": "raum-maedchenkammer.jpg"
+    "vorlage": "assets/original/bilder/raum-maedchenkammer.jpg"
   },
   {
     "name": "raum-maedchenkammer-spuk",
@@ -1411,7 +1411,7 @@ window.KANDIDATEN = [
       "raum-maedchenkammer-spuk-1.jpg"
     ],
     "gewaehlt": "raum-maedchenkammer-spuk.jpg",
-    "vorlage": "raum-maedchenkammer.jpg"
+    "vorlage": "assets/original/bilder/raum-maedchenkammer.jpg"
   },
   {
     "name": "raum-polizei",
@@ -1431,7 +1431,7 @@ window.KANDIDATEN = [
       "raum-polizei-nacht-1.jpg"
     ],
     "gewaehlt": "raum-polizei-nacht.jpg",
-    "vorlage": "raum-polizei.jpg"
+    "vorlage": "assets/original/bilder/raum-polizei.jpg"
   },
   {
     "name": "raum-polizei_buero",
@@ -1461,7 +1461,7 @@ window.KANDIDATEN = [
       "raum-ritualraum-gebrochen-1.jpg"
     ],
     "gewaehlt": "raum-ritualraum-gebrochen.jpg",
-    "vorlage": "raum-ritualraum.jpg"
+    "vorlage": "assets/original/bilder/raum-ritualraum.jpg"
   },
   {
     "name": "raum-ritualraum-spuk",
@@ -1471,7 +1471,7 @@ window.KANDIDATEN = [
       "raum-ritualraum-spuk-1.jpg"
     ],
     "gewaehlt": "raum-ritualraum-spuk.jpg",
-    "vorlage": "raum-ritualraum.jpg"
+    "vorlage": "assets/original/bilder/raum-ritualraum.jpg"
   },
   {
     "name": "raum-salon",
@@ -1491,7 +1491,7 @@ window.KANDIDATEN = [
       "raum-salon-nacht-1.jpg"
     ],
     "gewaehlt": "raum-salon-nacht.jpg",
-    "vorlage": "raum-salon.jpg"
+    "vorlage": "assets/original/bilder/raum-salon.jpg"
   },
   {
     "name": "raum-salon-spuk",
@@ -1501,7 +1501,7 @@ window.KANDIDATEN = [
       "raum-salon-spuk-1.jpg"
     ],
     "gewaehlt": "raum-salon-spuk.jpg",
-    "vorlage": "raum-salon.jpg"
+    "vorlage": "assets/original/bilder/raum-salon.jpg"
   },
   {
     "name": "raum-schlafzimmer",
@@ -1521,7 +1521,7 @@ window.KANDIDATEN = [
       "raum-schlafzimmer-nacht-1.jpg"
     ],
     "gewaehlt": "raum-schlafzimmer-nacht.jpg",
-    "vorlage": "raum-schlafzimmer.jpg"
+    "vorlage": "assets/original/bilder/raum-schlafzimmer.jpg"
   },
   {
     "name": "raum-schlafzimmer-spuk",
@@ -1531,7 +1531,7 @@ window.KANDIDATEN = [
       "raum-schlafzimmer-spuk-1.jpg"
     ],
     "gewaehlt": "raum-schlafzimmer-spuk.jpg",
-    "vorlage": "raum-schlafzimmer.jpg"
+    "vorlage": "assets/original/bilder/raum-schlafzimmer.jpg"
   },
   {
     "name": "raum-speicher",
@@ -1551,7 +1551,7 @@ window.KANDIDATEN = [
       "raum-speicher-nacht-1.jpg"
     ],
     "gewaehlt": "raum-speicher-nacht.jpg",
-    "vorlage": "raum-speicher.jpg"
+    "vorlage": "assets/original/bilder/raum-speicher.jpg"
   },
   {
     "name": "raum-speicher-spuk",
@@ -1561,7 +1561,7 @@ window.KANDIDATEN = [
       "raum-speicher-spuk-1.jpg"
     ],
     "gewaehlt": "raum-speicher-spuk.jpg",
-    "vorlage": "raum-speicher.jpg"
+    "vorlage": "assets/original/bilder/raum-speicher.jpg"
   },
   {
     "name": "raum-speisekammer",
@@ -1591,7 +1591,7 @@ window.KANDIDATEN = [
       "raum-speisezimmer-nacht-1.jpg"
     ],
     "gewaehlt": "raum-speisezimmer-nacht.jpg",
-    "vorlage": "raum-speisezimmer.jpg"
+    "vorlage": "assets/original/bilder/raum-speisezimmer.jpg"
   },
   {
     "name": "raum-spiegelzimmer",
@@ -1611,7 +1611,7 @@ window.KANDIDATEN = [
       "raum-spiegelzimmer-spuk-1.jpg"
     ],
     "gewaehlt": "raum-spiegelzimmer-spuk.jpg",
-    "vorlage": "raum-spiegelzimmer.jpg"
+    "vorlage": "assets/original/bilder/raum-spiegelzimmer.jpg"
   },
   {
     "name": "raum-stadtarchiv",
@@ -1641,7 +1641,7 @@ window.KANDIDATEN = [
       "raum-turmerker-nacht-1.jpg"
     ],
     "gewaehlt": "raum-turmerker-nacht.jpg",
-    "vorlage": "raum-turmerker.jpg"
+    "vorlage": "assets/original/bilder/raum-turmerker.jpg"
   },
   {
     "name": "raum-turmerker-spuk",
@@ -1651,7 +1651,7 @@ window.KANDIDATEN = [
       "raum-turmerker-spuk-1.jpg"
     ],
     "gewaehlt": "raum-turmerker-spuk.jpg",
-    "vorlage": "raum-turmerker.jpg"
+    "vorlage": "assets/original/bilder/raum-turmerker.jpg"
   },
   {
     "name": "raum-vorratskeller",
@@ -1671,7 +1671,7 @@ window.KANDIDATEN = [
       "raum-vorratskeller-spuk-1.jpg"
     ],
     "gewaehlt": "raum-vorratskeller-spuk.jpg",
-    "vorlage": "raum-vorratskeller.jpg"
+    "vorlage": "assets/original/bilder/raum-vorratskeller.jpg"
   },
   {
     "name": "raum-waescheboden",
@@ -1691,7 +1691,7 @@ window.KANDIDATEN = [
       "raum-waescheboden-nacht-1.jpg"
     ],
     "gewaehlt": "raum-waescheboden-nacht.jpg",
-    "vorlage": "raum-waescheboden.jpg"
+    "vorlage": "assets/original/bilder/raum-waescheboden.jpg"
   },
   {
     "name": "raum-waescheboden-spuk",
@@ -1701,7 +1701,7 @@ window.KANDIDATEN = [
       "raum-waescheboden-spuk-1.jpg"
     ],
     "gewaehlt": "raum-waescheboden-spuk.jpg",
-    "vorlage": "raum-waescheboden.jpg"
+    "vorlage": "assets/original/bilder/raum-waescheboden.jpg"
   },
   {
     "name": "raum-waeschekammer",
@@ -1721,7 +1721,7 @@ window.KANDIDATEN = [
       "raum-waeschekammer-nacht-1.jpg"
     ],
     "gewaehlt": "raum-waeschekammer-nacht.jpg",
-    "vorlage": "raum-waeschekammer.jpg"
+    "vorlage": "assets/original/bilder/raum-waeschekammer.jpg"
   },
   {
     "name": "raum-waeschekammer-spuk",
@@ -1731,7 +1731,7 @@ window.KANDIDATEN = [
       "raum-waeschekammer-spuk-1.jpg"
     ],
     "gewaehlt": "raum-waeschekammer-spuk.jpg",
-    "vorlage": "raum-waeschekammer.jpg"
+    "vorlage": "assets/original/bilder/raum-waeschekammer.jpg"
   },
   {
     "name": "raum-waschkueche",
@@ -1751,7 +1751,7 @@ window.KANDIDATEN = [
       "raum-waschkueche-spuk-1.jpg"
     ],
     "gewaehlt": "raum-waschkueche-spuk.jpg",
-    "vorlage": "raum-waschkueche.jpg"
+    "vorlage": "assets/original/bilder/raum-waschkueche.jpg"
   },
   {
     "name": "raum-weinkeller",
@@ -1771,7 +1771,7 @@ window.KANDIDATEN = [
       "raum-weinkeller-spuk-1.jpg"
     ],
     "gewaehlt": "raum-weinkeller-spuk.jpg",
-    "vorlage": "raum-weinkeller.jpg"
+    "vorlage": "assets/original/bilder/raum-weinkeller.jpg"
   },
   {
     "name": "raum-wintergarten",
@@ -1791,7 +1791,7 @@ window.KANDIDATEN = [
       "raum-wintergarten-nacht-1.jpg"
     ],
     "gewaehlt": "raum-wintergarten-nacht.jpg",
-    "vorlage": "raum-wintergarten.jpg"
+    "vorlage": "assets/original/bilder/raum-wintergarten.jpg"
   },
   {
     "name": "raum-wohnung",
@@ -1812,6 +1812,6 @@ window.KANDIDATEN = [
       "raum-wohnung-nacht-1.jpg"
     ],
     "gewaehlt": "raum-wohnung-nacht.jpg",
-    "vorlage": "raum-wohnung.jpg"
+    "vorlage": "assets/original/bilder/raum-wohnung.jpg"
   }
 ];

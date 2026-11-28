@@ -1,2 +1,5 @@
-Hier kommen Bilddateien hin (.webp, .jpg oder .png).
+Spielbilder als WebP: <name>.webp (max. 1280 px) und <name>-768.webp (Handy).
+Neue Bilder als JPG/PNG hier ablegen und "node tools/bilder-optimieren.js" ausführen –
+das Original wandert nach assets/original/bilder/ (nicht veröffentlicht).
+Übernehmen über tools/bilder.js bzw. die Auswahlseite macht das automatisch.
 Dateinamen und Prompt-Vorschläge: docs/medien-liste.md

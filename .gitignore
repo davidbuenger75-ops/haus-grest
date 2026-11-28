@@ -13,3 +13,6 @@ assets/bilder/_vorlagen/
 # Sound-Entwürfe
 assets/sound/_kandidaten/
 tools/sound-kandidaten.js
+
+# Originale (Bilder/Sounds in voller Größe) – bleiben lokal, veröffentlicht werden nur die verkleinerten Fassungen
+assets/original/

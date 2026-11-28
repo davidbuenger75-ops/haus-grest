@@ -4,7 +4,7 @@
 window.HG = window.HG || {};
 // Spielversion: bei jeder Veröffentlichung hochzählen – zusammen mit VERSION in sw.js (der Test prüft, dass beide passen).
 // Steht im Protokollkopf, damit man sieht, welcher Stand gespielt wurde.
-window.HG.SPIELVERSION = 31;
+window.HG.SPIELVERSION = 32;
 
 (function (HG) {
   'use strict';

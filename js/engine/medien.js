@@ -2,7 +2,7 @@
 //
 // Weil das Spiel per Doppelklick (file://) läuft, kann es keine Ordner durchsuchen.
 // Stattdessen probiert es feste Dateinamen der Reihe nach aus; fehlt eine Datei,
-// wird sie still übersprungen. Endungen: Bilder .webp, .jpg, .png – Sound .ogg, .mp3.
+// wird sie still übersprungen. Endungen: Bilder .webp (dazu <name>-768.webp fürs Handy), .jpg, .png – Sound .mp3, .ogg.
 //
 // BILDER (assets/bilder/)
 //   Raum:        raum-<raumId>.webp        z. B. raum-halle.webp
@@ -32,7 +32,10 @@
 (function (HG) {
   'use strict';
 
-  var BILD = ['webp', 'jpg', 'png'], TON = ['ogg', 'mp3'];
+  // Bilder: WebP (tools/bilder-optimieren.js), auf schmalen Bildschirmen zuerst die 768-px-Fassung; JPG/PNG nur als Rückfall.
+  // Ton: MP3 zuerst (so liegen die Dateien vor) – sonst fragt jeder Sound erst vergeblich nach .ogg.
+  var BILD = ['webp', 'jpg', 'png'], TON = ['mp3', 'ogg'];
+  function schmal() { return !!(window.matchMedia && window.matchMedia('(max-width: 860px)').matches); }
   var hatBrowser = typeof window.Image !== 'undefined' && typeof window.document !== 'undefined';
   var hatAudio = typeof window.Audio !== 'undefined';
   var cache = {};          // URL -> true (vorhanden) / false (fehlt)
@@ -50,7 +53,11 @@
   function erstesBild(namen, cb) {
     if (!hatBrowser || !namen.length) { cb(null); return; }
     var liste = [];
-    namen.forEach(function (n, i) { BILD.forEach(function (e) { liste.push({ url: M.ordnerBilder + n + '.' + e, i: i }); }); });
+    var klein = schmal();
+    namen.forEach(function (n, i) {
+      if (klein) liste.push({ url: M.ordnerBilder + n + '-768.webp', i: i });
+      BILD.forEach(function (e) { liste.push({ url: M.ordnerBilder + n + '.' + e, i: i }); });
+    });
     (function weiter(k) {
       if (k >= liste.length) { cb(null); return; }
       var url = liste[k].url;

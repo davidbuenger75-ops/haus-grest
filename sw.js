@@ -12,9 +12,17 @@
 // (node tools/test.js prüft das).
 'use strict';
 
-var VERSION = 'haus-grest-31';
+var VERSION = 'haus-grest-32';
+// Bilder und Sounds liegen in einem eigenen Speicher, der Code-Veröffentlichungen überdauert (sonst lädt das Handy nach
+// jeder neuen Version alles noch einmal). MEDIEN nur hochzählen, wenn sich Bilder oder Sounds geändert haben.
+var MEDIEN = 'haus-grest-medien-1';
 var GRUNDDATEIEN = ['./', './index.html', './manifest.webmanifest', './assets/icons/icon.svg',
   './assets/icons/icon-192.png', './assets/icons/icon-512.png'];
+// Beim Start nur die ersten Bilder (Prolog: die eigene Wohnung, Notarbrief, Testament) – alle anderen Bilder und
+// Sounds lädt das Spiel beim ersten Gebrauch; dann bleiben sie im Speicher (offline spielbar, was man gesehen hat).
+var PROLOG = ['raum-wohnung', 'raum-wohnung-nacht', 'ding-notarbrief', 'ding-testament'].reduce(function (l, n) {
+  return l.concat(['./assets/bilder/' + n + '.webp', './assets/bilder/' + n + '-768.webp']);
+}, []);
 
 self.addEventListener('install', function (e) {
   e.waitUntil(
@@ -22,9 +30,10 @@ self.addEventListener('install', function (e) {
       var dateien = GRUNDDATEIEN.slice(), m, re = /<(?:script|link)[^>]+(?:src|href)="([^"#:]+)"/g;
       while ((m = re.exec(html))) if (dateien.indexOf(m[1]) < 0) dateien.push(m[1]);
       // cache: 'reload' umgeht den Browser-Zwischenspeicher – sonst landen alte Dateien im neuen Speicher
-      return caches.open(VERSION).then(function (c) {
-        return c.addAll(dateien.map(function (d) { return new Request(d, { cache: 'reload' }); }));
-      });
+      return Promise.all([
+        caches.open(VERSION).then(function (c) { return c.addAll(dateien.map(function (d) { return new Request(d, { cache: 'reload' }); })); }),
+        caches.open(MEDIEN).then(function (c) { return c.addAll(PROLOG); })
+      ]);
     }).then(function () { return self.skipWaiting(); })
   );
 });
@@ -32,7 +41,7 @@ self.addEventListener('install', function (e) {
 self.addEventListener('activate', function (e) {
   e.waitUntil(
     caches.keys().then(function (namen) {
-      return Promise.all(namen.filter(function (n) { return n !== VERSION; }).map(function (n) { return caches.delete(n); }));
+      return Promise.all(namen.filter(function (n) { return n !== VERSION && n !== MEDIEN; }).map(function (n) { return caches.delete(n); }));
     }).then(function () { return self.clients.claim(); })
   );
 });
@@ -58,9 +67,9 @@ self.addEventListener('fetch', function (e) {
     );
     return;
   }
-  // Bilder, Sounds: aus dem Speicher, sonst laden und merken
+  // Bilder, Sounds: aus dem Speicher, sonst beim ersten Gebrauch laden und für offline behalten
   e.respondWith(
-    caches.open(VERSION).then(function (c) {
+    caches.open(MEDIEN).then(function (c) {
       return c.match(req, { ignoreSearch: true }).then(function (alt) {
         return alt || fetch(req).then(function (antwort) {
           if (antwort && antwort.ok && antwort.status === 200) c.put(req, antwort.clone());

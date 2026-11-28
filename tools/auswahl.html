@@ -71,7 +71,7 @@
     if (e.vorlage) {
       var vf = document.createElement('figure'); vf.className = 'vorlage';
       var vi = document.createElement('img');
-      vi.src = '../assets/bilder/' + e.vorlage + '?t=' + Date.now();
+      vi.src = '../' + e.vorlage + '?t=' + Date.now();
       vi.alt = 'Vorlage';
       vi.onclick = function () {
         var g = document.getElementById('gross');

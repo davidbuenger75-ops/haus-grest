@@ -166,13 +166,17 @@ function schreibeKandidatenJs() {
   });
   fs.writeFileSync(KANDIDATEN_JS, '// Automatisch erzeugt von tools/sounds.js – nicht von Hand bearbeiten.\nwindow.SOUNDS = ' + JSON.stringify(liste, null, 2) + ';\n', 'utf8');
 }
+/** Kandidaten übernehmen: Original nach assets/original/sound/, dann gleich die verkleinerte Spielfassung
+ *  (tools/sounds-optimieren.js: Effekte mono 96 kbit/s, Schleifen stereo 128 kbit/s). */
 function uebernimm(name, nummer) {
   const datei = kandidatenVon(name).find(f => f === name + '-' + nummer + '.mp3');
   if (!datei) throw new Error('Kandidat ' + name + ' Nr. ' + nummer + ' nicht gefunden.');
+  const opt = require('./sounds-optimieren.js');
+  fs.mkdirSync(opt.ORIGINAL, { recursive: true });
   for (const e of ENDUNGEN) { const alt = path.join(SOUND, name + e); if (fs.existsSync(alt)) fs.unlinkSync(alt); }
-  const ziel = path.join(SOUND, name + '.mp3');
-  fs.copyFileSync(path.join(KANDIDATEN, datei), ziel);
-  return path.relative(WURZEL, ziel);
+  fs.copyFileSync(path.join(KANDIDATEN, datei), path.join(opt.ORIGINAL, name + '.mp3'));
+  opt.optimiere(name, true);
+  return path.relative(WURZEL, path.join(SOUND, name + '.mp3')) + ' (Original: assets/original/sound/' + name + '.mp3)';
 }
 function starteAuswahl() {
   schreibeKandidatenJs();

@@ -2143,6 +2143,28 @@ const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'diens
     pruefe(!/Alte Partie/.test(t.split('--- Verlauf')[1]) && /Neue Partie/.test(t), 'Protokoll kopiert nur die aktuelle Partie');
   }
 }
+// --- 31. Spielgröße fürs Handy (28.11.2026) ---------------------------------------------------------------
+{
+  console.log('\n31. Spielgröße: WebP + 768-px-Fassung, keine Originale im Spiel, Sounds verkleinert, nur Spieldateien veröffentlicht');
+  const B = path.join(WURZEL, 'assets', 'bilder'), S = path.join(WURZEL, 'assets', 'sound');
+  const dateien = fs.readdirSync(B).filter(f => !fs.statSync(path.join(B, f)).isDirectory());
+  pruefe(!dateien.some(f => /\.(jpe?g|png)$/i.test(f)), 'assets/bilder: keine JPG/PNG mehr (Originale in assets/original/)');
+  const gross = dateien.filter(f => /\.webp$/.test(f) && !/-768\.webp$/.test(f));
+  const ohne = gross.filter(f => !dateien.includes(f.replace(/\.webp$/, '-768.webp')));
+  pruefe(gross.length > 100 && !ohne.length, 'Jedes Bild als WebP mit 768-px-Fassung (' + gross.length + ')' + (ohne.length ? ' – ohne: ' + ohne.slice(0, 3).join(', ') : ''));
+  const zuGross = gross.filter(f => fs.statSync(path.join(B, f)).size > 400 * 1024);
+  pruefe(!zuGross.length, 'Kein Spielbild über 400 KB' + (zuGross.length ? ' – ' + zuGross.slice(0, 3).join(', ') : ''));
+  const mp3 = fs.readdirSync(S).filter(f => /\.mp3$/.test(f));
+  pruefe(mp3.length > 100 && mp3.every(f => fs.statSync(path.join(S, f)).size < 600 * 1024), 'Sounds verkleinert (' + mp3.length + ' MP3)');
+  const ign = fs.readFileSync(path.join(WURZEL, '.gitignore'), 'utf8');
+  pruefe(['assets/original/', 'docs/', 'assets/bilder/_kandidaten/', 'assets/bilder/_stiltest/', 'assets/bilder/_vorlagen/'].every(p => ign.includes(p)), '.gitignore: Originale, docs und Entwürfe bleiben lokal');
+  const wf = fs.readFileSync(path.join(WURZEL, '.github', 'workflows', 'pages.yml'), 'utf8');
+  pruefe(/cp index\.html manifest\.webmanifest sw\.js _site/.test(wf) && !/cp -r[^\n]*tools/.test(wf) && /rm -rf _site\/assets\/original/.test(wf), 'Veröffentlicht wird nur das Spiel (ohne tools/, docs/, CLAUDE.md, Originale)');
+  const sw = fs.readFileSync(path.join(WURZEL, 'sw.js'), 'utf8');
+  pruefe(/raum-wohnung/.test(sw) && /MEDIEN/.test(sw) && !/assets\/sound/.test(sw.split('self.addEventListener')[0]), 'Service Worker: beim Start nur Code und die Prolog-Bilder');
+  const m = fs.readFileSync(path.join(WURZEL, 'js/engine/medien.js'), 'utf8');
+  pruefe(/-768\.webp/.test(m) && /TON = \['mp3'/.test(m), 'Spiel: auf schmalen Bildschirmen die 768-px-Fassung, Sound zuerst als MP3');
+}
 pruefe(!UNERSETZT.length, 'In keiner Ausgabe aller Tests steht ein unersetzter Platzhalter' + (UNERSETZT.length ? ': ' + UNERSETZT.slice(0, 3).join(' | ') : ''));
 
 console.log('\n' + (tests - fehler) + ' von ' + tests + ' Prüfungen bestanden.' + (fehler ? ' ' + fehler + ' FEHLGESCHLAGEN.' : ''));
