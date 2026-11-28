@@ -16,6 +16,7 @@
 (function () {
 
   function nacht(api) { return api.istNacht(); }
+  function dunkelDraussen(api) { return api.istDunkel(); }   // kein Strom: ab Einbruch der Dunkelheit (16:30) finster
 
   // ===================================================================
   // HINTERDIELE
@@ -24,7 +25,7 @@
     name: 'Hinterdiele',
     woerter: ['hinterdiele', 'diele', 'hintereingang'],
     schauplatz: 'haus', karte: { x: -1, y: -1 },
-    dunkel: nacht,
+    dunkel: dunkelDraussen,
     dunkelText: 'Stockfinster. Unter deinen Schuhen Steinfliesen. Irgendwo links von dir kratzt etwas an Holz.',
     beschreibung: function (api) {
       var tuer = api.eig('kraehentuer', 'verschlossen')
@@ -174,7 +175,7 @@
     name: 'Dienstbotenzimmer',
     woerter: ['dienstbotenzimmer', 'kammer', 'maedchenzimmer', 'pflegerzimmer'],
     schauplatz: 'haus', karte: { x: -2, y: -1 },
-    dunkel: nacht,
+    dunkel: dunkelDraussen,
     dunkelText: 'Stockfinster. Es riecht nach Kräutern. Ganz nah knarrt etwas, vor und zurück.',
     beschreibung: function (api) {
       return 'Eine schmale Kammer mit einem einzigen Fenster nach Norden, das Glas blind vor Schmutz. Ein eisernes Bettgestell ohne Matratze, ein Waschtisch mit Krug und Schüssel, in der Ecke ein Schaukelstuhl aus dunklem Holz. ' +
@@ -311,7 +312,7 @@
     name: 'Anrichte',
     woerter: ['anrichte', 'wc', 'gaestewc', 'toilette', 'klo'],
     schauplatz: 'haus', karte: { x: 1, y: -1 },
-    dunkel: nacht,
+    dunkel: dunkelDraussen,
     dunkelText: 'Stockfinster. Irgendwo tropft Wasser in ein Becken. Tropf. Tropf.',
     beschreibung: function (api) {
       return 'Ein schmaler Raum zwischen Flur und Küche. Wandschränke bis unter die Decke, eine Marmorplatte zum Anrichten, an der Wand eine Messingglocke an einer Feder. ' +
@@ -410,7 +411,7 @@
     name: 'Küche',
     woerter: ['kueche', 'kochkueche'],
     schauplatz: 'haus', karte: { x: 2, y: -1 },
-    dunkel: nacht,
+    dunkel: dunkelDraussen,
     dunkelText: 'Stockfinster. Es riecht nach kaltem Ruß. Über der Tür tickt etwas metallisch, wie eine Klappe, die zittert.',
     beschreibung: function (api) {
       return 'Eine große, hohe Küche. Ein gusseiserner Kohleherd, schwarz und kalt, daneben ein Gasherd aus den Fünfzigern mit abgeplatzter Emaille. Ein moderner Kühlschrank steht stumm daneben – kein Strom. ' +

@@ -120,6 +120,9 @@
     { a: 'ersteHilfe', w: L('versorg versorge versorgen verarzt verarzte verarzten'), o: '?', text: true },
     { a: 'schieben', w: L('schieb schiebe schieben rueck ruecke'), p: 'beiseite', o: 1 },
     { a: 'schieben', w: L('schieb schiebe schieben rueck ruecke'), p: 'weg', o: 1 },
+    // „richte das porträt gerade“, „häng es gerade“, „rück den rahmen gerade“ (Spieltest 3) – wie schieben
+    { a: 'schieben', w: L('schieb schiebe rueck ruecke richt richte richten haeng haenge haengen'), p: 'gerade', o: 1 },
+    { a: 'schieben', w: L('richt richte richten'), o: 1 },
     { a: 'schieben', w: L('schieb schiebe schieben verschieb verschiebe rueck ruecke verrueck verruecke'), o: 1 },
 
     // Licht
@@ -254,6 +257,9 @@
     return Object.keys(f);
   }
 
+  // Andere Schreibweisen, die überall gelten (Spieltest 3: „Portrait“)
+  var SCHREIBWEISE = { portrait: 'portraet', portraits: 'portraets', portrat: 'portraet' };
+
   // Bindewörter innerhalb einer Wortgruppe ("der Brief von 1905") – zählen beim Vergleich nicht mit
   var BINDEWORT = { von: 1, zu: 1 };   // "Brief von 1905", "Glastür zum Salon"
 
@@ -288,6 +294,58 @@
     });
   }
   function lex() { if (!LEX) baueLexikon(); return LEX; }
+
+  // ---- Tippfehler: ähnlichstes bekanntes Wort (Spieltest 3: „Meintest du ‚untersuche‘?“) ----
+  function abstand(a, b) {   // Levenshtein, Vertauschen zweier Nachbarn zählt 1
+    var d = [], i, j;
+    for (i = 0; i <= a.length; i++) { d[i] = [i]; }
+    for (j = 0; j <= b.length; j++) d[0][j] = j;
+    for (i = 1; i <= a.length; i++) for (j = 1; j <= b.length; j++) {
+      var k = a[i - 1] === b[j - 1] ? 0 : 1;
+      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + k);
+      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+    }
+    return d[a.length][b.length];
+  }
+  /** Schreibweise für die Rückfrage: Verben wie in der Befehlsliste („öffne“), Dinge wie ihr Name („porträt“). */
+  function anzeigeForm(w) {
+    var treffer = null;
+    VERB_LISTE.some(function (v) { var x = v.split(' ')[0]; if (T.norm(x) === w) { treffer = x; return true; } return false; });
+    if (treffer) return treffer;
+    Object.keys(HG.daten.dinge).some(function (id) {
+      var d = HG.daten.dinge[id];
+      return [d.nomen].concat(d.woerter || []).some(function (x) { if (x && T.norm(x) === w) { treffer = String(x).toLowerCase(); return true; } return false; });
+    });
+    return treffer || w;
+  }
+  /** Ähnlichstes Wort zu einem unbekannten: an Verb-Stelle ein Verb, sonst zuerst Wörter der Dinge in der Nähe. */
+  function aehnlich(w, verbStelle) {
+    if (!w || w.length < 3 || /[0-9]/.test(w)) return null;
+    var grenze = w.length <= 5 ? 1 : 2, best = null, bestD = 99;
+    function pruefe(liste) {
+      liste.forEach(function (k) {
+        if (Math.abs(k.length - w.length) > grenze || k.length < 3) return;
+        var dd = abstand(w, k) + (k.charAt(0) === w.charAt(0) ? 0 : 0.5);
+        if (dd <= grenze && dd < bestD) { bestD = dd; best = k; }
+      });
+    }
+    if (verbStelle) pruefe(Object.keys(VERB_MAP));
+    else {
+      var l = lex(), nah = [];
+      try { HG.welt.umfeld().forEach(function (id) { if (l.nomen[id]) nah = nah.concat(Object.keys(l.nomen[id])); }); } catch (e) { /* kein Raum */ }
+      pruefe(nah);
+      // sonst Dinge, die die Spielfigur schon kennt – nie etwas Verstecktes verraten (Tipps-Grundsatz)
+      if (!best) {
+        var bekannt = [];
+        Object.keys(l.nomen).forEach(function (id) { try { if (HG.api.kennt(id)) bekannt = bekannt.concat(Object.keys(l.nomen[id])); } catch (e) { /* */ } });
+        pruefe(bekannt);
+      }
+    }
+    return best ? anzeigeForm(best) : null;
+  }
+  function unbekannt(w, verbStelle) {
+    return { fehler: 'Das Wort „' + T.esc(P.roh[w] || w) + '“ kenne ich nicht.', unbekannt: w, vorschlag: aehnlich(w, verbStelle) };
+  }
 
   /** Nomen auch mit Beugungsendung erkennen (Streichhölzern, Tisches …) */
   function nomenForm(n, w) {
@@ -415,6 +473,7 @@
       var roh = s.split(/\s+/).filter(Boolean);
       var tokens = [];
       roh.forEach(function (t) {
+        t = SCHREIBWEISE[t] || t;
         if (ZUSAMMEN[t]) tokens.push.apply(tokens, ZUSAMMEN[t]);
         else if (t === '?' && roh.length > 1) { /* Fragezeichen am Satzende ignorieren */ }
         else tokens.push(t);
@@ -492,12 +551,13 @@
       }
 
       // Verb vorne – oder Infinitiv am Ende ("kerze nehmen")
-      if (!VERB_MAP[tokens[0]] && VERB_MAP[tokens[tokens.length - 1]]) {
+      // (nicht, wenn das erste Wort ein vertipptes Verb ist: „untersuhce tagebuch“ – „tagebuch“ ist selbst ein Befehl)
+      if (!VERB_MAP[tokens[0]] && VERB_MAP[tokens[tokens.length - 1]] && (istBekannt(tokens[0]) || !aehnlich(tokens[0], true))) {
         tokens = [tokens[tokens.length - 1]].concat(tokens.slice(0, -1));
       }
       var verb = tokens[0], eintraege = VERB_MAP[verb];
       if (!eintraege) {
-        if (!istBekannt(verb)) return { fehler: 'Das Wort „' + T.esc(P.roh[verb] || verb) + '“ kenne ich nicht.' };
+        if (!istBekannt(verb)) return unbekannt(verb, true);
         return { fehler: 'Ich verstehe nicht, was du tun möchtest. Ein Befehl beginnt mit einem Verb, z.&nbsp;B. „untersuche ' + T.esc(P.roh[verb] || verb) + '“.' };
       }
       var rest = tokens.slice(1);
@@ -607,7 +667,7 @@
         }
 
         for (var wi = 0; wi < g.length; wi++) {
-          if (!istBekannt(g[wi])) return { fehler: 'Das Wort „' + T.esc(P.roh[g[wi]] || g[wi]) + '“ kenne ich nicht.' };
+          if (!istBekannt(g[wi])) return unbekannt(g[wi], false);
         }
 
         var treffer = [], besteStufe = 0;
@@ -642,6 +702,13 @@
         if (treffer.length > 1 && !opt.universum) {
           var dabei = HG.welt.inventar(), imRaum = treffer.filter(function (id) { return dabei.indexOf(id) < 0; });
           if (imRaum.length) treffer = imRaum;
+        }
+        // Ein einzelnes Wort, das genau ein Ding beim Namen nennt, meint dieses: „efeu“ ist der Efeu, nicht der
+        // Efeukranz mit dem Nebenwort „efeu“ (wie bei Antworten auf Rückfragen, spiel.js; Spieltest 3)
+        if (treffer.length > 1) {
+          var inhalt = g.filter(function (w) { return ARTIKEL.indexOf(w) < 0; });
+          var benannt = inhalt.length === 1 ? treffer.filter(function (id) { return D(id).nomen && T.norm(D(id).nomen) === inhalt[0]; }) : [];
+          if (benannt.length === 1) treffer = benannt;
         }
         if (treffer.length > 1) {
           var gen = D(treffer[0]).genus;

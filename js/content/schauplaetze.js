@@ -7,7 +7,7 @@
   var AMT = { von: '08:00', bis: '16:00', tage: 'werktags' };
 
   HG.ziel('bauamt', {
-    name: 'Stadtverwaltung / Bauamt',
+    name: 'Stadtverwaltung / Bauamt',  herkunft: 'Aus dem Bauamt',
     woerter: ['bauamt', 'stadtverwaltung', 'verwaltung', 'rathaus', 'amt'],
     ankunft: 'bauamt', fahrzeit: 20, geoeffnet: AMT,
     geschlossen: 'Das Bauamt hat jetzt geschlossen. Geöffnet ist werktags von 8 bis 16 Uhr.'
@@ -82,7 +82,7 @@
 
   // Krankenhaus: volle Heilung, kostet einen ganzen Tag (Spielbibel, Abschnitt 6) [Vorschlag: Klinikum Nord]
   HG.ziel('krankenhaus', {
-    name: 'Krankenhaus',
+    name: 'Krankenhaus', herkunft: 'Aus dem Krankenhaus',
     woerter: ['krankenhaus', 'klinik', 'klinikum', 'notaufnahme', 'arzt', 'hospital'],
     ankunft: 'krankenhaus', fahrzeit: 20
   });
@@ -109,7 +109,7 @@
   // Polizeiwache: eigener Schauplatz in polizeiwache.js
 
   HG.ziel('friedhof', {
-    name: 'Friedhof',
+    name: 'Friedhof', herkunft: 'Vom Friedhof',
     woerter: ['friedhof', 'gottesacker', 'grab', 'graeber', 'gruft', 'grabstelle'],
     ankunft: 'friedhof', fahrzeit: 30, geoeffnet: { von: '07:00', bis: '20:00' },
     geschlossen: 'Nachts ist das Friedhofstor verschlossen (geöffnet 7–20 Uhr).'
@@ -119,7 +119,7 @@
   // Altenheim: eigener Schauplatz in altenheim.js
 
   HG.ziel('stadtarchiv', {
-    name: 'Stadtarchiv',
+    name: 'Stadtarchiv', herkunft: 'Aus dem Stadtarchiv',
     woerter: ['stadtarchiv', 'archiv'],
     ankunft: 'stadtarchiv', fahrzeit: 20, geoeffnet: AMT,
     geschlossen: 'Das Stadtarchiv hat jetzt geschlossen. Geöffnet ist werktags von 8 bis 16 Uhr.'

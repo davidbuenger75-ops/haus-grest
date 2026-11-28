@@ -39,6 +39,7 @@
   var schreibe = HG.ausgabe.schreibe;
   HG.ausgabe.schreibe = function (typ, html, extra) {
     schreibe.apply(this, arguments);
+    if (extra && extra.keinProtokoll) return;   // z. B. „Protokoll kopiert“ (Spieltest 3)
     if (this.puffer && (typ === 'wert' || typ === 'hinweis' || typ === 'andeutung' || typ === 'ziel')) return;   // kommt später über leere()
     // Platzhalter wie auf dem Bildschirm ersetzen ({name}, {g:…}) – sonst stünde im Protokoll etwas anderes, als der Tester sah
     var roh = typeof html === 'string' ? html : (html && html.html) || '';

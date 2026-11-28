@@ -188,11 +188,18 @@
       });
     },
 
-    // Hintergrundschleife mit Überblendung
-    _atmo: null, _atmoName: null, _atmoAnteil: 0.45,
+    /** Nur der Untertitel – z. B. für eine Raum-Schleife, die die Spiellogik ankündigt (abschaltbar wie alle). */
+    untertitel: function (text) { if (text && M.einst.untertitel !== false) HG.ausgabe.schreibe('ton', '[' + text + ']'); },
+
+    // Hintergrundschleife mit Überblendung. Klang-Daten der Schleife (klang.js):
+    //   ausblenden: 30 – nach 30 Sekunden leise ausblenden, bei jedem Raumwechsel wieder kurz (Uhrticken, Spieltest 3)
+    //   abbruch: true  – wird sie abgelöst, verstummt sie sofort statt überzublenden (Klavier hinter der Haustür)
+    // Raum "sound" darf eine Funktion sein: sound: function (api) { return … ? 'klavier-gedaempft' : null; }
+    _atmo: null, _atmoName: null, _atmoAnteil: 0.45, _atmoRaum: null, _atmoAus: false, _atmoTimer: null,
     atmoKandidaten: function () {
       var r = HG.welt.raum(), nacht = HG.zeit.istNacht(), basen = [];
-      if (r.sound) basen.push(r.sound);
+      var eigen = HG.wert(r.sound, HG.api);
+      if (eigen) basen.push(eigen);
       if (r.schauplatz) basen.push('ort-' + r.schauplatz);
       var liste = [];
       basen.forEach(function (b) { if (nacht) liste.push(b + '-nacht'); liste.push(b); });
@@ -200,24 +207,50 @@
     },
     atmo: function () {
       if (!hatAudio || !M.entsperrt || !Z() || !HG.welt.raum()) return;
-      var kand = M.atmoKandidaten(), schluessel = kand.join('|');
-      if (schluessel === M._atmoSchluessel) return;
-      M._atmoSchluessel = schluessel;
+      var kand = M.atmoKandidaten(), schluessel = kand.join('|'), raum = Z().raum;
+      if (schluessel === M._atmoSchluessel) {
+        if (raum !== M._atmoRaum) { M._atmoRaum = raum; M.atmoKurz(); }   // anderer Raum: ausgeblendete Schleife kurz wieder
+        return;
+      }
+      M._atmoSchluessel = schluessel; M._atmoRaum = raum;
       ersterTon(kand, function (a) {
         if (schluessel !== M._atmoSchluessel) return;          // inzwischen woanders
         var neuName = a ? a.src : null;
-        if (neuName && neuName === M._atmoName) return;          // gleiche Schleife läuft schon
-        var alt = M._atmo;
-        M._atmo = a; M._atmoName = neuName;
-        if (alt) M.blende(alt, alt.volume, 0, function () { alt.pause(); });
+        if (neuName && neuName === M._atmoName) { M.atmoKurz(); return; }   // gleiche Schleife läuft schon
+        var alt = M._atmo, altDef = M.atmoDef(M._atmoName);
+        M._atmo = a; M._atmoName = neuName; M._atmoAus = false;
+        clearTimeout(M._atmoTimer);
+        if (alt) { if (altDef.abbruch) alt.pause(); else M.blende(alt, alt.volume, 0, function () { alt.pause(); }); }
         if (a) {
           a.loop = true; a.volume = 0;
           var p = a.play(); if (p && p.catch) p.catch(function () { /* blockiert */ });
           M.blende(a, 0, M.pegel(M._atmoAnteil, 'hintergrund'));
+          M.atmoKurz(true);
         }
       });
     },
-    atmoPegel: function () { if (M._atmo) M._atmo.volume = M.pegel(M._atmoAnteil, 'hintergrund'); },
+    /** Klang-Daten zur laufenden Schleife (aus dem Dateinamen). */
+    atmoDef: function (src) {
+      var m = src && /([^\/]+)\.(mp3|ogg)(\?.*)?$/.exec(src);
+      return (m && HG.daten.klaenge[decodeURIComponent(m[1])]) || {};
+    },
+    /** Schleife mit „ausblenden“: (wieder) einblenden und nach der Zeit leise ausblenden. */
+    atmoKurz: function (frisch) {
+      var a = M._atmo, def = M.atmoDef(M._atmoName);
+      if (!a || !def.ausblenden) return;
+      clearTimeout(M._atmoTimer);
+      if (!frisch && M._atmoAus) {
+        M._atmoAus = false; a.volume = 0;
+        var p = a.play(); if (p && p.catch) p.catch(function () { /* blockiert */ });
+        M.blende(a, 0, M.pegel(M._atmoAnteil, 'hintergrund'));
+      }
+      M._atmoTimer = setTimeout(function () {
+        if (M._atmo !== a) return;
+        M._atmoAus = true;
+        M.blende(a, a.volume, 0, function () { if (M._atmoAus && M._atmo === a) a.pause(); });
+      }, def.ausblenden * 1000);
+    },
+    atmoPegel: function () { if (M._atmo && !M._atmoAus) M._atmo.volume = M.pegel(M._atmoAnteil, 'hintergrund'); },
 
     /** Herzschlag bei niedrigen NERVEN (nach jedem Zug aufrufen). */
     _herz: null, _herzLaedt: false,

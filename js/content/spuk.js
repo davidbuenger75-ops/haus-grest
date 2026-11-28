@@ -39,7 +39,10 @@ HG.spuk('kerze_wandert', {
   // nur, wenn die Kerze noch auf der Kommode steht und du nicht hinsiehst
   bedingung: function (api) { return api.eig('kerze', 'ort') === 'kommode' && !api.eig('kerze', 'brennt'); },
   bewege: { ding: 'kerze', nach: 'halle', rel: null },
-  text: 'Hinter dir ein leises Scharren. Als du dich umdrehst, steht die Kerze nicht mehr auf der Kommode – sondern auf der untersten Treppenstufe, als wolle sie dir den Weg nach oben leuchten.',
+  // Sie steht auf der untersten Stufe und BRENNT (wie auf dem Bild) – bis es Tag wird oder du das Haus verlässt
+  // (Spieltest 3; Zustand: Flag kerze_treppe, erdgeschoss.js)
+  aktion: function (api) { api.setze('kerze', 'brennt', true); api.setzeFlag('kerze_treppe', api.istTag() ? 'tag' : 'dunkel'); },
+  text: 'Hinter dir ein leises Scharren. Als du dich umdrehst, steht die Kerze nicht mehr auf der Kommode – sondern auf der untersten Treppenstufe. Und sie brennt. Niemand hat sie angezündet. Die Flamme steht still und ein wenig zu hoch, als wolle sie dir den Weg nach oben leuchten.',
   nerven: '1/1W6', grund: 'bewegter Gegenstand'
 });
 

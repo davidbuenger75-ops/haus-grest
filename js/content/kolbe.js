@@ -54,9 +54,17 @@
   (function () {
     var e = HG.daten.raeume.einfahrt;
     e.ausgaenge.westen = 'kolbe';
+    // Das Nachbarhaus steht schon in der Beschreibung (Spieltest 3) – sonst findet niemand den Weg nach Westen
+    var NACHBAR = {
+      tag: 'Links, hinter einer hohen Ligusterhecke, steht ein kleines weißes Siedlungshaus. Hinter einer Gardine bewegt sich etwas.',
+      sonst: 'Links, hinter der hohen Ligusterhecke, ein kleines weißes Siedlungshaus. In einem Fenster brennt Licht; die Gardine bewegt sich, als hätte eben jemand hinausgesehen.'
+    };
+    var altB = e.beschreibung, altK = e.kurz;
+    e.beschreibung = function (api) { return HG.wert(altB, api) + ' ' + HG.wert(NACHBAR, api); };
+    e.kurz = function (api) { return HG.wert(altK, api) + ' Im Westen, hinter der Hecke, das Nachbarhaus.'; };
     HG.ding('einfahrt_nachbarhaus', { nomen: 'Nachbarhaus', genus: 'n', woerter: ['nachbarhaus', 'nachbarin', 'kolbe', 'nachbarn', 'hecke', 'siedlungshaus'],
       ort: 'einfahrt', fest: true, szenerie: true,
-      beschreibung: 'Hinter der Ligusterhecke im Westen ein kleines weißes Siedlungshaus mit Geranien. Alle Fenster, die hierher zeigen, haben die Rollläden unten. Hin kommst du zu Fuß: „geh nach westen“.' });
+      beschreibung: 'Hinter der Ligusterhecke im Westen ein kleines weißes Siedlungshaus mit Geranien. Fast alle Fenster, die hierher zeigen, haben die Rollläden unten – nur eines nicht. Dort hängt eine Gardine, und dahinter steht jemand und sieht herüber. Hin kommst du zu Fuß: „geh nach westen“.' });
   })();
 
   // ===================================================================
@@ -78,7 +86,10 @@
     beimBetreten: function (api, info) {
       api.setzeFlag('kolbe_drin');
       if (!info.erstesMal) { api.sage('Frau Kolbe schenkt dir Kaffee nach, ohne zu fragen.'); return; }
-      var t = 'Frau Kolbe schiebt dich in die Küche, schließt die Haustür und legt den Riegel vor. Erst dann atmet sie aus. „Kaffee?“ Sie gießt ein, bevor du antworten kannst. „Ich hab Sie gesehen, wie Sie da reingegangen sind. Ich hab gebetet, dass Sie wieder rauskommen.“';
+      // Nur wer schon im Haus war, ist „da reingegangen“ (Spieltest 3)
+      var t = 'Frau Kolbe schiebt dich in die Küche, schließt die Haustür und legt den Riegel vor. Erst dann atmet sie aus. „Kaffee?“ Sie gießt ein, bevor du antworten kannst. ' +
+        (HG.zustand.z.besucht.halle ? '„Ich hab Sie gesehen, wie Sie da reingegangen sind. Ich hab gebetet, dass Sie wieder rauskommen.“'
+          : '„Ich hab Ihr Auto gesehen, drüben am Gartentor.“ Sie sieht dich über den Rand ihrer Tasse an. „Gehen Sie da nicht allein rein.“');
       if (HG.zustand.z.besucht.halle) {
         t += '<br><br>Als sie dir die Tasse hinstellt, hält sie inne. Sie schnuppert, kaum merklich, und tritt einen Schritt zurück. „Lavendel“, sagt sie leise. „Sie riechen schon danach.“ Sie bekreuzigt sich, schnell, als wäre es ihr peinlich.';
       }
@@ -149,7 +160,7 @@
     if (api.hatHinweis('renate_vogt')) optionen.push({ text: '„In Renate Vogts Notenheft steht: ‚Sie singt nicht mit. Sie singt vor.‘“', tu: function () {
       oeffnetSich(api, 'Die Kaffeekanne in Frau Kolbes Hand klirrt gegen die Tasse. Sie stellt sie ab, sehr vorsichtig. „Das hat sie zu mir auch gesagt“, flüstert sie. „Genau so. Renate.“ Sie bekreuzigt sich, und diesmal schämt sie sich nicht dafür.');
     } });
-    if (!heuteAbgewiesen) optionen.push({ text: '„Bitte. Ich wohne jetzt da drüben, und ich habe niemanden sonst, der es mir sagen kann.“', tu: function () {
+    if (!heuteAbgewiesen) optionen.push({ text: '„Bitte. Das Haus da drüben gehört jetzt mir, und ich habe niemanden sonst, der es mir sagen kann.“', tu: function () {
       var e = api.probe('ueberreden', { grund: 'Frau Kolbe zum Reden bringen' });
       if (e.erfolg) {
         oeffnetSich(api, 'Du sagst nichts vom Spuk. Du sagst, dass du nachts nicht schläfst, dass du nicht weißt, ob du dir alles nur einbildest. Frau Kolbe hört zu und nickt bei jedem Satz ein bisschen mehr. „Nein“, sagt sie schließlich. „Sie bilden sich nichts ein.“');

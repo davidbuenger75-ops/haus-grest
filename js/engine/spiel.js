@@ -165,6 +165,8 @@
     // Tageszeit, Reisen, Handy, Spuk
     tageszeit: function () { return HG.zeit.phase(); },
     istNacht: function () { return HG.zeit.istNacht(); },
+    istDunkel: function () { return HG.zeit.istDunkel(); },
+    untertitel: function (t) { HG.medien.untertitel(t); },   // nur [Untertitel], z. B. zu einer Raum-Schleife   // ab Einbruch der Dunkelheit (16:30) – Räume ohne Strom
     tag: function () { return Z().zeit.tag; },
     uhrzeit: function () { return HG.zeit.uhr(); },
     /** Minuten seit Spielbeginn – für "ist das schon lange her?" */
@@ -444,6 +446,10 @@
       if (S.offen) {
         var o = S.offen; S.offen = null;
         var erst = befehle[0];
+        if (o.art === 'tippfehler') {
+          if (/^(ja|j|jo|jep|genau|richtig|yes|ok|okay)$/.test(T.norm(roh.trim()))) { S.verarbeite(o.befehl); return; }
+          o = {};   // sonst ein ganz neuer Befehl
+        }
         // Auswahl (Spielbuch) zuerst: Antworten wie „Raus aus der Küche“ wären sonst eine Richtung
         if (o.art === 'auswahl') {
           var nr = parseInt(roh, 10), wahl = null;
@@ -496,7 +502,8 @@
       for (var i = 0; i < befehle.length; i++) {
         var b = P.analysiere(befehle[i]);
         if (!b.fehler && /(^| )(vorsichtig|langsam)( |$)/.test(befehle[i].join(" "))) b.vorsichtig = true;   // "geh vorsichtig hoch"
-        if (b.fehler) { HG.ausgabe.text(b.fehler); return; }
+        S._tokens = befehle[i];
+        if (b.fehler) { S.meldeFehler(b); return; }
         if (b.aktion === 'nochmal') {
           if (!S.letzter) { HG.ausgabe.text('Es gibt nichts zu wiederholen.'); return; }
           b = JSON.parse(JSON.stringify(S.letzter));
@@ -506,6 +513,15 @@
         var weiter = S.fuehreAus(b);
         if (weiter === false || S.offen || Z().vorbei) return;
       }
+    },
+
+    /** Fehlermeldung des Parsers; bei einem Tippfehler mit Rückfrage „Meintest du …?“ – antippbar, „ja“ führt sie aus
+     *  (Spieltest 3). S._tokens = Wörter des gerade bearbeiteten Befehls. */
+    meldeFehler: function (r) {
+      if (!r.vorschlag || !S._tokens) { HG.ausgabe.text(r.fehler); return; }
+      var korr = S._tokens.map(function (t) { return t === r.unbekannt ? r.vorschlag : (P.roh[t] || t); }).join(' ');
+      S.offen = { art: 'tippfehler', befehl: korr };
+      HG.ausgabe.text(r.fehler + ' Meintest du <span class="tippbefehl" data-tippbefehl="' + T.esc(korr) + '" role="button" tabindex="0">„' + T.esc(korr) + '“</span>? <span class="nebenbei">(„ja“ oder antippen)</span>');
     },
 
     /** Auswahl (Spielbuch): Text plus nummerierte Möglichkeiten; die Antwort führt eine Funktion aus. */
@@ -552,7 +568,7 @@
       if (b.aktion === 'gehen') {
         if (!ctx.richtung && b.np1.length) {
           var r = S.richtungZu(b.np1);
-          if (r.fehler) { HG.ausgabe.text(r.fehler); return false; }
+          if (r.fehler) { S.meldeFehler(r); return false; }
           ctx.richtung = r.richtung;
         }
         return S.handle(ctx);
@@ -620,7 +636,7 @@
       // "nimm alles aus der Schublade": erst den Behälter, dann den Inhalt
       if (slot === 'np1' && b.aktion === 'nehmen' && b.np2.length && !ctx.obj2) {
         var r2 = P.aufloesen(b.np2, { blind: opt.blind });
-        if (r2.fehler) { HG.ausgabe.text(r2.fehler); return false; }
+        if (r2.fehler) { S.meldeFehler(r2); return false; }
         if (r2.frage) { S.frage({ art: 'wahl', befehl: b, slot: 'np2', gruppe: r2.gruppe, kandidaten: r2.kandidaten }, r2.frage); return false; }
         if (r2.ids) {
           ctx.obj2 = r2.ids[0];
@@ -634,7 +650,7 @@
       if (slot === 'np2' && ctx.obj2 && b.aktion === 'nehmen') return true;
 
       var r = P.aufloesen(b[slot], opt);
-      if (r.fehler) { HG.ausgabe.text(r.fehler); return false; }
+      if (r.fehler) { S.meldeFehler(r); return false; }
       if (r.frage) { S.frage({ art: 'wahl', befehl: b, slot: slot, gruppe: r.gruppe, kandidaten: r.kandidaten }, r.frage); return false; }
       // "nimm etwas Hartes": das angedeutete, versteckte Ding wird dabei gefunden
       if (r.aufdecken) r.aufdecken.forEach(function (id) { W.deckeAuf(id); });
@@ -699,11 +715,16 @@
       // Zweige sind Texte oder function (api, ergebnis, ctx); fehlt "kritisch"/"patzer", gilt erfolg/misserfolg.
       if (ctx.obj && D(ctx.obj).proben && D(ctx.obj).proben[a]) haken.push(function (api2, c) { return S.datenProbe(D(c.obj).proben[a], c); });
       var erledigt = false;
+      // Geräusch am Ding (geraeusch: { oeffnen: 'tuer-knarren' }) nur, wenn sich am Ding wirklich etwas getan hat –
+      // kein Schlüsselklacken nach „Keiner deiner Schlüssel passt“, kein Knarren an einer verschlossenen Tür (Spieltest 3)
+      var klang = ctx.obj && D(ctx.obj) && D(ctx.obj).geraeusch && D(ctx.obj).geraeusch[a];
+      var dingVorher = klang ? JSON.stringify(Z().dinge[ctx.obj] || {}) : null;
       try { erledigt = haken.some(function (h) { return h(api, ctx); }); } catch (e) { S._tiefe = 0; throw e; }
       if (!erledigt) {
         if (!HG.aktionen[a]) HG.ausgabe.text('Das kann ich (noch) nicht.');
         else HG.aktionen[a](ctx);
       }
+      if (klang && JSON.stringify(Z().dinge[ctx.obj] || {}) !== dingVorher) HG.medien.effekt(HG.wert(klang, api, ctx));
       // Für die Menüs merken, was schon gelesen bzw. untersucht wurde (nur bei Licht – im Dunkeln sieht man nichts)
       if (ctx.obj && D(ctx.obj) && MERKEN.indexOf(a) >= 0 && W.hell()) {
         var getan = Z().getan || (Z().getan = {});
@@ -717,8 +738,7 @@
         if (dd === undefined && r.dauer) dd = HG.wert(r.dauer[a], api, ctx);
         if (dd === undefined) dd = HG.zeit.DAUER[a] === undefined ? 1 : HG.zeit.DAUER[a];
         S._dauer = (S._dauer || 0) + dd;
-        // Geräusche am Ding (geraeusch: { oeffnen: 'tuer-knarren' }) und große Bilder von Fundstücken
-        if (ctx.obj && D(ctx.obj).geraeusch && D(ctx.obj).geraeusch[a]) HG.medien.effekt(HG.wert(D(ctx.obj).geraeusch[a], api, ctx));
+        // Große Bilder von Fundstücken (Geräusche am Ding: oben, nur bei Erfolg)
         if (ctx.obj && (a === 'untersuchen' || a === 'lesen' || a === 'umdrehen')) S.zeigeFundBild(ctx.obj, ctx);
         if (ctx.obj && a === 'untersuchen' && D(ctx.obj) && D(ctx.obj).nahansicht && W.hell()) HG.ausgabe.schreibe('nahknopf', T.gross(T.name(ctx.obj, 'nom', '')), { ding: ctx.obj });
         HG.ausgabe.leere();
@@ -815,6 +835,8 @@
       HG.zeit.vergeht(dauer);
       S._dauer = null;
       S.tragBoni();
+      // Fundort jedes Dings beim ersten Einstecken merken (Menüs gruppieren „Bei dir“ danach, Spieltest 3)
+      if (sp) W.inventar().forEach(function (id) { if (!eig(id, 'herkunft')) HG.zustand.setze(id, 'herkunft', sp); });
       var r = W.raum();
       if (r.jedeRunde) r.jedeRunde(api);
       if (HG.daten.spiel.jedeRunde) HG.daten.spiel.jedeRunde(api);
@@ -1030,6 +1052,35 @@
       return !!((Z().getan || {})[id] || {})[e.aktion];
     },
     erledigtTitel: function (verb) { return ERLEDIGT_MENUE[verb] ? ERLEDIGT_MENUE[verb].titel : null; },
+
+    /** Menü einer Verb-Taste nach Herkunft gruppiert (Spieltest 3): [{ titel, ids, unter: [{ titel, ids }] }].
+     *  Erst „Hier im Raum“, dann „Bei dir“ – darin nach Fundort (Ziel-Daten `herkunft`, z. B. „Aus dem Lager“),
+     *  sobald die Dinge von mehr als einem Ort stammen. */
+    menueGruppen: function (verb) {
+      var ids = S.objekteFuer(verb), dabei = W.inventar();
+      var hier = ids.filter(function (id) { return dabei.indexOf(id) < 0; });
+      var mit = ids.filter(function (id) { return dabei.indexOf(id) >= 0; });
+      var gruppen = [];
+      if (hier.length) gruppen.push({ titel: 'Hier im Raum', ids: hier });
+      if (mit.length) {
+        var reihe = HG.reisen ? HG.reisen.bekannt() : [], orte = {}, schluessel = [];
+        mit.forEach(function (id) {
+          var h = eig(id, 'herkunft') || '';
+          if (!orte[h]) { orte[h] = []; schluessel.push(h); }
+          orte[h].push(id);
+        });
+        schluessel.sort(function (a, b) {
+          var ia = reihe.indexOf(a), ib = reihe.indexOf(b);
+          return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib);
+        });
+        var unter = schluessel.length > 1 ? schluessel.map(function (h) {
+          var zd = HG.daten.ziele[h];
+          return { titel: zd ? (zd.herkunft || 'Aus: ' + zd.name) : 'Sonst dabei', ids: orte[h] };
+        }) : null;
+        gruppen.push({ titel: 'Bei dir', ids: mit, unter: unter });
+      }
+      return gruppen;
+    },
 
     // =============== Vorschläge (anklickbar) ========================
     // ---------------------------------------------------------------

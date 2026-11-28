@@ -34,7 +34,7 @@
   // ZIEL
   // ===================================================================
   HG.ziel('lager', {
-    name: 'Lager Schmidt',
+    name: 'Lager Schmidt', herkunft: 'Aus dem Lager',
     woerter: ['lager', 'schmidt', 'lagerraum', 'einheit', 'lagerhalle', 'storage'],
     ankunft: 'lager_tor', fahrzeit: 30,
     fahrt: { tag: 'Du fährst durch die Nordstadt hinaus ins Gewerbegebiet.', nacht: 'Du fährst durch die nächtliche Nordstadt ins Gewerbegebiet. Nur die Leuchtreklame von „Lager Schmidt“ brennt.' }
@@ -277,7 +277,8 @@
     behaelter: true, oeffenbar: true, offen: false,
     beschreibung: 'Ein Schuhkarton, „Größe 44, schwarz“. Er ist schwerer, als er aussieht.',
     inhaltBeimOeffnen: false,
-    texte: { oeffnen: 'Du hebst den Deckel. Darin liegt etwas, eingeschlagen in ein kariertes Geschirrtuch. Du schlägst das Tuch zurück: eine Pistole. Daneben zwei volle Magazine.' }
+    // „Geschirrtuch“ ist ein Wort der Pistole – ohne kein-wort verbraucht es den Link, und „Pistole“ bleibt tot (Spieltest 3)
+    texte: { oeffnen: 'Du hebst den Deckel. Darin liegt etwas, eingeschlagen in ein kariertes <span class="kein-wort">Geschirrtuch</span>. Du schlägst das Tuch zurück: eine Pistole. Daneben zwei volle Magazine.' }
   });
   HG.ding('pistole', {
     nomen: 'Pistole', genus: 'f',

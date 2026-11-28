@@ -17,7 +17,9 @@
   var W = HG.welt;
   var PHASEN = ['morgen', 'mittag', 'abend', 'nacht'];
   var NAMEN = { morgen: 'Morgen', mittag: 'Mittag', abend: 'Abend', nacht: 'Nacht' };
-  var BEGINN = { morgen: 6 * 60, mittag: 11 * 60, abend: 17 * 60, nacht: 19 * 60 };   // Nacht ab 19 Uhr (David, 24.11.2026)
+  // Nacht ab 19 Uhr (David, 24.11.2026). Abend ab 16:30: Mitte November ist es dann dunkel (Spieltest 3) – Räume ohne
+  // Strom brauchen ab da Licht (api.istDunkel), Spuk und Gefahren der Nacht beginnen weiter um 19 Uhr.
+  var BEGINN = { morgen: 6 * 60, mittag: 11 * 60, abend: 16 * 60 + 30, nacht: 19 * 60 };
   // "warte bis morgen" usw. springt zu dieser Uhrzeit
   var ZIELZEIT = { morgen: 7 * 60, mittag: 12 * 60, abend: 18 * 60, nacht: 19 * 60 };
   var WOERTER = {
@@ -71,6 +73,8 @@
     beginn: function (p) { return BEGINN[p]; },
     name: function (p) { return NAMEN[p || ZT.phase()]; },
     istNacht: function () { return ZT.phase() === 'nacht'; },
+    /** Draußen dunkel? Abend (ab 16:30) und Nacht. */
+    istDunkel: function () { var p = ZT.phase(); return p === 'abend' || p === 'nacht'; },
 
     // --- Datum --------------------------------------------------------
     datum: function (tag) {

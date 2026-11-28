@@ -6,6 +6,7 @@
 (function () {
 
   function nacht(api) { return api.istNacht(); }
+  function dunkelDraussen(api) { return api.istDunkel(); }   // kein Strom: ab Einbruch der Dunkelheit (16:30) finster
   function sichtbarSchrift(api) { return !!api.flag('zitronentinte'); }
 
   // ===================================================================
@@ -15,7 +16,7 @@
     name: 'Galerie',
     woerter: ['galerie', 'treppenflur', 'obergeschoss', 'og'],
     schauplatz: 'haus', karte: { x: 10, y: 0 },
-    dunkel: nacht,
+    dunkel: dunkelDraussen,
     dunkelText: 'Stockfinster. Unter dir, wo die Halle sein muss, ein Abgrund aus Schwärze. Deine Hand findet das Geländer.',
     beschreibung: function (api) {
       return 'Die Galerie umläuft die Halle wie ein Balkon. Über das Geländer siehst du hinunter auf den abgetretenen Teppich – genau auf die Stelle am Fuß der Treppe, an der Natascha Romanow lag. ' +
@@ -107,7 +108,7 @@
     name: 'Elisabeths Krankenzimmer',
     woerter: ['schlafzimmer', 'krankenzimmer', 'elternschlafzimmer', 'zimmer'],
     schauplatz: 'haus', karte: { x: 11, y: 1 },
-    dunkel: nacht,
+    dunkel: dunkelDraussen,
     dunkelText: 'Stockfinster. Es riecht nach Kampfer und kaltem Lavendel. Irgendwo knarrt Leder.',
     beschreibung: function (api) {
       return 'Das größte Zimmer des Hauses war einmal ein Schlafzimmer. Heute steht hier ein Krankenbett aus weiß lackiertem Eisen mit breiten Ledergurten' +
@@ -217,7 +218,7 @@
     name: 'Bibliothek',
     woerter: ['bibliothek', 'buecherzimmer', 'lesezimmer'],
     schauplatz: 'haus', karte: { x: 9, y: 0 },
-    dunkel: nacht,
+    dunkel: dunkelDraussen,
     dunkelText: 'Stockfinster. Es riecht nach Papier und Leder. Irgendwo vor dir, sehr groß, schimmert Glas.',
     beschreibung: function (api) {
       return 'Bernwards Bibliothek: Regale bis unter die Decke, jedes hinter Glastüren mit Messingrahmen. Bücher über Statik, Baukunst, Mathematik, ordentlich, Rücken an Rücken, und auf jedem Rücken ein kleines weißes Etikett. ' +
@@ -357,7 +358,7 @@
     name: 'Kinderzimmer',
     woerter: ['kinderzimmer', 'bettinas zimmer', 'jugendzimmer'],
     schauplatz: 'haus', karte: { x: 9, y: -1 },
-    dunkel: nacht,
+    dunkel: dunkelDraussen,
     dunkelText: 'Stockfinster. Irgendwo vor dir ein leises Klicken, wie von winzigen Türen.',
     beschreibung: function (api) {
       return 'Ein Zimmer, das 1899 für ein Kind geplant wurde und erst hundert Jahre später eins bekam. Die Tapete hat helle Rechtecke, wo Poster hingen; an einem Nagel hängt noch ein Kalender von 2022, aufgeschlagen beim Oktober. ' +
@@ -472,7 +473,7 @@
     name: 'Bad',
     woerter: ['bad', 'badezimmer'],
     schauplatz: 'haus', karte: { x: 10, y: -1 },
-    dunkel: nacht,
+    dunkel: dunkelDraussen,
     dunkelText: 'Stockfinster. Fliesen unter deinen Füßen. Irgendwo tropft es, und jeder Tropfen fällt in tiefes Wasser.',
     beschreibung: function (api) {
       return 'Schwarz-weiße Fliesen, ein Waschbecken mit Messinghähnen, darüber ein Spiegel. In der Mitte des Raums steht eine Wanne auf Löwenfüßen, ' +
@@ -585,7 +586,7 @@
     name: 'Wäschekammer',
     woerter: ['waeschekammer', 'kammer', 'naehzimmer', 'abstellkammer'],
     schauplatz: 'haus', karte: { x: 11, y: -1 },
-    dunkel: nacht,
+    dunkel: dunkelDraussen,
     dunkelText: 'Stockfinster. Stoff streift dein Gesicht. Irgendwo tickt etwas Metallisches, wie eine Nadel, die auf und ab geht.',
     beschreibung: 'Eine schmale Kammer mit Regalen bis zur Decke, voller sorgfältig gefalteter Bettwäsche. Unter dem Fenster steht eine alte schwarze Singer-Nähmaschine mit goldenen Schnörkeln, daneben lehnt ein Bügelbrett. In der Ecke lehnen eine lange Stange mit Eisenhaken und ein Zinkeimer. Die Tür im Südwesten führt zurück auf die Galerie.',
     kurz: 'Die Wäschekammer: Regale mit Laken, Nähmaschine, Hakenstange, Eimer. Südwesten: Galerie.',
@@ -646,7 +647,7 @@
     name: 'Gästezimmer',
     woerter: ['gaestezimmer', 'carstens zimmer', 'schlafraum'],
     schauplatz: 'haus', karte: { x: 12, y: -1 },
-    dunkel: nacht,
+    dunkel: dunkelDraussen,
     dunkelText: 'Stockfinster. Ein Geruch nach kaltem Kaffee und ungewaschener Bettwäsche. Und nach Lavendel.',
     beschreibung: 'Hier hat Carsten in seinen letzten Monaten geschlafen. Das Bett ist ungemacht, das Kissen trägt noch den Abdruck eines Kopfes. Auf dem Nachttisch stehen zwei Kaffeetassen, beide mit einem braunen Rand. In einer Ecke liegt ein Stapel sorgfältig gefalteter Laken. Über einer Kommode hängt ein Wandspiegel, an dessen Rahmen ein gelber Klebezettel klebt. Vor dem Bett steht ein silberner Alukoffer. Die Tür im Westen führt zurück auf die Galerie.',
     kurz: 'Carstens Zimmer: ungemachtes Bett, zwei Tassen, Wandspiegel mit Zettel, der Alukoffer. Westen: Galerie.',

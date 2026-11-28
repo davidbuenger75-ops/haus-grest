@@ -52,6 +52,25 @@
     return Array.isArray(s) ? s.indexOf(schl) >= 0 : s === schl;
   }
 
+  /** Verschlossen, aber kein Schlüssel genannt („öffne die Tür“, „geh nach Norden“): Passt einer aus dem Inventar, schließt
+   *  er von selbst auf – „(mit dem eisernen Schlüssel)“ – über die normale Handlung (Texte, Haken, Geräusch). Sonst die
+   *  Meldung „verschlossen“ bzw. „Keiner deiner Schlüssel passt.“ und der gestaffelte Tipp. true = jetzt offen. (Spieltest 3) */
+  function autoAufschliessen(id, ctx) {
+    var meine = D(id).schluessel === undefined ? [] : W.inventar().filter(function (k) { return D(k).istSchluessel; });
+    var passend = meine.filter(function (k) { return schluesselPasst(k, id); });
+    if (passend.length) {
+      sag('<span class="nebenbei">(mit ' + der(passend[0], 'dat') + ')</span>');
+      HG.spiel.handle({ aktion: 'aufschliessen', obj: id, obj2: passend[0], verb: 'schliesse', np1: [], np2: [] });
+      if (!eig(id, 'verschlossen')) return true;
+      return false;
+    }
+    var t = txt(id, 'verschlossen', ctx) || Der(id) + ' ' + ist(id) + ' verschlossen.';
+    if (meine.length === 1) t += ' ' + Der(meine[0]) + ' passt nicht.';
+    else if (meine.length > 1) t += ' Keiner deiner Schlüssel passt.';
+    sag(t); verschlossenTipp(id);
+    return false;
+  }
+
   /** Gestaffelte Hinweise an verschlossenen Türen und Behältern: tipps: { verschlossen: { 2: '…', 3: '…' } } */
   function verschlossenTipp(id) {
     var t = D(id).tipps && D(id).tipps.verschlossen;
@@ -222,7 +241,7 @@
     if (eig(id, 'offen')) { sag(Der(id) + ' ' + ist(id) + ' schon offen.'); return; }
     if (eig(id, 'verschlossen')) {
       if (ctx.obj2 && D(ctx.obj2).istSchluessel) { A.aufschliessen(ctx); if (eig(id, 'verschlossen')) return; }
-      else { sag(txt(id, 'verschlossen', ctx) || Der(id) + ' ' + ist(id) + ' verschlossen.'); verschlossenTipp(id); return; }
+      else if (!autoAufschliessen(id, ctx)) return;
     }
     setze(id, 'offen', true);
     var t = txt(id, 'oeffnen', ctx) || ('Du öffnest ' + der(id) + '.');
@@ -650,7 +669,7 @@
       if (s) { sag(s); return; }
     }
     if (a.tuer && !eig(a.tuer, 'offen')) {
-      if (eig(a.tuer, 'verschlossen')) { sag(txt(a.tuer, 'verschlossen', ctx) || Der(a.tuer) + ' ' + ist(a.tuer) + ' verschlossen.'); verschlossenTipp(a.tuer); return; }
+      if (eig(a.tuer, 'verschlossen') && !autoAufschliessen(a.tuer, ctx)) return;
       setze(a.tuer, 'offen', true);
       sag('<span class="nebenbei">(Du öffnest zuerst ' + der(a.tuer) + '.)</span>');
     }

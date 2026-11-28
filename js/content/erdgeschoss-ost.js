@@ -14,6 +14,7 @@
 (function () {
 
   function nacht(api) { return api.istNacht(); }
+  function dunkelDraussen(api) { return api.istDunkel(); }   // kein Strom: ab Einbruch der Dunkelheit (16:30) finster
 
   // ===================================================================
   // SPEISEZIMMER – bei Tag unter Laken, nachts gedeckt
@@ -22,7 +23,7 @@
     name: 'Speisezimmer',
     woerter: ['speisezimmer', 'esszimmer', 'speisesaal'],
     schauplatz: 'haus', karte: { x: 1, y: 0 },
-    dunkel: nacht,
+    dunkel: dunkelDraussen,
     dunkelText: 'Stockfinster. Dein Knie stößt an eine Stuhllehne. Auf dem Tisch klirrt leise Glas an Glas.',
     beschreibung: function (api) {
       var t = 'Ein langer Raum mit dunkler Holzdecke und einem Kronleuchter, dessen Kristalle grau vor Staub sind. In der Mitte eine Tafel für ein Dutzend Gäste. ';
@@ -78,7 +79,7 @@
     name: 'Salon',
     woerter: ['salon', 'wohnzimmer', 'musikzimmer', 'turmerker', 'erker'],
     schauplatz: 'haus', karte: { x: 1, y: 1 },
-    dunkel: nacht,
+    dunkel: dunkelDraussen,
     dunkelText: 'Stockfinster. Etwas Großes, Schwarzes steht mitten im Raum. Du hörst eine Saite nachschwingen, ganz leise.',
     beschreibung: function (api) {
       return 'Der Salon: hohe Fenster zur Straße mit schweren Samtvorhängen, ein Kamin aus grünem Marmor mit geschnitztem Sims, davor zwei Sessel mit verblichenem Bezug. ' +

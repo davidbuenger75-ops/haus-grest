@@ -15,7 +15,7 @@
   var BESUCHSZEIT = { von: '08:00', bis: '18:00' };
 
   HG.ziel('gerdes', {
-    name: 'Wohnung Gerdes (Unna)',
+    name: 'Wohnung Gerdes (Unna)', herkunft: 'Von Brigitte Gerdes',
     woerter: ['gerdes', 'unna', 'brigitte', 'kreuzkamp'],
     ankunft: 'gerdes', fahrzeit: 35, geoeffnet: BESUCHSZEIT,
     geschlossen: 'Um diese Uhrzeit bei einer fremden Frau klingeln, die nicht reden will? Brigitte Gerdes würde nicht öffnen. Besser morgen ab acht.',
@@ -167,7 +167,7 @@
     if (kenntNummern(api)) optionen.push({ text: '„Schreibt es Ihnen auch? Von Nummern, die es nicht mehr geben kann?“', tu: function () {
       herein(api, 'Brigitte sieht dich lange an. Ihr Mund wird schmal. „Von welcher Nummer schreibt es Ihnen?“, fragt sie. Du erzählst von Carsten, von „Peter Gerdes“, der in Portugal ist und trotzdem vor der Tür stand. Sie schließt kurz die Augen.');
     } });
-    optionen.push({ text: '„Ich wohne jetzt in dem Haus. Ich brauche Ihre Hilfe.“', tu: function () {
+    optionen.push({ text: '„Ich habe das Haus geerbt. Ich brauche Ihre Hilfe.“', tu: function () {
       var e = api.probe('ueberreden', { grund: 'Brigitte Gerdes dazu bringen, die Tür aufzumachen' });
       if (e.erfolg) {
         herein(api, 'Du redest nicht über das Haus. Du redest über die Nächte, über das Licht oben, wenn keiner da ist, und dass du nicht weißt, wen du sonst fragen sollst. Brigitte hört zu. Ihre Hand an der Kette zittert.');

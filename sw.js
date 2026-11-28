@@ -12,7 +12,7 @@
 // (node tools/test.js prüft das).
 'use strict';
 
-var VERSION = 'haus-grest-32';
+var VERSION = 'haus-grest-33';
 // Bilder und Sounds liegen in einem eigenen Speicher, der Code-Veröffentlichungen überdauert (sonst lädt das Handy nach
 // jeder neuen Version alles noch einmal). MEDIEN nur hochzählen, wenn sich Bilder oder Sounds geändert haben.
 var MEDIEN = 'haus-grest-medien-1';

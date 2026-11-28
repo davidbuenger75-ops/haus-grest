@@ -2165,6 +2165,139 @@ const EG = ['halle', 'garderobe', 'arbeitszimmer', 'flur', 'hinterdiele', 'diens
   const m = fs.readFileSync(path.join(WURZEL, 'js/engine/medien.js'), 'utf8');
   pruefe(/-768\.webp/.test(m) && /TON = \['mp3'/.test(m), 'Spiel: auf schmalen Bildschirmen die 768-px-Fassung, Sound zuerst als MP3');
 }
+// --- 32. Spieltest 3 (28.11.2026) --------------------------------------------------------------------------
+{
+  console.log('\n32. Spieltest 3: Pistole/Grest-Karton, Menü-Gruppen, Handy-Nachricht, Tippfehler, Protokoll, Schlüssel, Geräusche, Friedhof, Nachbarin, Klavier, Kerze, Porträt, Dunkelheit');
+  const roh = s => s.bloecke.map(b => String(b.html || '')).join('\n');
+  // 1./2. Lager
+  {
+    const s = imLager();
+    s.tu('öffne schuhkarton');
+    pruefe(/<span class="kein-wort">Geschirrtuch<\/span>[^]*Pistole/.test(roh(s)), 'Schuhkarton: „Geschirrtuch“ verbraucht den Link nicht – die Pistole ist antippbar');
+    s.tu('öffne grest-karton');
+    pruefe(/data-befehle="[^"]*nimm etwas hartes[^"]*">etwas Hartes<\/span>/.test(s.bloecke[s.bloecke.length - 1].html), 'Grest-Karton: „etwas Hartes“ schon beim Öffnen, antippbar');
+    // 3. Menü nach Herkunft
+    s.tu('nimm kästchen');
+    const g = s.HG.spiel.menueGruppen('untersuche');
+    const bei = g.find(x => x.titel === 'Bei dir');
+    pruefe(g[0].titel === 'Hier im Raum' && bei && bei.unter && bei.unter.map(u => u.titel).join('|') === 'Von zu Hause|Aus dem Lager' && bei.unter[1].ids.includes('kaestchen'),
+      'Menü „Untersuche“: Hier im Raum · Bei dir → Von zu Hause / Aus dem Lager (' + g.map(x => x.titel).join(', ') + ')');
+    const a = fs.readFileSync(path.join(WURZEL, 'js/engine/anzeige.js'), 'utf8');
+    pruefe(/wm-gruppe/.test(a) && /menueGruppen/.test(a) && /_gruppeZu/.test(a), 'Oberfläche: Gruppen auf- und zuklappbar (merkt sich offen/zu)');
+    pruefe(/inRede/.test(a), 'Antippbare Wörter: nichts in wörtlicher Rede („Wand“ in Lottes Erzählung)');
+    // 6. Tippfehler
+    let t = s.tu('untersuhce kästchen');
+    pruefe(/Meintest du „untersuche kästchen“/.test(t) && /data-tippbefehl="untersuche kästchen"/.test(roh(s)), 'Tippfehler: „Meintest du ‚untersuche kästchen‘?“ (antippbar)');
+    t = s.tu('ja');
+    pruefe(/Nussbaum/.test(t), 'Tippfehler: „ja“ führt den Vorschlag aus');
+    t = s.tu('untersuhce tagebuch'); s.tu('nein');
+    pruefe(/Meintest du „untersuche tagebuch“/.test(t), 'Tippfehler vor einem Wort, das selbst ein Befehl ist („untersuhce tagebuch“)');
+    s.tu('öffne schuhkarton');
+    t = s.tu('nimm pistle');
+    pruefe(/Meintest du „nimm pistole“/.test(t), 'Tippfehler bei Dingen: ähnlichstes Wort im Raum');
+    const s2 = imLager(); t = s2.tu('nimm pistle');
+    pruefe(!/Meintest/.test(t), 'Tippfehler verraten nichts Verstecktes (Pistole im geschlossenen Karton)');
+    // 7. Protokoll
+    s.HG.ausgabe.schreibe('system', 'Protokoll kopiert (Test)', { keinProtokoll: true });
+    pruefe(!/Protokoll kopiert \(Test\)/.test(s.HG.protokoll.text()), 'Protokoll: die Meldung „Protokoll kopiert“ steht nicht im Protokoll');
+    pruefe(/navigator\.share/.test(a) && /canShare/.test(a) && /_protokollLaeuft/.test(a) && /download/.test(a), 'Protokoll: Teilen-Menü (Web Share, .txt), Rückfall Download/Zwischenablage, nur einmal auslösen');
+  }
+  // 4. Handy-Nachricht antippbar · 12. Nachbarhaus · 13. Frau Kolbe vor dem ersten Hausbesuch
+  {
+    const s = prolog(); s.tu('öffne umschlag'); s.tu('lies notarbrief'); s.tu('nimm hausschlüssel'); s.tu('fahre zum haus');
+    const b = s.bloecke.filter(x => x.typ === 'handy' && /Neue Nachricht/.test(x.html)).pop();
+    pruefe(b && b.befehl === 'lies nachrichten', 'Handy: eingeblendete Nachricht öffnet sich per Tipp („lies nachrichten“)');
+    pruefe(/Ligusterhecke[^]*Gardine/.test(s.tu('schau')), 'Vor Haus Grest: Hinweis auf das Nachbarhaus im Westen (Hecke, Gardine)');
+    s.HG.zufall = () => 0.05;
+    s.tu('geh nach westen'); s.HG.zustand.z.zeit.minute = 11 * 60;
+    const t = s.tu('geh hinein');
+    pruefe(/Ihr Auto gesehen/.test(t) && !/reingegangen/.test(t), 'Frau Kolbe: „Ich hab Ihr Auto gesehen“, solange man nicht im Haus war');
+  }
+  // 14. Gesprächsoptionen
+  {
+    const k = fs.readFileSync(path.join(WURZEL, 'js/content/kolbe.js'), 'utf8'), g = fs.readFileSync(path.join(WURZEL, 'js/content/gerdes.js'), 'utf8');
+    pruefe(/Das Haus da drüben gehört jetzt mir/.test(k) && /Ich habe das Haus geerbt/.test(g) && !/Ich wohne jetzt/.test(k + g), 'Kolbe und Gerdes: „Das Haus gehört jetzt mir“ / „Ich habe das Haus geerbt“');
+  }
+  // 8./9. Schlüssel und Geräusche · 18./19. Porträt
+  {
+    const s = imHaus();
+    s.tu('schließe haustür'); s.tu('schließe haustür ab');
+    let t = s.tu('öffne haustür');
+    pruefe(/\(mit dem alten Hausschlüssel\)/.test(t) && s.HG.api.eig('haustuer', 'offen'), '„öffne haustür“ schließt mit dem passenden Schlüssel von selbst auf');
+    s.tu('schließe haustür'); s.tu('schließe haustür ab');
+    t = s.tu('geh nach süden');
+    pruefe(/\(mit dem alten Hausschlüssel\)/.test(t) && s.HG.zustand.z.raum === 'einfahrt', '„geh nach …“ schließt ebenso auf');
+    s.tu('geh nach norden');
+    t = s.tu('öffne eichentür');
+    pruefe(/passt nicht/.test(t) && !/\[Ein Schlüssel dreht sich/.test(t) && !/\[Die Tür knarrt\]/.test(t), 'Ohne passenden Schlüssel: „passt nicht“ – kein Schlüssel- und kein Knarr-Geräusch');
+    t = s.tu('geh nach westen');
+    pruefe(/verschlossen/.test(t) && !/\[/.test(t), '„geh nach westen“ an der verschlossenen Eichentür: kein Geräusch');
+    s.HG.api.bewege('eisenschluessel', 'spieler'); s.HG.api.setze('eisenschluessel', 'versteckt', false);
+    t = s.tu('öffne eichentür');
+    pruefe(/\(mit dem [^)]*Schlüssel\)/.test(t) && /\[Ein Schlüssel dreht sich im Schloss\]/.test(t) && /\[Die Tür knarrt\]/.test(t), 'Mit dem eisernen Schlüssel: aufgeschlossen und geöffnet, beide Geräusche');
+    s.tu('geh nach westen');
+    t = s.tu('richte porträt gerade');
+    pruefe(/Messingschlüssel/.test(t) && !s.HG.api.eig('messingschluessel', 'versteckt'), '„richte porträt gerade“ findet den Messingschlüssel');
+    s.tu('untersuche portrait');
+    t = s.tu('untersuche zirkel');
+    pruefe(/Bernward hält den Zirkel/.test(t) && !/derselbe/.test(t), '„untersuche zirkel“ vor dem Porträt: der gemalte Zirkel („Portrait“ geht auch)');
+    s.HG.api.bewege('zirkel', 'kaestchen'); s.HG.api.setze('zirkel', 'versteckt', false);
+    t = s.tu('untersuche zirkel');
+    pruefe(/derselbe Zirkel, der in Bernwards Kästchen steckt – B\. G\. im Griff/.test(t), 'Ist der Zirkel gefunden: „Es ist derselbe Zirkel …“');
+    const u = imHaus(); u.HG.spiel.betrete('arbeitszimmer');
+    pruefe(/Messingschlüssel/.test(u.tu('häng das bild gerade')), '„häng das bild gerade“ ebenso');
+  }
+  // 10./11. Friedhof
+  {
+    const s = imLager(); s.HG.spiel.betrete('friedhof');
+    pruefe(/noch nie gesehen, wer/.test(s.tu('frage gärtner nach carstens grab')), 'Kowalski: Thema „Carstens Grab“ – der Lavendel, „Ich hab noch nie gesehen, wer.“');
+    s.tu('geh nach norden');
+    pruefe(/Efeu überzieht/.test(s.tu('untersuche efeu')), '„untersuche efeu“: eigenes Detail');
+    pruefe(/gemeißelt/.test(s.tu('untersuche efeu am grabstein')), '„efeu am grabstein“: der gemeißelte Efeukranz');
+  }
+  // 15./16. Klavier vor der Haustür, Uhrticken
+  {
+    const s = imHaus(); s.tu('geh nach süden'); s.tu('schließe haustür');
+    let t = s.tu('warte bis abend');
+    pruefe(/\[Drinnen spielt jemand Klavier\]/.test(t), 'Abends vor der geschlossenen Haustür: [Drinnen spielt jemand Klavier]');
+    pruefe(s.HG.medien.atmoKandidaten()[0] === 'klavier-gedaempft', 'Dazu der Raum-Sound klavier-gedaempft');
+    t = s.tu('öffne haustür');
+    pruefe(/\[Die Musik bricht ab\]/.test(t) && s.HG.medien.atmoKandidaten()[0] !== 'klavier-gedaempft', 'Beim Öffnen: [Die Musik bricht ab]');
+    const K = s.HG.daten.klaenge;
+    pruefe(K['klavier-gedaempft'] && K['klavier-gedaempft'].abbruch && K['ort-haus'].ausblenden === 30, 'Klang-Daten: Klavier bricht hart ab, Haus-Ticken blendet nach 30 s aus');
+    const ml = path.join(WURZEL, 'docs/medien-liste.md');
+    pruefe(!fs.existsSync(ml) || /klavier-gedaempft/.test(fs.readFileSync(ml, 'utf8')), 'Medienliste: klavier-gedaempft eingetragen');
+  }
+  // 17. Die wandernde Kerze brennt auf der untersten Stufe
+  {
+    const s = imHaus(), H = s.HG;
+    H.zustand.z.zeit.minute = 20 * 60;
+    H.api.spuk('kerze_wandert');
+    let t = s.tu('schau');
+    pruefe(/untersten Treppenstufe steht die Kerze[^]*brennt/.test(t) && H.medien.raumKandidaten().some(k => /raum-halle-spuk/.test(k.name)), 'Kerzen-Spuk: brennt auf der untersten Stufe (Text und Spukbild)');
+    s.tu('geh nach osten'); s.tu('geh nach westen');
+    pruefe(/untersten Stufe/.test(s.tu('untersuche kerze')), 'Der Zustand bleibt, solange man im Haus ist');
+    t = s.tu('nimm kerze');
+    pruefe(/brennt weiter/.test(t) && H.api.eig('kerze', 'brennt'), 'Genommen brennt sie weiter (Licht)');
+    const u = imHaus(), U = u.HG; U.zustand.z.zeit.minute = 14 * 60; U.api.spuk('kerze_wandert');
+    u.tu('geh nach süden');
+    pruefe(U.api.eig('kerze', 'ort') === 'kommode' && !U.api.eig('kerze', 'brennt'), 'Wer das Haus verlässt: Die Kerze steht wieder kalt auf der Kommode');
+  }
+  // 20. Dunkelheit ab 16:30
+  {
+    const s = imHaus(), H = s.HG, z = H.zustand.z;
+    s.tu('geh nach süden'); z.zeit.minute = 16 * 60 + 43;
+    let t = s.tu('schau');
+    pruefe(H.zeit.phase() === 'abend' && !/Mittagslicht/.test(t) && /dunkel/.test(t), '16:43 vor dem Haus: schon dunkel, kein „Mittagslicht“');
+    s.tu('geh nach norden'); s.tu('schalte taschenlampe aus');
+    pruefe(!H.welt.hell(), '16:43 in der Halle ohne Licht: dunkel');
+    s.tu('schalte taschenlampe ein'); H.spiel.betrete('arbeitszimmer'); z.zeit.minute = 17 * 60 + 39;
+    t = s.tu('schau');
+    pruefe(!/Abendlicht/.test(t) && /dunkel/.test(t), '17:39 im Arbeitszimmer: kein „Abendlicht“');
+    z.zeit.minute = 16 * 60 + 20;
+    pruefe(H.zeit.phase() === 'mittag' && H.welt.hell('halle'), '16:20: noch hell');
+  }
+}
 pruefe(!UNERSETZT.length, 'In keiner Ausgabe aller Tests steht ein unersetzter Platzhalter' + (UNERSETZT.length ? ': ' + UNERSETZT.slice(0, 3).join(' | ') : ''));
 
 console.log('\n' + (tests - fehler) + ' von ' + tests + ' Prüfungen bestanden.' + (fehler ? ' ' + fehler + ' FEHLGESCHLAGEN.' : ''));

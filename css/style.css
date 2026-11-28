@@ -147,6 +147,16 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--blut); outl
 .wm-erledigt > summary { cursor: pointer; list-style: none; padding: 6px 10px; color: var(--tinte-hell); font-style: italic; border-radius: 4px; display: flex; align-items: center; gap: 6px; }
 .wm-erledigt > summary::before { content: '▸'; display: inline-block; width: 1em; transition: transform .15s; }
 .wm-erledigt[open] > summary::before { transform: rotate(90deg); }
+/* Menüs: Gruppen nach Herkunft ("Hier im Raum", "Bei dir" → "Aus dem Lager" …), auf- und zuklappbar */
+.wm-gruppe { display: flex; flex-direction: column; gap: 2px; }
+.wm-gruppe > summary { cursor: pointer; list-style: none; padding: 6px 8px; font-size: .85em; font-weight: bold; color: var(--tinte-hell); border-bottom: 1px solid #2a1d1222; display: flex; align-items: center; gap: 6px; }
+.wm-gruppe > summary::-webkit-details-marker { display: none; }
+.wm-gruppe > summary::before { content: '▸'; display: inline-block; width: 1em; transition: transform .15s; }
+.wm-gruppe[open] > summary::before { transform: rotate(90deg); }
+.wm-gruppe + .wm-gruppe { margin-top: 4px; }
+.wm-gruppe.wm-unter { padding-left: 10px; }
+.wm-gruppe.wm-unter > summary { font-weight: normal; font-style: italic; border-bottom: none; }
+@media (prefers-reduced-motion: reduce) { .wm-gruppe > summary::before, .wm-erledigt > summary::before { transition: none; } }
 .wm-alt { display: flex; flex-direction: column; gap: 2px; max-height: 32vh; overflow-y: auto; overscroll-behavior: contain; padding-left: 8px; }
 .wm-alt button { color: var(--tinte-hell) !important; }
 
@@ -195,6 +205,9 @@ body[data-zeit=nacht] .buehne { box-shadow: 0 10px 40px #000c, inset 0 0 110px #
 .sms.neu { border-color: var(--blut); }
 .sms .von { font-weight: bold; }
 .sms.klein { font-size: .85em; }
+#log .tippkasten, #log .tippbefehl { cursor: pointer; }
+#log .tippbefehl { text-decoration: underline dotted; text-underline-offset: 3px; font-weight: bold; }
+#log .tippkasten:focus-visible { outline: 2px solid var(--tinte); outline-offset: 2px; }
 .handy-knoepfe { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
 #handy button { font: inherit; font-size: .8em; background: #f3ead6aa; color: var(--tinte); border: 1px solid #2a1d1244; border-radius: 14px; padding: 3px 10px; cursor: pointer; }
 .klingelt { color: var(--blut); font-weight: bold; }
@@ -267,7 +280,7 @@ body[data-zeit=nacht] #bild.art-auto::after { content: ''; position: absolute; i
   #vorschlaege button:hover, #ergaenzung button:hover, #leiste button:hover:not(:disabled), .knoepfe button:hover,
   #inventar button:hover, #verbinden:hover:not(:disabled), #handy button:hover, .wortmenue button:hover { background: var(--tinte); color: var(--papier); }
   #log .wort:hover { background: #2a1d1218; }
-  .nb-gruppe > summary:hover, .nb-hinweis > summary:hover, .wm-erledigt > summary:hover { background: #2a1d1214; }
+  .nb-gruppe > summary:hover, .nb-hinweis > summary:hover, .wm-erledigt > summary:hover, .wm-gruppe > summary:hover { background: #2a1d1214; }
   #log .abbildung .abb-umdrehen:hover { background: var(--tinte); color: var(--papier); }
   .wortmenue .wm-alt button:hover { color: var(--papier) !important; }
 }
@@ -313,7 +326,7 @@ body[data-zeit=nacht] #grossbild-bild.art-svg svg { filter: invert(.86) sepia(.5
   #eingabe button { min-width: 48px; min-height: 44px; }
   .wortmenue button { min-height: 46px; }
   .hinweise input[type=checkbox] { width: 22px; height: 22px; margin-top: 3px; }
-  .nb-gruppe > summary, .wm-erledigt > summary { min-height: 46px; }
+  .nb-gruppe > summary, .wm-erledigt > summary, .wm-gruppe > summary { min-height: 46px; }
   .nb-hinweis > summary { padding: 6px 4px; }
   #log .abbildung .abb-umdrehen { min-height: 40px; padding: 4px 14px; }
   .ton input[type=range] { min-height: 44px; }

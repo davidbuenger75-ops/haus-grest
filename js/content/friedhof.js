@@ -26,7 +26,7 @@
     schauplatz: 'friedhof', abfahrt: true, karte: { x: 0, y: 0 },
     beschreibung: {
       tag: 'Ein schmiedeeisernes Tor in einer Bruchsteinmauer, dahinter ein Hauptweg aus Kies zwischen alten Linden. Rechts die Gräber der letzten Jahrzehnte, gepflegt, mit Heidekraut und Grablichtern. Neben dem Tor ein Gärtnerhäuschen mit Schubkarre, Gießkannen und einem Wasserhahn. Nach Norden, hinter der Kirche, wird der Friedhof älter und dunkler.',
-      abend: 'Das Tor steht noch offen, aber nicht mehr lange. Die Linden werfen lange Schatten über den Hauptweg, auf den neueren Gräbern flackern rote Grablichter. Am Gärtnerhäuschen brennt eine Lampe. Nach Norden, hinter der Kirche, ist es schon fast dunkel.'
+      abend: 'Das Tor steht noch offen, aber nicht mehr lange. Unter den Linden ist der Hauptweg schon dunkel, auf den neueren Gräbern flackern rote Grablichter. Am Gärtnerhäuschen brennt eine Lampe. Nach Norden, hinter der Kirche, ist es schon fast dunkel.'
     },
     kurz: 'Am Tor des Friedhofs Kirchhörde: Hauptweg, Linden, das Gärtnerhäuschen. Norden: der alte Teil hinter der Kirche.',
     riechen: 'Nasses Laub, Kerzenwachs, frische Erde von einem neuen Grab.',
@@ -86,7 +86,10 @@
       return v.concat(['geh nach süden']);
     },
     details: [
-      { nomen: 'Gräber', genus: 'pl', adj: ['alt'], woerter: ['graeber', 'kreuze', 'eisenkreuze', 'engel', 'efeu', 'reihen'], text: 'Hier liegt das alte Kirchhörde: Bauern, Bergleute, ein Lehrer, Kinder. Viele Namen sind nicht mehr zu lesen. Einige weiter hinten tragen Namen, die du aus Carstens Grundbuchauszug kennst: Ostermann, Teubner. Man hat sie nebeneinandergelegt, als gehörten sie zusammen.' },
+      { nomen: 'Gräber', genus: 'pl', adj: ['alt'], woerter: ['graeber', 'kreuze', 'eisenkreuze', 'engel', 'reihen'], text: 'Hier liegt das alte Kirchhörde: Bauern, Bergleute, ein Lehrer, Kinder. Viele Namen sind nicht mehr zu lesen. Einige weiter hinten tragen Namen, die du aus Carstens Grundbuchauszug kennst: Ostermann, Teubner. Man hat sie nebeneinandergelegt, als gehörten sie zusammen.' },
+      // Efeu als eigenes Detail (Spieltest 3: „untersuche efeu“ zeigte die Beschreibung der alten Gräber)
+      { nomen: 'Efeu', genus: 'm', woerter: ['efeu', 'ranken', 'efeuranken', 'blaetter'], text: 'Efeu überzieht die alten Steine, dunkelgrün und glänzend, als wäre nicht November. An manchen Gräbern hat er die Namen ganz verschluckt; du müsstest ihn wegreißen, um zu lesen, wer darunter liegt. Nur am Stein der Grests wächst kein lebendiger Efeu – dort ist er aus Sandstein, ein gemeißelter Kranz um die beiden Hände.',
+        tasten: 'Die Blätter sind kalt und wachsig. Darunter, zwischen den Ranken, der raue Stein.', entfernen: 'Du ziehst an einer Ranke. Sie gibt nicht nach, sie hält sich am Stein fest wie mit Fingern. Du lässt sie.' },
       { nomen: 'Eibe', genus: 'f', woerter: ['eibe', 'baum', 'nadeln'], text: 'Eine alte Eibe, dunkel und dicht. Der Boden darunter ist trocken, obwohl es geregnet hat. Nur das Grab der Grests liegt im Schatten, als hätte der Baum sich darüber gebeugt.' },
       { nomen: 'Kirchenmauer', genus: 'f', woerter: ['kirchenmauer', 'mauer', 'kirche'], text: 'Die Rückwand der Dorfkirche, Bruchstein, ein vermauertes gotisches Fenster. Die Krähen sitzen auf dem Sims in einer Reihe.' }
     ]
@@ -170,6 +173,13 @@
       }
     }
   });
+  // Der gemeißelte Efeukranz – „untersuche efeu am grabstein“ (Spieltest 3)
+  HG.ding('efeukranz_grab', {
+    nomen: 'Efeukranz', genus: 'm', adj: ['gemeißelt'], woerter: ['efeukranz', 'kranz', 'efeu', 'blaetter'],
+    ort: 'grabstein_grest', rel: 'teil', fest: true, szenerie: true,
+    beschreibung: 'Ein Kranz aus Efeu, in den Sandstein gemeißelt, jedes Blatt einzeln, die Adern fein wie mit der Nadel gezogen. Er schließt sich um die beiden Hände. Echter Efeu wuchert an allen Steinen ringsum – nur an diesem nicht, als hielte er Abstand.',
+    tasten: 'Kalter, körniger Stein. Die Blätter sind so fein gearbeitet, dass du ihre Ränder unter den Fingerkuppen spürst.'
+  });
   HG.ding('moos_grab', {
     nomen: 'Moos', genus: 'n', woerter: ['moos', 'flechten', 'buchstaben', 'inschrift', 'zeile'],
     ort: 'friedhof_alt', fest: true, szenerie: true,
@@ -189,9 +199,13 @@
     ort: 'friedhof', person: true, szenerie: true,
     beschreibung: 'Ein Mann um die sechzig in grüner Latzhose, Wollmütze, Hände wie Baumrinde. Er recht ruhig und gründlich und sieht nur auf, wenn er muss.',
     gespraech: function (api) {
-      return '„Kowalski. Ich mach hier die Gräber, seit dreißig Jahren.“ Er stützt sich auf den Rechen. „Wen suchen Sie?“ <span class="nebenbei">(„frage gärtner nach …“ – Grest, Lavendel, Pflegerin, Inschrift)</span>';
+      return '„Kowalski. Ich mach hier die Gräber, seit dreißig Jahren.“ Er stützt sich auf den Rechen. „Wen suchen Sie?“ <span class="nebenbei">(„frage gärtner nach …“ – Grest, Carstens Grab, Lavendel, Pflegerin, Inschrift)</span>';
     },
     themen: {
+      // „frage gärtner nach carstens grab“ (Spieltest 3) – steht vorn, sonst fängt „grab“ das Thema Grest ab [Vorschlag]
+      'carstens,carstensgrab,beerdigung,beerdigt,bestattung,beisetzung,senfglas': function () {
+        return '„Häuser, ja.“ Er lehnt den Rechen an die Schubkarre. „Ende Oktober unter die Erde gekommen. Kein Pfarrer, nur einer vom Bestatter, der was vorgelesen hat. Bezahlt hat der Notar, aus dem Nachlass – Reihengrab, das Einfachste, Holzkreuz, bis ein Stein kommt. Wenn einer kommt.“ Er sieht zum frischen Grab hinüber. „Da waren nur der Notar und die alte Frau aus dem Ulmenweg. Und der Lavendel im Senfglas …“ Er schüttelt langsam den Kopf. „Den stellt jemand jeden Morgen hin. Ich hab ihn zweimal weggeräumt. Ich bin um sieben hier, und er steht schon da. Ich hab noch nie gesehen, wer.“';
+      },
       'grest,grab,grabstelle,elisabeth,bernward,stein,grabstein': function (api) {
         api.setzeFlag('kowalski_grest');
         return '„Grest? Hinten, hinter der Kirche, unter der Eibe. Der hohe dunkle Stein mit den Händen.“ Er sieht zur Kirche. „Das ist bezahlt bis 2050. Im Februar 1930 bar bezahlt, für hundertzwanzig Jahre. Steht so in der alten Kartei. Unterschrieben hat sie selbst, die Frau Grest. Vier Wochen bevor sie gestorben ist.“ Er kratzt sich unter der Mütze. „Als hätte sie gewusst, dass sie lange warten muss.“';

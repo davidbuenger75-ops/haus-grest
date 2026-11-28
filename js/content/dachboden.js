@@ -6,6 +6,7 @@
 (function () {
 
   function nacht(api) { return api.istNacht(); }
+  function dunkelDraussen(api) { return api.istDunkel(); }   // kein Strom: ab Einbruch der Dunkelheit (16:30) finster
 
   // ===================================================================
   // Zugang: die Bodenklappe an der Galerie
@@ -26,7 +27,7 @@
     name: 'Speicher',
     woerter: ['speicher', 'dachboden', 'boden', 'dach'],
     schauplatz: 'haus', karte: { x: 20, y: 0 },
-    dunkel: nacht,
+    dunkel: dunkelDraussen,
     dunkelText: 'Stockfinster. Über dir knackt das Gebälk. Irgendwo scharrt etwas über Holz – eine Kiste, die jemand ein Stück weiterschiebt.',
     beschreibung: function (api) {
       return 'Der Speicher zieht sich unter dem ganzen Walmdach hin, Balken und Sparren wie die Rippen eines umgedrehten Schiffs. Durch zwei Gauben fällt ' +
@@ -261,7 +262,7 @@
     name: 'Mädchenkammer',
     woerter: ['maedchenkammer', 'kammer', 'dachkammer'],
     schauplatz: 'haus', karte: { x: 20, y: 1 },
-    dunkel: nacht,
+    dunkel: dunkelDraussen,
     dunkelText: 'Stockfinster. Ganz nah, als säße es neben dir: ein Kind, das leise weint.',
     beschreibung: 'Eine winzige Kammer unter der Dachschräge, durch eine Gaube fällt ' + 'ein Streifen Licht. Ein schmales Eisenbett, ein Waschgestell, ein Haken an der Tür. Hier schlief die Köchin der Grests – und, so sieht es aus, ein Kind: Am Kopfende des Bettes sind Buchstaben ins Holz der Wand geritzt, kindlich, mit großer Mühe. Die Tür im Norden führt zurück auf den Speicher.',
     kurz: 'Die Mädchenkammer mit der Ritzung an der Wand. Norden: Speicher.',
@@ -289,7 +290,7 @@
     name: 'Wäscheboden',
     woerter: ['waescheboden', 'trockenboden'],
     schauplatz: 'haus', karte: { x: 21, y: 0 },
-    dunkel: nacht,
+    dunkel: dunkelDraussen,
     dunkelText: 'Stockfinster. Stoff streift dein Gesicht, kühl und feucht, und noch einer, und noch einer.',
     beschreibung: function (api) {
       return 'Leinen sind kreuz und quer unter das Dach gespannt, und an einigen hängen noch Laken, grau geworden, steif vom Staub von Jahrzehnten. ' +
@@ -314,7 +315,7 @@
     name: 'Turmerker',
     woerter: ['turmerker', 'turm', 'tuermchen', 'ausguck', 'turmzimmer'],
     schauplatz: 'haus', karte: { x: 21, y: 1 },
-    dunkel: nacht,
+    dunkel: dunkelDraussen,
     dunkelText: 'Stockfinster. Um dich herum, ganz nah: das Rascheln von Federn.',
     beschreibung: function (api) {
       return 'Ganz oben im Türmchen: ein achteckiger Ausguck, kaum zwei Meter breit, mit schmalen Fenstern nach allen Seiten. Ein Fenster ist zerbrochen, und durch die Öffnung haben die Krähen ein Nest gebaut, groß wie ein Waschkorb, aus Zweigen, Draht und glitzerndem Kram. ' +

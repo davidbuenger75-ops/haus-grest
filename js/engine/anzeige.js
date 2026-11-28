@@ -60,7 +60,8 @@
 
       // Antippbare Wörter im Text und ihr Aktionsmenü
       $('log').addEventListener('click', function (e) {
-        var w = e.target.closest('.wort'); if (w) A.wortMenue(w);
+        var w = e.target.closest('.wort'); if (w) { A.wortMenue(w); return; }
+        var k = e.target.closest('[data-tippbefehl]'); if (k) A.befehl(k.getAttribute('data-tippbefehl'));
       });
       $('wortmenue').addEventListener('click', function (e) {
         var b = e.target.closest('button'); if (!b || !A._menue) return;
@@ -153,7 +154,10 @@
           A.befehl(c);
         });
       });
-      if ($('protokoll-knopf')) $('protokoll-knopf').addEventListener('click', function () { A.protokollKopieren(); });
+      if ($('protokoll-knopf')) {
+        $('protokoll-knopf').addEventListener('click', function () { A.protokollKopieren(); });
+        if (touch() && navigator.share) $('protokoll-knopf').textContent = 'Protokoll teilen';
+      }
       if ($('protokoll-zu')) $('protokoll-zu').addEventListener('click', function () { $('protokoll-dialog').close(); A.fokus(); });
       $('karte-zu').addEventListener('click', function () { $('karte').close(); A.fokus(); });
       // Nahansicht: Bereiche lösen Befehle aus, Ringe drehen sich erst lokal und rasten per Knopf ein
@@ -282,11 +286,15 @@
     // ---------------- Menüs (angetipptes Wort, Verb mit Objektauswahl) ----------------
     /** eintraege: [{ text, befehl, erledigt? } | { text, eingabe } | { kopf }]
      *  erledigt: true – landet im eingeklappten Bereich "erledigtTitel" (z. B. "Bereits gelesen") unter der Liste. */
+    _gruppeZu: {},
     zeigeMenue: function (anker, titel, eintraege, erledigtTitel) {
       var m = $('wortmenue'), html = '<div class="wm-titel">' + titel + '</div>', alt = '', nAlt = 0;
       function knopf(x, i) { return '<button type="button" data-i="' + i + '"' + (x.eingabe !== undefined ? ' class="wm-eingabe"' : '') + '>' + T.esc(x.text) + '</button>'; }
       eintraege.forEach(function (x, i) {
-        if (x.kopf) html += '<div class="wm-kopf">' + x.kopf + '</div>';
+        // Aufklappbare Gruppen (Verb-Menüs nach Herkunft, Spieltest 3); offen/zu merkt sich A._gruppeZu
+        if (x.gruppeAuf) html += '<details class="wm-gruppe' + (x.unter ? ' wm-unter' : '') + '" data-gruppe="' + T.esc(x.gruppeAuf) + '"' + (A._gruppeZu[x.gruppeAuf] ? '' : ' open') + '><summary>' + T.esc(x.gruppeAuf) + ' <span class="nb-zahl">' + x.n + '</span></summary>';
+        else if (x.gruppeZu) html += '</details>';
+        else if (x.kopf) html += '<div class="wm-kopf">' + x.kopf + '</div>';
         else if (x.erledigt) { alt += knopf(x, i); nAlt++; }
         else if (x.eingabe !== undefined) return;   // Eingabe-Knöpfe kommen ganz nach unten
         else html += knopf(x, i);
@@ -297,6 +305,9 @@
       A.platziereMenue();
       var erster = m.querySelector('button, summary');
       if (erster && !touch()) erster.focus();
+      m.querySelectorAll('.wm-gruppe').forEach(function (g) {
+        g.addEventListener('toggle', function () { A._gruppeZu[g.getAttribute('data-gruppe')] = !g.open; A.platziereMenue(); });
+      });
       var det = m.querySelector('.wm-erledigt');
       if (det) det.addEventListener('toggle', function () {
         A.platziereMenue();
@@ -344,8 +355,23 @@
     },
     verbMenue: function (verb, knopf) {
       // Schon Gelesenes/Untersuchtes rutscht in den eingeklappten Bereich darunter (HG.spiel.erledigt)
-      var liste = HG.spiel.objekteFuer(verb).map(function (id) {
-        return { text: T.gross(T.name(id, 'nom', '')), befehl: verb + ' ' + HG.spiel.kurzwort(id), erledigt: HG.spiel.erledigt(verb, id) };
+      // Gruppiert nach Herkunft: „Hier im Raum“, „Bei dir“ (darin nach Fundort) – nur wenn es beides gibt bzw.
+      // mehrere Fundorte; eine einzige Gruppe braucht keinen Rahmen (HG.spiel.menueGruppen, Spieltest 3)
+      var liste = [], gruppen = HG.spiel.menueGruppen(verb);
+      function eintrag(id) { return { text: T.gross(T.name(id, 'nom', '')), befehl: verb + ' ' + HG.spiel.kurzwort(id), erledigt: HG.spiel.erledigt(verb, id) }; }
+      function offeneZahl(ids) { return ids.filter(function (id) { return !HG.spiel.erledigt(verb, id); }).length; }
+      var rahmen = gruppen.length > 1 || gruppen.some(function (g) { return g.unter; });
+      gruppen.forEach(function (g) {
+        var n = offeneZahl(g.ids);
+        if (rahmen && n) liste.push({ gruppeAuf: g.titel, n: n });
+        if (g.unter) g.unter.forEach(function (u) {
+          var nu = offeneZahl(u.ids);
+          if (nu) liste.push({ gruppeAuf: u.titel, n: nu, unter: true });
+          liste = liste.concat(u.ids.map(eintrag));
+          if (nu) liste.push({ gruppeZu: true });
+        });
+        else liste = liste.concat(g.ids.map(eintrag));
+        if (rahmen && n) liste.push({ gruppeZu: true });
       });
       if (!liste.length) liste.push({ kopf: 'Hier ist nichts Passendes zu sehen.' });
       liste.push({ text: 'Selbst eintippen …', eingabe: verb + ' ' });
@@ -376,11 +402,24 @@
         var gang = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null), knoten = [];
         while (gang.nextNode()) {
           var n = gang.currentNode;
-          if (!n.parentNode.closest('button, a, .wort, .nebenbei, .unsichtbar, .kein-wort')) knoten.push(n);
+          if (!n.parentNode.closest('button, a, .wort, .nebenbei, .unsichtbar, .kein-wort, [data-tippbefehl]')) knoten.push(n);
         }
+        // Wörtliche Rede („…“) bleibt ohne Links: dort wird erzählt, nicht gezeigt (Spieltest 3: „Wand“ in Lottes
+        // Erzählung über die Kammer im Haus Grest zeigte auf die Wand im Altenheim). Der Zustand läuft über alle
+        // Textstücke des Absatzes mit.
+        var inRede = 0;
         knoten.forEach(function (n) {
-          var text = n.nodeValue, re = /[A-ZÄÖÜ][A-Za-zÄÖÜäöüß]{2,}/g, m, frag = null, pos = 0;
+          var text = n.nodeValue, re = /[A-ZÄÖÜ][A-Za-zÄÖÜäöüß]{2,}/g, m, frag = null, pos = 0, gezaehlt = 0;
+          function zaehle(bis) {
+            for (; gezaehlt < bis; gezaehlt++) {
+              var c = text.charAt(gezaehlt);
+              if (c === '„' || c === '»') inRede++;
+              else if ((c === '“' || c === '«') && inRede > 0) inRede--;
+            }
+          }
           while ((m = re.exec(text))) {
+            zaehle(m.index);
+            if (inRede > 0) continue;
             var ids = A.findeWort(idx, m[0]);
             if (!ids) continue;
             var schl = ids.join(',');
@@ -393,6 +432,7 @@
             frag.appendChild(s);
             pos = m.index + m[0].length;
           }
+          zaehle(text.length);
           if (frag) { frag.appendChild(document.createTextNode(text.slice(pos))); n.parentNode.replaceChild(frag, n); }
         });
       } catch (e) { /* Verlinken ist nur Komfort – nie das Spiel stören */ }
@@ -437,7 +477,14 @@
         case 'schock': el = document.createElement('p'); el.className = 'schock'; el.innerHTML = b.html; break;
         case 'buchinhalt': el = document.createElement('div'); el.className = 'auswahl'; el.innerHTML = b.html; break;
         case 'handy': case 'anruf': case 'auswahl':
-          el = document.createElement('div'); el.className = b.typ; el.innerHTML = b.html; break;
+          el = document.createElement('div'); el.className = b.typ; el.innerHTML = b.html;
+          // Meldung mit eigenem Befehl (neue Nachricht → „lies nachrichten“): der ganze Kasten ist antippbar
+          if (b.befehl) {
+            el.className += ' tippkasten'; el.setAttribute('data-tippbefehl', b.befehl);
+            el.setAttribute('role', 'button'); el.tabIndex = 0;
+            el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); A.befehl(b.befehl); } });
+          }
+          break;
         case 'zeit': el = document.createElement('p'); el.className = 'zeitwechsel'; el.innerHTML = '— ' + b.html + ' —'; break;
         case 'tipp': el = document.createElement('p'); el.className = 'tipp'; el.innerHTML = '<span class="tipp-zeichen" aria-hidden="true">☞</span> ' + b.html; break;
         case 'spuk': el = document.createElement('p'); el.className = 'spuk'; el.innerHTML = b.html; break;
@@ -614,12 +661,48 @@
       if ($('grossbild').showModal) $('grossbild').showModal(); else $('grossbild').setAttribute('open', '');
     },
 
-    /** Spielprotokoll in die Zwischenablage (für Tester). Klappt das nicht, öffnet sich ein Fenster zum Selbstkopieren. */
+    /** Spielprotokoll weitergeben (für Tester). Auf dem Handy das Teilen-Menü mit einer .txt-Datei (Web Share API),
+     *  sonst die Zwischenablage; Rückfall: .txt herunterladen bzw. ein Fenster zum Selbstkopieren (Spieltest 3).
+     *  Die Meldung darüber kommt nicht ins Protokoll; mehrfaches Antippen löst nur einmal aus. */
     protokollKopieren: function () {
-      if (!HG.protokoll) return;
-      var text = HG.protokoll.text(), n = HG.protokoll.anzahl();
-      var ok = function () { HG.ausgabe.system('Protokoll kopiert (' + n + ' Einträge, ' + Math.round(text.length / 1024) + ' KB). Du kannst es jetzt in eine E-Mail oder Nachricht einfügen (Strg+V).'); };
-      var notfall = function () {
+      if (!HG.protokoll || A._protokollLaeuft) return;
+      A._protokollLaeuft = true;
+      var fertig = function () { setTimeout(function () { A._protokollLaeuft = false; }, 1200); };
+      var text = HG.protokoll.text(), n = HG.protokoll.anzahl(), kb = Math.round(text.length / 1024);
+      var melde = function (t) { HG.ausgabe.schreibe('system', t, { keinProtokoll: true }); fertig(); };
+      var ok = function () { melde('Protokoll kopiert (' + n + ' Einträge, ' + kb + ' KB). Du kannst es jetzt in eine E-Mail oder Nachricht einfügen (Strg+V).'); };
+      var dateiname = 'haus-grest-protokoll-' + new Date().toISOString().slice(0, 16).replace(/[T:]/g, '-') + '.txt';
+      var herunterladen = function () {
+        try {
+          var url = URL.createObjectURL(new Blob([text], { type: 'text/plain;charset=utf-8' }));
+          var a = document.createElement('a'); a.href = url; a.download = dateiname;
+          document.body.appendChild(a); a.click(); document.body.removeChild(a);
+          setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+          return true;
+        } catch (e) { return false; }
+      };
+      // Handy: Teilen-Menü (Mail, Messenger …) mit dem Protokoll als Datei
+      try {
+        var datei = typeof File === 'function' ? new File([text], dateiname, { type: 'text/plain' }) : null;
+        if (touch() && datei && navigator.share && navigator.canShare && navigator.canShare({ files: [datei] })) {
+          navigator.share({ files: [datei], title: 'Haus Grest – Spielprotokoll' }).then(function () {
+            melde('Protokoll geteilt (' + n + ' Einträge, ' + kb + ' KB).');
+          }, function (e) {
+            if (e && e.name === 'AbortError') { fertig(); return; }   // abgebrochen: nichts weiter
+            if (herunterladen()) melde('Teilen hat nicht geklappt – das Protokoll wurde als Datei „' + dateiname + '“ heruntergeladen.');
+            else kopieren();
+          });
+          return;
+        }
+      } catch (e) { /* weiter mit der Zwischenablage */ }
+      kopieren();
+      function kopieren() {
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok, notfall);
+          else notfall();
+        } catch (e) { notfall(); }
+      }
+      function notfall() {
         var ta = document.createElement('textarea');
         ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
         document.body.appendChild(ta); ta.select();
@@ -627,14 +710,12 @@
         try { geklappt = document.execCommand('copy'); } catch (e) { geklappt = false; }
         document.body.removeChild(ta);
         if (geklappt) { ok(); return; }
+        if (touch() && herunterladen()) { melde('Das Protokoll wurde als Datei „' + dateiname + '“ heruntergeladen.'); return; }
+        fertig();
         $('protokoll-text').value = text;
         if ($('protokoll-dialog').showModal) $('protokoll-dialog').showModal(); else $('protokoll-dialog').setAttribute('open', '');
         $('protokoll-text').focus(); $('protokoll-text').select();
-      };
-      try {
-        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok, notfall);
-        else notfall();
-      } catch (e) { notfall(); }
+      }
     },
 
     /** Lautstärke und Stummschalter in der Seitenleiste. */

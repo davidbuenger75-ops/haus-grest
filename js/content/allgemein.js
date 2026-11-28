@@ -97,7 +97,7 @@ HG.spielDaten({
   tageszeitTexte: {
     morgen: 'Ein neuer Morgen.',
     mittag: 'Mittag.',
-    abend: 'Es wird Abend. Die Schatten werden lang.',
+    abend: 'Es wird dunkel. Mitte November ist der Tag früh vorbei.',
     nacht: 'Es ist Nacht geworden.'
   },
 

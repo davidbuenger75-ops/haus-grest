@@ -5,7 +5,7 @@
 // [Vorschlag] Notar "Dr. M. Brandt", Wortlaut von Brief und Testament.
 
 HG.ziel('zuhause', {
-  name: 'Zuhause',
+  name: 'Zuhause', herkunft: 'Von zu Hause',
   woerter: ['zuhause', 'hause', 'heim', 'wohnung', 'daheim'],
   ankunft: 'wohnung', fahrzeit: 25,
   fahrt: { tag: 'Du fährst nach Hause.', sonst: 'Du fährst nach Hause. Die Fenster deiner Nachbarn sind dunkel.' }

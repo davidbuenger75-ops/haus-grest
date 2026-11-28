@@ -53,6 +53,13 @@
 
   // --- Hintergrundschleifen je Schauplatz --------------------------------
   S('ort-haus', 'schleife', 25, '', 'Inside a large empty old house during the day: slow ticking of a distant clock, old wood quietly creaking and settling, faint wind outside the windows, a very low barely audible hum. Still, uneasy.' + LOOP);
+  // Spieltest 3: Das Ticken nervt auf Dauer – nach 30 Sekunden ausblenden, bei jedem Raumwechsel wieder kurz (medien.js)
+  HG.daten.klaenge['ort-haus'].ausblenden = 30;
+  // Vor der Haustür, abends und nachts (Spieltest 3): gedämpftes Klavier aus dem Haus, bricht beim Öffnen der Tür ab
+  // (Raum-Sound der Einfahrt, kolbe.js/erdgeschoss.js; Untertitel aus der Spiellogik)
+  HG.klang('klavier-gedaempft', { art: 'schleife', sek: 25, untertitel: 'Drinnen spielt jemand Klavier', abbruch: true,
+    prompt: 'A slow, sad lullaby played on an old, slightly out-of-tune grand piano somewhere deep inside a large house, heard from outside through a heavy closed wooden front door: muffled, distant, dull, no high frequencies, a little reverb of an empty hall. Quiet night outdoors, no wind. Seamless loop.' });
+  S('effekt-musik-bricht-ab', 'effekt', 1.5, 'Die Musik bricht ab', 'A muffled piano chord inside a house cut off abruptly mid-note, followed by complete dead silence.');
   S('ort-zuhause', 'schleife', 25, '', 'Small quiet city apartment in the morning: soft distant street traffic through a closed window, a fridge humming. Calm, ordinary.' + RUHIG + LOOP);
   S('ort-lager', 'schleife', 25, '', 'Large corrugated-metal self-storage hall: steady buzzing of fluorescent tubes, occasional water drip, faint distant traffic. Cold and empty.' + LOOP);
   S('ort-lager-nacht', 'schleife', 25, '', 'Self-storage hall at night: only the buzz of fluorescent tubes, slow water drips, irregular metallic creaks of the roof cooling down. Lonely, tense.' + LOOP);

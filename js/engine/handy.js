@@ -40,7 +40,8 @@
       hz().nachrichten.push({ id: nid, zeit: HG.zeit.text(), gelesen: false });
       if (H.dabei() && !H.leer()) HG.medien.effekt('handy-vibriert');
       if (H.dabei() && !H.leer()) HG.ausgabe.schreibe('handy', HG.wert(HG.daten.spiel.vibrierText, HG.api) ? HG.wert(HG.daten.spiel.vibrierText, HG.api).replace('%VON%', T.esc(HG.wert(d.von, HG.api)))
-        : 'Dein Handy vibriert. Neue Nachricht von <b>' + T.esc(HG.wert(d.von, HG.api)) + '</b>. <span class="nebenbei">(„lies nachrichten“)</span>');
+        : 'Dein Handy vibriert. Neue Nachricht von <b>' + T.esc(HG.wert(d.von, HG.api)) + '</b>. <span class="nebenbei">(„lies nachrichten“ oder hier tippen)</span>',
+        { befehl: 'lies nachrichten' });   // ein Tipp auf die Meldung öffnet die Nachrichten (Spieltest 3)
       return true;
     },
 

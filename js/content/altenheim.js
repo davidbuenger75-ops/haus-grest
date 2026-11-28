@@ -18,7 +18,7 @@
   var VORMITTAG = { von: '09:00', bis: '11:00' };
 
   HG.ziel('altenheim', {
-    name: 'Seniorenheim Lindenhof',
+    name: 'Seniorenheim Lindenhof', herkunft: 'Aus dem Altenheim',
     woerter: ['altenheim', 'seniorenheim', 'pflegeheim', 'altersheim', 'lindenhof', 'heim'],
     ankunft: 'altenheim', fahrzeit: 25, geoeffnet: BESUCHSZEIT,
     geschlossen: 'Die Besuchszeit im Lindenhof ist vorbei (9–19 Uhr).',

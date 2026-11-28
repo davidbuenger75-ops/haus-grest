@@ -8,7 +8,7 @@
 // Nachts hält das Haus die Haustür von innen zu (bis zum Morgen).
 
 HG.ziel('haus', {
-  name: 'Haus Grest',
+  name: 'Haus Grest', herkunft: 'Aus Haus Grest',
   woerter: ['haus', 'grest', 'hausgrest', 'villa', 'erbe'],
   ankunft: 'einfahrt', fahrzeit: 25,
   fahrt: { tag: 'Du fährst hinaus an den Stadtrand, wo die Straßen breiter und die Gärten verwilderter werden.', abend: 'Du fährst in die Dämmerung hinein. Je näher du dem Haus kommst, desto weniger Laternen brennen.', nacht: 'Du fährst durch die Nacht. Die letzte Laterne liegt weit hinter dir, als die Scheinwerfer das Gartentor von Haus Grest aus der Dunkelheit schneiden.' }
@@ -17,6 +17,35 @@ HG.ziel('haus', {
 // =====================================================================
 // VOR DEM HAUS
 // =====================================================================
+// Abends und nachts spielt drinnen jemand Klavier, solange die Haustür zu ist – beim Öffnen bricht es ab (Spieltest 3;
+// der Flügel im Salon, Spuk „Wiegenlied“). Ton: Raum-Sound klavier-gedaempft (klang.js, bricht hart ab).
+// Die wandernde Kerze (Spuk kerze_wandert): brennt auf der untersten Stufe, bis es Tag wird oder du das Haus verlässt.
+// Nimmst du sie, brennt sie weiter (und ist dein Licht). Danach steht sie wieder kalt auf der Kommode.
+function kerzeAufTreppe(api) { return api.flag('kerze_treppe') && api.eig('kerze', 'ort') === 'halle' && api.eig('kerze', 'brennt'); }
+(function () {
+  var vorher = HG.daten.spiel.jedeRunde;
+  HG.spielDaten({ jedeRunde: function (api) {
+    if (vorher) vorher(api);
+    if (!api.flag('kerze_treppe')) return;
+    var imHaus = HG.reisen.hier() === 'haus' && api.raum() !== 'einfahrt';
+    if (!api.traegt('kerze') && api.eig('kerze', 'ort') !== 'halle') { api.setzeFlag('kerze_treppe', false); return; }   // abgestellt
+    if (api.traegt('kerze')) { api.setzeFlag('kerze_treppe', false); return; }   // mitgenommen: einfach eine brennende Kerze
+    // Bei Tagesanbruch vorbei (wenn sie im Dunkeln wanderte) – oder sobald du das Haus verlässt
+    if ((api.istTag() && api.flag('kerze_treppe') === 'dunkel') || !imHaus) {
+      api.setzeFlag('kerze_treppe', false);
+      api.setze('kerze', 'brennt', false);
+      api.bewege('kerze', 'kommode', 'auf');   // als wäre nichts gewesen
+    }
+  } });
+})();
+function klavierSpielt(api) { return api.raum() === 'einfahrt' && api.istDunkel() && !api.eig('haustuer', 'offen'); }
+function klavierAus(api, hinein) {
+  if (!api.flag('klavier_spielt') || (!hinein && klavierSpielt(api))) return;
+  api.setzeFlag('klavier_spielt', false);
+  if (!api.eig('haustuer', 'offen')) return;   // weggegangen, ohne die Tür zu öffnen
+  api.sage('Im selben Augenblick bricht die Musik ab. Mitten im Takt, als hätte jemand die Hände von den Tasten genommen, weil du kommst. Drinnen ist es still.');
+  api.sound('musik-bricht-ab');
+}
 HG.raum('einfahrt', {
   name: 'Vor Haus Grest',
   woerter: ['einfahrt', 'garten', 'vorgarten', 'gartentor', 'draussen'],
@@ -24,13 +53,17 @@ HG.raum('einfahrt', {
   karte: { x: 0, y: 1 },
   beschreibung: {
     morgen: 'Morgennebel hängt im verwilderten Garten. Vor dir steht Haus Grest: drei Stockwerke aus dunklem Stein, spitze Giebel, Fenster wie geschlossene Augen. Ein Kiesweg führt nach Norden zur Haustür. Dein Auto steht am Gartentor.',
-    mittag: 'Selbst im Mittagslicht wirkt Haus Grest, als stünde es im Schatten. Drei Stockwerke aus dunklem Stein, spitze Giebel. Ein Kiesweg führt nach Norden zur Haustür. Dein Auto steht am Gartentor.',
-    abend: 'Haus Grest ragt schwarz gegen den Abendhimmel. In einem Fenster im ersten Stock glaubst du für einen Herzschlag eine Frau zu sehen. Ein Kiesweg führt nach Norden zur Haustür. Dein Auto steht am Gartentor.',
+    mittag: 'Selbst bei Tageslicht wirkt Haus Grest, als stünde es im Schatten. Drei Stockwerke aus dunklem Stein, spitze Giebel. Ein Kiesweg führt nach Norden zur Haustür. Dein Auto steht am Gartentor.',
+    abend: 'Es ist schon dunkel. Haus Grest ragt schwarz in den Novemberhimmel, nur die Laterne an der Straße wirft ein wenig Licht bis ans Gartentor. In einem Fenster im ersten Stock glaubst du für einen Herzschlag eine Frau zu sehen. Ein Kiesweg führt nach Norden zur Haustür. Dein Auto steht am Gartentor.',
     nacht: 'Das Haus ist nur ein schwärzerer Umriss vor dem Nachthimmel. Kein Fenster ist erleuchtet – und doch hast du das Gefühl, dass dich etwas ansieht. Der Kiesweg führt nach Norden zur Haustür. Dein Auto steht am Gartentor.'
   },
   kurz: 'Vor Haus Grest. Nach Norden geht es zur Haustür, dein Auto steht am Gartentor.',
-  horchen: { tag: 'Krähen in den alten Bäumen. Sonst nichts.', nacht: 'Kein Wind, kein Tier. Die Stille um das Haus ist vollkommen.' },
+  horchen: function (api) {
+    if (klavierSpielt(api)) return 'Kein Wind, kein Tier. Nur aus dem Haus, gedämpft durch die schwere Tür: Klavier. Ein langsames Wiegenlied, immer wieder dieselben vier Takte, als übe jemand – oder als könne er nicht aufhören.';
+    return api.istTag() ? 'Krähen in den alten Bäumen. Sonst nichts.' : 'Kein Wind, kein Tier. Die Stille um das Haus ist vollkommen.';
+  },
   riechen: 'Feuchte Erde, nasses Laub.',
+  sound: function (api) { return klavierSpielt(api) ? 'klavier-gedaempft' : null; },
   foto: { tag: 'Haus Grest im Tageslicht. Im Fenster des ersten Stocks: ein heller Fleck. Eine Spiegelung, sicher.', nacht: 'Fast nur Schwärze. Doch im Fenster des ersten Stocks: ein blasses Oval, wie ein Gesicht.' },
   ausgaenge: {
     norden: { ziel: 'halle', tuer: 'haustuer' }
@@ -40,7 +73,23 @@ HG.raum('einfahrt', {
       api.sage('Das Gartentor quietscht. Das also ist dein Erbe.');
       api.nachricht('brandt_strom');
     }
+    if (klavierSpielt(api)) {
+      api.setzeFlag('klavier_spielt');
+      api.sage('Als du auf den Kiesweg trittst, hörst du es: Aus dem Haus, gedämpft durch die geschlossene Tür, spielt jemand Klavier.');
+      api.untertitel('Drinnen spielt jemand Klavier');
+    }
   },
+  // Die Haustür geht auf: Die Musik bricht ab, mitten im Takt – nach „öffne haustür“ (jedeRunde) oder gleich beim
+  // Hineingehen („geh nach norden“ öffnet die Tür unterwegs, beimVerlassen)
+  jedeRunde: function (api) {
+    klavierAus(api);
+    if (klavierSpielt(api) && !api.flag('klavier_spielt')) {   // dunkel geworden, während du hier stehst
+      api.setzeFlag('klavier_spielt');
+      api.sage('Aus dem Haus dringt auf einmal Musik. Jemand spielt Klavier, gedämpft durch die geschlossene Tür.');
+      api.untertitel('Drinnen spielt jemand Klavier');
+    }
+  },
+  beimVerlassen: function (api, info) { klavierAus(api, info.ziel === 'halle'); return false; },
   vorschlaege: function (api) { return api.eig('haustuer', 'verschlossen') ? ['schließe haustür auf'] : ['geh nach norden']; },
   details: [
     { nomen: 'Haus', genus: 'n', woerter: ['haus', 'fassade', 'giebel', 'fenster', 'grest'], text: { tag: 'Dunkler Stein, spitze Giebel, hohe Fenster. Über der Tür ist eine Jahreszahl in den Stein gemeißelt: 1900.', nacht: 'Ein schwarzer Umriss. Die Fenster spiegeln nichts, nicht einmal den Himmel.' } },
@@ -56,13 +105,13 @@ HG.raum('halle', {
   woerter: ['halle', 'eingangshalle', 'diele', 'vorhalle', 'eingang'],
   schauplatz: 'haus',
   karte: { x: 0, y: 0 },
-  dunkel: function (api) { return api.istNacht(); },   // kein Strom: nachts stockfinster
+  dunkel: function (api) { return api.istDunkel(); },   // kein Strom: ab Einbruch der Dunkelheit (16:30) stockfinster
   dunkelText: 'Stockfinster. Nur das Oberlicht über der Haustür zeichnet ein graues Halbrund in die Schwärze.',
   beschreibung: function (api) {
     var licht = {
       morgen: 'Durch das bunte Oberlicht über der Haustür fällt graues Morgenlicht',
       mittag: 'Durch das bunte Oberlicht über der Haustür fällt Mittagslicht und legt farbige Flecken',
-      abend: 'Durch das bunte Oberlicht über der Haustür fällt das letzte Tageslicht und legt rote Flecken',
+      abend: 'Draußen ist es schon dunkel; das Oberlicht über der Haustür ist nur noch ein graues Halbrund. Dein Licht fällt',
       nacht: 'Dein Licht lässt die Schatten der Geländerstäbe über die Wände wandern. Das Oberlicht über der Haustür ist ein schwarzes Halbrund. Dein Lichtkegel fällt'
     }[api.tageszeit()];
     return 'Eine hohe Halle, getäfelt mit dunklem Holz. Eine breite Treppe schwingt sich ins Obergeschoss hinauf, ihr Geländer ist grau vor Staub. ' +
@@ -187,12 +236,16 @@ HG.ding('kerze', {
   woerter: ['kerze', 'kerzenleuchter', 'leuchter', 'kerzenhalter', 'licht', 'docht'],
   ort: 'kommode', rel: 'auf', haltung: 'steht',
   lichtquelle: true, anzuendbar: true, brennt: false,
+  // Nach dem Spuk „Die wandernde Kerze“ (spuk.js) steht sie brennend auf der untersten Stufe
+  hierText: function (api) { return kerzeAufTreppe(api) ? 'Auf der untersten Treppenstufe steht die Kerze in ihrem Messingleuchter und brennt. Die Flamme zittert nicht, obwohl es durch die Halle zieht.' : null; },
   beschreibung: function (api) {
+    if (kerzeAufTreppe(api)) return 'Die Kerze steht auf der untersten Stufe der Treppe, im Messingleuchter, und brennt. Niemand hat sie angezündet. Die Flamme steht still und ein wenig zu hoch; das Wachs ist nicht heruntergelaufen, kein Tropfen. Sie leuchtet die Stufen hinauf.';
     return api.eig('kerze', 'brennt')
       ? 'Eine halb heruntergebrannte Kerze in einem Messingleuchter. Die Flamme brennt ruhig und ein wenig zu hoch.'
       : 'Eine halb heruntergebrannte Kerze in einem Messingleuchter. Der Docht ist schwarz – sie hat schon einmal gebrannt.';
   },
   texte: {
+    nehmen: function (api) { return api.flag('kerze_treppe') && api.eig('kerze', 'brennt') ? 'Du hebst den Leuchter von der Stufe. Die Flamme neigt sich nicht einmal. Sie brennt weiter in deiner Hand, ruhig und warm – ein Licht, das dir jemand angezündet hat.' : null; },
     anzuenden: 'Das Streichholz flammt auf, der Docht fängt Feuer. Das Licht der Kerze schiebt die Schatten an die Wände zurück – nicht weit, aber weit genug.',
     loeschen: 'Du bläst die Kerze aus. Ein dünner Rauchfaden steigt auf.'
   },
@@ -249,7 +302,7 @@ HG.raum('garderobe', {
   woerter: ['garderobe', 'garderobenkammer', 'kleiderablage'],
   schauplatz: 'haus',
   karte: { x: -1, y: 1 },
-  dunkel: function (api) { return api.istNacht(); },
+  dunkel: function (api) { return api.istDunkel(); },
   dunkelText: 'Stockfinster und eng. Etwas Weiches streift deine Schulter – Stoff, der an einem Haken hängt. Du weißt nicht mehr genau, wie viele Haken leer waren.',
   beschreibung: function (api) {
     return 'Eine schmale Kammer unter dem Treppenabsatz; über dir hörst du die Stufen knacken, wenn sich das Haus setzt. ' +
@@ -299,7 +352,7 @@ HG.raum('arbeitszimmer', {
     var licht = {
       morgen: 'Durch das hohe Fenster fällt fahles Morgenlicht.',
       mittag: 'Staub tanzt im Licht, das durch das hohe Fenster fällt.',
-      abend: 'Das Abendlicht färbt die Buchrücken rot.',
+      abend: 'Hinter dem hohen Fenster ist es schon dunkel. Dein Licht streift die Buchrücken.',
       nacht: 'Durch das hohe Fenster fällt Mondlicht und macht alles grau und flach wie auf einer alten Fotografie.'
     }[api.tageszeit()];
     return 'Das Arbeitszimmer eines Architekten. Regale voller Bücher und gerollter Pläne bedecken die Wände bis unter die Decke. ' +
@@ -319,7 +372,7 @@ HG.raum('arbeitszimmer', {
     return v;
   },
   details: [
-    { nomen: 'Fenster', genus: 'n', woerter: ['fenster', 'scheibe', 'vorhang', 'vorhaenge', 'garten'], text: 'Hinter dem Glas liegt der verwilderte Garten im letzten Licht. Die Vorhänge sind schwer vor Staub. Das Fenster ist verriegelt, der Griff fehlt.' },
+    { nomen: 'Fenster', genus: 'n', woerter: ['fenster', 'scheibe', 'vorhang', 'vorhaenge', 'garten'], text: { tag: 'Hinter dem Glas liegt der verwilderte Garten in grauem Novemberlicht. Die Vorhänge sind schwer vor Staub. Das Fenster ist verriegelt, der Griff fehlt.', sonst: 'Hinter dem Glas ist es schwarz; den Garten ahnst du nur. Die Vorhänge sind schwer vor Staub. Das Fenster ist verriegelt, der Griff fehlt.' } },
     { nomen: 'Bücherregal', genus: 'n', woerter: ['regal', 'regale', 'buecherregal', 'buecher', 'buch', 'band', 'baende', 'rollen'], text: 'Bücher über Statik, Baukunst und Geometrie, dazwischen Rollen mit Plänen. Alles ordentlich beschriftet – in derselben schrägen Handschrift.', lesbar: 'Du ziehst wahllos einen Band heraus: „Handbuch der Baukonstruktion“. Am Rand Notizen in schräger Handschrift: Lasten, Winkel, Zahlenkolonnen. Nichts Persönliches.' }
   ]
 });
@@ -381,6 +434,21 @@ HG.ding('portraet', {
   },
   hinweis: 'portraet_bernward',
   texte: { abnehmen: 'Du hebst das Porträt an, aber dahinter ist nur ein hellerer Fleck auf der Tapete. Du hängst es zurück.' }
+});
+
+// Der gemalte Zirkel in Bernwards Hand (Spieltest 3): „untersuche zirkel“ vor dem Porträt meint ihn – und wer den echten
+// schon hat, erkennt ihn wieder
+HG.ding('portraet_zirkel', {
+  nomen: 'Zirkel', genus: 'm', adj: ['gemalt'], woerter: ['zirkel', 'messingzirkel'],
+  ort: 'portraet', rel: 'teil', fest: 'Der Zirkel ist nur gemalt.', szenerie: true,
+  beschreibung: function (api) {
+    var t = 'Bernward hält den Zirkel, als wolle er gleich etwas abmessen: ein kleiner Zeichenzirkel aus Messing, die Spitzen leicht gespreizt, der Maler hat sich mit dem Glanz auf dem Metall viel Mühe gegeben. Im Griff zwei winzige gemalte Buchstaben.';
+    if (api.eig('zirkel', 'versteckt')) return t;
+    var steckt = api.eig('zirkel', 'ort') === 'schlitz' || api.eig('zirkel', 'ort') === 'kaestchen';
+    return t + ' ' + (steckt ? 'Es ist derselbe Zirkel, der in Bernwards Kästchen steckt – B. G. im Griff.'
+      : api.traegt('zirkel') ? 'Es ist derselbe Zirkel, den du bei dir trägst – B. G. im Griff.'
+      : 'Es ist derselbe Zirkel, den du in Carstens Karton gefunden hast – B. G. im Griff.');
+  }
 });
 
 HG.ding('messingschluessel', {

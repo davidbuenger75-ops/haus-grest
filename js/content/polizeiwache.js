@@ -33,7 +33,7 @@
   // ZIEL
   // ===================================================================
   HG.ziel('polizei', {
-    name: 'Polizeiwache Hombruch',
+    name: 'Polizeiwache Hombruch', herkunft: 'Aus der Polizeiwache',
     woerter: ['polizei', 'polizeiwache', 'wache', 'revier', 'kommissariat', 'hombruch'],
     ankunft: 'polizei', fahrzeit: 25,
     fahrt: { tag: 'Du fährst nach Hombruch. Die Wache ist ein Zweckbau aus den Siebzigern zwischen einer Sparkasse und einem Bäcker.',

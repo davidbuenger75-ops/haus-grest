@@ -46,7 +46,11 @@
 
   // Raum-Bildvarianten (zusätzlich zur automatischen Variante "spuk" nach einem Spuk-Ereignis)
   var halle = HG.daten.raeume.halle;
-  if (halle) halle.bildVariante = function (api) { return api.eig('eichentuer', 'offen') ? 'tuer-offen' : null; };
+  // Die Kerze brennt auf der untersten Stufe (Spuk kerze_wandert): das Spukbild bleibt, solange sie dort brennt (Spieltest 3)
+  if (halle) halle.bildVariante = function (api) {
+    if (api.flag('kerze_treppe') && api.eig('kerze', 'ort') === 'halle' && api.eig('kerze', 'brennt')) return 'spuk';
+    return api.eig('eichentuer', 'offen') ? 'tuer-offen' : null;
+  };
   // Arbeitszimmer: das Rasiermesser liegt (nach dem Spuk "rasiermesser_erscheint") auf dem Schreibtisch –
   // Bild raum-arbeitszimmer-rasiermesser-nacht (Mondlicht); keine allgemeine Spuk-Variante (David, 23.11.2026)
   var arbeitszimmer = HG.daten.raeume.arbeitszimmer;
